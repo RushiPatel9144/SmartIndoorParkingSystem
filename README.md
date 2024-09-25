@@ -5,11 +5,11 @@ Welcome to the **Smart Indoor Parking System** project! This Android-based solut
 ## Table of Contents
 
 - [About the Project](#about-the-project)
+- [Team Members](#team-members)
 - [Key Features](#key-features)
 - [Tech Stack](#tech-stack)
 - [System Architecture](#system-architecture)
 - [License](#license)
-- [Team Members](#team-members)
 - [Contact](#contact)
 
 ## About the Project
@@ -25,6 +25,14 @@ By leveraging IoT sensors and an Android app, the system provides real-time park
 
 GitHub Repository: [Smart Indoor Parking System](https://github.com/RushiPatel9144/SmartIndoorParkingSystem.git)
 
+
+## Team Members
+
+1. **Kunal Dhiman** - n01540952
+2. **Nisargkumar Pareshbhai Joshi** - n01545986
+3. **Rushi Manojkumar Patel** - N01539144
+4. **Raghav Sharma** - n01537255
+5. 
 ## Key Features
 
 - 🚦 **Real-Time Parking Availability**: Displays available and occupied parking spaces in real-time.
@@ -56,12 +64,6 @@ The system is divided into several components:
 
 Distributed under the MIT License. See `LICENSE` for more information.
 
-## Team Members
-
-1. **Kunal Dhiman** - n01540952
-2. **Nisargkumar Pareshbhai Joshi** - n01545986
-3. **Rushi Manojkumar Patel** - N01539144
-4. **Raghav Sharma** - n01537255
 
 ## Contact
 
@@ -69,3 +71,4 @@ For any inquiries or support, feel free to reach out:
 
 - Project Lead: [Raghav Sharma](https://github.com/RaghavSharma7255)
 - Email: n01537255@students.humber.ca
+- Supervised under: [Haki Sharifi](https://github.com/Haki11)
