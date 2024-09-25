@@ -32,7 +32,7 @@ GitHub Repository: [Smart Indoor Parking System](https://github.com/RushiPatel91
 2. **Nisargkumar Pareshbhai Joshi** - n01545986
 3. **Rushi Manojkumar Patel** - N01539144
 4. **Raghav Sharma** - n01537255
-5. 
+
 ## Key Features
 
 - 🚦 **Real-Time Parking Availability**: Displays available and occupied parking spaces in real-time.
