@@ -1,23 +1,112 @@
 package ca.tech.sense.it.smart.indoor.parking.system;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.view.MenuItem;
+
 import androidx.activity.EdgeToEdge;
+import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-public class MainActivity extends AppCompatActivity {
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
+
+    // Declare a BottomNavigationView
+    BottomNavigationView bottomNavigationView;
+
+    // Create instances of each fragment
+    Home firstFragment = new Home();
+    Maps secondFragment = new Maps();
+    Setting thirdFragment = new Setting();
+    MyAccount fourthFragment = new MyAccount();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+
+        // Find the BottomNavigationView in the layout
+        bottomNavigationView = findViewById(R.id.bottom_navigation);
+
+        // Set this activity as the listener for item selection events in the BottomNavigationView
+        bottomNavigationView.setOnNavigationItemSelectedListener(this);
+        bottomNavigationView.setSelectedItemId(R.id.navigation_home);  // Set the initially selected item
+
+        EdgeToEdge.enable(this);
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        // Handling back button press using OnBackPressedDispatcher
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                // Custom back button logic here, such as showing a dialog
+                new AlertDialog.Builder(MainActivity.this)
+                        .setMessage(R.string.are_you_sure_you_want_to_exit)
+                        .setCancelable(false)
+                        .setTitle(R.string.leaving)
+                        .setIcon(R.drawable.alert)
+                        .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                finish();  // Close the activity
+                            }
+                        })
+                        .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();  // Stay in the app
+                            }
+                        })
+                        .show();
+            }
+        };
+        getOnBackPressedDispatcher().addCallback(this, callback);
+    }
+
+    // Override the onNavigationItemSelected method
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+        // Get the ID of the selected item
+        int itemId = item.getItemId();
+
+        // Replace the current fragment based on the selected item
+        if (itemId == R.id.navigation_home) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.flFragment, firstFragment)
+                    .commit();
+            return true;
+        } else if (itemId == R.id.navigation_maps) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.flFragment, secondFragment)
+                    .commit();
+            return true;
+        } else if (itemId == R.id.navigation_setting) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.flFragment, thirdFragment)
+                    .commit();
+            return true;
+        } else if (itemId == R.id.navigation_account) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.flFragment, fourthFragment)
+                    .commit();
+            return true;
+        }
+        return false;  // Return false if no match is found
     }
 }
