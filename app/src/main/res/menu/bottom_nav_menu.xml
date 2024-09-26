@@ -4,13 +4,13 @@
         android:icon="@drawable/home"
         android:title="Home" />
     <item
-        android:id="@+id/navigation_maps"
-        android:icon="@drawable/maps"
-        android:title="Maps" />
+        android:id="@+id/navigation_park"
+        android:icon="@drawable/park"
+        android:title="Park" />
     <item
-        android:id="@+id/navigation_setting"
-        android:icon="@drawable/setting"
-        android:title="Setting" />
+        android:id="@+id/navigation_activity"
+        android:icon="@drawable/activity"
+        android:title="Activity" />
     <item
         android:id="@+id/navigation_account"
         android:icon="@drawable/account"

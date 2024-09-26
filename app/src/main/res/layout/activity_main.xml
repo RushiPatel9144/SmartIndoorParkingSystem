@@ -17,19 +17,19 @@
             android:layout_width="match_parent"
             android:layout_height="82dp"
             android:background="@color/lavender"
-            android:elevation="4dp"
+            android:elevation="3dp"
             android:popupTheme="@style/ThemeOverlay.AppCompat.Light"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-    <FrameLayout
-        android:id="@+id/flFragment"
-        android:layout_width="491dp"
-        android:layout_height="698dp"
-        app:layout_constraintBottom_toTopOf="@+id/bottom_navigation"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <FrameLayout
+            android:id="@+id/flFragment"
+            android:layout_width="491dp"
+            android:layout_height="698dp"
+            app:layout_constraintBottom_toTopOf="@+id/bottom_navigation"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </LinearLayout>
 
@@ -46,15 +46,15 @@
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
         android:layout_width="415dp"
-        android:layout_height="118dp"
-        android:layout_marginTop="691dp"
+        android:layout_height="match_parent"
+        android:layout_marginTop="800dp"
         android:layout_marginBottom="3dp"
         app:labelVisibilityMode="labeled"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.861"
         app:menu="@menu/bottom_nav_menu"
-        tools:layout_editor_absoluteX="-1dp"
-        tools:ignore="MissingConstraints" />
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="-1dp" />
 
 </androidx.drawerlayout.widget.DrawerLayout>

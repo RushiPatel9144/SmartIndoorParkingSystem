@@ -28,8 +28,8 @@ import com.google.android.material.navigation.NavigationView;public class MainAc
 
     // Create instances of each fragment
     Home firstFragment = new Home();
-    Maps secondFragment = new Maps();
-    Setting thirdFragment = new Setting();
+    Park secondFragment = new Park();
+    Activity thirdFragment = new Activity();
     MyAccount fourthFragment = new MyAccount();
 
     @SuppressLint("MissingInflatedId")
@@ -104,13 +104,13 @@ import com.google.android.material.navigation.NavigationView;public class MainAc
                     .replace(R.id.flFragment, firstFragment)
                     .commit();
             return true;
-        } else if (itemId == R.id.navigation_maps) {
+        } else if (itemId == R.id.navigation_park) {
             getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.flFragment, secondFragment)
                     .commit();
             return true;
-        } else if (itemId == R.id.navigation_setting) {
+        } else if (itemId == R.id.navigation_activity) {
             getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.flFragment, thirdFragment)
