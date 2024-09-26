@@ -18,8 +18,8 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationView;
-public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnItemSelectedListener, NavigationView.OnNavigationItemSelectedListener {
+
+import com.google.android.material.navigation.NavigationView;public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnItemSelectedListener, NavigationView.OnNavigationItemSelectedListener {
 
     // Declare a BottomNavigationView
     BottomNavigationView bottomNavigationView;
@@ -90,8 +90,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         };
         getOnBackPressedDispatcher().addCallback(this, callback);
     }
-
-    // Override the onNavigationItemSelected method
+        // Override the onNavigationItemSelected method
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 

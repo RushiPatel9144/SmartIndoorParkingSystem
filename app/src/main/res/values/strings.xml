@@ -3,4 +3,9 @@
     <string name="book_parking_spots_at_your_fingertips">Book Parking Spots At Your Fingertips</string>
     <string name="drawer_open">Open</string>
     <string name="drawer_close">Close</string>
+    <string name="are_you_sure_you_want_to_exit">Are you sure you want to exit?</string>
+    <string name="leaving">Leaving</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+
 </resources>
