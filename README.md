@@ -13,8 +13,10 @@ Welcome to the **Smart Indoor Parking System** project! This Android-based solut
 - [Contact](#contact)
 
 ## About the Project
-
-The **Smart Indoor Parking System** Android application is designed to assist drivers in finding available parking spots in indoor parking facilities using smart technologies like sensors and real-time data. It aims to reduce the time spent looking for parking spots, optimize the use of parking spaces, and provide a user-friendly interface for drivers.
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/dcd64ed5-550e-46f6-87d4-cf0d3b4fe132" alt="image" width="200"/>
+</p>
+The Smart Indoor Parking System Android application is designed to assist drivers in finding available parking spots in indoor parking facilities using smart technologies like sensors and real-time data. It aims to reduce the time spent looking for parking spots, optimize the use of parking spaces, and provide a user-friendly interface for drivers.
 
 By leveraging IoT sensors and an Android app, the system provides real-time parking availability, efficient guidance, and navigation to available parking spaces.
 
@@ -55,7 +57,7 @@ The system is divided into several components:
 2. **Data Processing**: A central server (Raspberry Pi) collects data from the sensors and sends it to the Firebase database.
 3. **Android App**: The Android app communicates with Firebase to fetch real-time parking availability and guides users to available spots.
 
-![System Architecture - coming soon](https://example.com/architecture-diagram.png) <!-- Replace with your actual architecture diagram -->
+System Architecture - coming soon
 
 
 
