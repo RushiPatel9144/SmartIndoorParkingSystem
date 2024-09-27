@@ -8,9 +8,14 @@
         android:checkableBehavior="single">
 
         <item
-            android:id="@+id/nav_home"
-            android:icon="@drawable/nav_home"
-            android:title="Home"/>
+            android:id="@+id/nav_manage_account"
+            android:icon="@drawable/manage_account"
+            android:title="Manage Account"/>
+
+        <item
+            android:id="@+id/nav_notifications"
+            android:icon="@drawable/notifications"
+            android:title="Notifications"/>
 
         <item
             android:id="@+id/nav_settings"
@@ -18,14 +23,24 @@
             android:title="Settings"/>
 
         <item
-            android:id="@+id/nav_share"
-            android:icon="@drawable/nav_share"
-            android:title="Share"/>
+            android:id="@+id/nav_help"
+            android:icon="@drawable/help"
+            android:title="Help"/>
 
         <item
-            android:id="@+id/nav_about"
-            android:icon="@drawable/nav_about"
-            android:title="About Us"/>
+            android:id="@+id/nav_private_policy"
+            android:icon="@drawable/private_policy"
+            android:title="Private policy"/>
+
+        <item
+            android:id="@+id/nav_terms_of_use"
+            android:icon="@drawable/terms_of_use"
+            android:title="Terms of use"/>
+
+        <item
+            android:id="@+id/rate_us"
+            android:icon="@drawable/rate"
+            android:title="Rate us"/>
     </group>
     <item
         android:title="">
