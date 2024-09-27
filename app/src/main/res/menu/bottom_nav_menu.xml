@@ -2,17 +2,17 @@
     <item
         android:id="@+id/navigation_home"
         android:icon="@drawable/home"
-        android:title="Home" />
+        android:title="@string/home" />
     <item
         android:id="@+id/navigation_park"
         android:icon="@drawable/park"
-        android:title="Park" />
+        android:title="@string/park" />
     <item
         android:id="@+id/navigation_activity"
         android:icon="@drawable/activity"
-        android:title="Activity" />
+        android:title="@string/activity" />
     <item
         android:id="@+id/navigation_account"
         android:icon="@drawable/account"
-        android:title="My Account" />
+        android:title="@string/my_account" />
 </menu>

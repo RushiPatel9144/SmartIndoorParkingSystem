@@ -4,4 +4,32 @@
   Name: NisargKumar Pareshbhai Joshi, StudentID: N01545986,  section number: RCB
   Name: Rushi Manojkumar Patel, StudentID: N01539144, section number: RCB
 -->
-<resources></resources>
+<resources>
+    <string name="app_name">Garez-le</string>
+    <string name="book_parking_spots_at_your_fingertips">Réservez des places de stationnement à portée de main</string>
+    <string name="drawer_open">ouvrir</string>
+    <string name="drawer_close">fermer</string>
+    <string name="are_you_sure_you_want_to_exit">Êtes-vous sûr de vouloir quitter ?</string>
+    <string name="leaving">Quitter</string>
+    <string name="yes">Oui</string>
+    <string name="no">Non</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Bonjour fragment vide</string>
+    <string name="app_logo">Logo de l’application</string>
+    <string name="manage_accounts">Gérer les comptes</string>
+    <string name="activity">Activité</string>
+    <string name="help">Aide</string>
+    <string name="home">Domicile</string>
+    <string name="notifications">Notifications</string>
+    <string name="park">Parc</string>
+    <string name="private_policy">Politique de confidentialité</string>
+    <string name="rate_us">Nous évaluer</string>
+    <string name="settings">Paramètres</string>
+    <string name="terms_of_use">Conditions d’utilisation</string>
+    <string name="the_tech_sense">Le sens de la technologie</string>
+    <string name="techsense123_gmail_com">techsense123@gmail.com</string>
+    <string name="my_account">Mon compte</string>
+    <string name="manage_account">Gérer le compte</string>
+    <string name="logout">Déconnexion</string>
+
+</resources>

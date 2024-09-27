@@ -10,7 +10,7 @@
         android:id="@+id/splash_logo"
         android:layout_width="286dp"
         android:layout_height="238dp"
-        android:contentDescription="App Logo"
+        android:contentDescription="@string/app_logo"
         android:src="@mipmap/logo" />
 
     <TextView
