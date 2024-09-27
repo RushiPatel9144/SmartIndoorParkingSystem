@@ -3,8 +3,8 @@
     <style name="Base.Theme.SmartIndoorParkingSystem" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/lavender</item>
-        <item name="colorPrimaryVariant">@color/lavender</item>
+        <item name="colorPrimary">@color/theme</item>
+        <item name="colorPrimaryVariant">@color/theme</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/teal_200</item>
