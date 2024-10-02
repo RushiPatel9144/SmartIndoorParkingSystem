@@ -31,4 +31,19 @@
     <string name="manage_account">Manage Account</string>
     <string name="logout">Logout</string>
 
+        <!-- Theme options -->
+        <string-array name="theme_options">
+            <item>Light</item>
+            <item>Dark</item>
+            <item>System Default</item>
+        </string-array>
+
+        <!-- Language options -->
+        <string-array name="language_options">
+            <item>English</item>
+            <item>French</item>
+            <item>Spanish</item>
+            <item>German</item>
+        </string-array>
+
 </resources>
