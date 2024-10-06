@@ -77,7 +77,7 @@
             android:textOn="Dark"/>
     </LinearLayout>
 
-    <!-- Language Selection -->
+    <!-- Location Settings -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -88,14 +88,13 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Language"
+            android:text="Location"
             android:textSize="18sp"/>
 
         <Spinner
-            android:id="@+id/spinner_language"
+            android:id="@+id/spinner_location"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:entries="@array/language_options"/>
+            android:layout_height="wrap_content"/>
     </LinearLayout>
 
 </LinearLayout>

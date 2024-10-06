@@ -38,12 +38,12 @@
             <item>System Default</item>
         </string-array>
 
-        <!-- Language options -->
-        <string-array name="language_options">
-            <item>English</item>
-            <item>French</item>
-            <item>Spanish</item>
-            <item>German</item>
-        </string-array>
+    <string-array name="canada_busy_cities">
+        <item>Toronto</item>
+        <item>Vancouver</item>
+        <item>Montreal</item>
+        <item>Calgary</item>
+        <item>Ottawa</item>
+    </string-array>
 
 </resources>

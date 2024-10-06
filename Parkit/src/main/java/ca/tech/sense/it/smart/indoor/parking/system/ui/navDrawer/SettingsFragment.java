@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.Spinner;
 import android.widget.Switch;
@@ -19,7 +20,7 @@ public class SettingsFragment extends Fragment {
     private Switch switchLockPortrait;
     private Switch switchNotifications;
     private ToggleButton toggleTheme;
-    private Spinner spinnerLanguage;
+    private Spinner spinnerLocation;
 
     public SettingsFragment() {
         // Required empty public constructor
@@ -40,7 +41,7 @@ public class SettingsFragment extends Fragment {
         switchLockPortrait = view.findViewById(R.id.switch_lock_portrait);
         switchNotifications = view.findViewById(R.id.switch_notifications);
         toggleTheme = view.findViewById(R.id.toggle_theme);
-        spinnerLanguage = view.findViewById(R.id.spinner_language);
+        spinnerLocation = view.findViewById(R.id.spinner_location);
 
         // Load saved preferences
         SharedPreferences sharedPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
@@ -81,6 +82,12 @@ public class SettingsFragment extends Fragment {
                 }
             }
         });
+
+        // Initialize spinner with location options
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
+                R.array.canada_busy_cities, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerLocation.setAdapter(adapter);
 
         // Other initialization code here
 
