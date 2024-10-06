@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="ca.tech.sense.it.smart.indoor.parking.system" />
+                  <option name="mobileSdkAppId" value="1:361561575523:android:11c4a2f9916b22fee2e856" />
+                  <option name="projectId" value="smartindoorparkingsystem" />
+                  <option name="projectNumber" value="361561575523" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />
