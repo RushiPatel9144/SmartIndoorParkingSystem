@@ -31,4 +31,19 @@
     <string name="manage_account">Manage Account</string>
     <string name="logout">Logout</string>
 
+        <!-- Theme options -->
+        <string-array name="theme_options">
+            <item>Light</item>
+            <item>Dark</item>
+            <item>System Default</item>
+        </string-array>
+
+    <string-array name="canada_busy_cities">
+        <item>Toronto</item>
+        <item>Vancouver</item>
+        <item>Montreal</item>
+        <item>Calgary</item>
+        <item>Ottawa</item>
+    </string-array>
+
 </resources>
