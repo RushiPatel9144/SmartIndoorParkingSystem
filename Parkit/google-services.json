@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "361561575523",
+    "project_id": "smartindoorparkingsystem",
+    "storage_bucket": "smartindoorparkingsystem.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:361561575523:android:11c4a2f9916b22fee2e856",
+        "android_client_info": {
+          "package_name": "ca.tech.sense.it.smart.indoor.parking.system"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD3jAUS3SseL0STV94VFaN6sH5fk2Otu-M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
