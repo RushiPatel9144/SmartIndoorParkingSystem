@@ -30,8 +30,12 @@
     <string name="my_account">My Account</string>
     <string name="manage_account">Manage Account</string>
     <string name="logout">Logout</string>
+    <string name="notification">Notification</string>
+    <string name="promotions">Promotions</string>
+    <string name="favorites">Favorites</string>
+    <string name="support">Support</string>
 
-        <!-- Theme options -->
+    <!-- Theme options -->
         <string-array name="theme_options">
             <item>Light</item>
             <item>Dark</item>

@@ -39,7 +39,7 @@ import ca.tech.sense.it.smart.indoor.parking.system.ui.navDrawer.RateUsFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.navDrawer.SettingsFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.navDrawer.TermsOfUseFragment;
 
-public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnItemSelectedListener, NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends MenuHandler implements BottomNavigationView.OnItemSelectedListener, NavigationView.OnNavigationItemSelectedListener {
 
     // Declare a BottomNavigationView
     BottomNavigationView bottomNavigationView;
