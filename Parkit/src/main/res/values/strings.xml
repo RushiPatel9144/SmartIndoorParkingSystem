@@ -34,6 +34,14 @@
     <string name="promotions">Promotions</string>
     <string name="favorites">Favorites</string>
     <string name="support">Support</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="already_have_an_account_login_here">Already have an account? Login here</string>
+    <string name="i_accept_the_terms_of_use_and_privacy_policy">I accept the Terms of Use and Privacy Policy.</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="password">Password</string>
+    <string name="email">Email</string>
+    <string name="last_name">Last Name</string>
+    <string name="first_name">First Name</string>
 
     <!-- Theme options -->
         <string-array name="theme_options">
