@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
+    android:id="@+id/signup"
     android:layout_height="match_parent"
     android:padding="24dp">
 
@@ -44,7 +45,7 @@
                 android:inputType="textPersonName" />
 
             <EditText
-                android:id="@+id/editTextEmail"
+                android:id="@+id/signup_editTextEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
@@ -52,7 +53,7 @@
                 android:inputType="textEmailAddress" />
 
             <EditText
-                android:id="@+id/editTextPassword"
+                android:id="@+id/signup_editTextPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
@@ -74,6 +75,12 @@
                 android:layout_marginTop="16dp"
                 android:text="@string/i_accept_the_terms_of_use_and_privacy_policy" />
 
+            <ProgressBar
+                android:id="@+id/signup_progressBar"
+                android:visibility="gone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/buttonSignUp"
                 android:layout_width="match_parent"
@@ -83,6 +90,7 @@
                 android:textColor="@android:color/white" />
 
             <TextView
+                android:id="@+id/jump_to_login"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
