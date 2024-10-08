@@ -74,7 +74,7 @@
                 android:layout_marginTop="16dp"
                 android:text="@string/i_accept_the_terms_of_use_and_privacy_policy" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/buttonSignUp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

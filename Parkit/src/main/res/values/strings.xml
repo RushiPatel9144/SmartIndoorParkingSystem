@@ -42,13 +42,15 @@
     <string name="email">Email</string>
     <string name="last_name">Last Name</string>
     <string name="first_name">First Name</string>
+    <string name="login">Login</string>
+    <string name="don_t_have_an_account_sign_up">Don\'t have an account? Sign up</string>
 
     <!-- Theme options -->
-        <string-array name="theme_options">
-            <item>Light</item>
-            <item>Dark</item>
-            <item>System Default</item>
-        </string-array>
+    <string-array name="theme_options">
+        <item>Light</item>
+        <item>Dark</item>
+        <item>System Default</item>
+    </string-array>
 
     <string-array name="canada_busy_cities">
         <item>Toronto</item>

@@ -31,5 +31,7 @@
     <string name="my_account">Mon compte</string>
     <string name="manage_account">Gérer le compte</string>
     <string name="logout">Déconnexion</string>
+    <string name="login">Login</string>
+    <string name="don_t_have_an_account_sign_up">Don\'t have an account? Sign up</string>
 
 </resources>
