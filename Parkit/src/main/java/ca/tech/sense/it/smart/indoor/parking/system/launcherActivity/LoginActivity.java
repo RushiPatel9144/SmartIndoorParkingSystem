@@ -1,4 +1,4 @@
-package ca.tech.sense.it.smart.indoor.parking.system;
+package ca.tech.sense.it.smart.indoor.parking.system.launcherActivity;
 
 import android.os.Bundle;
 
@@ -7,6 +7,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+
+import ca.tech.sense.it.smart.indoor.parking.system.R;
 
 public class LoginActivity extends AppCompatActivity {
 

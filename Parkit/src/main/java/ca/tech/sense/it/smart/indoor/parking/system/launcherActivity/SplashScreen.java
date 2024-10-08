@@ -4,9 +4,7 @@
   Name: Rushi Manojkumar Patel, StudentID: N01539144, section number: RCB
  */
 
-package ca.tech.sense.it.smart.indoor.parking.system;
-
-import static androidx.core.content.ContextCompat.startActivity;
+package ca.tech.sense.it.smart.indoor.parking.system.launcherActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,6 +13,9 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
+
+import ca.tech.sense.it.smart.indoor.parking.system.MainActivity;
+import ca.tech.sense.it.smart.indoor.parking.system.R;
 
 public class SplashScreen extends AppCompatActivity {
 
@@ -29,9 +30,9 @@ public class SplashScreen extends AppCompatActivity {
         Animation textAnimation = AnimationUtils.loadAnimation(this, R.anim.text_animation);
         splashText.startAnimation(textAnimation);
 
-        // Handler to transition to the main activity after the splash screen
+        // Handler to transition to the Login activity after the splash screen
         new Handler().postDelayed(() -> {
-            Intent intent = new Intent(SplashScreen.this, MainActivity.class);
+            Intent intent = new Intent(SplashScreen.this, LoginActivity.class);
             startActivity(intent);
             finish();
         }, SPLASH_SCREEN_TIME_OUT);

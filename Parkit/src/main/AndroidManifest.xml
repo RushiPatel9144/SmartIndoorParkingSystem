@@ -15,19 +15,14 @@
         android:theme="@style/Theme.SmartIndoorParkingSystem"
         tools:targetApi="31">
         <activity
-            android:name=".SignUpActivity"
+            android:name=".launcherActivity.SignUpActivity"
             android:exported="false" />
         <activity
-            android:name=".LoginActivity"
+            android:name=".launcherActivity.LoginActivity"
             android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
-            android:name=".SplashScreen"
+            android:name=".launcherActivity.SplashScreen"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
