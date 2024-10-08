@@ -81,27 +81,13 @@ public class MainActivity extends MenuHandler implements BottomNavigationView.On
 
         //temp opr
         tempAuth = FirebaseAuth.getInstance();
-        tempBtn = findViewById(R.id.temp_logoutBtn);
-        tempTv = findViewById(R.id.temp_tv);
         tempUser = tempAuth.getCurrentUser();
 
         if(tempUser == null){
             Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
             startActivity(intent);
             finish();
-        } else {
-            tempTv.setText(tempUser.getEmail());
         }
-
-        tempBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FirebaseAuth.getInstance().signOut();
-                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-                startActivity(intent);
-                finish();
-            }
-        });
 
 
         toolbar = findViewById(R.id.nisToolbar); //Ignore red line errors
@@ -236,7 +222,11 @@ public class MainActivity extends MenuHandler implements BottomNavigationView.On
             return true;
         } else if (itemId == R.id.nav_logout) {
             // Handle logout
-            drawerLayout.closeDrawer(GravityCompat.START);
+
+            FirebaseAuth.getInstance().signOut();
+            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+            startActivity(intent);
+            finish();
             return true;
         }
         return false;  // Return false if no match is found

@@ -17,7 +17,8 @@
         <LinearLayout
             android:layout_width="327dp"
             android:layout_height="529dp"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:gravity="center">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -76,6 +77,7 @@
                 android:text="@string/i_accept_the_terms_of_use_and_privacy_policy" />
 
             <ProgressBar
+
                 android:id="@+id/signup_progressBar"
                 android:visibility="gone"
                 android:layout_width="wrap_content"

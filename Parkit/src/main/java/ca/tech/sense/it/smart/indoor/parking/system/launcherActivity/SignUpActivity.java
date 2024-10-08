@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -31,11 +32,12 @@ public class SignUpActivity extends AppCompatActivity {
 
 
 
-    EditText editTextEmail,editTextPassword;
+    EditText editTextEmail,editTextPassword,editTextConfirmPassword;
     MaterialButton button;
     TextView textView;
     ProgressBar progressBar;
     FirebaseAuth mAuth;
+    CheckBox checkBox;
 
     @Override
     public void onStart() {
@@ -63,10 +65,12 @@ public class SignUpActivity extends AppCompatActivity {
 
         editTextEmail = findViewById(R.id.signup_editTextEmail);
         editTextPassword = findViewById(R.id.signup_editTextEmail);
+        editTextConfirmPassword = findViewById(R.id.editTextConfirmPassword);
         textView = findViewById(R.id.jump_to_login);
         button = findViewById(R.id.buttonSignUp);
         progressBar = findViewById(R.id.signup_progressBar);
         mAuth = FirebaseAuth.getInstance();
+        checkBox = findViewById(R.id.checkBoxTerms);
 
         textView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,6 +97,7 @@ public class SignUpActivity extends AppCompatActivity {
                 if(TextUtils.isEmpty(password)){
                     Toast.makeText(SignUpActivity.this, "Enter Password", Toast.LENGTH_SHORT).show();
                 }
+
 
                 mAuth.createUserWithEmailAndPassword(email, password)
                         .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
