@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <array name="preloaded_fonts" translatable="false">
+        <item>@font/alata</item>
+        <item>@font/aoboshi_one</item>
+        <item>@font/corben</item>
+        <item>@font/corben_bold</item>
         <item>@font/poppins_medium</item>
     </array>
 </resources>
