@@ -5,6 +5,12 @@
     android:layout_height="match_parent"
     tools:context=".ui.navDrawer.HelpFragment">
 
+    <!-- Background ImageView with alpha set to 0.7 -->
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/help_background"
+        android:alpha="0.7" />
 
     <!-- TODO: Update blank fragment layout -->
     <TextView
