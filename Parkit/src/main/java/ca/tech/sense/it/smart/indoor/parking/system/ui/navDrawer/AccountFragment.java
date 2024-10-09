@@ -7,11 +7,8 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
@@ -21,6 +18,8 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+
+import java.io.InputStream;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -116,7 +115,14 @@ public class AccountFragment extends Fragment {
         String uriString = sharedPreferences.getString(KEY_PROFILE_PICTURE_URI, null);
         if (uriString != null) {
             Uri uri = Uri.parse(uriString);
-            profilePictureButton.setImageURI(uri);
+            try (InputStream inputStream = getActivity().getContentResolver().openInputStream(uri)) {
+                profilePictureButton.setImageURI(uri);
+            } catch (Exception e) {
+                profilePictureButton.setImageResource(R.mipmap.ic_launcher);
+            }
+        }
+        else {
+            profilePictureButton.setImageResource(R.mipmap.ic_launcher);
         }
     }
 }
