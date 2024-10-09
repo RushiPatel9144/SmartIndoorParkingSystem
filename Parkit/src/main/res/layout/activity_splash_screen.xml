@@ -1,39 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
-    android:background="@color/white"> <!-- Set background color for splash screen -->
+    android:background="@color/splash_background"> <!-- Set background color for splash screen -->
 
     <ImageView
         android:id="@+id/splash_logo"
-        android:layout_width="245dp"
-        android:layout_height="201dp"
+        android:layout_width="286dp"
+        android:layout_height="238dp"
         android:contentDescription="@string/app_logo"
-        android:src="@mipmap/ic_launcher"
-        app:layout_constraintBottom_toTopOf="@+id/splash_text"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
+        android:src="@mipmap/logo" />
 
     <TextView
         android:id="@+id/splash_text"
-        android:layout_width="362dp"
-        android:layout_height="98dp"
-        android:layout_marginBottom="240dp"
-        android:fontFamily="@font/aoboshi_one"
+        android:layout_width="297dp"
+        android:layout_height="90dp"
+        android:layout_marginTop="20dp"
+        android:fontFamily="@font/poppins_medium"
         android:text="@string/book_parking_spots_at_your_fingertips"
         android:textAlignment="center"
-        android:textColor="@color/icon_text"
-        android:textSize="26sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.673"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:textColor="@color/black"
+        android:textSize="27sp"
+        android:textStyle="bold" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>
