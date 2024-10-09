@@ -48,11 +48,11 @@ import ca.tech.sense.it.smart.indoor.parking.system.ui.navDrawer.TermsOfUseFragm
 public class MainActivity extends MenuHandler implements BottomNavigationView.OnItemSelectedListener, NavigationView.OnNavigationItemSelectedListener {
 
 
-    //temporary- for testing the frebase login and logout functionality
-    TextView tempTv;
+    //temporary- for testing the firebase login and logout functionality
+
     FirebaseAuth tempAuth;
     FirebaseUser tempUser;
-    Button tempBtn;
+
 
     // Declare a BottomNavigationView
     BottomNavigationView bottomNavigationView;
@@ -90,7 +90,7 @@ public class MainActivity extends MenuHandler implements BottomNavigationView.On
 //            finish();
 //        }
 
-        toolbar = findViewById(R.id.nisToolbar); //Ignore red line errors
+        toolbar = findViewById(R.id.nisToolbar);
         setSupportActionBar(toolbar);
 
         drawerLayout = findViewById(R.id.login);
@@ -116,7 +116,7 @@ public class MainActivity extends MenuHandler implements BottomNavigationView.On
 
             @Override
             public void onDrawerStateChanged(int newState) {
-                // Do nothing
+
             }
         });
 

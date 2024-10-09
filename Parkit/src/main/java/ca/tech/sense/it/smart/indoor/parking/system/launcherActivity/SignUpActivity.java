@@ -1,6 +1,7 @@
 package ca.tech.sense.it.smart.indoor.parking.system.launcherActivity;
 
 import android.annotation.SuppressLint;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -13,6 +14,7 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -90,12 +92,30 @@ public class SignUpActivity extends AppCompatActivity {
                 password = String.valueOf(editTextPassword.getText());
                 //when email is empty
                 if(TextUtils.isEmpty(email)){
-                    Toast.makeText(SignUpActivity.this, R.string.enter_email, Toast.LENGTH_SHORT).show();
+                    new AlertDialog.Builder(SignUpActivity.this)
+                            .setMessage(R.string.enter_password)
+                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            })
+                            .show();
+                    progressBar.setVisibility(View.GONE); // Hide progress bar
                     return  ;
                 }
                 //when password is empty - remainder change this to alert in post(RushiPatel)
                 if(TextUtils.isEmpty(password)){
-                    Toast.makeText(SignUpActivity.this, R.string.enter_email, Toast.LENGTH_SHORT).show();
+                    new AlertDialog.Builder(SignUpActivity.this)
+                            .setMessage(R.string.enter_password)
+                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            })
+                            .show();
+                    progressBar.setVisibility(View.GONE); // Hide progress bar
                 }
 
 

@@ -36,6 +36,8 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/login_email_editext"
             android:hint="@string/email"
+            android:layout_marginLeft="7dp"
+            android:layout_marginRight="7dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
     </com.google.android.material.textfield.TextInputLayout>
@@ -46,6 +48,8 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/login_password_editext"
             android:hint="@string/password"
+            android:layout_marginLeft="7dp"
+            android:layout_marginRight="7dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
     </com.google.android.material.textfield.TextInputLayout>

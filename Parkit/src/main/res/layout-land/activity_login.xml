@@ -78,6 +78,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/login"
+        app:cornerRadius="16dp"
         app:layout_constraintEnd_toEndOf="@+id/login_progressBar"
         app:layout_constraintHorizontal_bias="0.589"
         app:layout_constraintStart_toStartOf="@+id/login_progressBar"
