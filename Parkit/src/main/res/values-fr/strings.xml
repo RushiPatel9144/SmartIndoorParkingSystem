@@ -31,8 +31,32 @@
     <string name="my_account">Mon compte</string>
     <string name="manage_account">Gérer le compte</string>
     <string name="logout">Déconnexion</string>
+
+    <string name="notification">Notification</string>
+    <string name="promotions">Promotions</string>
+    <string name="favorites">Favorites</string>
+    <string name="support">Support</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="already_have_an_account_login_here">Already have an account? Login here</string>
+    <string name="i_accept_the_terms_of_use_and_privacy_policy">I accept the Terms of Use and Privacy Policy.</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="password">Password</string>
+    <string name="email">Email</string>
+    <string name="last_name">Last Name</string>
+    <string name="first_name">First Name</string>
     <string name="login">Login</string>
     <string name="don_t_have_an_account_sign_up">Don\'t have an account? Sign up</string>
     <string name="login_as_guest">Login as guest</string>
+    <string name="enter_email">Enter Email</string>
+    <string name="enter_password">Enter Password</string>
+    <string name="login_successful">Login successful.</string>
+    <string name="authentication_failed">Authentication failed.</string>
+    <string name="account_created">Account created.</string>
+    <string name="permission_granted_to_read_external_storage">Permission granted to read external storage</string>
+    <string name="permission_denied_to_read_external_storage">Permission denied to read external storage</string>
+    <string name="thetechsense123_gmail_com">thetechsense123@gmail.com</string>
+    <string name="image">image/*</string>
+    <string name="lock_portrait">lock_portrait</string>
+    <string name="dark_theme">dark_theme</string>
 
 </resources>

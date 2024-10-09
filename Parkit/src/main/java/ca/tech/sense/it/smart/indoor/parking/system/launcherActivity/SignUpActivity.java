@@ -90,12 +90,12 @@ public class SignUpActivity extends AppCompatActivity {
                 password = String.valueOf(editTextPassword.getText());
                 //when email is empty
                 if(TextUtils.isEmpty(email)){
-                    Toast.makeText(SignUpActivity.this, "Enter Email", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SignUpActivity.this, R.string.enter_email, Toast.LENGTH_SHORT).show();
                     return  ;
                 }
                 //when password is empty - remainder change this to alert in post(RushiPatel)
                 if(TextUtils.isEmpty(password)){
-                    Toast.makeText(SignUpActivity.this, "Enter Password", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SignUpActivity.this, R.string.enter_email, Toast.LENGTH_SHORT).show();
                 }
 
 
@@ -106,7 +106,7 @@ public class SignUpActivity extends AppCompatActivity {
                                 progressBar.setVisibility(View.GONE);
                                 if (task.isSuccessful()) {
                                     // If sign in succeeds, display a message to the user.
-                                    Toast.makeText(SignUpActivity.this, "Account created.",
+                                    Toast.makeText(SignUpActivity.this, (R.string.account_created),
                                             Toast.LENGTH_SHORT).show();
                                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                                     startActivity(intent);
@@ -114,7 +114,7 @@ public class SignUpActivity extends AppCompatActivity {
 
                                 } else {
                                     // If sign in fails, display a message to the user.
-                                    Toast.makeText(SignUpActivity.this, "Authentication failed.",
+                                    Toast.makeText(SignUpActivity.this, R.string.authentication_failed,
                                             Toast.LENGTH_SHORT).show();
                                 }
                             }

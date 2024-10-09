@@ -45,6 +45,17 @@
     <string name="login">Login</string>
     <string name="don_t_have_an_account_sign_up">Don\'t have an account? Sign up</string>
     <string name="login_as_guest">Login as guest</string>
+    <string name="enter_email">Enter Email</string>
+    <string name="enter_password">Enter Password</string>
+    <string name="login_successful">Login successful.</string>
+    <string name="authentication_failed">Authentication failed.</string>
+    <string name="account_created">Account created.</string>
+    <string name="permission_granted_to_read_external_storage">Permission granted to read external storage</string>
+    <string name="permission_denied_to_read_external_storage">Permission denied to read external storage</string>
+    <string name="thetechsense123_gmail_com">thetechsense123@gmail.com</string>
+    <string name="image">image/*</string>
+    <string name="lock_portrait">lock_portrait</string>
+    <string name="dark_theme">dark_theme</string>
 
     <!-- Theme options -->
     <string-array name="theme_options">

@@ -36,9 +36,9 @@ public class AccountFragment extends Fragment {
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
                 if (isGranted) {
                     openGallery();
-                    Snackbar.make(getView(), "Permission granted to read external storage", Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(getView(), (R.string.permission_granted_to_read_external_storage), Snackbar.LENGTH_SHORT).show();
                 } else {
-                    Snackbar.make(getView(), "Permission denied to read external storage", Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(getView(), (R.string.permission_denied_to_read_external_storage), Snackbar.LENGTH_SHORT).show();
                 }
             });
 
@@ -75,8 +75,8 @@ public class AccountFragment extends Fragment {
 
         // Set data (replace with actual data)
         profilePictureButton.setImageResource(R.mipmap.ic_launcher); // Replace with actual image resource or URL
-        name.setText("The TECH SENSE"); // Replace with actual name
-        contactDetails.setText("thetechsense123@gmail.com"); // Replace with actual contact details
+        name.setText(R.string.the_tech_sense); // Replace with actual name
+        contactDetails.setText(R.string.thetechsense123_gmail_com); // Replace with actual contact details
 
         // Load saved profile picture URI
         loadProfilePictureUri();
@@ -102,7 +102,7 @@ public class AccountFragment extends Fragment {
 
     private void openGallery() {
         Intent intent = new Intent(Intent.ACTION_PICK);
-        intent.setType("image/*");
+        intent.setType(getString(R.string.image));
         pickImageLauncher.launch(intent);
     }
 

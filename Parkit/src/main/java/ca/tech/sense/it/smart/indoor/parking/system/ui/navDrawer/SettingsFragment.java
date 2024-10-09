@@ -45,8 +45,8 @@ public class SettingsFragment extends Fragment {
 
         // Load saved preferences
         SharedPreferences sharedPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
-        boolean isPortraitLocked = sharedPreferences.getBoolean("lock_portrait", false);
-        boolean isDarkTheme = sharedPreferences.getBoolean("dark_theme", false);
+        boolean isPortraitLocked = sharedPreferences.getBoolean(getString(R.string.lock_portrait), false);
+        boolean isDarkTheme = sharedPreferences.getBoolean(getString(R.string.dark_theme), false);
 
         switchLockPortrait.setChecked(isPortraitLocked);
         toggleTheme.setChecked(isDarkTheme);
@@ -56,7 +56,7 @@ public class SettingsFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putBoolean("lock_portrait", isChecked);
+                editor.putBoolean(getString(R.string.lock_portrait), isChecked);
                 editor.apply();
 
                 if (isChecked) {
@@ -71,7 +71,7 @@ public class SettingsFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putBoolean("dark_theme", isChecked);
+                editor.putBoolean(getString(R.string.dark_theme), isChecked);
                 editor.apply();
 
                 // Apply theme change logic here
