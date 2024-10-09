@@ -23,6 +23,8 @@ import java.io.InputStream;
 
 import static android.app.Activity.RESULT_OK;
 
+import com.google.android.material.snackbar.Snackbar;
+
 public class AccountFragment extends Fragment {
 
     private static final String PREFS_NAME = "AccountPrefs";
@@ -34,8 +36,9 @@ public class AccountFragment extends Fragment {
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
                 if (isGranted) {
                     openGallery();
+                    Snackbar.make(getView(), "Permission granted to read external storage", Snackbar.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(getActivity(), "Permission denied to read external storage", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(getView(), "Permission denied to read external storage", Snackbar.LENGTH_SHORT).show();
                 }
             });
 
