@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:gravity="center"
+    android:orientation="vertical"> <!-- Set background color for splash screen -->
+
+    <ImageView
+        android:id="@+id/splash_logo"
+        android:layout_width="245dp"
+        android:layout_height="201dp"
+        android:layout_marginTop="35dp"
+        android:contentDescription="@string/app_logo"
+        android:src="@mipmap/ic_launcher"
+        app:layout_constraintBottom_toTopOf="@+id/splash_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.744" />
+
+    <TextView
+        android:id="@+id/splash_text"
+        android:layout_width="362dp"
+        android:layout_height="98dp"
+        android:layout_marginStart="199dp"
+        android:layout_marginEnd="170dp"
+        android:layout_marginBottom="56dp"
+        android:fontFamily="@font/aoboshi_one"
+        android:text="@string/book_parking_spots_at_your_fingertips"
+        android:textAlignment="center"
+        android:textColor="@color/icon_text"
+        android:textSize="26sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
