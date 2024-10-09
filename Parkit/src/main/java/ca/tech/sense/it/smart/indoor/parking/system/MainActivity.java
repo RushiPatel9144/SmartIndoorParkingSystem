@@ -36,6 +36,7 @@ import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.LoginActivi
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.Activity;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.Home;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.Park;
+import ca.tech.sense.it.smart.indoor.parking.system.ui.menu.MenuHandler;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.navDrawer.AccountFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.navDrawer.HelpFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.navDrawer.NotificationsFragment;
@@ -88,7 +89,6 @@ public class MainActivity extends MenuHandler implements BottomNavigationView.On
             startActivity(intent);
             finish();
         }
-
 
         toolbar = findViewById(R.id.nisToolbar); //Ignore red line errors
         setSupportActionBar(toolbar);

@@ -1,0 +1,51 @@
+package ca.tech.sense.it.smart.indoor.parking.system.ui.menu;
+
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+
+import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.ui.navDrawer.HelpFragment;
+import ca.tech.sense.it.smart.indoor.parking.system.ui.navDrawer.NotificationsFragment;
+
+public class MenuHandler extends AppCompatActivity {
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        if (item.getItemId() == R.id.notification) {
+            loadFragment(new NotificationsFragment());
+            return true;
+        }
+        if (item.getItemId() == R.id.favorites) {
+            loadFragment(new FavoritesFragment());
+            return true;
+        }
+        if (item.getItemId() == R.id.support) {
+            loadFragment(new HelpFragment());
+            return true;
+        }
+        if (item.getItemId() == R.id.Offers){
+            loadFragment(new PromotionFragment());
+            return true;
+        }
+        return false;
+
+    }
+    private void loadFragment(Fragment fragment) {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.flFragment, fragment);  // Assuming you have a FrameLayout with id fragment_container in your layout
+        transaction.addToBackStack(null);  // Optional: to add the transaction to the back stack
+        transaction.commit();
+    }
+}
