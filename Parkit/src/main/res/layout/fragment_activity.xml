@@ -7,6 +7,17 @@
     android:layout_height="match_parent"
     tools:context=".ui.bottomNav.Activity">
 
+    <!-- Background ImageView with alpha set to 0.7 -->
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0.7"
+        android:src="@drawable/activity_background"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <!-- TODO: Update blank fragment layout -->
     <TextView
         android:id="@+id/textView2"
@@ -22,6 +33,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />
-    />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

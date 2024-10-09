@@ -7,6 +7,14 @@
     android:layout_height="match_parent"
     tools:context=".ui.bottomNav.Home">
 
+    <!-- Background ImageView with alpha set to 0.7 -->
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/home_background"
+        android:scaleType="centerCrop"
+        android:alpha="0.7" />
+
     <TextView
         android:id="@+id/textView4"
         android:layout_width="138dp"

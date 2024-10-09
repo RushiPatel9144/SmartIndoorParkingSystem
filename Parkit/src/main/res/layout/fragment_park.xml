@@ -7,12 +7,11 @@
     android:layout_height="match_parent"
     tools:context=".ui.bottomNav.Park">
 
-    <!-- Background ImageView with alpha set to 0.75 -->
+    <!-- Background ImageView with alpha set to 0.7 -->
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:src="@drawable/park_background"
-        android:scaleType="centerCrop"
         android:alpha="0.7" />
 
     <!-- TODO: Update blank fragment layout -->
