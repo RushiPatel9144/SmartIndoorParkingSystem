@@ -29,7 +29,7 @@ import ca.tech.sense.it.smart.indoor.parking.system.R;
 public class LoginActivity extends AppCompatActivity {
 
     EditText editTextEmail,editTextPassword;
-    MaterialButton buttonLogin;
+    MaterialButton buttonLogin,guestLogin;
     TextView textView;
     ProgressBar progressBar;
     FirebaseAuth mAuth;
@@ -61,6 +61,7 @@ public class LoginActivity extends AppCompatActivity {
         editTextPassword = findViewById(R.id.login_password_editext);
         textView = findViewById(R.id.jump_to_signup_page);
         buttonLogin = findViewById(R.id.login_btn);
+        guestLogin = findViewById(R.id.guestSignIn_btn);
         progressBar = findViewById(R.id.login_progressBar);
         mAuth = FirebaseAuth.getInstance();
         //to sing up page
@@ -68,6 +69,15 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(),SignUpActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+
+        guestLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 startActivity(intent);
                 finish();
             }

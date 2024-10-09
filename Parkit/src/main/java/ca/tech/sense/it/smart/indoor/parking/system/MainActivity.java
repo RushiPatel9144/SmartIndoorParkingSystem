@@ -84,11 +84,11 @@ public class MainActivity extends MenuHandler implements BottomNavigationView.On
         tempAuth = FirebaseAuth.getInstance();
         tempUser = tempAuth.getCurrentUser();
 
-        if(tempUser == null){
-            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-            startActivity(intent);
-            finish();
-        }
+//        if(tempUser == null){
+//            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+//            startActivity(intent);
+//            finish();
+//        }
 
         toolbar = findViewById(R.id.nisToolbar); //Ignore red line errors
         setSupportActionBar(toolbar);
