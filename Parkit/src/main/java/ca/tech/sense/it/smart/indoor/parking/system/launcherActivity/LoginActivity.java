@@ -93,15 +93,19 @@ public class LoginActivity extends AppCompatActivity {
                 password = String.valueOf(editTextPassword.getText());
                 //when email is empty
                 if(TextUtils.isEmpty(email)){
-                    Toast.makeText(LoginActivity.this, R.string.enter_email, Toast.LENGTH_SHORT).show();
-                    return  ;
+                    editTextEmail.setError(getString(R.string.enter_e_mail));
+                    progressBar.setVisibility(View.GONE);
+                    return;
                 }
                 //when password is empty - remainder change this to alert in post(RushiPatel)
                 if(TextUtils.isEmpty(password)){
-                    Toast.makeText(LoginActivity.this, (R.string.enter_password), Toast.LENGTH_SHORT).show();
+                    editTextPassword.setError(getString(R.string.enter_passwords));
+                    progressBar.setVisibility(View.GONE);
+                    return;
                 }
+
                 //checks for user in firebase
-                mAuth.signInWithEmailAndPassword(email, password)
+                FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)
                         .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
