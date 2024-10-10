@@ -58,6 +58,10 @@
     <string name="dark_theme">dark_theme</string>
     <string name="enter_e_mail">Enter E-mail</string>
     <string name="enter_passwords">Enter Password</string>
+    <string name="user_not_found">User not found</string>
+    <string name="invalid_password">Invalid Password</string>
+    <string name="invalid_e_mail_format">Invalid E-mail format</string>
+    <string name="invaild_credentials">Invaild Credentials</string>
 
     <!-- Theme options -->
     <string-array name="theme_options">
