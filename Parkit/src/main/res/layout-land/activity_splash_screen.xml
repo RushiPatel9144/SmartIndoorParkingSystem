@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
     android:gravity="center"
-    android:orientation="vertical"> <!-- Set background color for splash screen -->
+    android:orientation="vertical">
 
     <ImageView
         android:id="@+id/splash_logo"
@@ -17,9 +17,10 @@
         android:src="@mipmap/ic_launcher"
         app:layout_constraintBottom_toTopOf="@+id/splash_text"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.526"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.744" />
+        app:layout_constraintVertical_bias="0.56" />
 
     <TextView
         android:id="@+id/splash_text"
@@ -27,7 +28,7 @@
         android:layout_height="98dp"
         android:layout_marginStart="199dp"
         android:layout_marginEnd="170dp"
-        android:layout_marginBottom="56dp"
+        android:layout_marginBottom="52dp"
         android:fontFamily="@font/aoboshi_one"
         android:text="@string/book_parking_spots_at_your_fingertips"
         android:textAlignment="center"
@@ -39,4 +40,4 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>
