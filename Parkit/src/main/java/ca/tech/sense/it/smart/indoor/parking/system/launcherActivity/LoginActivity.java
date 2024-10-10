@@ -21,6 +21,9 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 import com.google.firebase.auth.FirebaseUser;
 
 import ca.tech.sense.it.smart.indoor.parking.system.MainActivity;
@@ -73,7 +76,7 @@ public class LoginActivity extends AppCompatActivity {
                 finish();
             }
         });
-
+        //handles login in as a guest feature
         guestLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -83,50 +86,82 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-
+        //handles login feature
         buttonLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                progressBar.setVisibility(View.VISIBLE);
-                String email,password;
-                email = String.valueOf(editTextEmail.getText());
-                password = String.valueOf(editTextPassword.getText());
-                //when email is empty
-                if(TextUtils.isEmpty(email)){
+                progressBar.setVisibility(View.VISIBLE);  // Show progress bar
+
+                // Retrieve and trim the input values
+                String email = editTextEmail.getText().toString().trim();
+                String password = editTextPassword.getText().toString().trim();
+
+                // Validate email
+                if (TextUtils.isEmpty(email)) {
                     editTextEmail.setError(getString(R.string.enter_e_mail));
-                    progressBar.setVisibility(View.GONE);
+                    progressBar.setVisibility(View.GONE);  // Hide progress bar
                     return;
                 }
-                //when password is empty - remainder change this to alert in post(RushiPatel)
-                if(TextUtils.isEmpty(password)){
-                    editTextPassword.setError(getString(R.string.enter_passwords));
-                    progressBar.setVisibility(View.GONE);
+                // Validate email format
+                if (!isValidEmail(email)) {
+                    editTextEmail.setError(getString(R.string.invalid_e_mail_format));
+                    progressBar.setVisibility(View.GONE);  // Hide progress bar
                     return;
                 }
 
-                //checks for user in firebase
+                // Validate password
+                if (TextUtils.isEmpty(password)) {
+                    editTextPassword.setError(getString(R.string.enter_passwords));
+                    progressBar.setVisibility(View.GONE);  // Hide progress bar
+                    return;
+                }
+
+                // Attempt to sign in with FirebaseAuth
                 FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)
                         .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
-                                progressBar.setVisibility(View.GONE);
+                                progressBar.setVisibility(View.GONE);  // Hide progress bar after task completion
                                 if (task.isSuccessful()) {
-                                    // Sign in success, update UI with the signed-in user's information
-                                    Toast.makeText(LoginActivity.this, (R.string.login_successful),
-                                            Toast.LENGTH_SHORT).show();
+                                    // Sign in success, proceed to the main activity
+                                    Toast.makeText(LoginActivity.this, getString(R.string.login_successful), Toast.LENGTH_SHORT).show();
                                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                                     startActivity(intent);
-                                    finish();
+                                    finish();  // Close the login activity
                                 } else {
-                                    // If sign in fails, display a message to the user.
-                                    Toast.makeText(LoginActivity.this, (R.string.authentication_failed),
-                                            Toast.LENGTH_SHORT).show();
-
+                                    // Sign in failed, handle error and show message
+                                    if (task.getException() != null) {
+                                        String errorCode = ((FirebaseAuthException) task.getException()).getErrorCode();
+                                        switch (errorCode) {
+                                            case "ERROR_USER_NOT_FOUND":
+                                                // If email is not registered
+                                                editTextEmail.setError(getString(R.string.user_not_found));
+                                                editTextEmail.requestFocus();
+                                                break;
+                                            case "ERROR_INVALID_CREDENTIAL":
+                                                // If the password is wrong
+                                                editTextPassword.setError(getString(R.string.invaild_credentials));
+                                                editTextPassword.requestFocus();
+                                                break;
+                                            default:
+                                                // General error handling
+                                                Toast.makeText(LoginActivity.this, getString(R.string.authentication_failed), Toast.LENGTH_SHORT).show();
+                                                break;
+                                        }
+                                    }
                                 }
                             }
                         });
             }
         });
 
+
+
+    }
+
+    // Method to validate email format
+    private boolean isValidEmail(String email) {
+        String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
+        return email.matches(emailPattern);
     }
 }
