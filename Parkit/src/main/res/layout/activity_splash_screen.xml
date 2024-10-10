@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
-    android:background="@color/splash_background"> <!-- Set background color for splash screen -->
+    android:background="@color/white"> <!-- Set background color for splash screen -->
 
     <ImageView
         android:id="@+id/splash_logo"
@@ -22,7 +22,7 @@
         android:fontFamily="@font/poppins_medium"
         android:text="@string/book_parking_spots_at_your_fingertips"
         android:textAlignment="center"
-        android:textColor="@color/black"
+        android:textColor="@color/icon_text"
         android:textSize="27sp"
         android:textStyle="bold" />
 
