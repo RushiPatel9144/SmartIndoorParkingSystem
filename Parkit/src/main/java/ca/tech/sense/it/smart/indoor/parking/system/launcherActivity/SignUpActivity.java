@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -34,7 +35,7 @@ public class SignUpActivity extends AppCompatActivity {
 
 
 
-    EditText editTextEmail,editTextPassword,editTextConfirmPassword;
+    EditText editTextEmail,editTextPassword,editTextConfirmPassword,firstName,lastName;
     MaterialButton button;
     TextView textView;
     ProgressBar progressBar;
@@ -64,15 +65,18 @@ public class SignUpActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-
+        //Initialize all the fields
         editTextEmail = findViewById(R.id.signup_editTextEmail);
-        editTextPassword = findViewById(R.id.signup_editTextEmail);
+        editTextPassword = findViewById(R.id.signup_editTextPassword);
         editTextConfirmPassword = findViewById(R.id.editTextConfirmPassword);
         textView = findViewById(R.id.jump_to_login);
         button = findViewById(R.id.buttonSignUp);
         progressBar = findViewById(R.id.signup_progressBar);
         mAuth = FirebaseAuth.getInstance();
         checkBox = findViewById(R.id.checkBoxTerms);
+        firstName = findViewById(R.id.editTextFirstName);
+        lastName = findViewById(R.id.editTextLastName);
+
 
         textView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,60 +90,74 @@ public class SignUpActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                progressBar.setVisibility(View.VISIBLE);
-                String email,password;
-                email = String.valueOf(editTextEmail.getText());
-                password = String.valueOf(editTextPassword.getText());
-                //when email is empty
-                if(TextUtils.isEmpty(email)){
-                    new AlertDialog.Builder(SignUpActivity.this)
-                            .setMessage(R.string.enter_password)
-                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                }
-                            })
-                            .show();
-                    progressBar.setVisibility(View.GONE); // Hide progress bar
-                    return  ;
-                }
-                //when password is empty - remainder change this to alert in post(RushiPatel)
-                if(TextUtils.isEmpty(password)){
-                    new AlertDialog.Builder(SignUpActivity.this)
-                            .setMessage(R.string.enter_password)
-                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                }
-                            })
-                            .show();
-                    progressBar.setVisibility(View.GONE); // Hide progress bar
+                progressBar.setVisibility(View.VISIBLE);  // Show progress bar
+                String fName = firstName.getText().toString().trim();
+                String lName = lastName.getText().toString().trim();
+                String email = String.valueOf(editTextEmail.getText());
+                String password = editTextPassword.getText().toString().trim();
+                String confirmPassword = editTextConfirmPassword.getText().toString().trim();
+                
+                // Validate first name
+                if (TextUtils.isEmpty(fName)) {
+                    firstName.setError("Please enter your first name");
+                    progressBar.setVisibility(View.GONE);  // Hide progress bar
+                    return;
                 }
 
+                // Validate last name
+                if (TextUtils.isEmpty(lName)) {
+                    lastName.setError("Please enter your last name");
+                    progressBar.setVisibility(View.GONE);  // Hide progress bar
+                    return;
+                }
+                // Validate email
+                if (TextUtils.isEmpty(email)) {
+                    editTextEmail.setError(getString(R.string.enter_e_mail));
+                    progressBar.setVisibility(View.GONE);  // Hide progress bar
+                    return;
+                }
 
+                // Validate password
+                if (TextUtils.isEmpty(password)) {
+                    editTextPassword.setError(getString(R.string.enter_passwords));
+                    progressBar.setVisibility(View.GONE);  // Hide progress bar
+                    return;
+                }
+
+                // Check if passwords match
+                if (!password.equals(confirmPassword)) {
+                    editTextConfirmPassword.setError("Passwords do not match");
+                    progressBar.setVisibility(View.GONE);  // Hide progress bar
+                    return;
+                }
+
+                // Check if checkbox is checked
+                if (!checkBox.isChecked()) {
+                    Toast.makeText(SignUpActivity.this, "Please accept the terms and conditions", Toast.LENGTH_SHORT).show();
+                    progressBar.setVisibility(View.GONE);  // Hide progress bar
+                    return;
+                }
+
+                // If all validations pass, create the user
                 mAuth.createUserWithEmailAndPassword(email, password)
                         .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
-                                progressBar.setVisibility(View.GONE);
+                                progressBar.setVisibility(View.GONE);  // Hide progress bar after task completion
                                 if (task.isSuccessful()) {
-                                    // If sign in succeeds, display a message to the user.
-                                    Toast.makeText(SignUpActivity.this, (R.string.account_created),
-                                            Toast.LENGTH_SHORT).show();
+                                    // Sign up successful
+                                    Toast.makeText(SignUpActivity.this, getString(R.string.account_created), Toast.LENGTH_SHORT).show();
                                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                                     startActivity(intent);
-                                    finish();
-
+                                    finish();  // Close the sign-up activity
                                 } else {
-                                    // If sign in fails, display a message to the user.
-                                    Toast.makeText(SignUpActivity.this, R.string.authentication_failed,
-                                            Toast.LENGTH_SHORT).show();
+                                    // Sign up failed
+                                    Toast.makeText(SignUpActivity.this, getString(R.string.authentication_failed), Toast.LENGTH_SHORT).show();
                                 }
                             }
                         });
             }
         });
+
     }
 }

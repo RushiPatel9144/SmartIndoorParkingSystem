@@ -56,6 +56,8 @@
     <string name="image">image/*</string>
     <string name="lock_portrait">lock_portrait</string>
     <string name="dark_theme">dark_theme</string>
+    <string name="enter_e_mail">Enter E-mail</string>
+    <string name="enter_passwords">Enter Password</string>
 
     <!-- Theme options -->
     <string-array name="theme_options">
