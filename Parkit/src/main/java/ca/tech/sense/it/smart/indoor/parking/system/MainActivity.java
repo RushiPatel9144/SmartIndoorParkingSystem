@@ -7,72 +7,35 @@
 package ca.tech.sense.it.smart.indoor.parking.system;
 
 import android.annotation.SuppressLint;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
-
-import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.graphics.Insets;
-import androidx.core.view.GravityCompat;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-
+import androidx.fragment.app.Fragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-
-import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.LoginActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.Activity;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.Home;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.Park;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.menu.MenuHandler;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.navDrawer.AccountFragment;
-import ca.tech.sense.it.smart.indoor.parking.system.ui.navDrawer.HelpFragment;
-import ca.tech.sense.it.smart.indoor.parking.system.ui.navDrawer.NotificationsFragment;
-import ca.tech.sense.it.smart.indoor.parking.system.ui.navDrawer.PrivatePolicyFragment;
-import ca.tech.sense.it.smart.indoor.parking.system.ui.navDrawer.RateUsFragment;
-import ca.tech.sense.it.smart.indoor.parking.system.ui.navDrawer.SettingsFragment;
-import ca.tech.sense.it.smart.indoor.parking.system.ui.navDrawer.TermsOfUseFragment;
 
-public class MainActivity extends MenuHandler implements BottomNavigationView.OnItemSelectedListener, NavigationView.OnNavigationItemSelectedListener {
-
-
-    //temporary- for testing the firebase login and logout functionality
-
-    FirebaseAuth tempAuth;
-    FirebaseUser tempUser;
-
+public class MainActivity extends MenuHandler implements NavigationBarView.OnItemSelectedListener {
 
     // Declare a BottomNavigationView
-    BottomNavigationView bottomNavigationView;
-    DrawerLayout drawerLayout;
-    Toolbar toolbar;
+    private BottomNavigationView bottomNavigationView;
 
-    // Create instances of each fragment
-    Home firstFragment = new Home();
-    Park secondFragment = new Park();
-    Activity thirdFragment = new Activity();
-
-    // Create instances of each fragment for navigation drawer
-    AccountFragment fourthFragment = new AccountFragment();
-    NotificationsFragment notificationsFragment = new NotificationsFragment();
-    SettingsFragment settingsFragment = new SettingsFragment();
-    HelpFragment helpFragment = new HelpFragment();
-    PrivatePolicyFragment privatePolicyFragment = new PrivatePolicyFragment();
-    TermsOfUseFragment termsOfUseFragment = new TermsOfUseFragment();
-    RateUsFragment rateUsFragment = new RateUsFragment();
-
+    // Fragments for bottom navigation
+    private final Home homeFragment = new Home();
+    private final Park parkFragment = new Park();
+    private final Activity activityFragment = new Activity();
+    private final AccountFragment accountFragment = new AccountFragment(); // Will display the list of old navigation drawer items
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -80,155 +43,87 @@ public class MainActivity extends MenuHandler implements BottomNavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //temp opr
+        // Initialize Firebase Authentication
+        initFirebaseAuth();
+
+        // Initialize UI components
+        initUIComponents();
+
+        // Set BottomNavigationView listener
+        bottomNavigationView.setOnItemSelectedListener(this);
+        bottomNavigationView.setSelectedItemId(R.id.navigation_home);  // Set the initial fragment
+
+        // Handle back button press
+        handleBackButtonPress();
+    }
+
+    private void initFirebaseAuth() {
+        FirebaseAuth tempAuth;
+        FirebaseUser tempUser;
         tempAuth = FirebaseAuth.getInstance();
         tempUser = tempAuth.getCurrentUser();
 
-//        if(tempUser == null){
-//            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-//            startActivity(intent);
-//            finish();
-//        }
+        if (tempUser == null) {
+            navigateToLoginActivity();
+        }
+    }
 
+    private void initUIComponents() {
+        Toolbar toolbar;
         toolbar = findViewById(R.id.nisToolbar);
         setSupportActionBar(toolbar);
 
-        drawerLayout = findViewById(R.id.login);
-        NavigationView navigationView = findViewById(R.id.nis_nav_view);
-        navigationView.setNavigationItemSelectedListener((NavigationView.OnNavigationItemSelectedListener) this);
-
-        // Add DrawerListener to control toolbar visibility
-        drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
-            @Override
-            public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
-                // Do nothing
-            }
-
-            @Override
-            public void onDrawerOpened(@NonNull View drawerView) {
-                toolbar.setVisibility(View.VISIBLE); // Hide the toolbar
-            }
-
-            @Override
-            public void onDrawerClosed(@NonNull View drawerView) {
-                toolbar.setVisibility(View.VISIBLE); // Show the toolbar
-            }
-
-            @Override
-            public void onDrawerStateChanged(int newState) {
-
-            }
-        });
-
-
-        // Find the BottomNavigationView in the layout
         bottomNavigationView = findViewById(R.id.bottom_navigation);
+    }
 
-        // Set this activity as the listener for item selection events in the BottomNavigationView
-        bottomNavigationView.setOnItemSelectedListener(this);
-        bottomNavigationView.setSelectedItemId(R.id.navigation_home);  // Set the initially selected item
-
-        EdgeToEdge.enable(this);
-
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.login), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
-
-        // Handling back button press using OnBackPressedDispatcher
+    private void handleBackButtonPress() {
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                // Custom back button logic here, such as showing a dialog
                 new AlertDialog.Builder(MainActivity.this)
                         .setMessage(R.string.are_you_sure_you_want_to_exit)
                         .setCancelable(false)
                         .setTitle(R.string.leaving)
                         .setIcon(R.drawable.alert)
-                        .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                finish();  // Close the activity
-                            }
-                        })
-                        .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();  // Stay in the app
-                            }
-                        })
+                        .setPositiveButton(R.string.yes, (dialog, which) -> finish())
+                        .setNegativeButton(R.string.no, (dialog, which) -> dialog.dismiss())
                         .show();
             }
         };
         getOnBackPressedDispatcher().addCallback(this, callback);
     }
-        // Override the onNavigationItemSelected method
+
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-
-        // Get the ID of the selected item
         int itemId = item.getItemId();
 
-        // Replace the current fragment based on the selected item
         if (itemId == R.id.navigation_home) {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.flFragment, firstFragment)
-                    .commit();
+            loadFragments(homeFragment);
             return true;
         } else if (itemId == R.id.navigation_park) {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.flFragment, secondFragment)
-                    .commit();
+            loadFragments(parkFragment);
             return true;
         } else if (itemId == R.id.navigation_activity) {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.flFragment, thirdFragment)
-                    .commit();
+            loadFragments(activityFragment);
             return true;
         } else if (itemId == R.id.navigation_account) {
-            drawerLayout.openDrawer(GravityCompat.START);
+            loadFragments(accountFragment); // AccountFragment shows ListView of previous nav drawer items
             return true;
-        } else if (itemId == R.id.nav_manage_account) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.flFragment,fourthFragment).commit();
-            drawerLayout.closeDrawer(GravityCompat.START);
-            return true;
-        }else if (itemId == R.id.nav_notifications) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.flFragment, notificationsFragment).commit();
-            drawerLayout.closeDrawer(GravityCompat.START);
-            return true;
-        } else if (itemId == R.id.nav_settings) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.flFragment, settingsFragment).commit();
-            drawerLayout.closeDrawer(GravityCompat.START);
-            return true;
-        } else if (itemId == R.id.nav_help) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.flFragment, helpFragment).commit();
-            drawerLayout.closeDrawer(GravityCompat.START);
-            return true;
-        } else if (itemId == R.id.nav_private_policy) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.flFragment, privatePolicyFragment).commit();
-            drawerLayout.closeDrawer(GravityCompat.START);
-            return true;
-        } else if (itemId == R.id.nav_terms_of_use) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.flFragment, termsOfUseFragment).commit();
-            drawerLayout.closeDrawer(GravityCompat.START);
-            return true;
-        } else if (itemId == R.id.rate_us) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.flFragment, rateUsFragment).commit();
-            drawerLayout.closeDrawer(GravityCompat.START);
-            return true;
-        } else if (itemId == R.id.nav_logout) {
-            // Handle logout
-
-            FirebaseAuth.getInstance().signOut();
-            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-            startActivity(intent);
-            finish();
-            return true;
+        } else {
+            return false;
         }
-        return false;  // Return false if no match is found
+    }
+    
+    private void loadFragments(Fragment fragment) {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.flFragment, fragment)
+                .commit();
+    }
+
+    private void navigateToLoginActivity() {
+        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+        startActivity(intent);
+        finish();
     }
 }
