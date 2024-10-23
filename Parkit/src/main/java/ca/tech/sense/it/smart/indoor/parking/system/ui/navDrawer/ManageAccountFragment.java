@@ -1,5 +1,7 @@
 package ca.tech.sense.it.smart.indoor.parking.system.ui.navDrawer;
 
+import static android.app.Activity.RESULT_OK;
+
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
@@ -7,38 +9,43 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
-import ca.tech.sense.it.smart.indoor.parking.system.R;
-
-import java.io.InputStream;
-
-import static android.app.Activity.RESULT_OK;
 
 import com.google.android.material.snackbar.Snackbar;
 
-public class AccountFragment extends Fragment {
+import java.io.InputStream;
 
+import ca.tech.sense.it.smart.indoor.parking.system.R;
+
+public class ManageAccountFragment extends Fragment {
+
+    // Constants for shared preferences
     private static final String PREFS_NAME = "AccountPrefs";
     private static final String KEY_PROFILE_PICTURE_URI = "profile_picture_uri";
 
+    // Views
     private ImageButton profilePictureButton;
+    private TextView nameTextView;
+    private TextView contactDetailsTextView;
 
+    // ActivityResultLaunchers for permissions and image picking
     private final ActivityResultLauncher<String> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
                 if (isGranted) {
                     openGallery();
-                    Snackbar.make(getView(), (R.string.permission_granted_to_read_external_storage), Snackbar.LENGTH_SHORT).show();
+                    showSnackbar(R.string.permission_granted_to_read_external_storage);
                 } else {
-                    Snackbar.make(getView(), (R.string.permission_denied_to_read_external_storage), Snackbar.LENGTH_SHORT).show();
+                    showSnackbar(R.string.permission_denied_to_read_external_storage);
                 }
             });
 
@@ -47,13 +54,12 @@ public class AccountFragment extends Fragment {
                 if (result.getResultCode() == RESULT_OK && result.getData() != null) {
                     Uri selectedImageUri = result.getData().getData();
                     if (selectedImageUri != null) {
-                        profilePictureButton.setImageURI(selectedImageUri);
-                        saveProfilePictureUri(selectedImageUri);
+                        updateProfilePicture(selectedImageUri);
                     }
                 }
             });
 
-    public AccountFragment() {
+    public ManageAccountFragment() {
         // Required empty public constructor
     }
 
@@ -63,41 +69,38 @@ public class AccountFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_account, container, false);
-
-        // Bind views
-        profilePictureButton = view.findViewById(R.id.imageButton);
-        TextView name = view.findViewById(R.id.name);
-        TextView contactDetails = view.findViewById(R.id.contact_details);
-
-        // Set data (replace with actual data)
-        profilePictureButton.setImageResource(R.mipmap.ic_launcher); // Replace with actual image resource or URL
-        name.setText(R.string.the_tech_sense); // Replace with actual name
-        contactDetails.setText(R.string.thetechsense123_gmail_com); // Replace with actual contact details
-
-        // Load saved profile picture URI
+        bindViews(view);
         loadProfilePictureUri();
+        setupProfilePictureButton();
+        return view;
+    }
 
-        // Set click listener for the ImageButton
-        profilePictureButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Check for runtime permissions
-                if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)
-                        != PackageManager.PERMISSION_GRANTED) {
-                    // Request permission
-                    requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE);
-                } else {
-                    // Permission already granted, open gallery
-                    openGallery();
-                }
+    private void bindViews(View view) {
+        profilePictureButton = view.findViewById(R.id.imageButton);
+        nameTextView = view.findViewById(R.id.name);
+        contactDetailsTextView = view.findViewById(R.id.contact_details);
+
+        // Set default values or fetch actual data from storage/database
+        profilePictureButton.setImageResource(R.mipmap.ic_launcher);
+        nameTextView.setText(R.string.the_tech_sense); // Replace with actual name
+        contactDetailsTextView.setText(R.string.thetechsense123_gmail_com); // Replace with actual contact
+    }
+
+    private void setupProfilePictureButton() {
+        profilePictureButton.setOnClickListener(v -> {
+            if (isPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                openGallery();
+            } else {
+                requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE);
             }
         });
+    }
 
-        return view;
+    private boolean isPermissionGranted(String permission) {
+        return ContextCompat.checkSelfPermission(getActivity(), permission) == PackageManager.PERMISSION_GRANTED;
     }
 
     private void openGallery() {
@@ -106,11 +109,14 @@ public class AccountFragment extends Fragment {
         pickImageLauncher.launch(intent);
     }
 
+    private void updateProfilePicture(Uri uri) {
+        profilePictureButton.setImageURI(uri);
+        saveProfilePictureUri(uri);
+    }
+
     private void saveProfilePictureUri(Uri uri) {
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(KEY_PROFILE_PICTURE_URI, uri.toString());
-        editor.apply();
+        sharedPreferences.edit().putString(KEY_PROFILE_PICTURE_URI, uri.toString()).apply();
     }
 
     private void loadProfilePictureUri() {
@@ -123,9 +129,12 @@ public class AccountFragment extends Fragment {
             } catch (Exception e) {
                 profilePictureButton.setImageResource(R.mipmap.ic_launcher);
             }
-        }
-        else {
+        } else {
             profilePictureButton.setImageResource(R.mipmap.ic_launcher);
         }
+    }
+
+    private void showSnackbar(int messageId) {
+        Snackbar.make(getView(), messageId, Snackbar.LENGTH_SHORT).show();
     }
 }

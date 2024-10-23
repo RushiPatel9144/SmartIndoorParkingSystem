@@ -24,7 +24,7 @@ import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.Activity;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.Home;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.Park;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.menu.MenuHandler;
-import ca.tech.sense.it.smart.indoor.parking.system.ui.navDrawer.AccountFragment;
+import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountFragment;
 
 public class MainActivity extends MenuHandler implements NavigationBarView.OnItemSelectedListener {
 
