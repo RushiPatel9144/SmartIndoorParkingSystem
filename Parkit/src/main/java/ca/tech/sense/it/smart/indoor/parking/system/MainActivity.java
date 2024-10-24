@@ -24,7 +24,6 @@ import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.Activity;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.Home;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.Park;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.menu.MenuHandler;
-import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountFragment;
 
 public class MainActivity extends MenuHandler implements NavigationBarView.OnItemSelectedListener {
 
@@ -35,7 +34,7 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
     private final Home homeFragment = new Home();
     private final Park parkFragment = new Park();
     private final Activity activityFragment = new Activity();
-    private final AccountFragment accountFragment = new AccountFragment(); // Will display the list of old navigation drawer items
+    private final ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountFragment accountFragment = new ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountFragment();
 
     @SuppressLint("MissingInflatedId")
     @Override

@@ -1,6 +1,4 @@
-package ca.tech.sense.it.smart.indoor.parking.system.ui.navDrawer;
-
-import static android.app.Activity.RESULT_OK;
+package ca.tech.sense.it.smart.indoor.parking.system.ui.AccountItems;
 
 import android.Manifest;
 import android.content.Context;
@@ -9,22 +7,16 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
-
 import com.google.android.material.snackbar.Snackbar;
-
 import java.io.InputStream;
-
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 
 public class ManageAccountFragment extends Fragment {
@@ -38,26 +30,8 @@ public class ManageAccountFragment extends Fragment {
     private TextView nameTextView;
     private TextView contactDetailsTextView;
 
-    // ActivityResultLaunchers for permissions and image picking
-    private final ActivityResultLauncher<String> requestPermissionLauncher =
-            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-                if (isGranted) {
-                    openGallery();
-                    showSnackbar(R.string.permission_granted_to_read_external_storage);
-                } else {
-                    showSnackbar(R.string.permission_denied_to_read_external_storage);
-                }
-            });
-
-    private final ActivityResultLauncher<Intent> pickImageLauncher =
-            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-                if (result.getResultCode() == RESULT_OK && result.getData() != null) {
-                    Uri selectedImageUri = result.getData().getData();
-                    if (selectedImageUri != null) {
-                        updateProfilePicture(selectedImageUri);
-                    }
-                }
-            });
+    // Request code for image picking
+    private static final int PICK_IMAGE_REQUEST = 1;
 
     public ManageAccountFragment() {
         // Required empty public constructor
@@ -71,7 +45,7 @@ public class ManageAccountFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_account, container, false);
+        View view = inflater.inflate(R.layout.fragment_manage_account, container, false);
         bindViews(view);
         loadProfilePictureUri();
         setupProfilePictureButton();
@@ -94,7 +68,7 @@ public class ManageAccountFragment extends Fragment {
             if (isPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE)) {
                 openGallery();
             } else {
-                requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE);
+                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PICK_IMAGE_REQUEST);
             }
         });
     }
@@ -105,8 +79,19 @@ public class ManageAccountFragment extends Fragment {
 
     private void openGallery() {
         Intent intent = new Intent(Intent.ACTION_PICK);
-        intent.setType(getString(R.string.image));
-        pickImageLauncher.launch(intent);
+        intent.setType("image/*");
+        startActivityForResult(intent, PICK_IMAGE_REQUEST);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == getActivity().RESULT_OK && data != null) {
+            Uri selectedImageUri = data.getData();
+            if (selectedImageUri != null) {
+                updateProfilePicture(selectedImageUri);
+            }
+        }
     }
 
     private void updateProfilePicture(Uri uri) {
@@ -124,11 +109,7 @@ public class ManageAccountFragment extends Fragment {
         String uriString = sharedPreferences.getString(KEY_PROFILE_PICTURE_URI, null);
         if (uriString != null) {
             Uri uri = Uri.parse(uriString);
-            try (InputStream inputStream = getActivity().getContentResolver().openInputStream(uri)) {
-                profilePictureButton.setImageURI(uri);
-            } catch (Exception e) {
-                profilePictureButton.setImageResource(R.mipmap.ic_launcher);
-            }
+            profilePictureButton.setImageURI(uri);
         } else {
             profilePictureButton.setImageResource(R.mipmap.ic_launcher);
         }
@@ -136,5 +117,16 @@ public class ManageAccountFragment extends Fragment {
 
     private void showSnackbar(int messageId) {
         Snackbar.make(getView(), messageId, Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == PICK_IMAGE_REQUEST) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                openGallery();
+            } else {
+                showSnackbar(R.string.permission_denied_to_read_external_storage);
+            }
+        }
     }
 }

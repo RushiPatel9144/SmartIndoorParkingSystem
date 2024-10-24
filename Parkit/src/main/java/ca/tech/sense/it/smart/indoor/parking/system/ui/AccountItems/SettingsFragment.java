@@ -1,4 +1,4 @@
-package ca.tech.sense.it.smart.indoor.parking.system.ui.navDrawer;
+package ca.tech.sense.it.smart.indoor.parking.system.ui.AccountItems;
 
 import android.content.Context;
 import android.content.SharedPreferences;
