@@ -1,4 +1,4 @@
-package ca.tech.sense.it.smart.indoor.parking.system.ui.AccountItems;
+package ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems;
 
 import android.os.Bundle;
 
@@ -10,9 +10,9 @@ import android.view.ViewGroup;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 
-public class PrivatePolicyFragment extends Fragment {
+public class TermsOfUseFragment extends Fragment {
 
-    public PrivatePolicyFragment() {
+    public TermsOfUseFragment() {
         // Required empty public constructor
     }
 
@@ -25,6 +25,6 @@ public class PrivatePolicyFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_private_policy, container, false);
+        return inflater.inflate(R.layout.fragment_terms_of_use, container, false);
     }
 }
