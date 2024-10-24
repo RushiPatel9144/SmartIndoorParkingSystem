@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="16dp"
+    android:background="?android:attr/selectableItemBackground"
+    android:gravity="center_vertical">
+
+    <!-- Icon for the list item -->
+    <ImageView
+        android:id="@+id/item_icon"
+        android:layout_width="46dp"
+        android:layout_height="33dp"
+        android:scaleType="fitCenter"
+        android:layout_marginEnd="16dp"
+        android:tint="@color/theme"
+        android:src="@mipmap/ic_launcher" /> <!-- Replace with your icon drawable -->
+
+    <!-- Text view for displaying item title -->
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:textSize="18sp"
+        android:textColor="@android:color/black"
+        android:drawableEnd="@drawable/baseline_arrow_forward_ios_24"/>
+
+
+</LinearLayout>

@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.navDrawer.NotificationsFragment">
+    tools:context=".ui.AccountItems.NotificationsFragment">
 
     <!-- Background ImageView with alpha set to 0.7 -->
     <ImageView

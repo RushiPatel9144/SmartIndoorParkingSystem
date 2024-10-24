@@ -1,4 +1,4 @@
-package ca.tech.sense.it.smart.indoor.parking.system.ui.navDrawer;
+package ca.tech.sense.it.smart.indoor.parking.system.ui.AccountItems;
 
 import android.os.Bundle;
 
@@ -10,10 +10,9 @@ import android.view.ViewGroup;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 
+public class RateUsFragment extends Fragment {
 
-public class NotificationsFragment extends Fragment {
-
-    public NotificationsFragment() {
+    public RateUsFragment() {
         // Required empty public constructor
     }
 
@@ -26,6 +25,6 @@ public class NotificationsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_notifications, container, false);
+        return inflater.inflate(R.layout.fragment_rate_us, container, false);
     }
 }

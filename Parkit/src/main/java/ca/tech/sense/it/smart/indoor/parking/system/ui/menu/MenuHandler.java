@@ -4,13 +4,12 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
-import ca.tech.sense.it.smart.indoor.parking.system.ui.navDrawer.HelpFragment;
-import ca.tech.sense.it.smart.indoor.parking.system.ui.navDrawer.NotificationsFragment;
+import ca.tech.sense.it.smart.indoor.parking.system.ui.AccountItems.HelpFragment;
+import ca.tech.sense.it.smart.indoor.parking.system.ui.AccountItems.NotificationsFragment;
 
 public class MenuHandler extends AppCompatActivity {
 
