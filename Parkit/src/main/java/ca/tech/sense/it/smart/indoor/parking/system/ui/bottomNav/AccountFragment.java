@@ -12,13 +12,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import java.util.ArrayList;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
-import ca.tech.sense.it.smart.indoor.parking.system.ui.AccountItems.HelpFragment;
-import ca.tech.sense.it.smart.indoor.parking.system.ui.AccountItems.ManageAccountFragment;
-import ca.tech.sense.it.smart.indoor.parking.system.ui.AccountItems.NotificationsFragment;
-import ca.tech.sense.it.smart.indoor.parking.system.ui.AccountItems.PrivatePolicyFragment;
-import ca.tech.sense.it.smart.indoor.parking.system.ui.AccountItems.RateUsFragment;
-import ca.tech.sense.it.smart.indoor.parking.system.ui.AccountItems.SettingsFragment;
-import ca.tech.sense.it.smart.indoor.parking.system.ui.AccountItems.TermsOfUseFragment;
+import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems.HelpFragment;
+import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems.ManageAccountFragment;
+import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems.NotificationsFragment;
+import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems.PrivatePolicyFragment;
+import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems.RateUsFragment;
+import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems.SettingsFragment;
+import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems.TermsOfUseFragment;
 
 public class AccountFragment extends Fragment {
 

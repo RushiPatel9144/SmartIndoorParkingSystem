@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.AccountItems.HelpFragment">
+    tools:context=".ui.bottomNav.AccountItems.HelpFragment">
 
     <!-- Background ImageView with alpha set to 0.7 -->
     <ImageView
