@@ -24,12 +24,13 @@ import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.Activity;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.Home;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.Park;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.menu.MenuHandler;
+import ca.tech.sense.it.smart.indoor.parking.system.utility.NotificationHelper;
 
 public class MainActivity extends MenuHandler implements NavigationBarView.OnItemSelectedListener {
 
     // Declare a BottomNavigationView
     private BottomNavigationView bottomNavigationView;
-
+    private Toolbar toolbar;
     // Fragments for bottom navigation
     private final Home homeFragment = new Home();
     private final Park parkFragment = new Park();
@@ -50,7 +51,12 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
 
         // Set BottomNavigationView listener
         bottomNavigationView.setOnItemSelectedListener(this);
-        bottomNavigationView.setSelectedItemId(R.id.navigation_home);  // Set the initial fragment
+        bottomNavigationView.setSelectedItemId(R.id.navigation_home);
+
+        // Create notification channel
+        NotificationHelper.createNotificationChannel(this);
+
+
 
         // Handle back button press
         handleBackButtonPress();
@@ -68,7 +74,6 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
     }
 
     private void initUIComponents() {
-        Toolbar toolbar;
         toolbar = findViewById(R.id.nisToolbar);
         setSupportActionBar(toolbar);
 
@@ -98,21 +103,25 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
 
         if (itemId == R.id.navigation_home) {
             loadFragments(homeFragment);
+            toolbar.setTitle(R.string.home);
             return true;
         } else if (itemId == R.id.navigation_park) {
             loadFragments(parkFragment);
+            toolbar.setTitle(R.string.park);
             return true;
         } else if (itemId == R.id.navigation_activity) {
             loadFragments(activityFragment);
+            toolbar.setTitle(R.string.activity);
             return true;
         } else if (itemId == R.id.navigation_account) {
-            loadFragments(accountFragment); // AccountFragment shows ListView of previous nav drawer items
+            loadFragments(accountFragment);
+            toolbar.setTitle(R.string.my_account);
             return true;
         } else {
             return false;
         }
     }
-    
+
     private void loadFragments(Fragment fragment) {
         getSupportFragmentManager()
                 .beginTransaction()
