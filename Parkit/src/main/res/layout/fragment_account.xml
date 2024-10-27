@@ -1,13 +1,315 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="16dp"
-        android:clipToPadding="false"/>
-</RelativeLayout>
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Item 1 -->
+        <LinearLayout
+            android:id="@+id/manage_account"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="16dp">
+
+            <ImageView
+                android:id="@+id/profilePic"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:scaleType="fitCenter"
+                android:src="@mipmap/ic_launcher" />
+
+            <TextView
+                android:id="@+id/textView_Account"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/manage_account"
+                android:textColor="@android:color/black"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:drawableEndCompat="@drawable/baseline_arrow_forward_ios_24" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.6dp"
+            android:layout_marginBottom="8dp"
+            android:background="#BDBDBD" />
+
+        <!-- Item 2 -->
+        <LinearLayout
+            android:id="@+id/settings"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="8dp">
+
+            <ImageView
+                android:id="@+id/item_setting"
+                android:layout_width="46dp"
+                android:layout_height="33dp"
+                android:scaleType="fitCenter"
+                android:layout_marginEnd="16dp"
+                android:src="@drawable/nav_settings"
+                app:tint="@color/theme" />
+
+            <TextView
+                android:id="@+id/textView_Settings"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="18sp"
+                android:textColor="@android:color/black"
+                android:text="@string/settings"
+                 app:drawableEndCompat="@drawable/baseline_arrow_forward_ios_24" />
+        </LinearLayout>
+
+        <!-- Divider -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.6dp"
+            android:layout_marginBottom="8dp"
+            android:background="#BDBDBD" />
+
+        <!-- Item 3 -->
+        <LinearLayout
+            android:id="@+id/help"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="8dp">
+
+            <ImageView
+                android:id="@+id/item_help"
+                android:layout_width="46dp"
+                android:layout_height="33dp"
+                android:scaleType="fitCenter"
+                android:layout_marginEnd="16dp"
+                android:src="@drawable/help"
+                app:tint="@color/theme" />
+
+            <TextView
+                android:id="@+id/textView_help"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="18sp"
+                android:textColor="@android:color/black"
+                android:text="@string/help"
+                app:drawableEndCompat="@drawable/baseline_arrow_forward_ios_24" />
+        </LinearLayout>
+
+        <!-- Divider -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.6dp"
+            android:layout_marginBottom="8dp"
+            android:background="#BDBDBD" />
+
+        <!-- Item 4 -->
+        <LinearLayout
+            android:id="@+id/rate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="8dp">
+
+            <ImageView
+                android:id="@+id/item_rate"
+                android:layout_width="46dp"
+                android:layout_height="33dp"
+                android:scaleType="fitCenter"
+                android:layout_marginEnd="16dp"
+                android:src="@drawable/rate"
+                app:tint="@color/theme" />
+
+            <TextView
+                android:id="@+id/textView_rate"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="18sp"
+                android:textColor="@android:color/black"
+                android:text="@string/rate_us"
+                app:drawableEndCompat="@drawable/baseline_arrow_forward_ios_24" />
+        </LinearLayout>
+        <!-- Divider -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.6dp"
+            android:layout_marginBottom="8dp"
+            android:background="#BDBDBD" />
+
+        <!-- Item 5 -->
+        <LinearLayout
+            android:id="@+id/notification"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="8dp">
+
+            <ImageView
+                android:id="@+id/item_icon_notification"
+                android:layout_width="46dp"
+                android:layout_height="33dp"
+                android:scaleType="fitCenter"
+                android:layout_marginEnd="16dp"
+                android:src="@drawable/notifications"
+                app:tint="@color/theme" />
+
+            <TextView
+                android:id="@+id/textView_notification"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="18sp"
+                android:textColor="@android:color/black"
+                android:text="@string/notifications"
+                app:drawableEndCompat="@drawable/baseline_arrow_forward_ios_24" />
+        </LinearLayout>
+
+        <!-- Divider -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.6dp"
+            android:layout_marginBottom="8dp"
+            android:background="#BDBDBD" />
+
+        <!-- Item 6 -->
+        <LinearLayout
+            android:id="@+id/privacy"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="8dp">
+
+            <ImageView
+                android:id="@+id/item_icon_privacy"
+                android:layout_width="46dp"
+                android:layout_height="33dp"
+                android:scaleType="fitCenter"
+                android:layout_marginEnd="16dp"
+                android:src="@drawable/private_policy"
+                app:tint="@color/theme" />
+
+            <TextView
+                android:id="@+id/textView_privacy"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="18sp"
+                android:textColor="@android:color/black"
+                android:text="@string/private_policy"
+                app:drawableEndCompat="@drawable/baseline_arrow_forward_ios_24" />
+        </LinearLayout>
+
+        <!-- Divider -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.6dp"
+            android:layout_marginBottom="8dp"
+            android:background="#BDBDBD" />
+
+        <!-- Item 7 -->
+        <LinearLayout
+            android:id="@+id/terms"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="8dp">
+
+            <ImageView
+                android:id="@+id/item_icon_terms"
+                android:layout_width="46dp"
+                android:layout_height="33dp"
+                android:scaleType="fitCenter"
+                android:layout_marginEnd="16dp"
+                android:src="@drawable/terms_of_use"
+                app:tint="@color/theme" />
+
+            <TextView
+                android:id="@+id/textView_term"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="18sp"
+                android:textColor="@android:color/black"
+                android:text="@string/terms_of_use"
+                app:drawableEndCompat="@drawable/baseline_arrow_forward_ios_24" />
+        </LinearLayout>
+        <!-- Divider -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.6dp"
+            android:layout_marginBottom="8dp"
+            android:background="#BDBDBD" />
+
+        <!-- Item 8 -->
+        <LinearLayout
+            android:id="@+id/logout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="8dp">
+
+            <ImageView
+                android:id="@+id/item_icon_logout"
+                android:layout_width="46dp"
+                android:layout_height="33dp"
+                android:scaleType="fitCenter"
+                android:layout_marginEnd="16dp"
+                android:src="@drawable/nav_logout"
+                app:tint="@color/theme" />
+
+            <TextView
+                android:id="@+id/textView_2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="18sp"
+                android:textColor="@android:color/black"
+                android:text="@string/logout"
+                app:drawableEndCompat="@drawable/baseline_arrow_forward_ios_24" />
+        </LinearLayout>
+        <!-- Divider -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.6dp"
+            android:layout_marginBottom="8dp"
+            android:background="#BDBDBD" />
+
+
+    </LinearLayout>
+</ScrollView>
