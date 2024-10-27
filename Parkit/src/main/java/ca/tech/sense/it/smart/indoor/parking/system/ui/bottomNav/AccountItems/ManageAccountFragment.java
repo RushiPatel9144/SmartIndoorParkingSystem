@@ -14,6 +14,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.google.android.material.snackbar.Snackbar;
 import java.io.InputStream;
@@ -24,9 +26,9 @@ public class ManageAccountFragment extends Fragment {
     // Constants for shared preferences
     private static final String PREFS_NAME = "AccountPrefs";
     private static final String KEY_PROFILE_PICTURE_URI = "profile_picture_uri";
-
+    int counter;
     // Views
-    private ImageButton profilePictureButton;
+    private ImageView profilePictureButton;
     private TextView nameTextView;
     private TextView contactDetailsTextView;
 
@@ -53,14 +55,14 @@ public class ManageAccountFragment extends Fragment {
     }
 
     private void bindViews(View view) {
-        profilePictureButton = view.findViewById(R.id.imageButton);
-        nameTextView = view.findViewById(R.id.name);
-        contactDetailsTextView = view.findViewById(R.id.contact_details);
+        profilePictureButton = view.findViewById(R.id.profileImageView);
+        nameTextView = view.findViewById(R.id.nameEdit);
+        contactDetailsTextView = view.findViewById(R.id.emailEdit);
 
         // Set default values or fetch actual data from storage/database
         profilePictureButton.setImageResource(R.mipmap.ic_launcher);
-        nameTextView.setText(R.string.the_tech_sense); // Replace with actual name
-        contactDetailsTextView.setText(R.string.thetechsense123_gmail_com); // Replace with actual contact
+        nameTextView.setText(R.string.the_tech_sense);
+        contactDetailsTextView.setText(R.string.thetechsense123_gmail_com);
     }
 
     private void setupProfilePictureButton() {
