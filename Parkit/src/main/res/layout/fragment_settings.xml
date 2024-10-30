@@ -4,7 +4,6 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-
     <!-- Title -->
     <TextView
         android:id="@+id/settings_title"
@@ -70,15 +69,13 @@
             android:text="Theme"
             android:textSize="18sp"/>
 
-        <ToggleButton
-            android:id="@+id/toggle_theme"
+        <Switch
+            android:id="@+id/switch_theme"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textOff="Light"
-            android:textOn="Dark"/>
+            android:layout_height="wrap_content"/>
     </LinearLayout>
 
-    <!-- Location Settings -->
+    <!-- Currency Selection -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -89,11 +86,11 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Location"
+            android:text="Currency"
             android:textSize="18sp"/>
 
         <Spinner
-            android:id="@+id/spinner_location"
+            android:id="@+id/spinner_currency"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
     </LinearLayout>
