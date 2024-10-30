@@ -40,7 +40,8 @@
             android:hint="Enter your name"
             android:textColor="#716F6F"
             android:textSize="18sp"
-            android:inputType="textPersonName" />
+            android:inputType="textCapWords|textPersonName"
+            android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ " />
 
         <!-- Divider -->
         <View
@@ -68,7 +69,9 @@
             android:hint="Enter your phone number"
             android:textColor="#716F6F"
             android:textSize="18sp"
-            android:inputType="phone" />
+            android:inputType="phone"
+            android:maxLength="10"
+            android:digits="0123456789"/>
 
         <!-- Divider -->
         <View
@@ -146,7 +149,7 @@
             android:layout_marginBottom="16dp"
             android:background="?attr/selectableItemBackground"
             android:padding="12dp"
-            android:hint="Tell us about your experience"
+            android:hint="Tell us about your experience (Optional)"
             android:textColor="#716F6F"
             android:textSize="18sp"
             android:gravity="top"
