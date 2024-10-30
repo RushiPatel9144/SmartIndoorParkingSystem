@@ -79,13 +79,40 @@
         <item>Dark</item>
         <item>System Default</item>
     </string-array>
-
-    <string-array name="canada_busy_cities">
-        <item>Toronto</item>
-        <item>Vancouver</item>
-        <item>Montreal</item>
-        <item>Calgary</item>
-        <item>Ottawa</item>
+    <string-array name="currency_options">
+        <item>USD - United States Dollar</item>
+        <item>CAD - Canadian Dollar</item>
+        <item>EUR - Euro</item>
+        <item>GBP - British Pound</item>
+        <item>JPY - Japanese Yen</item>
+        <item>AUD - Australian Dollar</item>
+        <item>CHF - Swiss Franc</item>
+        <item>CNY - Chinese Yuan</item>
+        <item>SEK - Swedish Krona</item>
+        <item>NZD - New Zealand Dollar</item>
+        <item>MXN - Mexican Peso</item>
+        <item>SGD - Singapore Dollar</item>
+        <item>HKD - Hong Kong Dollar</item>
+        <item>NOK - Norwegian Krone</item>
+        <item>KRW - South Korean Won</item>
+        <item>TRY - Turkish Lira</item>
+        <item>INR - Indian Rupee</item>
+        <item>RUB - Russian Ruble</item>
+        <item>BRL - Brazilian Real</item>
+        <item>ZAR - South African Rand</item>
+        <item>DKK - Danish Krone</item>
+        <item>PLN - Polish Zloty</item>
+        <item>TWD - New Taiwan Dollar</item>
+        <item>THB - Thai Baht</item>
+        <item>IDR - Indonesian Rupiah</item>
+        <item>HUF - Hungarian Forint</item>
+        <item>CZK - Czech Koruna</item>
+        <item>ILS - Israeli Shekel</item>
+        <item>CLP - Chilean Peso</item>
+        <item>PHP - Philippine Peso</item>
+        <item>AED - United Arab Emirates Dirham</item>
+        <item>MYR - Malaysian Ringgit</item>
+        <item>SAR - Saudi Riyal</item>
+        <item>RON - Romanian Leu</item>
     </string-array>
-
 </resources>

@@ -33,7 +33,6 @@ public class SettingsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
-// In your SettingsFragment class
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -48,7 +47,7 @@ public class SettingsFragment extends Fragment {
         spinnerCurrency = view.findViewById(R.id.spinner_currency);
 
         // Load saved preferences
-        SharedPreferences sharedPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
         boolean isPortraitLocked = sharedPreferences.getBoolean(getString(R.string.lock_portrait), false);
         boolean isDarkTheme = sharedPreferences.getBoolean(getString(R.string.dark_theme), false);
         boolean areNotificationsEnabled = sharedPreferences.getBoolean("Notification Enabled", true);
@@ -88,8 +87,6 @@ public class SettingsFragment extends Fragment {
             }
         });
 
-
-
         switchNotifications.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -123,7 +120,6 @@ public class SettingsFragment extends Fragment {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         }
     }
-
 
     private void enableNotifications() {
         // Logic to enable notifications
