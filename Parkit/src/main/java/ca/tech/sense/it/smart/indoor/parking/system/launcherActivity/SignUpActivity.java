@@ -35,7 +35,7 @@ public class SignUpActivity extends AppCompatActivity {
 
 
 
-    EditText editTextEmail,editTextPassword,editTextConfirmPassword,firstName,lastName;
+    EditText editTextEmail,editTextPassword,editTextConfirmPassword,firstName,lastName,phone;
     MaterialButton button;
     TextView textView;
     ProgressBar progressBar;
@@ -76,6 +76,7 @@ public class SignUpActivity extends AppCompatActivity {
         checkBox = findViewById(R.id.checkBoxTerms);
         firstName = findViewById(R.id.editTextFirstName);
         lastName = findViewById(R.id.editTextLastName);
+        phone = findViewById(R.id.signup_phoneNumber);
 
 
         textView.setOnClickListener(new View.OnClickListener() {
@@ -96,6 +97,7 @@ public class SignUpActivity extends AppCompatActivity {
                 String email = String.valueOf(editTextEmail.getText());
                 String password = editTextPassword.getText().toString().trim();
                 String confirmPassword = editTextConfirmPassword.getText().toString().trim();
+                String phoneNumber = phone.getText().toString().trim();
                 
                 // Validate first name
                 if (TextUtils.isEmpty(fName)) {
@@ -113,6 +115,12 @@ public class SignUpActivity extends AppCompatActivity {
                 // Validate email
                 if (TextUtils.isEmpty(email)) {
                     editTextEmail.setError(getString(R.string.enter_e_mail));
+                    progressBar.setVisibility(View.GONE);  // Hide progress bar
+                    return;
+                }
+                // Validate email
+                if (TextUtils.isEmpty(phoneNumber)) {
+                    editTextEmail.setError("Enter phone number");
                     progressBar.setVisibility(View.GONE);  // Hide progress bar
                     return;
                 }

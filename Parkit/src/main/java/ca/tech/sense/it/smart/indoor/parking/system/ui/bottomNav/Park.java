@@ -93,7 +93,7 @@ public class Park extends Fragment implements OnMapReadyCallback {
             Marker marker = mMap.addMarker(new MarkerOptions()
                     .position(parkingSpot)
                     .title("Parking Spot")
-                    .icon(bitmapDescriptorFromVector(getContext(), R.drawable.parking)));
+                    .icon(bitmapDescriptorFromVector(getContext(), R.drawable.park)));
             marker.setTag("Parking Spot");
             mMap.setOnMarkerClickListener(clickedMarker -> {
                 showInfoWindow(clickedMarker, (String) clickedMarker.getTag());
@@ -125,7 +125,7 @@ public class Park extends Fragment implements OnMapReadyCallback {
                     Marker marker = mMap.addMarker(new MarkerOptions()
                             .position(parkingSpot)
                             .title("Parking Spot")
-                            .icon(bitmapDescriptorFromVector(getContext(), R.drawable.parking)));
+                            .icon(bitmapDescriptorFromVector(getContext(), R.drawable.park)));
                     marker.setTag("Parking Spot");
                     mMap.setOnMarkerClickListener(clickedMarker -> {
                         showInfoWindow(clickedMarker, (String) clickedMarker.getTag());
