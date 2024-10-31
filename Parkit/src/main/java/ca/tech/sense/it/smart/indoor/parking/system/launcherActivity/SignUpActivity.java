@@ -57,7 +57,7 @@ public class SignUpActivity extends AppCompatActivity {
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if(currentUser != null){ // this will check if the user is already logged in or not, if yes then it will redirect user to main activity
-            Intent intent = new Intent(getApplicationContext(),SignUpActivity.class);
+            Intent intent = new Intent(getApplicationContext(),MainActivity.class);
             startActivity(intent);
             finish();
         }
@@ -130,7 +130,7 @@ public class SignUpActivity extends AppCompatActivity {
                 }
                 // Validate email
                 if (TextUtils.isEmpty(phoneNumber)) {
-                    editTextEmail.setError("Enter phone number");
+                    phone.setError("Enter phone number");
                     progressBar.setVisibility(View.GONE);  // Hide progress bar
                     return;
                 }
