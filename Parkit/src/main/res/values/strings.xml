@@ -74,6 +74,15 @@
     <string name="clear_notifications">Clear Notifications</string>
     <string name="error_loading_image">Unable to Load Image! Try Again</string>
     <string name="error_crop_failed">Unable to Crop Image !\n</string>
+    <string name="name_updated_successfully">Name Updated Successfully.</string>
+    <string name="error_updating_name">Error Updating Name</string>
+    <string name="user_not_authenticated">User Not Authenticated</string>
+    <string name="ok">OK</string>
+    <string name="name_cannot_be_empty">Name cannot be empty.</string>
+    <string name="cancel">Cancel</string>
+    <string name="enter_new_name">Enter New Name</string>
+    <string name="user_data_not_found">No user data</string>
+    <string name="fetch_data_failed">Updating user info failed</string>
 
     <!-- Theme options -->
     <string-array name="theme_options">

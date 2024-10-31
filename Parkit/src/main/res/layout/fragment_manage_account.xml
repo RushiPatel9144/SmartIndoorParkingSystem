@@ -35,6 +35,7 @@
 
         <!-- Item 1: Edit Profile Picture -->
         <LinearLayout
+            android:id="@+id/manageProfilePic"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -63,6 +64,7 @@
 
         <!-- Item 2: Edit Name -->
         <LinearLayout
+            android:id="@+id/manageName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -98,6 +100,7 @@
 
         <!-- Item 3: Edit Email -->
         <LinearLayout
+            android:id="@+id/manageEmail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -133,6 +136,7 @@
 
         <!-- Item 4: Edit Phone Number -->
         <LinearLayout
+            android:id="@+id/managePhoneNumber"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -168,6 +172,7 @@
 
         <!-- Item 5: Change Password -->
         <LinearLayout
+            android:id="@+id/managePassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
