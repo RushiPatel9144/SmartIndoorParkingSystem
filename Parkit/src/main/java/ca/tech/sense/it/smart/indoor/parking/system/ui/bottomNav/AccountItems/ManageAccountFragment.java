@@ -35,6 +35,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.utility.AuthUtils;
 
 public class ManageAccountFragment extends Fragment {
     private static final String PREFS_NAME = "AccountPrefs";
@@ -88,7 +89,7 @@ public class ManageAccountFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         loadProfilePicture();
         setupProfilePictureButton();
-
+        setupPasswordResetButton();
     }
 
     private void bindViews(View view) {
@@ -105,6 +106,7 @@ public class ManageAccountFragment extends Fragment {
         ManageContactDetail=view.findViewById(R.id.manageEmail);
         ManagePhoneNumber=view.findViewById(R.id.managePhoneNumber);
         ManagePassword=view.findViewById(R.id.managePassword);
+
     }
 
     private void setupProfilePictureButton() {
@@ -211,4 +213,9 @@ public class ManageAccountFragment extends Fragment {
             return ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
         }
     }
+
+    private void setupPasswordResetButton() {
+        ManagePassword.setOnClickListener(v -> AuthUtils.showResetPasswordDialog(requireContext(), FirebaseAuth.getInstance()));
+    }
+
 }

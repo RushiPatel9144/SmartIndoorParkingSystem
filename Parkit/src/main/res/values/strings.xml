@@ -84,6 +84,12 @@
     <string name="user_data_not_found">No user data</string>
     <string name="fetch_data_failed">Updating user info failed</string>
     <string name="_1_phone_number">+1 Phone number</string>
+    <string name="confirm">Confirm</string>
+    <string name="dialog_title">Dialog Title</string>
+    <string name="a_password_reset_link_will_be_sent_to">"A password reset link will be sent to: "</string>
+    <string name="reset_password">Reset Password</string>
+    <string name="no_email_found_for_the_current_user">No email found for the current user.</string>
+    <string name="forgot_password">Forget Password ?</string>
 
     <!-- Theme options -->
     <string-array name="theme_options">
