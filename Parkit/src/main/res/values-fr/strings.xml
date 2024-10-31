@@ -64,5 +64,6 @@
     <string name="invalid_password">Invalid Password</string>
     <string name="invalid_e_mail_format">Invalid E-mail format</string>
     <string name="invaild_credentials">Invaild Credentials</string>
+    <string name="_1_phone_number">+1 Phone number</string>
 
 </resources>

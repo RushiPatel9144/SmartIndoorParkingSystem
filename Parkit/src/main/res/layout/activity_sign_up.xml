@@ -17,10 +17,10 @@
 
         <LinearLayout
             android:layout_width="327dp"
-            android:layout_height="529dp"
-            android:orientation="vertical"
+            android:layout_height="644dp"
             android:gravity="center"
-            android:padding="12dp" >
+            android:orientation="vertical"
+            android:padding="12dp">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -56,13 +56,19 @@
                 android:inputType="textEmailAddress" />
 
             <EditText
+                android:id="@+id/signup_phoneNumber"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:hint="@string/_1_phone_number" />
+
+            <EditText
                 android:id="@+id/signup_editTextPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:hint="@string/password"
-                android:inputType="textPassword"
-                />
+                android:inputType="textPassword" />
 
             <EditText
                 android:id="@+id/editTextConfirmPassword"
@@ -82,18 +88,18 @@
             <ProgressBar
 
                 android:id="@+id/signup_progressBar"
-                android:visibility="gone"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/buttonSignUp"
-                app:cornerRadius="16dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:text="@string/sign_up"
-                android:textColor="@android:color/white" />
+                android:textColor="@android:color/white"
+                app:cornerRadius="16dp" />
 
             <TextView
                 android:id="@+id/jump_to_login"
@@ -101,7 +107,9 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="16dp"
-                android:text="@string/already_have_an_account_login_here" />
+                android:text="@string/already_have_an_account_login_here"
+                android:textColor="#0000FF" />
+
 
         </LinearLayout>
     </androidx.cardview.widget.CardView>

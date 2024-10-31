@@ -72,6 +72,7 @@
     <string name="change_password">Change Password</string>
     <string name="last_changed_on_14_02_2024">Last Changed on 14-02-2024</string>
     <string name="clear_notifications">Clear Notifications</string>
+    <string name="_1_phone_number">+1 Phone number</string>
 
     <!-- Theme options -->
     <string-array name="theme_options">
