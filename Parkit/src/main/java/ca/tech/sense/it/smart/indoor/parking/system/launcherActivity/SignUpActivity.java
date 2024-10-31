@@ -22,11 +22,18 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
+import com.google.firebase.Firebase;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import ca.tech.sense.it.smart.indoor.parking.system.MainActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
@@ -41,6 +48,8 @@ public class SignUpActivity extends AppCompatActivity {
     ProgressBar progressBar;
     FirebaseAuth mAuth;
     CheckBox checkBox;
+    FirebaseFirestore fireStore;
+    String userID;
 
     @Override
     public void onStart() {
@@ -48,7 +57,7 @@ public class SignUpActivity extends AppCompatActivity {
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if(currentUser != null){ // this will check if the user is already logged in or not, if yes then it will redirect user to main activity
-            Intent intent = new Intent(getApplicationContext(),SignUpActivity.class);
+            Intent intent = new Intent(getApplicationContext(),MainActivity.class);
             startActivity(intent);
             finish();
         }
@@ -73,6 +82,7 @@ public class SignUpActivity extends AppCompatActivity {
         button = findViewById(R.id.buttonSignUp);
         progressBar = findViewById(R.id.signup_progressBar);
         mAuth = FirebaseAuth.getInstance();
+        fireStore = FirebaseFirestore.getInstance();
         checkBox = findViewById(R.id.checkBoxTerms);
         firstName = findViewById(R.id.editTextFirstName);
         lastName = findViewById(R.id.editTextLastName);
@@ -97,7 +107,7 @@ public class SignUpActivity extends AppCompatActivity {
                 String email = String.valueOf(editTextEmail.getText());
                 String password = editTextPassword.getText().toString().trim();
                 String confirmPassword = editTextConfirmPassword.getText().toString().trim();
-                String phoneNumber = phone.getText().toString().trim();
+                String phoneNumber = phone.getText().toString() ;
                 
                 // Validate first name
                 if (TextUtils.isEmpty(fName)) {
@@ -120,7 +130,7 @@ public class SignUpActivity extends AppCompatActivity {
                 }
                 // Validate email
                 if (TextUtils.isEmpty(phoneNumber)) {
-                    editTextEmail.setError("Enter phone number");
+                    phone.setError("Enter phone number");
                     progressBar.setVisibility(View.GONE);  // Hide progress bar
                     return;
                 }
@@ -155,6 +165,22 @@ public class SignUpActivity extends AppCompatActivity {
                                 if (task.isSuccessful()) {
                                     // Sign up successful
                                     Toast.makeText(SignUpActivity.this, getString(R.string.account_created), Toast.LENGTH_SHORT).show();
+                                    userID = mAuth.getCurrentUser().getUid();
+                                    DocumentReference documentReference = fireStore.collection("users").document(userID);
+                                    Map<String,Object> user = new HashMap<>();
+                                    user.put("uid",userID);
+                                    user.put("firstName",fName);
+                                    user.put("lastName",lName);
+                                    user.put("email",email);
+                                    user.put("phone",phoneNumber);
+                                    user.put("password",password);
+                                    documentReference.set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void unused) {
+                                            Log.d("TAG","onSuccess: user profile is " + userID);
+                                        }
+                                    });
+
                                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                                     startActivity(intent);
                                     finish();  // Close the sign-up activity
