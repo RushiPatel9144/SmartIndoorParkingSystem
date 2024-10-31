@@ -84,6 +84,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="16dp"
-        android:text="@string/don_t_have_an_account_sign_up" />
+        android:text="@string/don_t_have_an_account_sign_up"
+        android:textColor="#0000FF" />
 
 </LinearLayout>

@@ -1,5 +1,6 @@
 package ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,7 +10,11 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+
+import com.google.firebase.auth.FirebaseAuth;
+
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.LoginActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems.*;
 
 public class AccountFragment extends Fragment {
@@ -81,7 +86,12 @@ public class AccountFragment extends Fragment {
     }
 
     private void handleLogout() {
-        // Implement logout functionality here if needed
+        // Clear the in-memory session data
+//        UserSession.clearSession();
+        FirebaseAuth.getInstance().signOut();
+        Intent intent = new Intent(requireActivity(), LoginActivity.class);
+        startActivity(intent);
+        requireActivity().finish();
     }
 
     private enum AccountSection {
