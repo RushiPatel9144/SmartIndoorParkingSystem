@@ -100,7 +100,6 @@ public class ManageAccountFragment extends Fragment {
         nameTextView = view.findViewById(R.id.nameEdit);
         contactDetailsTextView = view.findViewById(R.id.emailEdit);
         phoneNumberTextView = view.findViewById(R.id.phoneNumberManage);
-        passwordTextView = view.findViewById(R.id.passwordManage);
         ManageProfilePicture = view.findViewById(R.id.manageProfilePic);
         ManageName=view.findViewById(R.id.manageName);
         ManageContactDetail=view.findViewById(R.id.manageEmail);
