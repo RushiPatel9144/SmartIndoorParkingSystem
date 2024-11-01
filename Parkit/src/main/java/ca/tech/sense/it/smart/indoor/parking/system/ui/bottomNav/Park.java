@@ -7,14 +7,19 @@ import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -54,14 +59,12 @@ public class Park extends Fragment implements OnMapReadyCallback {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_park, container, false);
 
         // Initialize the map fragment
-        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
-                .findFragmentById(R.id.map);
+        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
         }
@@ -83,24 +86,24 @@ public class Park extends Fragment implements OnMapReadyCallback {
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Add a marker and move the camera
-        LatLng location = new LatLng(-34, 151);
-        currentMarker = mMap.addMarker(new MarkerOptions().position(location).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(location));
-
         // Add markers for parking spots with custom icon and set click listener
         for (LatLng parkingSpot : parkingSpots) {
+          
+            Marker marker = mMap.addMarker(new MarkerOptions().position(parkingSpot).title("Parking Spot").icon(bitmapDescriptorFromVector(getContext(), R.drawable.parking)));
+
             Marker marker = mMap.addMarker(new MarkerOptions()
                     .position(parkingSpot)
                     .title("Parking Spot")
                     .icon(bitmapDescriptorFromVector(getContext(), R.drawable.park)));
+
             marker.setTag("Parking Spot");
             mMap.setOnMarkerClickListener(clickedMarker -> {
-                showInfoWindow(clickedMarker, (String) clickedMarker.getTag());
+                showBookingDialog(clickedMarker);
                 return true;
             });
         }
     }
+
     private void searchLocation(String location) {
         Geocoder geocoder = new Geocoder(getContext());
         List<Address> addressList;
@@ -116,22 +119,28 @@ public class Park extends Fragment implements OnMapReadyCallback {
                     currentMarker.remove();
                 }
 
-                // Add a new marker and move the camera
+                // Clear existing markers
+                mMap.clear();
+
+                // Add a new marker for the searched location
                 currentMarker = mMap.addMarker(new MarkerOptions().position(latLng).title(location));
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15)); // Zoom to the location
 
-                // Add markers for parking spots with custom icon and set click listener
+                // Re-add markers for parking spots with custom icon and set click listener
                 for (LatLng parkingSpot : parkingSpots) {
                     Marker marker = mMap.addMarker(new MarkerOptions()
                             .position(parkingSpot)
                             .title("Parking Spot")
-                            .icon(bitmapDescriptorFromVector(getContext(), R.drawable.park)));
-                    marker.setTag("Parking Spot");
+
+                            .icon(bitmapDescriptorFromVector(getContext(), R.drawable.parking)));
+                    marker.setTag(new ParkingSpotDetails("123 Example St, Toronto, ON", "M1A 2B3", R.drawable.park));
+
                     mMap.setOnMarkerClickListener(clickedMarker -> {
-                        showInfoWindow(clickedMarker, (String) clickedMarker.getTag());
+                        showBookingDialog(clickedMarker);
                         return true;
                     });
                 }
+
             } else {
                 Toast.makeText(getContext(), "Location not found", Toast.LENGTH_SHORT).show();
             }
@@ -140,8 +149,6 @@ public class Park extends Fragment implements OnMapReadyCallback {
             Toast.makeText(getContext(), "Error finding location", Toast.LENGTH_SHORT).show();
         }
     }
-
-
 
     private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId) {
         Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorResId);
@@ -152,9 +159,41 @@ public class Park extends Fragment implements OnMapReadyCallback {
         return BitmapDescriptorFactory.fromBitmap(bitmap);
     }
 
-    private void showInfoWindow(Marker marker, String title) {
-        marker.setTitle(title);
-        marker.showInfoWindow();
+    private void showBookingDialog(Marker marker) {
+        // Inflate the booking dialog layout
+        View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.booking_dialog, null);
+        TextView tvParkingLocation = dialogView.findViewById(R.id.tv_parking_location);
+        TextView tvParkingAddress = dialogView.findViewById(R.id.tv_parking_address);
+        TextView tvParkingPostcode = dialogView.findViewById(R.id.tv_parking_postcode);
+        ImageView ivParkingImage = dialogView.findViewById(R.id.iv_parking_image);
+        Button btnConfirmBooking = dialogView.findViewById(R.id.btn_confirm_booking);
+
+        // Retrieve the parking spot details from the marker's tag
+        ParkingSpotDetails details = (ParkingSpotDetails) marker.getTag();
+
+        // Set the parking location in the TextView
+        tvParkingLocation.setText(marker.getTitle());
+
+        // Set additional details
+        if (details != null) {
+            tvParkingAddress.setText(details.getAddress());
+            tvParkingPostcode.setText(details.getPostcode());
+            ivParkingImage.setImageResource(details.getImageResId());
+        }
+
+        // Create and show the dialog
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setView(dialogView);
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        // Handle booking confirmation
+        btnConfirmBooking.setOnClickListener(v -> {
+            // Handle booking logic (e.g., save to database, send confirmation email)
+            Toast.makeText(getContext(), "Booking confirmed for " + marker.getTitle(), Toast.LENGTH_SHORT).show();
+            dialog.dismiss();
+        });
     }
+
 
 }
