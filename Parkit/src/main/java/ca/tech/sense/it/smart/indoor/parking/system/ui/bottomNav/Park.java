@@ -88,8 +88,6 @@ public class Park extends Fragment implements OnMapReadyCallback {
 
         // Add markers for parking spots with custom icon and set click listener
         for (LatLng parkingSpot : parkingSpots) {
-          
-            Marker marker = mMap.addMarker(new MarkerOptions().position(parkingSpot).title("Parking Spot").icon(bitmapDescriptorFromVector(getContext(), R.drawable.parking)));
 
             Marker marker = mMap.addMarker(new MarkerOptions()
                     .position(parkingSpot)
@@ -132,7 +130,7 @@ public class Park extends Fragment implements OnMapReadyCallback {
                             .position(parkingSpot)
                             .title("Parking Spot")
 
-                            .icon(bitmapDescriptorFromVector(getContext(), R.drawable.parking)));
+                            .icon(bitmapDescriptorFromVector(getContext(), R.drawable.park)));
                     marker.setTag(new ParkingSpotDetails("123 Example St, Toronto, ON", "M1A 2B3", R.drawable.park));
 
                     mMap.setOnMarkerClickListener(clickedMarker -> {
