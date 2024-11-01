@@ -72,6 +72,24 @@
     <string name="change_password">Change Password</string>
     <string name="last_changed_on_14_02_2024">Last Changed on 14-02-2024</string>
     <string name="clear_notifications">Clear Notifications</string>
+    <string name="error_loading_image">Unable to Load Image! Try Again</string>
+    <string name="error_crop_failed">Unable to Crop Image !\n</string>
+    <string name="name_updated_successfully">Name Updated Successfully.</string>
+    <string name="error_updating_name">Error Updating Name</string>
+    <string name="user_not_authenticated">User Not Authenticated</string>
+    <string name="ok">OK</string>
+    <string name="name_cannot_be_empty">Name cannot be empty.</string>
+    <string name="cancel">Cancel</string>
+    <string name="enter_new_name">Enter New Name</string>
+    <string name="user_data_not_found">No user data</string>
+    <string name="fetch_data_failed">Updating user info failed</string>
+    <string name="_1_phone_number">+1 Phone number</string>
+    <string name="confirm">Confirm</string>
+    <string name="dialog_title">Dialog Title</string>
+    <string name="a_password_reset_link_will_be_sent_to">"A password reset link will be sent to: "</string>
+    <string name="reset_password">Reset Password</string>
+    <string name="no_email_found_for_the_current_user">No email found for the current user.</string>
+    <string name="forgot_password">Forget Password ?</string>
 
     <!-- Theme options -->
     <string-array name="theme_options">

@@ -40,12 +40,11 @@ dependencies {
     implementation libs.filament.android
     implementation libs.firebase.auth
     implementation libs.recyclerview
+    implementation libs.firebase.firestore
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
     //noinspection UseTomlInstead
     implementation 'com.google.android.material:material:1.12.0'
     implementation 'com.google.android.gms:play-services-maps:18.0.1'
-
-
 }

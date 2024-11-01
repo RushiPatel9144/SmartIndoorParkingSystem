@@ -29,10 +29,13 @@
             android:contentDescription="@string/profile_picture"
             android:padding="4dp"
             android:scaleType="fitCenter"
+            android:maxHeight="50dp"
+            android:maxWidth="50dp"
             android:src="@drawable/ic_profile_placeholder" />
 
         <!-- Item 1: Edit Profile Picture -->
         <LinearLayout
+            android:id="@+id/manageProfilePic"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -61,6 +64,7 @@
 
         <!-- Item 2: Edit Name -->
         <LinearLayout
+            android:id="@+id/manageName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -96,6 +100,7 @@
 
         <!-- Item 3: Edit Email -->
         <LinearLayout
+            android:id="@+id/manageEmail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -131,6 +136,7 @@
 
         <!-- Item 4: Edit Phone Number -->
         <LinearLayout
+            android:id="@+id/managePhoneNumber"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -166,6 +172,7 @@
 
         <!-- Item 5: Change Password -->
         <LinearLayout
+            android:id="@+id/managePassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
