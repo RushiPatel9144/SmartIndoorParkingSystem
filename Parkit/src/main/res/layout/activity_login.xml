@@ -69,14 +69,6 @@
         android:layout_height="wrap_content"
         app:cornerRadius="16dp" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/guestSignIn_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/login_as_guest"
-        app:backgroundTint="@color/black"
-        app:cornerRadius="16dp" />
-
     <TextView
         android:id="@+id/jump_to_signup_page"
         android:layout_width="wrap_content"
