@@ -1,9 +1,16 @@
 package ca.tech.sense.it.smart.indoor.parking.system.launcherActivity;
 
+import static android.content.ContentValues.TAG;
+
+import static com.google.android.material.internal.ViewUtils.hideKeyboard;
+
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -22,17 +29,24 @@ import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
+import com.google.firebase.auth.FirebaseAuthInvalidUserException;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.SignInMethodQueryResult;
+
+import java.util.List;
+import java.util.Objects;
 
 import ca.tech.sense.it.smart.indoor.parking.system.MainActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.AuthUtils;
+import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
 
 public class LoginActivity extends AppCompatActivity {
 
     // UI Elements
     private EditText editTextEmail, editTextPassword;
-    private MaterialButton buttonLogin, guestLogin;
+    private MaterialButton buttonLogin;
     private TextView textView, forgotPasswordTextView;
     private ProgressBar progressBar;
 
@@ -50,6 +64,7 @@ public class LoginActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         checkIfUserLoggedIn();
         setOnClickListeners();
+        forgetPassword();
     }
 
     @Override
@@ -71,7 +86,6 @@ public class LoginActivity extends AppCompatActivity {
         editTextPassword = findViewById(R.id.login_password_editext);
         textView = findViewById(R.id.jump_to_signup_page);
         buttonLogin = findViewById(R.id.login_btn);
-        guestLogin = findViewById(R.id.guestSignIn_btn);
         progressBar = findViewById(R.id.login_progressBar);
         forgotPasswordTextView = findViewById(R.id.forgot_password);
 
@@ -97,9 +111,11 @@ public class LoginActivity extends AppCompatActivity {
             finish();
         });
 
-        guestLogin.setOnClickListener(v -> navigateToMainActivity());
+        buttonLogin.setOnClickListener(v -> {
+            hideKeyboard(v);
+            performLogin();
+        });
 
-        buttonLogin.setOnClickListener(v -> performLogin());
     }
 
     private void performLogin() {
@@ -151,6 +167,7 @@ public class LoginActivity extends AppCompatActivity {
                 case "ERROR_INVALID_CREDENTIAL":
                     editTextPassword.setError(getString(R.string.invaild_credentials));
                     editTextPassword.requestFocus();
+                    forgotPasswordTextView.setVisibility(View.VISIBLE);
                     break;
                 default:
                     Toast.makeText(LoginActivity.this, getString(R.string.authentication_failed), Toast.LENGTH_SHORT).show();
@@ -163,4 +180,59 @@ public class LoginActivity extends AppCompatActivity {
         String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
         return email.matches(emailPattern);
     }
+
+
+    public void forgetPassword() {
+        forgotPasswordTextView.setOnClickListener(v -> DialogUtil.showInputDialog(LoginActivity.this, "Enter Your Registered Email", "someone@gmail.com", new DialogUtil.InputDialogCallback() {
+            @Override
+            public void onConfirm(String inputText) {
+                if (TextUtils.isEmpty(inputText)) {
+                    Toast.makeText(LoginActivity.this, "Email cannot be empty", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                sendPasswordResetEmail(inputText);
+            }
+            @Override
+            public void onCancel() {
+                //do nothing
+            }
+        }));
+    }
+
+
+    private void sendPasswordResetEmail(String email) {
+        mAuth.createUserWithEmailAndPassword(email, getString(R.string.dummypassword))
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Log.d(TAG, getString(R.string.user_is_created_successfully));
+                        Objects.requireNonNull(mAuth.getCurrentUser()).delete();
+                        Toast.makeText(LoginActivity.this, R.string.this_email_is_not_registered, Toast.LENGTH_SHORT).show();
+                    } else {
+                        if (task.getException() instanceof FirebaseAuthUserCollisionException) {
+                            Log.d(TAG, getString(R.string.email_is_already_registered));
+                            mAuth.sendPasswordResetEmail(email).addOnCompleteListener(task1 -> {
+                                if (task1.isSuccessful()) {
+                                    Toast.makeText(LoginActivity.this, R.string.reset_link_sent_to_your_email, Toast.LENGTH_SHORT).show();
+                                } else {
+                                    if (task1.getException() instanceof FirebaseAuthInvalidUserException) {
+                                        Toast.makeText(LoginActivity.this, R.string.this_email_is_not_registered, Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        Toast.makeText(LoginActivity.this, getString(R.string.error) + task1.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+                        } else {
+                            Log.d(TAG, R.string.error + Objects.requireNonNull(task.getException()).getMessage());
+                        }
+                    }
+                });
+    }
+
+    private void hideKeyboard(View view) {
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+    }
+
 }

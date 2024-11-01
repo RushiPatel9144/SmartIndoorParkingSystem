@@ -90,6 +90,12 @@
     <string name="reset_password">Reset Password</string>
     <string name="no_email_found_for_the_current_user">No email found for the current user.</string>
     <string name="forgot_password">Forget Password ?</string>
+    <string name="dummypassword">dummyPassword</string>
+    <string name="user_is_created_successfully">User is created successfully.</string>
+    <string name="this_email_is_not_registered">This email is not registered.</string>
+    <string name="email_is_already_registered">Email is already registered.</string>
+    <string name="reset_link_sent_to_your_email">Reset link sent to your email.</string>
+    <string name="error">"Error: "</string>
 
     <!-- Theme options -->
     <string-array name="theme_options">

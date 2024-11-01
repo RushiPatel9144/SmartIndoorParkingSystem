@@ -41,6 +41,9 @@ public class DialogUtil {
                 .setView(dialogView)
                 .create();
 
+        dialog.getWindow().setBackgroundDrawableResource(R.drawable.dialog_background);
+        dialog.show();
+
         cancelButton.setOnClickListener(v -> {
             dialog.dismiss();
             if (callback != null) {
