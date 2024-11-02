@@ -1,21 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:padding="16dp"
     tools:context=".ui.menu.PromotionFragment">
 
-    <!-- Background ImageView with alpha set to 0.7 -->
-    <ImageView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:src="@drawable/promotions_background"
-        android:alpha="0.7" />
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="8dp"
+        android:background="@android:color/white">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/promotions" />
+        <TextView
+            android:id="@+id/tvPromotionsTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Promotions"
+            android:textSize="26sp"
+            android:textStyle="bold"
+            android:textColor="@color/logo_background"
+            android:layout_gravity="center"
+            android:paddingBottom="24dp"/>
 
-</FrameLayout>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvPromotions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:paddingBottom="16dp" />
+
+        <Button
+            android:id="@+id/btnClearPromotions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Clear Promotions"
+            android:layout_gravity="center"
+            android:padding="12dp"
+            android:backgroundTint="@color/logo_background"
+            android:textColor="@android:color/white"
+            android:layout_marginTop="16dp"/>
+    </LinearLayout>
+
+</ScrollView>
