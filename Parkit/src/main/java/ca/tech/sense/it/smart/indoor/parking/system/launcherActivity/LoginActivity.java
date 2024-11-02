@@ -2,8 +2,6 @@ package ca.tech.sense.it.smart.indoor.parking.system.launcherActivity;
 
 import static android.content.ContentValues.TAG;
 
-import static com.google.android.material.internal.ViewUtils.hideKeyboard;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -23,7 +21,6 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.AuthResult;
@@ -32,14 +29,11 @@ import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.SignInMethodQueryResult;
 
-import java.util.List;
 import java.util.Objects;
 
 import ca.tech.sense.it.smart.indoor.parking.system.MainActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
-import ca.tech.sense.it.smart.indoor.parking.system.utility.AuthUtils;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
 
 public class LoginActivity extends AppCompatActivity {
@@ -74,7 +68,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void setUpWindowInsets() {
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.login), (v, insets) -> {
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.loginActivity), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;

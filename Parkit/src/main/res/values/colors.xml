@@ -11,10 +11,11 @@
     <color name="dark_theme">#369765</color>
     <color name="icon_color">#FFFFFF</color>
     <color name="icon_text">#5d2213</color>
-
     <color name="colorPrimaryLight">#6200EE</color>
     <color name="colorPrimaryDark">#BB86FC</color>
     <color name="colorPrimaryDarkMode">#3700B3</color>
     <color name="colorAccentLight">#03DAC5</color>
     <color name="colorAccentDark">#03DAC5</color>
+    <color name="colorAccent">#369765</color>
+    <color name="offWhite">#F0F0F0</color>
 </resources>
