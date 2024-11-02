@@ -13,4 +13,10 @@
     </style>
 
     <style name="Theme.SmartIndoorParkingSystem" parent="Base.Theme.SmartIndoorParkingSystem" />
+  <!-- Base application theme. -->
+    <style name="Base.Base.Theme.SmartIndoorParkingSystem"
+        parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your dark theme here. -->
+        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+    </style>
 </resources>

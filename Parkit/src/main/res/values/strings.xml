@@ -96,6 +96,7 @@
     <string name="email_is_already_registered">Email is already registered.</string>
     <string name="reset_link_sent_to_your_email">Reset link sent to your email.</string>
     <string name="error">"Error: "</string>
+    <string name="crop">Crop</string>
 
     <!-- Theme options -->
     <string-array name="theme_options">
@@ -139,4 +140,5 @@
         <item>SAR - Saudi Riyal</item>
         <item>RON - Romanian Leu</item>
     </string-array>
+
 </resources>
