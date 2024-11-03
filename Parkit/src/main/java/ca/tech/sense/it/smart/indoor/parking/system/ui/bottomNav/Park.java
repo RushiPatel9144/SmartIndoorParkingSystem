@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,6 +39,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.ui.adapters.BookingManager;
+import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.ParkingSpotDetails;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.ParkingUtility;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.FavoriteManager;
@@ -49,12 +52,14 @@ public class Park extends Fragment implements OnMapReadyCallback {
     private Marker selectedMarker;
     private ParkingUtility parkingUtility;
     private FavoriteManager favoriteManager;
+    private BookingManager bookingManager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         parkingUtility = new ParkingUtility();
         favoriteManager = new FavoriteManager(getContext());
+        bookingManager = BookingManager.getInstance(); // Initialize BookingManager
 
         // Initialize the Places SDK with your API key
         if (!Places.isInitialized()) {
@@ -99,17 +104,13 @@ public class Park extends Fragment implements OnMapReadyCallback {
             });
         }
     }
-
-    private void initializeFab(View view) {
-        fabAddToFavorites = view.findViewById(R.id.fab_add_to_favorites);
-        fabAddToFavorites.setOnClickListener(v -> addLocationToFavorites());
-    }
-
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
         addParkingSpotsToMap();
-
+        // Set the camera to Toronto (coordinates: latitude 43.65107, longitude -79.347015)
+        LatLng torontoCenter = new LatLng(43.65107, -79.347015); // Coordinates for Toronto
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(torontoCenter, 10)); // Zoom level 10 for a good view of the city
         mMap.setOnMarkerClickListener(clickedMarker -> {
             selectedMarker = clickedMarker;
             showBookingDialog(clickedMarker);
@@ -140,13 +141,17 @@ public class Park extends Fragment implements OnMapReadyCallback {
         }
     }
 
-    private void addLocationToFavorites() {
-        if (selectedMarker != null) {
-            LatLng location = selectedMarker.getPosition();
+    private void addLocationToFavorites(Marker marker) {
+        if (marker != null) {
+            LatLng location = marker.getPosition();
             favoriteManager.addFavorite(location);
             Toast.makeText(getContext(), "Location added to favorites!", Toast.LENGTH_SHORT).show();
-            fabAddToFavorites.setVisibility(View.GONE);
         }
+    }
+
+    private void initializeFab(View view) {
+        fabAddToFavorites = view.findViewById(R.id.fab_add_to_favorites);
+        fabAddToFavorites.setOnClickListener(v -> addLocationToFavorites(selectedMarker));
     }
 
     private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId) {
@@ -159,32 +164,50 @@ public class Park extends Fragment implements OnMapReadyCallback {
     }
 
     private void showBookingDialog(Marker marker) {
-        View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.booking_dialog, null);
-        TextView tvParkingLocation = dialogView.findViewById(R.id.tv_parking_location);
-        TextView tvParkingAddress = dialogView.findViewById(R.id.tv_parking_address);
-        TextView tvParkingPostcode = dialogView.findViewById(R.id.tv_parking_postcode);
-        ImageView ivParkingImage = dialogView.findViewById(R.id.iv_parking_image);
-        ImageView ivAddToFavorites = dialogView.findViewById(R.id.iv_add_to_favorites);
-
         ParkingSpotDetails details = (ParkingSpotDetails) marker.getTag();
-        tvParkingLocation.setText(marker.getTitle());
+        String title = marker.getTitle();
+        String message = details != null ? "Address: " + details.getAddress() + "\nPostcode: " + details.getPostcode() : "";
 
-        if (details != null) {
-            tvParkingAddress.setText(details.getAddress());
-            tvParkingPostcode.setText(details.getPostcode());
-            ivParkingImage.setImageResource(details.getImageResId());
-        }
+        // Inflate the custom dialog layout
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_booking_details, null);
 
-        ivAddToFavorites.setOnClickListener(v -> {
-            LatLng location = marker.getPosition();
-            favoriteManager.addFavorite(location);
-            Toast.makeText(getContext(), "Location added to favorites!", Toast.LENGTH_SHORT).show();
-        });
+        // Set the title and message
+        TextView dialogTitle = dialogView.findViewById(R.id.dialog_title);
+        TextView dialogMessage = dialogView.findViewById(R.id.dialog_message);
+        dialogTitle.setText(title);
+        dialogMessage.setText(message);
 
+        // Create the AlertDialog
         AlertDialog dialog = new AlertDialog.Builder(getContext())
                 .setView(dialogView)
                 .create();
+
+        // Handle the favorite icon click
+        ImageView ivAddToFavorites = dialogView.findViewById(R.id.iv_add_to_favorites);
+        ivAddToFavorites.setOnClickListener(v -> {
+            addLocationToFavorites(marker); // Call your method to add to favorites
+            Toast.makeText(getContext(), "Added to Favorites!", Toast.LENGTH_SHORT).show();
+        });
+
+        // Set dialog button actions
+        Button btnConfirm = dialogView.findViewById(R.id.btn_confirm);
+        btnConfirm.setOnClickListener(v -> {
+            // Navigate to BookingDetailsFragment
+            BookingDetailsFragment bookingDetailsFragment = new BookingDetailsFragment();
+            getParentFragmentManager().beginTransaction()
+                    .replace(R.id.flFragment, bookingDetailsFragment) // Replace with your container ID
+                    .addToBackStack(null)
+                    .commit();
+            dialog.dismiss();
+        });
+
+        Button btnCancel = dialogView.findViewById(R.id.btn_cancel);
+        btnCancel.setOnClickListener(v -> dialog.dismiss());
+
         dialog.show();
     }
+
+
 
 }
