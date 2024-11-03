@@ -190,5 +190,10 @@
     <string name="welcome_to_parkit">Welcome To Parkit</string>
     <string name="explore_the_app_and_find_parking_spots_nearby">Explore the app and find parking spots nearby.</string>
     <string name="notification_permission_denied">Notification permission denied</string>
+    <string name="email_update_unavailable">Email Update Unavailable</string>
+    <string name="changing_your_email_address_is_currently_not_permitted_please_reach_out_to_our_support_team_for_further_assistance">Changing your email address is currently not permitted. Please reach out to our support team for further assistance.</string>
+    <string name="please_enter_your_email">Please enter your email</string>
+    <string name="reset_email_sent">Reset email sent</string>
+    <string name="error_sending_email">Error sending email</string>
 
 </resources>
