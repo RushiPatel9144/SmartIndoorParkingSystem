@@ -1,4 +1,4 @@
-package ca.tech.sense.it.smart.indoor.parking.system.model;
+package ca.tech.sense.it.smart.indoor.parking.system.model.user;
 
 public class User {
     private String uid;       // Unique user ID
@@ -10,8 +10,6 @@ public class User {
 
     public User() {
     }
-
-
 
     public User(String uid, String firstName, String lastName, String email, String phone, String profilePhotoUrl) {
         this.uid = uid;
