@@ -1,6 +1,8 @@
 package ca.tech.sense.it.smart.indoor.parking.system.utility;
 
 import androidx.annotation.NonNull;
+
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -10,7 +12,10 @@ import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingSensor;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingSlot;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ParkingUtility {
@@ -139,8 +144,11 @@ public class ParkingUtility {
 
     public interface FetchSlotsCallback {
         void onFetchSuccess(Map<String, ParkingSlot> slots);
+
         void onFetchFailure(Exception exception);
-     
+    }
+
+
     // Method to fetch parking spots as LatLng objects
     public List<LatLng> getParkingSpots() {
         List<LatLng> parkingSpots = new ArrayList<>();

@@ -211,7 +211,8 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
 
             // Set flag to true to avoid sending again
             sharedPreferences.edit().putBoolean(KEY_WELCOME_NOTIFICATION_SENT, true).apply();
-          
+        }
+    }
     private void applyTheme() {
         SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
         boolean isDarkTheme = sharedPreferences.getBoolean(getString(R.string.dark_theme), false);
