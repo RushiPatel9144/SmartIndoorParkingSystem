@@ -63,7 +63,7 @@ public class DialogUtil {
     }
 
     // Method to show a message dialog
-    public static void showMessageDialog(Context context, String title, String message, DialogCallback callback) {
+    public static void showMessageDialog(Context context, String title, String message,String confirm, DialogCallback callback) {
         LayoutInflater inflater = LayoutInflater.from(context);
         View dialogView = inflater.inflate(R.layout.dialog_message, null);
 
@@ -74,6 +74,7 @@ public class DialogUtil {
 
         dialogTitle.setText(title);
         dialogMessage.setText(message);
+        confirmButton.setText(confirm);
 
         AlertDialog dialog = new AlertDialog.Builder(context)
                 .setView(dialogView)

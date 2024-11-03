@@ -8,26 +8,16 @@
     tools:context=".ui.bottomNav.Home">
 
     <!-- Background ImageView with alpha set to 0.7 -->
+
     <ImageView
+        android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/home_background"
+        android:alpha="0.7"
         android:scaleType="centerCrop"
-        android:alpha="0.7" />
+        android:src="@drawable/home_background"
+        tools:layout_editor_absoluteX="-44dp"
+        tools:layout_editor_absoluteY="-306dp" />
 
-    <TextView
-        android:id="@+id/textView4"
-        android:layout_width="138dp"
-        android:layout_height="87dp"
-        android:layout_marginStart="165dp"
-        android:layout_marginTop="245dp"
-        android:layout_marginEnd="108dp"
-        android:text="@string/home"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
-        />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

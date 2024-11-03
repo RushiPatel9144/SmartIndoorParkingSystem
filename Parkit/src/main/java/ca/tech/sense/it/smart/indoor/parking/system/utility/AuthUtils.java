@@ -1,5 +1,10 @@
 package ca.tech.sense.it.smart.indoor.parking.system.utility;
 
+
+import static ca.tech.sense.it.smart.indoor.parking.system.R.string.error_sending_email;
+import static ca.tech.sense.it.smart.indoor.parking.system.R.string.please_enter_your_email;
+import static ca.tech.sense.it.smart.indoor.parking.system.R.string.reset_email_sent;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.text.InputType;
@@ -18,7 +23,7 @@ public class AuthUtils {
         String currentEmail = getCurrentUserEmail(auth);
         if (currentEmail != null) {
             DialogUtil.showMessageDialog(context, context.getString(R.string.reset_password),String.format("%s%s", context.getString(R.string.a_password_reset_link_will_be_sent_to), currentEmail)
-                    ,
+                     ,context.getString(R.string.confirm) ,
                     new DialogUtil.DialogCallback() {
                         @Override
                         public void onConfirm() {
@@ -37,17 +42,16 @@ public class AuthUtils {
 
     public static void sendPasswordResetEmail(String email, FirebaseAuth auth, Context context) {
         if (email.isEmpty()) {
-            Toast.makeText(context, "Please enter your email", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, please_enter_your_email, Toast.LENGTH_SHORT).show();
             return;
         }
 
         auth.sendPasswordResetEmail(email)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        Toast.makeText(context, "Reset email sent", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, reset_email_sent, Toast.LENGTH_SHORT).show();
                     } else {
-                        Log.e("AuthUtils", "Error sending reset email: " + task.getException());
-                        Toast.makeText(context, "Error sending email", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, error_sending_email, Toast.LENGTH_SHORT).show();
                     }
                 });
     }

@@ -35,6 +35,7 @@ import java.io.IOException;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.AuthUtils;
+import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.ImageCropActivity;
 
 public class ManageAccountFragment extends Fragment {
@@ -45,9 +46,9 @@ public class ManageAccountFragment extends Fragment {
     private TextView nameTextView;
     private TextView contactDetailsTextView;
     private TextView phoneNumberTextView;
-    private LinearLayout ManageProfilePicture;
-    private LinearLayout ManagePassword;
-
+    private LinearLayout manageProfilePicture;
+    private LinearLayout managePassword;
+    private LinearLayout manageEmail;
     private View rootView;
 
     private final ActivityResultLauncher<Intent> imagePickerLauncher = registerForActivityResult(
@@ -114,6 +115,7 @@ public class ManageAccountFragment extends Fragment {
         loadProfilePicture();
         setupProfilePictureButton();
         setupPasswordResetButton();
+        manageEmail();
     }
 
     private void bindViews(View view) {
@@ -121,12 +123,13 @@ public class ManageAccountFragment extends Fragment {
         nameTextView = view.findViewById(R.id.nameEdit);
         contactDetailsTextView = view.findViewById(R.id.emailEdit);
         phoneNumberTextView = view.findViewById(R.id.phoneNumberManage);
-        ManageProfilePicture = view.findViewById(R.id.manageProfilePic);
-        ManagePassword = view.findViewById(R.id.managePassword);
+        manageProfilePicture = view.findViewById(R.id.manageProfilePic);
+        managePassword = view.findViewById(R.id.managePassword);
+        manageEmail = view.findViewById(R.id.manageEmail);
     }
 
     private void setupProfilePictureButton() {
-        ManageProfilePicture.setOnClickListener(v -> {
+        manageProfilePicture.setOnClickListener(v -> {
             if (isPermissionGranted()) {
                 openGallery();
             } else {
@@ -239,6 +242,30 @@ public class ManageAccountFragment extends Fragment {
     }
 
     private void setupPasswordResetButton() {
-        ManagePassword.setOnClickListener(v -> AuthUtils.showResetPasswordDialog(requireContext(), FirebaseAuth.getInstance()));
+        managePassword.setOnClickListener(v -> AuthUtils.showResetPasswordDialog(requireContext(), FirebaseAuth.getInstance()));
+    }
+
+    private void manageEmail() {
+        manageEmail.setOnClickListener(v -> {
+            DialogUtil.showMessageDialog(
+                    requireContext(),
+                    getString(R.string.email_update_unavailable),
+                    getString(R.string.changing_your_email_address_is_currently_not_permitted_please_reach_out_to_our_support_team_for_further_assistance),
+                    getString(R.string.help),
+                    new DialogUtil.DialogCallback() {
+                        @Override
+                        public void onConfirm() {
+                            getParentFragmentManager().beginTransaction()
+                                    .replace(R.id.flFragment, new HelpFragment())
+                                    .addToBackStack(null)
+                                    .commit();
+                        }
+                        @Override
+                        public void onCancel() {
+                            // Do nothing, just close the dialog
+                        }
+                    }
+            );
+        });
     }
 }
