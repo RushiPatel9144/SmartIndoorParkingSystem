@@ -6,14 +6,23 @@
 
 package ca.tech.sense.it.smart.indoor.parking.system;
 
+import static ca.tech.sense.it.smart.indoor.parking.system.R.string.notification_permission_denied;
+
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.widget.Toast;
+import android.Manifest;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
@@ -31,10 +40,18 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
     // Declare a BottomNavigationView
     private BottomNavigationView bottomNavigationView;
     private Toolbar toolbar;
+    private FirebaseAuth tempAuth;
+    private FirebaseUser tempUser;
     // Fragments for bottom navigation
     private final Home homeFragment = new Home();
     private final Park parkFragment = new Park();
     private final Activity activityFragment = new Activity();
+    private static final String PREFS_NAME = "MyAppPreferences";
+    private static final String KEY_WELCOME_NOTIFICATION_TIMESTAMP = "welcome_notification_timestamp";
+    private static final long NOTIFICATION_COOLDOWN = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+    private static final String PREFS__NAME = "UserPrefs";
+    private static final String KEY_WELCOME_NOTIFICATION_SENT = "welcome_notification_sent";
+    private static final int NOTIFICATION_PERMISSION_CODE = 100;
     private final ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountFragment accountFragment = new ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountFragment();
 
     @SuppressLint("MissingInflatedId")
@@ -45,26 +62,22 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
 
         // Initialize Firebase Authentication
         initFirebaseAuth();
-
         // Initialize UI components
         initUIComponents();
-
         // Set BottomNavigationView listener
         bottomNavigationView.setOnItemSelectedListener(this);
         bottomNavigationView.setSelectedItemId(R.id.navigation_home);
 
-        // Create notification channel
-        NotificationHelper.createNotificationChannel(this);
-
-
-
-        // Handle back button press
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requestNotificationPermission();
+        }
         handleBackButtonPress();
+        NotificationHelper.createNotificationChannel(this);
+        sendWelcomeBackNotification();
+        sendNewUserWelcomeNotification();
     }
 
     private void initFirebaseAuth() {
-        FirebaseAuth tempAuth;
-        FirebaseUser tempUser;
         tempAuth = FirebaseAuth.getInstance();
         tempUser = tempAuth.getCurrentUser();
 
@@ -84,14 +97,18 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                new AlertDialog.Builder(MainActivity.this)
-                        .setMessage(R.string.are_you_sure_you_want_to_exit)
-                        .setCancelable(false)
-                        .setTitle(R.string.leaving)
-                        .setIcon(R.drawable.alert)
-                        .setPositiveButton(R.string.yes, (dialog, which) -> finish())
-                        .setNegativeButton(R.string.no, (dialog, which) -> dialog.dismiss())
-                        .show();
+                if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                    getSupportFragmentManager().popBackStack();
+                } else {
+                    new AlertDialog.Builder(MainActivity.this)
+                            .setMessage(R.string.are_you_sure_you_want_to_exit)
+                            .setCancelable(false)
+                            .setTitle(R.string.leaving)
+                            .setIcon(R.drawable.alert)
+                            .setPositiveButton(R.string.yes, (dialog, which) -> finish())
+                            .setNegativeButton(R.string.no, (dialog, which) -> dialog.dismiss())
+                            .show();
+                }
             }
         };
         getOnBackPressedDispatcher().addCallback(this, callback);
@@ -133,5 +150,63 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
         Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
         startActivity(intent);
         finish();
+    }
+
+    private void requestNotificationPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                != PackageManager.PERMISSION_GRANTED) {
+            // Request the permission
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.POST_NOTIFICATIONS},
+                    NOTIFICATION_PERMISSION_CODE);
+        } else {
+            // Permission already granted, proceed with notification
+            sendWelcomeBackNotification(); // Or any notification logic
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == NOTIFICATION_PERMISSION_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                sendNewUserWelcomeNotification();
+            } else {
+                Toast.makeText(this, notification_permission_denied, Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void sendWelcomeBackNotification() {
+        SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        long lastSentTimestamp = sharedPreferences.getLong(KEY_WELCOME_NOTIFICATION_TIMESTAMP, 0);
+
+        long currentTime = System.currentTimeMillis();
+        if (currentTime - lastSentTimestamp > NOTIFICATION_COOLDOWN) {
+            NotificationHelper.sendNotification(
+                    this,
+                    getString(R.string.welcome_back),
+                    getString(R.string.we_ve_missed_you_check_out_the_latest_parking_spots_available_for_you),
+                    FirebaseAuth.getInstance().getCurrentUser().getUid()
+            );
+            sharedPreferences.edit().putLong(KEY_WELCOME_NOTIFICATION_TIMESTAMP, currentTime).apply();
+        }
+    }
+    private void sendNewUserWelcomeNotification() {
+        SharedPreferences sharedPreferences = getSharedPreferences(PREFS__NAME, MODE_PRIVATE);
+        boolean isWelcomeNotificationSent = sharedPreferences.getBoolean(KEY_WELCOME_NOTIFICATION_SENT, false);
+
+        if (!isWelcomeNotificationSent) {
+            NotificationHelper.sendNotification(
+                    this,
+                    getString(R.string.welcome_to_parkit),
+                    getString(R.string.explore_the_app_and_find_parking_spots_nearby),
+                    FirebaseAuth.getInstance().getCurrentUser().getUid()
+            );
+
+            // Set flag to true to avoid sending again
+            sharedPreferences.edit().putBoolean(KEY_WELCOME_NOTIFICATION_SENT, true).apply();
+        }
     }
 }

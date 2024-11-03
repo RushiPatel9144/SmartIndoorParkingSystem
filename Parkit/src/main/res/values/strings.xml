@@ -183,5 +183,12 @@
         vestibulum. Fusce dictum libero quis erat maximus, vitae volutpat diam dignissim.
     </string>
     <string name="location_not_found">Location not found</string>
+    <string name="we_ve_missed_you_check_out_the_latest_parking_spots_available_for_you">We’ve missed you! Check out the latest parking spots available for you.</string>
+    <string name="welcome_back">Welcome Back!</string>
+    <string name="clear">Clear</string>
+    <string name="no_notifications_yet">No Notifications Yet</string>
+    <string name="welcome_to_parkit">Welcome To Parkit</string>
+    <string name="explore_the_app_and_find_parking_spots_nearby">Explore the app and find parking spots nearby.</string>
+    <string name="notification_permission_denied">Notification permission denied</string>
 
 </resources>
