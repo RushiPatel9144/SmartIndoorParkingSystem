@@ -1,6 +1,7 @@
-package ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav;
+package ca.tech.sense.it.smart.indoor.parking.system.utility;
 
 public class ParkingSpotDetails {
+
     private String address;
     private String postcode;
     private int imageResId;
@@ -23,4 +24,3 @@ public class ParkingSpotDetails {
         return imageResId;
     }
 }
-

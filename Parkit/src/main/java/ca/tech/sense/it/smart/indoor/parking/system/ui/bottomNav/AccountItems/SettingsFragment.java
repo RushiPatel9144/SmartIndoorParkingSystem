@@ -41,12 +41,28 @@ public class SettingsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
 
         // Initialize UI elements
+        initializeUIElements(view);
+
+        // Load saved preferences
+        loadPreferences();
+
+        // Set up listeners
+        setupListeners();
+
+        // Initialize spinner with currency options
+        initializeSpinner();
+
+        return view;
+    }
+
+    private void initializeUIElements(View view) {
         switchLockPortrait = view.findViewById(R.id.switch_lock_portrait);
         switchNotifications = view.findViewById(R.id.switch_notifications);
         switchTheme = view.findViewById(R.id.switch_theme);
         spinnerCurrency = view.findViewById(R.id.spinner_currency);
+    }
 
-        // Load saved preferences
+    private void loadPreferences() {
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
         boolean isPortraitLocked = sharedPreferences.getBoolean(getString(R.string.lock_portrait), false);
         boolean isDarkTheme = sharedPreferences.getBoolean(getString(R.string.dark_theme), false);
@@ -55,8 +71,11 @@ public class SettingsFragment extends Fragment {
         switchLockPortrait.setChecked(isPortraitLocked);
         switchTheme.setChecked(isDarkTheme);
         switchNotifications.setChecked(areNotificationsEnabled);
+    }
 
-        // Set up listeners
+    private void setupListeners() {
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
+
         switchLockPortrait.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -103,14 +122,13 @@ public class SettingsFragment extends Fragment {
                 }
             }
         });
+    }
 
-        // Initialize spinner with currency options
+    private void initializeSpinner() {
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
                 R.array.currency_options, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerCurrency.setAdapter(adapter);
-
-        return view;
     }
 
     private void applyTheme(boolean isDarkMode) {

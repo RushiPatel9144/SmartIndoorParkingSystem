@@ -9,6 +9,7 @@ package ca.tech.sense.it.smart.indoor.parking.system;
 import static ca.tech.sense.it.smart.indoor.parking.system.R.string.notification_permission_denied;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -20,6 +21,7 @@ import android.Manifest;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -59,6 +61,7 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        applyTheme();
 
         // Initialize Firebase Authentication
         initFirebaseAuth();
@@ -152,6 +155,7 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
         finish();
     }
 
+
     private void requestNotificationPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -207,6 +211,15 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
 
             // Set flag to true to avoid sending again
             sharedPreferences.edit().putBoolean(KEY_WELCOME_NOTIFICATION_SENT, true).apply();
+          
+    private void applyTheme() {
+        SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
+        boolean isDarkTheme = sharedPreferences.getBoolean(getString(R.string.dark_theme), false);
+        if (isDarkTheme) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+
         }
     }
 }
