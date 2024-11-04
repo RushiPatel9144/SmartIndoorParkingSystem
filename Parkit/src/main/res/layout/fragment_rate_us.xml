@@ -3,45 +3,157 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.bottomNav.AccountItems.RateUsFragment">
+    tools:context=".ui.bottomNav.AccountItems.RateUsFragment"
+    android:padding="16dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Title -->
+        <!-- Rate Us Heading -->
         <TextView
-            android:id="@+id/rate_us_title"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-medium"
+            android:paddingBottom="16dp"
             android:text="Rate Us"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:layout_gravity="center_horizontal"
-            android:paddingBottom="16dp"/>
+            android:textColor="@android:color/black"
+            android:textSize="24sp" />
+
+        <!-- Name Field -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="12dp"
+            android:paddingBottom="4dp"
+            android:text="Name"
+            android:textColor="@android:color/black"
+            android:textSize="18sp" />
+        <EditText
+            android:id="@+id/feedback_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:background="?attr/selectableItemBackground"
+            android:padding="12dp"
+            android:hint="Enter your name"
+            android:textColor="#716F6F"
+            android:textSize="18sp"
+            android:inputType="textCapWords|textPersonName"
+            android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ " />
+
+        <!-- Divider -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.6dp"
+            android:layout_marginBottom="8dp"
+            android:background="#BDBDBD" />
+
+        <!-- Phone Number Field -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="12dp"
+            android:paddingBottom="4dp"
+            android:text="Phone Number"
+            android:textColor="@android:color/black"
+            android:textSize="18sp" />
+        <EditText
+            android:id="@+id/feedback_phone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:background="?attr/selectableItemBackground"
+            android:padding="12dp"
+            android:hint="Enter your phone number"
+            android:textColor="#716F6F"
+            android:textSize="18sp"
+            android:inputType="phone"
+            android:maxLength="10"
+            android:digits="0123456789"/>
+
+        <!-- Divider -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.6dp"
+            android:layout_marginBottom="8dp"
+            android:background="#BDBDBD" />
+
+        <!-- Email Field -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="12dp"
+            android:paddingBottom="4dp"
+            android:text="Email"
+            android:textColor="@android:color/black"
+            android:textSize="18sp" />
+        <EditText
+            android:id="@+id/feedback_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:background="?attr/selectableItemBackground"
+            android:padding="12dp"
+            android:hint="Enter your email"
+            android:textColor="#716F6F"
+            android:textSize="18sp"
+            android:inputType="textEmailAddress" />
+
+        <!-- Divider -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.6dp"
+            android:layout_marginBottom="8dp"
+            android:background="#BDBDBD" />
 
         <!-- Star Rating Bar -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="12dp"
+            android:paddingBottom="4dp"
+            android:text="Rating"
+            android:textColor="@android:color/black"
+            android:textSize="18sp" />
         <RatingBar
             android:id="@+id/rating_bar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:numStars="5"
-            android:stepSize="1"
+            android:stepSize="0.5"
             android:layout_gravity="center_horizontal"
-            android:paddingBottom="16dp"/>
+            android:layout_marginBottom="16dp" />
 
-        <!-- Feedback Comment Box -->
+        <!-- Divider -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.6dp"
+            android:layout_marginBottom="8dp"
+            android:background="#BDBDBD" />
+
+        <!-- Comment Box -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="12dp"
+            android:paddingBottom="4dp"
+            android:text="Comment"
+            android:textColor="@android:color/black"
+            android:textSize="18sp" />
         <EditText
             android:id="@+id/feedback_comment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Tell us about your experience"
+            android:layout_marginBottom="16dp"
+            android:background="?attr/selectableItemBackground"
             android:padding="12dp"
-            android:background="@drawable/edit_text_background"
+            android:hint="Tell us about your experience (Optional)"
+            android:textColor="#716F6F"
+            android:textSize="18sp"
             android:gravity="top"
-            android:minHeight="100dp"
-            android:layout_marginBottom="16dp"/>
+            android:minHeight="100dp" />
 
         <!-- Submit Button -->
         <Button
@@ -54,7 +166,5 @@
             android:backgroundTint="@color/logo"
             android:textColor="@android:color/white"
             android:layout_marginTop="16dp"/>
-
     </LinearLayout>
-
 </ScrollView>
