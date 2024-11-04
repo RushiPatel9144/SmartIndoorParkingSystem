@@ -23,13 +23,7 @@
         android:supportsRtl="true"
         android:theme="@style/Base.Theme.SmartIndoorParkingSystem"
         tools:targetApi="31">
-        <activity
-            android:name=".ui.parking.ParkingManagement"
-            android:exported="false" />
-        <activity
-            android:name=".ui.ParkingManagementActivity"
-            android:exported="false"
-            android:theme="@style/Base.Theme.SmartIndoorParkingSystem" />
+
         <activity
             android:name=".utility.ImageCropActivity"
             android:exported="false"
