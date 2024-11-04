@@ -24,4 +24,26 @@
         android:layout_weight="1"
         android:paddingBottom="16dp"/>
 
+    <!-- No Promotions Image -->
+    <ImageView
+        android:id="@+id/imgNoPromotions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="16dp"
+        android:visibility="gone"
+        android:src="@drawable/promotions_background" />
+
+    <!-- No Promotions Text -->
+    <TextView
+        android:id="@+id/tvNoPromotions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="8dp"
+        android:text="No promotions available"
+        android:textSize="16sp"
+        android:textColor="#A9A9A9"
+        android:visibility="gone" />
+
 </LinearLayout>

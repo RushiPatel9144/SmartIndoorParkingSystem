@@ -3,6 +3,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -30,6 +32,9 @@ public class PromotionFragment extends Fragment {
     private List<Promotion> promotionList = new ArrayList<>();
     private DatabaseReference promotionsRef;
 
+    // Views for "No Promotions" message
+    private ImageView imgNoPromotions;
+    private TextView tvNoPromotions;
 
     @Nullable
     @Override
@@ -44,6 +49,10 @@ public class PromotionFragment extends Fragment {
         // Set up adapter
         adapter = new PromotionAdapter(promotionList);
         recyclerView.setAdapter(adapter);
+
+        // Initialize "No Promotions" views
+        imgNoPromotions = view.findViewById(R.id.imgNoPromotions);
+        tvNoPromotions = view.findViewById(R.id.tvNoPromotions);
 
         // Save hardcoded promotions to Firebase (if they don't exist already)
         PromotionHelper.saveHardcodedPromotionsToFirebase();
@@ -66,6 +75,19 @@ public class PromotionFragment extends Fragment {
                     if (promotion != null) {
                         promotionList.add(promotion);
                     }
+                }
+
+                // Check if there are promotions to display
+                if (promotionList.isEmpty()) {
+                    // Show "No Promotions" message and hide RecyclerView
+                    recyclerView.setVisibility(View.GONE);
+                    imgNoPromotions.setVisibility(View.VISIBLE);
+                    tvNoPromotions.setVisibility(View.VISIBLE);
+                } else {
+                    // Show RecyclerView and hide "No Promotions" message
+                    recyclerView.setVisibility(View.VISIBLE);
+                    imgNoPromotions.setVisibility(View.GONE);
+                    tvNoPromotions.setVisibility(View.GONE);
                 }
                 adapter.notifyDataSetChanged();
             }
