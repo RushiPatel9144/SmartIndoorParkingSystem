@@ -43,11 +43,11 @@ dependencies {
     implementation libs.filament.android
     implementation libs.firebase.auth
     implementation libs.recyclerview
+    implementation libs.firebase.database
     implementation libs.firebase.firestore
     implementation libs.navigation.fragment
     implementation libs.navigation.ui
     implementation libs.media3.exoplayer
-    implementation libs.firebase.database
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
