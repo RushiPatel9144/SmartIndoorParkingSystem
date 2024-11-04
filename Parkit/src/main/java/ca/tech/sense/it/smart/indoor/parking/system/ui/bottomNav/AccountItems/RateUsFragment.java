@@ -19,7 +19,7 @@ import ca.tech.sense.it.smart.indoor.parking.system.R;
 public class RateUsFragment extends Fragment {
 
     RatingBar ratingBar;
-    EditText nameField, phoneField, emailField, feedbackComment;
+    EditText feedbackComment;
     Button submitFeedbackButton;
 
     public RateUsFragment() {
@@ -47,9 +47,6 @@ public class RateUsFragment extends Fragment {
 
     //Initializes UI components by linking them to the XML layout elements.
     private void initializeUIComponents(View view) {
-        nameField = view.findViewById(R.id.feedback_name);
-        phoneField = view.findViewById(R.id.feedback_phone);
-        emailField = view.findViewById(R.id.feedback_email);
         ratingBar = view.findViewById(R.id.rating_bar);
         feedbackComment = view.findViewById(R.id.feedback_comment);
         submitFeedbackButton = view.findViewById(R.id.submit_feedback_button);
@@ -67,36 +64,21 @@ public class RateUsFragment extends Fragment {
 
      //Handles feedback submission with feedback validation and user notification.
     private void handleSubmitFeedback() {
-        // Retrieve inputs
-        String name = nameField.getText().toString().trim();
-        String phone = phoneField.getText().toString().trim();
-        String email = emailField.getText().toString().trim();
+
         float rating = ratingBar.getRating();
         String comment = feedbackComment.getText().toString().trim();
 
         // Validate inputs
-        if (isInputValid(name, phone, email, rating)) {
+        if (isInputValid(rating)) {
             // Display success message
-            showFeedbackSubmittedToast(name, rating);
+            showFeedbackSubmittedToast(rating);
             clearFeedbackInputs();
         } else {
             showFeedbackErrorToast();
         }
     }
 
-    private boolean isInputValid(String name, String phone, String email, float rating) {
-        if (TextUtils.isEmpty(name)) {
-            nameField.setError("Name is required");
-            return false;
-        }
-        if (TextUtils.isEmpty(phone) || !Patterns.PHONE.matcher(phone).matches()) {
-            phoneField.setError("Valid phone number is required");
-            return false;
-        }
-        if (TextUtils.isEmpty(email) || !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            emailField.setError("Valid email is required");
-            return false;
-        }
+    private boolean isInputValid(float rating) {
         if (rating <= 0) {
             Toast.makeText(getContext(), "Please select a star rating", Toast.LENGTH_SHORT).show();
             return false;
@@ -105,16 +87,13 @@ public class RateUsFragment extends Fragment {
     }
 
     //Displays a toast confirming submission of feedback with the selected rating.
-    private void showFeedbackSubmittedToast(String name, float rating) {
-        Toast.makeText(getContext(), "Thank you, " + name + "! You rated us: " + rating + " stars.", Toast.LENGTH_SHORT).show();
+    private void showFeedbackSubmittedToast( float rating) {
+        Toast.makeText(getContext(), "Thank you ! You rated us: " + rating + " stars.", Toast.LENGTH_SHORT).show();
     }
 
 
     //Clears the inputs after submission for a clean slate.
     private void clearFeedbackInputs() {
-        nameField.setText("");
-        phoneField.setText("");
-        emailField.setText("");
         ratingBar.setRating(0);
         feedbackComment.setText("");
     }
