@@ -6,13 +6,53 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <TextView
-        android:id="@+id/tvNotificationTitle"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="8dp">
+
+        <TextView
+            android:id="@+id/tvNotificationTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
         android:text="@string/notifications"
         android:textSize="24sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:paddingRight="15dp"
+        android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/btnClearNotifications"
+            android:layout_width="65dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/button_background"
+            android:padding="4dp"
+            android:text="@string/clear"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            android:visibility="gone"/>
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/ivEmptyState"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:src="@drawable/mute"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/tvEmptyStateText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="@string/no_notifications_yet"
+        android:textSize="28sp"
+        android:textColor="@color/gray"
+        android:visibility="gone"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvNotifications"
@@ -20,10 +60,4 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:layout_marginTop="8dp"/>
-
-    <Button
-        android:id="@+id/btnClearNotifications"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/clear_notifications" />
 </LinearLayout>

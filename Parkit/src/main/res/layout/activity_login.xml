@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/login"
+    android:id="@+id/loginActivity"
     android:gravity="center"
     android:orientation="vertical"
     android:layout_width="match_parent"
@@ -54,6 +54,7 @@
             android:layout_height="wrap_content"
             android:inputType="textPassword"/>
     </com.google.android.material.textfield.TextInputLayout>
+
     <ProgressBar
         android:id="@+id/login_progressBar"
         android:visibility="gone"
@@ -68,22 +69,22 @@
         android:layout_height="wrap_content"
         app:cornerRadius="16dp" />
 
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/guestSignIn_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/login_as_guest"
-        app:backgroundTint="@color/black"
-        app:cornerRadius="16dp" />
-
-
     <TextView
         android:id="@+id/jump_to_signup_page"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="16dp"
-        android:text="@string/don_t_have_an_account_sign_up" />
+        android:text="@string/don_t_have_an_account_sign_up"
+        android:textColor="#0000FF" />
 
+    <!-- Forgot Password TextView -->
+    <TextView
+        android:id="@+id/forgot_password"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/forgot_password"
+        android:textColor="#0000FF"
+        android:visibility="gone" /> <!-- Initially invisible -->
 </LinearLayout>

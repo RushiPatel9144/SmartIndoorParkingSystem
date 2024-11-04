@@ -1,4 +1,4 @@
-package ca.tech.sense.it.smart.indoor.parking.system.model;
+package ca.tech.sense.it.smart.indoor.parking.system.model.user;
 
 public class User {
     private String uid;       // Unique user ID
@@ -6,16 +6,18 @@ public class User {
     private String lastName;
     private String email;     // User's email address
     private String phone;      // User's phone number
+    private String profilePhotoUrl;
 
     public User() {
     }
 
-    public User(String uid, String firstName, String lastName, String email, String phone) {
+    public User(String uid, String firstName, String lastName, String email, String phone, String profilePhotoUrl) {
         this.uid = uid;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.phone = phone;
+        this.profilePhotoUrl = profilePhotoUrl;
     }
 
     // Getters and setters
@@ -57,5 +59,13 @@ public class User {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public String getProfilePhotoUrl() {
+        return profilePhotoUrl;
+    }
+
+    public void setProfilePhotoUrl(String profilePhotoUrl) {
+        this.profilePhotoUrl = profilePhotoUrl;
     }
 }

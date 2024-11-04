@@ -2,7 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/login_scroll"
+    android:id="@+id/loginActivity"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="35dp"
@@ -77,21 +77,14 @@
             android:layout_height="wrap_content"
             app:cornerRadius="16dp" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/guestSignIn_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/login_as_guest"
-            app:backgroundTint="@color/black"
-            app:cornerRadius="16dp" />
-
         <TextView
             android:id="@+id/jump_to_signup_page"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="16dp"
-            android:text="@string/don_t_have_an_account_sign_up" />
+            android:text="@string/don_t_have_an_account_sign_up"
+            android:textColor="#0000FF" />
 
     </LinearLayout>
 

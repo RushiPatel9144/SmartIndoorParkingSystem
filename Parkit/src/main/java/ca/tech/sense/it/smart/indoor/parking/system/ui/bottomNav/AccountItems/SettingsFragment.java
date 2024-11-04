@@ -11,16 +11,19 @@ import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.Spinner;
 import android.widget.Switch;
-import android.widget.ToggleButton;
+
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 
 public class SettingsFragment extends Fragment {
 
     private Switch switchLockPortrait;
     private Switch switchNotifications;
-    private ToggleButton toggleTheme;
-    private Spinner spinnerLocation;
+    private Switch switchTheme;
+    private Spinner spinnerCurrency;
 
     public SettingsFragment() {
         // Required empty public constructor
@@ -38,20 +41,41 @@ public class SettingsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
 
         // Initialize UI elements
-        switchLockPortrait = view.findViewById(R.id.switch_lock_portrait);
-        switchNotifications = view.findViewById(R.id.switch_notifications);
-        toggleTheme = view.findViewById(R.id.toggle_theme);
-        spinnerLocation = view.findViewById(R.id.spinner_location);
+        initializeUIElements(view);
 
         // Load saved preferences
-        SharedPreferences sharedPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
-        boolean isPortraitLocked = sharedPreferences.getBoolean(getString(R.string.lock_portrait), false);
-        boolean isDarkTheme = sharedPreferences.getBoolean(getString(R.string.dark_theme), false);
-
-        switchLockPortrait.setChecked(isPortraitLocked);
-        toggleTheme.setChecked(isDarkTheme);
+        loadPreferences();
 
         // Set up listeners
+        setupListeners();
+
+        // Initialize spinner with currency options
+        initializeSpinner();
+
+        return view;
+    }
+
+    private void initializeUIElements(View view) {
+        switchLockPortrait = view.findViewById(R.id.switch_lock_portrait);
+        switchNotifications = view.findViewById(R.id.switch_notifications);
+        switchTheme = view.findViewById(R.id.switch_theme);
+        spinnerCurrency = view.findViewById(R.id.spinner_currency);
+    }
+
+    private void loadPreferences() {
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
+        boolean isPortraitLocked = sharedPreferences.getBoolean(getString(R.string.lock_portrait), false);
+        boolean isDarkTheme = sharedPreferences.getBoolean(getString(R.string.dark_theme), false);
+        boolean areNotificationsEnabled = sharedPreferences.getBoolean("Notification Enabled", true);
+
+        switchLockPortrait.setChecked(isPortraitLocked);
+        switchTheme.setChecked(isDarkTheme);
+        switchNotifications.setChecked(areNotificationsEnabled);
+    }
+
+    private void setupListeners() {
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
+
         switchLockPortrait.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -67,30 +91,59 @@ public class SettingsFragment extends Fragment {
             }
         });
 
-        toggleTheme.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        switchTheme.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putBoolean(getString(R.string.dark_theme), isChecked);
                 editor.apply();
 
-                // Apply theme change logic here
-                if (isChecked) {
-                    // Set dark theme
-                } else {
-                    // Set light theme
-                }
+                applyTheme(isChecked);
+
+                // Refresh the fragment to apply the theme change
+                FragmentTransaction ft = requireActivity().getSupportFragmentManager().beginTransaction();
+                ft.detach(SettingsFragment.this).attach(SettingsFragment.this).commit();
             }
         });
 
-        // Initialize spinner with location options
+        switchNotifications.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putBoolean("Notification Enabled", isChecked);
+                editor.apply();
+
+                if (isChecked) {
+                    // Enable notifications
+                    enableNotifications();
+                } else {
+                    // Disable notifications
+                    disableNotifications();
+                }
+            }
+        });
+    }
+
+    private void initializeSpinner() {
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
-                R.array.canada_busy_cities, android.R.layout.simple_spinner_item);
+                R.array.currency_options, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerLocation.setAdapter(adapter);
+        spinnerCurrency.setAdapter(adapter);
+    }
 
-        // Other initialization code here
+    private void applyTheme(boolean isDarkMode) {
+        if (isDarkMode) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        }
+    }
 
-        return view;
+    private void enableNotifications() {
+        // Logic to enable notifications
+    }
+
+    private void disableNotifications() {
+        // Logic to disable notifications
     }
 }
