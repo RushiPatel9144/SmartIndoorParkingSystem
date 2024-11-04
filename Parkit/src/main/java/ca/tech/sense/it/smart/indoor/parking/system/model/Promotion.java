@@ -1,20 +1,31 @@
 package ca.tech.sense.it.smart.indoor.parking.system.model;
 
 public class Promotion {
+    private String id;
+    private String title;
     private String description;
     private int discount;
-    private String title;
 
     // Empty constructor needed for Firebase
     public Promotion() {}
 
-    public Promotion(String description, int discount, String title) {
+    public Promotion(String id, String title, String description,int discount) {
+        this.id=id;
+        this.title = title;
         this.description = description;
         this.discount = discount;
-        this.title = title;
+
     }
 
     // Getters
+    public String getId() {
+        return id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
     public String getDescription() {
         return description;
     }
@@ -23,7 +34,5 @@ public class Promotion {
         return discount;
     }
 
-    public String getTitle() {
-        return title;
-    }
+
 }
