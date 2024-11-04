@@ -29,7 +29,7 @@ public class PromotionAdapter extends RecyclerView.Adapter<PromotionAdapter.Prom
         Promotion promotion = promotionList.get(position);
         holder.title.setText(promotion.getTitle());
         holder.description.setText(promotion.getDescription());
-        holder.discount.setText(String.valueOf(promotion.getDiscount()));
+        holder.discount.setText(String.valueOf(promotion.getDiscount()) + "%");
     }
 
     @Override

@@ -12,9 +12,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Promotions"
-        android:textSize="26sp"
+        android:textSize="24sp"
         android:textStyle="bold"
-        android:layout_gravity="center"
         android:paddingBottom="16dp"/>
 
     <!-- RecyclerView for Promotions List -->

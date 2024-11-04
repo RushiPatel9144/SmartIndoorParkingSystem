@@ -16,10 +16,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,7 +45,6 @@ public class PromotionFragment extends Fragment {
         adapter = new PromotionAdapter(promotionList);
         recyclerView.setAdapter(adapter);
 
-        promotionsRef = FirebaseDatabase.getInstance().getReference("Promotions");
         // Save hardcoded promotions to Firebase (if they don't exist already)
         PromotionHelper.saveHardcodedPromotionsToFirebase();
 
@@ -59,6 +54,9 @@ public class PromotionFragment extends Fragment {
     }
 
     private void fetchPromotions() {
+
+        promotionsRef = FirebaseDatabase.getInstance().getReference("Promotions");
+
         promotionsRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
