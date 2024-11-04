@@ -16,7 +16,6 @@
             android:fontFamily="sans-serif-medium"
             android:paddingBottom="16dp"
             android:text="Settings"
-            android:textColor="@android:color/black"
             android:textSize="24sp" />
 
         <!-- Lock Screen to Portrait -->
