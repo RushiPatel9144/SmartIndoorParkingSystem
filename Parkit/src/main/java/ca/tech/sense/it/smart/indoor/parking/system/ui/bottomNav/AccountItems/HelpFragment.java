@@ -1,31 +1,89 @@
 package ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems;
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.DocumentReference;
+
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
-
+import ca.tech.sense.it.smart.indoor.parking.system.model.Help;
 
 public class HelpFragment extends Fragment {
 
-    public HelpFragment() {
-        // Required empty public constructor
-    }
+    private EditText etName, etPhone, etEmail, etComment;
+    private Button btnSubmitHelp;
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+    @Nullable
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_help, container, false);
+        View view = inflater.inflate(R.layout.fragment_help, container, false);
+
+        // Initialize UI elements
+        etName = view.findViewById(R.id.feedback_name);
+        etPhone = view.findViewById(R.id.feedback_phone);
+        etEmail = view.findViewById(R.id.feedback_email);
+        etComment = view.findViewById(R.id.feedback_comment);
+        btnSubmitHelp = view.findViewById(R.id.submit_feedback_button);
+
+        // Set up button click listener
+        btnSubmitHelp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String name = etName.getText().toString().trim();
+                String phone = etPhone.getText().toString().trim();
+                String email = etEmail.getText().toString().trim();
+                String comment = etComment.getText().toString().trim();
+
+                if (name.isEmpty() || phone.isEmpty() || email.isEmpty() || comment.isEmpty()) {
+                    Toast.makeText(getActivity(), "Please fill in all fields", Toast.LENGTH_SHORT).show();
+                }else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                    Toast.makeText(getActivity(), "Please enter a valid email address", Toast.LENGTH_SHORT).show();}
+                else {
+                    // Create a new Help object
+                    Help help = new Help(name, phone, email, comment);
+
+                    // Add the Help object to the 'help' collection
+                    db.collection("help").add(help)
+                            .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                @Override
+                                public void onSuccess(DocumentReference documentReference) {
+                                    // Clear the fields
+                                    etName.setText("");
+                                    etPhone.setText("");
+                                    etEmail.setText("");
+                                    etComment.setText("");
+                                    // Show success message
+                                    Toast.makeText(getActivity(), "Help request submitted", Toast.LENGTH_SHORT).show();
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    // Show error message
+                                    Toast.makeText(getActivity(), "Error adding document", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                }
+            }
+        });
+
+        return view;
     }
 }
