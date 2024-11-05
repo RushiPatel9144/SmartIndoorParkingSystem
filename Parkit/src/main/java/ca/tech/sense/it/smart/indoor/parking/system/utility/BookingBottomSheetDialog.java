@@ -2,7 +2,9 @@ package ca.tech.sense.it.smart.indoor.parking.system.utility;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -15,21 +17,14 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
-import ca.tech.sense.it.smart.indoor.parking.system.model.parking.BookingStatus;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingSlot;
 
@@ -42,12 +37,14 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
     private TextView addressText, postalCodeText, errorTextView, priceTag, confirmationSummary;
 
     private String locationId;
+    private String selectedDate;
     private ParkingUtility parkingUtility;
+    private double basePrice = 25.00; // Base price in USD
 
     public BookingBottomSheetDialog(@NonNull Context context, String locationId) {
         super(context);
         this.context = context;
-        this.locationId = locationId; // Set the location ID directly from the constructor
+        this.locationId = locationId;
         parkingUtility = new ParkingUtility();
     }
 
@@ -66,22 +63,43 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
         progressBar = view.findViewById(R.id.progressBar);
         addressText = view.findViewById(R.id.addressText);
         postalCodeText = view.findViewById(R.id.postalCodeText);
-        errorTextView = view.findViewById(R.id.error_text_view);
         priceTag = view.findViewById(R.id.priceTag);
         confirmationSummary = view.findViewById(R.id.confirmationSummary);
 
-         // Set up the slot spinner
-        setupTimeSlots(); // Set up the time slots spinner
-        setupConfirmButton(); // Set up the confirm button
-        setupCancelButton(); // Set up the cancel button
-        setupSelectDateButton(); // Set up the date selection button
+        // Set up the slot spinner
+        setupTimeSlots();
+        setupConfirmButton();
+        setupCancelButton();
+        setupSelectDateButton();
+        updateCurrencyDisplay();
 
         // Fetch the parking location data when the dialog is opened
         fetchParkingLocationData();
     }
 
+
+    private void updateCurrencyDisplay() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        String currency = preferences.getString("selected_currency", "USD");
+
+        double convertedPrice;
+        switch (currency) {
+            case "INR":
+                convertedPrice = basePrice * 75.0; // Conversion rate USD to INR
+                priceTag.setText(String.format("Price: ₹%.2f", convertedPrice));
+                break;
+            case "CAD":
+                convertedPrice = basePrice * 1.25; // Conversion rate USD to CAD
+                priceTag.setText(String.format("Price: CAD$%.2f", convertedPrice));
+                break;
+            default: // USD
+                priceTag.setText(String.format("Price: $%.2f", basePrice));
+                break;
+        }
+    }
+
     private void fetchParkingLocationData() {
-        progressBar.setVisibility(View.VISIBLE); // Show progress bar while fetching
+        progressBar.setVisibility(View.VISIBLE);
 
         parkingUtility.fetchParkingLocation(locationId, new ParkingUtility.FetchLocationCallback() {
             @Override
@@ -90,17 +108,17 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
                     addressText.setText(location.getAddress());
                     postalCodeText.setText(location.getPostalCode());
                     priceTag.setText("Price: $" + location.getPrice());
-                    setupSlotSpinnerData(location.getSlots()); // Setup slots based on the fetched location
+                    setupSlotSpinnerData(location.getSlots());
                 } else {
                     setErrorMessage("Location data is not available.");
                 }
-                progressBar.setVisibility(View.GONE); // Hide progress bar
+                progressBar.setVisibility(View.GONE);
             }
 
             @Override
             public void onFetchFailure(Exception exception) {
                 setErrorMessage("Failed to fetch location data: " + exception.getMessage());
-                progressBar.setVisibility(View.GONE); // Hide progress bar
+                progressBar.setVisibility(View.GONE);
             }
         });
     }
@@ -108,7 +126,7 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
     private void setupSlotSpinnerData(Map<String, ParkingSlot> slots) {
         List<String> slotNames = new ArrayList<>();
         for (Map.Entry<String, ParkingSlot> entry : slots.entrySet()) {
-            slotNames.add(entry.getValue().getId()); // Corrected from getid() to getId()
+            slotNames.add(entry.getValue().getId());
         }
         ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, slotNames);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -116,27 +134,20 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
     }
 
     private void setupTimeSlots() {
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("timeSlots");
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                List<String> timeSlots = new ArrayList<>();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    String timeSlot = snapshot.getValue(String.class);
-                    if (timeSlot != null) {
-                        timeSlots.add(timeSlot);
-                    }
-                }
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, timeSlots);
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                timeSlotSpinner.setAdapter(adapter);
-            }
+        List<String> timeSlots = generateTimeSlots();
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, timeSlots);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        timeSlotSpinner.setAdapter(adapter);
+    }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                setErrorMessage("Failed to fetch time slots: " + databaseError.getMessage());
-            }
-        });
+    private List<String> generateTimeSlots() {
+        List<String> timeSlots = new ArrayList<>();
+        for (int hour = 0; hour < 24; hour++) {
+            String startTime = String.format(Locale.getDefault(), "%02d:00", hour);
+            String endTime = String.format(Locale.getDefault(), "%02d:00", (hour + 1) % 24);
+            timeSlots.add(startTime + " - " + endTime);
+        }
+        return timeSlots;
     }
 
     private void setupConfirmButton() {
@@ -144,16 +155,16 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
             String selectedSlot = slotSpinner.getSelectedItem() != null ? slotSpinner.getSelectedItem().toString() : null;
             String selectedTimeSlot = timeSlotSpinner.getSelectedItem() != null ? timeSlotSpinner.getSelectedItem().toString() : null;
 
-            if (selectedSlot != null && selectedTimeSlot != null) {
-                setupProceedToPayment(selectedSlot, selectedTimeSlot);
+            if (selectedSlot != null && selectedTimeSlot != null && selectedDate != null) {
+                confirmBooking(selectedSlot, selectedTimeSlot);
             } else {
-                Toast.makeText(context, "Please select a slot and time.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Please select a slot, date, and time.", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     private void setupCancelButton() {
-        cancelButton.setOnClickListener(v -> dismiss()); // Dismiss the bottom sheet
+        cancelButton.setOnClickListener(v -> dismiss());
     }
 
     private void setupSelectDateButton() {
@@ -164,20 +175,20 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
             int day = calendar.get(Calendar.DAY_OF_MONTH);
 
             DatePickerDialog datePickerDialog = new DatePickerDialog(context, (view, selectedYear, selectedMonth, selectedDay) -> {
-                String selectedDate = String.format("%04d-%02d-%02d", selectedYear, selectedMonth + 1, selectedDay);
-                confirmationSummary.setText("Selected Date: " + selectedDate); // Update summary with selected date
+                selectedDate = String.format(Locale.getDefault(), "%04d-%02d-%02d", selectedYear, selectedMonth + 1, selectedDay);
+                updateConfirmationSummary();
             }, year, month, day);
             datePickerDialog.show();
         });
     }
 
-    private void setupProceedToPayment(String slot, String timing) {
-        // Placeholder for payment processing logic
-        confirmationSummary.setText(String.format("Summary: Date: TBD, Time: %s, Slot: %s, Price: %s", timing, slot, priceTag.getText()));
+    private void updateConfirmationSummary() {
+        confirmationSummary.setText(String.format("Summary: Date: %s, Time: TBD, Slot: TBD, Price: %s", selectedDate, priceTag.getText()));
+    }
 
-        // Optionally, update booking status in the relevant parking slot
-        // For example, assuming you have the date, you would save the booking status
-        // parkingUtility.updateBookingStatus(locationId, slot, selectedDate, new BookingStatus("occupied", selectedDate));
+    private void confirmBooking(String slot, String timing) {
+        confirmationSummary.setText(String.format("Summary: Date: %s, Time: %s, Slot: %s, Price: %s", selectedDate, timing, slot, priceTag.getText()));
+        Toast.makeText(context, "Booking confirmed", Toast.LENGTH_SHORT).show();
     }
 
     public void setErrorMessage(String message) {

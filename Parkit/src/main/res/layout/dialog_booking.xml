@@ -1,35 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:layout_margin="16dp"
     app:cardElevation="8dp"
-    app:cardBackgroundColor="@android:color/white">
+    app:cardBackgroundColor="@android:color/white"
+    app:cardCornerRadius="12dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="14dp">
 
+        <!-- Title and Favorite Button -->
         <LinearLayout
             android:id="@+id/title_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:gravity="center_vertical"
+            android:paddingBottom="6dp">
 
             <TextView
                 android:id="@+id/dialog_title"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:text="Book a Spot"
                 android:textSize="22sp"
                 android:textStyle="bold"
-                android:textColor="@android:color/black"
-                android:text="Book a Spot"/>
+                android:textColor="@android:color/black" />
 
             <ImageButton
                 android:id="@+id/iv_add_to_favorites"
@@ -40,40 +43,78 @@
                 android:src="@drawable/star" />
         </LinearLayout>
 
+        <!-- Address and Postal Code -->
         <TextView
             android:id="@+id/addressText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingBottom="8dp"
+            android:paddingBottom="4dp"
             android:text="Address"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            android:textColor="@android:color/black" />
 
         <TextView
             android:id="@+id/postalCodeText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingBottom="8dp"
+            android:paddingBottom="12dp"
             android:text="Postal Code"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            android:textColor="@android:color/black" />
 
-        <TextView
-            android:id="@+id/error_text_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:textColor="@android:color/holo_red_dark"
-            android:textSize="16sp"
-            android:visibility="gone" />
-
+        <!-- Price Tag -->
         <TextView
             android:id="@+id/priceTag"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingTop="8dp"
+            android:paddingBottom="6dp"
             android:text="Price: $25.00"
             android:textSize="20sp"
             android:textColor="@android:color/holo_green_dark" />
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingTop="8dp">
+
+            <TextView
+                android:id="@+id/selectedDate"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Selected Date:"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:textColor="@android:color/black" />
+
+            <Button
+                android:id="@+id/selectDateButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:drawable/edit_text"
+                android:text="Pick a Date" />
+        </LinearLayout>
+
+        <!-- Time Selection -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="14dp"
+            android:text="Select Time"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <Spinner
+            android:id="@+id/timeSlotSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@android:drawable/edit_text"
+            android:padding="10dp" />
+
+        <!-- Slot Selection -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -88,47 +129,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:background="@android:drawable/edit_text"
-            android:padding="12dp" />
+            android:padding="10dp" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:paddingTop="16dp">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Select Date"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-            <Button
-                android:id="@+id/selectDateButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@android:drawable/edit_text"
-                android:text="Pick a Date" />
-        </LinearLayout>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingTop="16dp"
-            android:text="Select Time"
-            android:textSize="18sp"
-            android:textStyle="bold" />
-
-        <Spinner
-            android:id="@+id/timeSlotSpinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:background="@android:drawable/edit_text"
-            android:padding="12dp" />
-
+        <!-- Confirmation Summary -->
         <TextView
             android:id="@+id/confirmationSummary"
             android:layout_width="match_parent"
@@ -137,15 +140,15 @@
             android:text="Summary: Date: TBD, Time: TBD, Slot: TBD, Price: $25.00"
             android:textSize="16sp" />
 
+        <!-- Buttons -->
         <Button
             android:id="@+id/confirmButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:padding="12dp"
+            android:padding="10dp"
             android:stateListAnimator="@null"
-            android:text="Proceed to Payment"
-            android:textColor="@android:color/white"
+            android:text="Confirm Booking"
             android:backgroundTint="@color/theme" />
 
         <Button
@@ -155,6 +158,7 @@
             android:layout_marginTop="8dp"
             android:text="Cancel" />
 
+        <!-- Progress Bar -->
         <ProgressBar
             android:id="@+id/progressBar"
             android:layout_width="wrap_content"
