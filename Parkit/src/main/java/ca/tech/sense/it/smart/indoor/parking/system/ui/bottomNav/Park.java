@@ -39,7 +39,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
-import ca.tech.sense.it.smart.indoor.parking.system.ui.adapters.BookingManager;
+import ca.tech.sense.it.smart.indoor.parking.system.utility.BookingBottomSheetDialog;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.ParkingSpotDetails;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.ParkingUtility;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.FavoriteManager;
@@ -53,14 +53,12 @@ public class Park extends Fragment implements OnMapReadyCallback {
     private Marker selectedMarker;
     private ParkingUtility parkingUtility;
     private FavoriteManager favoriteManager;
-    private BookingManager bookingManager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         parkingUtility = new ParkingUtility();
         favoriteManager = new FavoriteManager(requireContext());
-        bookingManager = BookingManager.getInstance();
 
         // Initialize the Places SDK
         if (!Places.isInitialized()) {
@@ -97,7 +95,7 @@ public class Park extends Fragment implements OnMapReadyCallback {
 
                 @Override
                 public void onError(@NonNull Status status) {
-                    Log.d("tag","Error: " + status.getStatusMessage());
+                    Log.d("tag", "Error: " + status.getStatusMessage());
                 }
             });
         }
@@ -205,16 +203,19 @@ public class Park extends Fragment implements OnMapReadyCallback {
 
         Button btnConfirm = dialogView.findViewById(R.id.btn_confirm);
         btnConfirm.setOnClickListener(v -> {
-            BookingDetailsFragment bookingDetailsFragment = new BookingDetailsFragment();
-            getParentFragmentManager().beginTransaction()
-                    .replace(R.id.flFragment, bookingDetailsFragment)
-                    .addToBackStack(null)
-                    .commit();
+            // Create and show the BookingBottomSheetDialog
+            BookingBottomSheetDialog bookingDialog = new BookingBottomSheetDialog(getContext());
+            bookingDialog.show(); // Show the bottom sheet dialog
+
+            // Dismiss the current dialog
             dialog.dismiss();
         });
 
-        Button btnCancel = dialogView.findViewById(R.id.btn_cancel);
-        btnCancel.setOnClickListener(v -> dialog.dismiss());
+        // Set up the Cancel button
+        Button btnCancel = dialogView.findViewById(R.id.btn_cancel); // Assuming you have a button with this ID
+        btnCancel.setOnClickListener(v -> {
+            // Dismiss the alert dialog
+            dialog.dismiss();
+        });
     }
-
 }
