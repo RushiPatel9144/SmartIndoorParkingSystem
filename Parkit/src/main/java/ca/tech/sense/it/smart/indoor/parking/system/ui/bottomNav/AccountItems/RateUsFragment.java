@@ -14,6 +14,11 @@ import android.widget.EditText;
 import android.widget.RatingBar;
 import android.widget.Toast;
 
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 
 public class RateUsFragment extends Fragment {
@@ -21,6 +26,7 @@ public class RateUsFragment extends Fragment {
     RatingBar ratingBar;
     EditText feedbackComment;
     Button submitFeedbackButton;
+    FirebaseFirestore db;
 
     public RateUsFragment() {
         // Required empty public constructor
@@ -29,6 +35,8 @@ public class RateUsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        db = FirebaseFirestore.getInstance();
     }
 
     @Override
@@ -57,6 +65,37 @@ public class RateUsFragment extends Fragment {
         submitFeedbackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // Get rating value
+                float rating = ratingBar.getRating();
+                // Get feedback comment
+                String comment = feedbackComment.getText().toString();
+
+                // Display a toast message as a placeholder for feedback submission
+                if (rating > 0 || !comment.isEmpty()) {
+                    Toast.makeText(getContext(), "Thank you for your feedback!", Toast.LENGTH_SHORT).show();
+
+                    // Create a new feedback object
+                    Map<String, Object> feedback = new HashMap<>();
+                    feedback.put("rating", rating);
+                    feedback.put("comment", comment);
+
+                    // Add a new document with generated ID to the 'feedback' collection
+                    db.collection("feedback").add(feedback)
+                            .addOnSuccessListener(documentReference -> {
+                                Toast.makeText(getContext(), "Feedback submitted successfully!", Toast.LENGTH_SHORT).show();
+                            })
+                            .addOnFailureListener(e -> {
+                                Toast.makeText(getContext(), "Error submitting feedback", Toast.LENGTH_SHORT).show();
+                            });
+
+                    // Clear the inputs after submission (optional)
+                    ratingBar.setRating(0);
+                    feedbackComment.setText("");
+
+                } else {
+                    Toast.makeText(getContext(), "Please provide a rating or comment", Toast.LENGTH_SHORT).show();
+                }
+             
                 handleSubmitFeedback();
             }
         });
