@@ -1,6 +1,8 @@
 package ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
@@ -11,11 +13,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
@@ -37,6 +43,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
@@ -54,6 +61,7 @@ public class Park extends Fragment implements OnMapReadyCallback {
     private Marker selectedMarker;
     private ParkingUtility parkingUtility;
     private FavoriteManager favoriteManager;
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1000;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -61,9 +69,10 @@ public class Park extends Fragment implements OnMapReadyCallback {
         parkingUtility = new ParkingUtility();
         favoriteManager = new FavoriteManager(requireContext());
 
+
         // Initialize the Places SDK
         if (!Places.isInitialized()) {
-            Places.initialize(requireContext(), "AIzaSyDv1Ev5porhRyQAUa8s9B96rcLA1OZ6Wzo");
+            Places.initialize(requireContext(), "AIzaSyDv1Ev5porhRyQAUa8s9B96rcLA1OZ6Wzo"); // Replace with your actual API key
         }
     }
 
@@ -96,7 +105,7 @@ public class Park extends Fragment implements OnMapReadyCallback {
 
                 @Override
                 public void onError(@NonNull Status status) {
-                    Log.d("tag", "Error: " + status.getStatusMessage());
+                    Log.d(TAG, "Error: " + status.getStatusMessage());
                 }
             });
         }
@@ -115,12 +124,16 @@ public class Park extends Fragment implements OnMapReadyCallback {
         mMap.getUiSettings().setZoomGesturesEnabled(true);
         mMap.getUiSettings().setTiltGesturesEnabled(true);
         mMap.getUiSettings().setRotateGesturesEnabled(true);
+
         // Enable traffic, buildings, and indoor maps
         mMap.setTrafficEnabled(true);
         mMap.setBuildingsEnabled(true);
 
         // Map types
-        mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+        mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+
+        moveMyLocationButton();
+        checkLocationPermissionAndEnableMyLocation();
 
         addParkingSpotsToMap();
         LatLng torontoCenter = new LatLng(43.65107, -79.347015); // Toronto coordinates
@@ -143,22 +156,16 @@ public class Park extends Fragment implements OnMapReadyCallback {
             public void onFetchSuccess(Map<String, ParkingLocation> locations) {
                 for (Map.Entry<String, ParkingLocation> entry : locations.entrySet()) {
                     ParkingLocation location = entry.getValue();
-
-                    // Check for null values in the ParkingLocation data
-                    if (location.getLatitude() >= -90 && location.getLatitude() <= 90 &&
-                            location.getLongitude() >= -180 && location.getLongitude() <= 180 &&
-                            location.getName() != null) {
+                    if (isValidParkingLocation(location)) {
                         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
                         Marker marker = mMap.addMarker(new MarkerOptions()
                                 .position(latLng)
                                 .title(location.getName())
-                                .icon(bitmapDescriptorFromVector(requireContext(), R.drawable.park))
+                                .icon(bitmapDescriptorFromVector(requireContext(), R.mipmap.ic_parking))
                         );
-
-                        // Set the marker's tag to the document ID or ParkingLocation object for future reference
                         marker.setTag(location.getId());
                     } else {
-                        Log.e(TAG, "Missing data for parking location: " + location.getId());
+                        Log.e(TAG, "Invalid parking location data for: " + location.getId());
                     }
                 }
             }
@@ -166,42 +173,30 @@ public class Park extends Fragment implements OnMapReadyCallback {
             @Override
             public void onFetchFailure(Exception e) {
                 Log.e(TAG, "Error fetching parking locations: ", e);
-                // Optionally, show a message to the user (e.g., a Toast)
+                Toast.makeText(getContext(), "Failed to load parking locations.", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private boolean isValidParkingLocation(ParkingLocation location) {
+        return location.getLatitude() >= -90 && location.getLatitude() <= 90 &&
+                location.getLongitude() >= -180 && location.getLongitude() <= 180 &&
+                location.getName() != null;
     }
 
     private void setupMapListeners() {
         mMap.setOnMarkerClickListener(clickedMarker -> {
             selectedMarker = clickedMarker;
-            // Instead of showing the dialog, directly show the BookingBottomSheetDialog
             showBookingBottomSheet(clickedMarker);
             return true;
         });
     }
 
     private void showBookingBottomSheet(Marker marker) {
-        // Fetch the parking location ID from the marker tag
         String parkingLocationId = (String) marker.getTag();
-
-        // Fetch the parking location details from Firebase
-        parkingUtility.fetchParkingLocation(parkingLocationId, new ParkingUtility.FetchLocationCallback() {
-            @Override
-            public void onFetchSuccess(ParkingLocation location) {
-                // Create and show the BookingBottomSheetDialog with location details
-                BookingBottomSheetDialog bookingDialog = new BookingBottomSheetDialog(requireContext());
-                bookingDialog.setParkingLocation(location); // Ensure this method exists in BookingBottomSheetDialog
-                bookingDialog.show();
-            }
-
-            @Override
-            public void onFetchFailure(Exception e) {
-                Log.e(TAG, "Error fetching parking location details: ", e);
-                Toast.makeText(getContext(), "Failed to fetch parking location details.", Toast.LENGTH_SHORT).show();
-            }
-        });
+        BookingBottomSheetDialog bookingDialog = new BookingBottomSheetDialog(requireContext(), parkingLocationId);
+        bookingDialog.show();
     }
-
 
     private void addLocationToFavorites(Marker marker) {
         if (marker != null) {
@@ -223,47 +218,42 @@ public class Park extends Fragment implements OnMapReadyCallback {
         return null;
     }
 
-    private void showBookingDialog(Marker marker) {
-        ParkingSpotDetails details = (ParkingSpotDetails) marker.getTag();
-        String title = marker.getTitle();
-        String message = details != null ? "Address: " + details.getAddress() + "\nPostcode: " + details.getPostcode() : "";
 
-        View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_booking_details, null);
-        TextView dialogTitle = dialogView.findViewById(R.id.dialog_title);
-        TextView dialogMessage = dialogView.findViewById(R.id.dialog_message);
-        dialogTitle.setText(title);
-        dialogMessage.setText(message);
+    private final ActivityResultLauncher<String> requestPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                if (isGranted) {
+                    enableMyLocation();
+                } else {
+                    Toast.makeText(getContext(), "Location permission denied", Toast.LENGTH_SHORT).show();
+                }
+            });
 
-        AlertDialog dialog = new AlertDialog.Builder(requireContext())
-                .setView(dialogView)
-                .create();
-        dialog.getWindow().setBackgroundDrawableResource(R.drawable.dialog_background);
-        setupDialogButtons(dialog, marker, dialogView);
-        dialog.show();
+    private void checkLocationPermissionAndEnableMyLocation() {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            enableMyLocation();
+        } else {
+            requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
+        }
     }
 
-    private void setupDialogButtons(AlertDialog dialog, Marker marker, View dialogView) {
-        ImageView ivAddToFavorites = dialogView.findViewById(R.id.iv_add_to_favorites);
-        ivAddToFavorites.setOnClickListener(v -> {
-            addLocationToFavorites(marker);
-            Toast.makeText(getContext(), "Added to Favorites!", Toast.LENGTH_SHORT).show();
-        });
-
-        Button btnConfirm = dialogView.findViewById(R.id.btn_confirm);
-        btnConfirm.setOnClickListener(v -> {
-            // Create and show the BookingBottomSheetDialog
-            BookingBottomSheetDialog bookingDialog = new BookingBottomSheetDialog(getContext());
-            bookingDialog.show(); // Show the bottom sheet dialog
-
-            // Dismiss the current dialog
-            dialog.dismiss();
-        });
-
-        // Set up the Cancel button
-        Button btnCancel = dialogView.findViewById(R.id.btn_cancel); // Assuming you have a button with this ID
-        btnCancel.setOnClickListener(v -> {
-            // Dismiss the alert dialog
-            dialog.dismiss();
-        });
+    private void enableMyLocation() {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            mMap.setMyLocationEnabled(true);
+            mMap.getUiSettings().setMyLocationButtonEnabled(true);
+        }
     }
+
+    private void moveMyLocationButton() {
+        View locationButton = ((View) getView().findViewById(Integer.parseInt("1")).getParent()).findViewById(Integer.parseInt("2"));
+        if (locationButton != null) {
+            RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) locationButton.getLayoutParams();
+            // Adjust these values to set the desired position
+            layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0); // Remove top alignment
+            layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE); // Align to the bottom
+            layoutParams.setMargins(0, 0, 30, 350); // Adjust margins as needed
+            locationButton.setLayoutParams(layoutParams);
+        }
+    }
+
+
 }

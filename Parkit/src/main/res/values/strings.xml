@@ -105,10 +105,9 @@
         <item>System Default</item>
     </string-array>
     <string-array name="currency_options">
-        <item>USD - United States Dollar</item>
-        <item>CAD - Canadian Dollar</item>
-        <item>EUR - Euro</item>
-        <item>INR - Indian Rupee</item>
+        <item>USD</item>
+        <item>INR</item>
+        <item>CAD</item>
 
     </string-array>
     <!-- Strings used for fragments for navigation -->
@@ -170,5 +169,18 @@
     <string name="push_notifications">Push Notifications</string>
     <string name="theme">Theme</string>
     <string name="currency">Currency</string>
+
+    <string-array name="time_slots">
+        <item>9:00 AM - 10:00 AM</item>
+        <item>10:00 AM - 11:00 AM</item>
+        <item>11:00 AM - 12:00 PM</item>
+        <item>12:00 PM - 1:00 PM</item>
+        <item>1:00 PM - 2:00 PM</item>
+        <item>2:00 PM - 3:00 PM</item>
+        <item>3:00 PM - 4:00 PM</item>
+        <item>4:00 PM - 5:00 PM</item>
+        <item>5:00 PM - 6:00 PM</item>
+        <item>6:00 PM - 7:00 PM</item>
+    </string-array>
 
 </resources>
