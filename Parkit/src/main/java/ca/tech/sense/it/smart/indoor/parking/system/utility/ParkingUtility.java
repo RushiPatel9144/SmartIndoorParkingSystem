@@ -1,5 +1,10 @@
 package ca.tech.sense.it.smart.indoor.parking.system.utility;
 
+import static android.content.ContentValues.TAG;
+import static android.provider.Settings.System.getString;
+
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -93,6 +98,12 @@ public class ParkingUtility {
 
     // Fetch specific parking location
     public void fetchParkingLocation(String locationId, final FetchLocationCallback callback) {
+        if (locationId == null || locationId.isEmpty()) {
+            Log.e(TAG, "Location ID is null or empty");
+            callback.onFetchFailure(new IllegalArgumentException("Location ID cannot be null or empty"));
+            return;
+        }
+
         databaseReference.child(locationId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -101,7 +112,7 @@ public class ParkingUtility {
                     location.setId(locationId); // Set the ID from Firebase
                     callback.onFetchSuccess(location);
                 } else {
-                    callback.onFetchFailure(new Exception(String.valueOf(R.string.location_not_found)));
+                    callback.onFetchFailure(new Exception("location not Found"));
                 }
             }
 
@@ -111,6 +122,7 @@ public class ParkingUtility {
             }
         });
     }
+
 
     public void fetchParkingLocationById(String id, FetchLocationCallback callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
