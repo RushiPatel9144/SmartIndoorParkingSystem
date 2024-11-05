@@ -11,17 +11,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
@@ -43,12 +38,10 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.Arrays;
 import java.util.Map;
-import java.util.Objects;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.BookingBottomSheetDialog;
-import ca.tech.sense.it.smart.indoor.parking.system.utility.ParkingSpotDetails;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.ParkingUtility;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.FavoriteManager;
 
@@ -62,6 +55,7 @@ public class Park extends Fragment implements OnMapReadyCallback {
     private ParkingUtility parkingUtility;
     private FavoriteManager favoriteManager;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1000;
+    private ActivityResultLauncher<String> requestPermissionLauncher;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -74,6 +68,18 @@ public class Park extends Fragment implements OnMapReadyCallback {
         if (!Places.isInitialized()) {
             Places.initialize(requireContext(), "AIzaSyDv1Ev5porhRyQAUa8s9B96rcLA1OZ6Wzo"); // Replace with your actual API key
         }
+        // Register the ActivityResultLauncher
+        requestPermissionLauncher = registerForActivityResult(
+                new ActivityResultContracts.RequestPermission(),
+                isGranted -> {
+                    if (isGranted) {
+                        enableMyLocation();
+                    } else {
+                        Toast.makeText(getContext(), "Location permission denied", Toast.LENGTH_SHORT).show();
+                    }
+                }
+        );
+
     }
 
     @Override
@@ -222,16 +228,6 @@ public class Park extends Fragment implements OnMapReadyCallback {
         }
         return null;
     }
-
-
-    private final ActivityResultLauncher<String> requestPermissionLauncher =
-            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-                if (isGranted) {
-                    enableMyLocation();
-                } else {
-                    Toast.makeText(getContext(), "Location permission denied", Toast.LENGTH_SHORT).show();
-                }
-            });
 
     private void checkLocationPermissionAndEnableMyLocation() {
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
