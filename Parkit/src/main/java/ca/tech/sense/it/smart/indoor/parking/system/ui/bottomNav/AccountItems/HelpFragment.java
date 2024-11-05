@@ -13,6 +13,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 
 public class HelpFragment extends Fragment {
@@ -20,6 +28,7 @@ public class HelpFragment extends Fragment {
     private TextView tvHelpTopic, tvHelpDescription;
     private EditText etHelpTopic, etHelpDescription;
     private Button btnSubmitHelp;
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Nullable
     @Override
@@ -44,8 +53,27 @@ public class HelpFragment extends Fragment {
                 if (helpTopic.isEmpty() || helpDescription.isEmpty()) {
                     Toast.makeText(getActivity(), "Please fill in both fields", Toast.LENGTH_SHORT).show();
                 } else {
-                    // Handle the submit action (e.g., send to a server or save locally)
-                    Toast.makeText(getActivity(), "Help request submitted", Toast.LENGTH_SHORT).show();
+                    // Create a new document in 'help' collection
+                    Map<String, Object> help = new HashMap<>();
+                    help.put("topic", helpTopic);
+                    help.put("description", helpDescription);
+
+                    db.collection("help").add(help)
+                            .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                @Override
+                                public void onSuccess(DocumentReference documentReference) {
+                                    // Clear the fields
+                                    etHelpTopic.setText("");
+                                    etHelpDescription.setText("");
+                                    Toast.makeText(getActivity(), "Help request submitted", Toast.LENGTH_SHORT).show();
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Toast.makeText(getActivity(), "Error adding document", Toast.LENGTH_SHORT).show();
+                                }
+                            });
                 }
             }
         });

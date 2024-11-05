@@ -38,7 +38,8 @@
             android:layout_marginTop="8dp"
             android:hint="Enter your help topic"
             android:padding="12dp"
-            android:background="@android:drawable/editbox_background" />
+            android:background="@android:drawable/editbox_background"
+            android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ "/>
 
         <!-- Help Description Label -->
         <TextView
