@@ -63,7 +63,7 @@ public class Park extends Fragment implements OnMapReadyCallback {
 
         // Initialize the Places SDK
         if (!Places.isInitialized()) {
-            Places.initialize(requireContext(), "AIzaSyDv1Ev5porhRyQAUa8s9B96rcLA1OZ6Wzo");
+            Places.initialize(requireContext(), "AIzaSyDv1Ev5porhRyQAUa8s9B96rcLA1OZ6Wzo"); // Replace with your actual API key
         }
     }
 
@@ -96,7 +96,7 @@ public class Park extends Fragment implements OnMapReadyCallback {
 
                 @Override
                 public void onError(@NonNull Status status) {
-                    Log.d("tag", "Error: " + status.getStatusMessage());
+                    Log.d(TAG, "Error: " + status.getStatusMessage());
                 }
             });
         }
@@ -115,6 +115,7 @@ public class Park extends Fragment implements OnMapReadyCallback {
         mMap.getUiSettings().setZoomGesturesEnabled(true);
         mMap.getUiSettings().setTiltGesturesEnabled(true);
         mMap.getUiSettings().setRotateGesturesEnabled(true);
+
         // Enable traffic, buildings, and indoor maps
         mMap.setTrafficEnabled(true);
         mMap.setBuildingsEnabled(true);
@@ -143,22 +144,16 @@ public class Park extends Fragment implements OnMapReadyCallback {
             public void onFetchSuccess(Map<String, ParkingLocation> locations) {
                 for (Map.Entry<String, ParkingLocation> entry : locations.entrySet()) {
                     ParkingLocation location = entry.getValue();
-
-                    // Check for null values in the ParkingLocation data
-                    if (location.getLatitude() >= -90 && location.getLatitude() <= 90 &&
-                            location.getLongitude() >= -180 && location.getLongitude() <= 180 &&
-                            location.getName() != null) {
+                    if (isValidParkingLocation(location)) {
                         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
                         Marker marker = mMap.addMarker(new MarkerOptions()
                                 .position(latLng)
                                 .title(location.getName())
                                 .icon(bitmapDescriptorFromVector(requireContext(), R.drawable.park))
                         );
-
-                        // Set the marker's tag to the document ID or ParkingLocation object for future reference
                         marker.setTag(location.getId());
                     } else {
-                        Log.e(TAG, "Missing data for parking location: " + location.getId());
+                        Log.e(TAG, "Invalid parking location data for: " + location.getId());
                     }
                 }
             }
@@ -166,42 +161,30 @@ public class Park extends Fragment implements OnMapReadyCallback {
             @Override
             public void onFetchFailure(Exception e) {
                 Log.e(TAG, "Error fetching parking locations: ", e);
-                // Optionally, show a message to the user (e.g., a Toast)
+                Toast.makeText(getContext(), "Failed to load parking locations.", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private boolean isValidParkingLocation(ParkingLocation location) {
+        return location.getLatitude() >= -90 && location.getLatitude() <= 90 &&
+                location.getLongitude() >= -180 && location.getLongitude() <= 180 &&
+                location.getName() != null;
     }
 
     private void setupMapListeners() {
         mMap.setOnMarkerClickListener(clickedMarker -> {
             selectedMarker = clickedMarker;
-            // Instead of showing the dialog, directly show the BookingBottomSheetDialog
             showBookingBottomSheet(clickedMarker);
             return true;
         });
     }
 
     private void showBookingBottomSheet(Marker marker) {
-        // Fetch the parking location ID from the marker tag
         String parkingLocationId = (String) marker.getTag();
-
-        // Fetch the parking location details from Firebase
-        parkingUtility.fetchParkingLocation(parkingLocationId, new ParkingUtility.FetchLocationCallback() {
-            @Override
-            public void onFetchSuccess(ParkingLocation location) {
-                // Create and show the BookingBottomSheetDialog with location details
-                BookingBottomSheetDialog bookingDialog = new BookingBottomSheetDialog(requireContext());
-                bookingDialog.setParkingLocation(location); // Ensure this method exists in BookingBottomSheetDialog
-                bookingDialog.show();
-            }
-
-            @Override
-            public void onFetchFailure(Exception e) {
-                Log.e(TAG, "Error fetching parking location details: ", e);
-                Toast.makeText(getContext(), "Failed to fetch parking location details.", Toast.LENGTH_SHORT).show();
-            }
-        });
+        BookingBottomSheetDialog bookingDialog = new BookingBottomSheetDialog(requireContext(), parkingLocationId);
+        bookingDialog.show();
     }
-
 
     private void addLocationToFavorites(Marker marker) {
         if (marker != null) {
@@ -251,19 +234,16 @@ public class Park extends Fragment implements OnMapReadyCallback {
 
         Button btnConfirm = dialogView.findViewById(R.id.btn_confirm);
         btnConfirm.setOnClickListener(v -> {
-            // Create and show the BookingBottomSheetDialog
-            BookingBottomSheetDialog bookingDialog = new BookingBottomSheetDialog(getContext());
-            bookingDialog.show(); // Show the bottom sheet dialog
-
-            // Dismiss the current dialog
-            dialog.dismiss();
+            String parkingLocationId = (String) marker.getTag(); // Ensure you're using the correct ID
+            BookingBottomSheetDialog bookingDialog = new BookingBottomSheetDialog(getContext(), parkingLocationId);
+            bookingDialog.show();
+            dialog.dismiss(); // Dismiss the current dialog
         });
 
-        // Set up the Cancel button
-        Button btnCancel = dialogView.findViewById(R.id.btn_cancel); // Assuming you have a button with this ID
+        Button btnCancel = dialogView.findViewById(R.id.btn_cancel);
         btnCancel.setOnClickListener(v -> {
-            // Dismiss the alert dialog
             dialog.dismiss();
         });
     }
+
 }
