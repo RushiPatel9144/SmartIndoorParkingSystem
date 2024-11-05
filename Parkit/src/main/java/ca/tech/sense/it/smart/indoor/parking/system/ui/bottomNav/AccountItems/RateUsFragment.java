@@ -4,6 +4,8 @@ import android.os.Build;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import android.text.TextUtils;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,17 +44,28 @@ public class RateUsFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_rate_us, container, false);
 
         // Initialize UI components
+        initializeUIComponents(view);
+
+        // Set up click listener for feedback submission
+        setupSubmitButtonClickListener();
+
+        return view;
+    }
+
+    //Initializes UI components by linking them to the XML layout elements.
+    private void initializeUIComponents(View view) {
         ratingBar = view.findViewById(R.id.rating_bar);
         feedbackComment = view.findViewById(R.id.feedback_comment);
         submitFeedbackButton = view.findViewById(R.id.submit_feedback_button);
+    }
 
-        // Set up the submit button click listener
+    // Sets up the submit button click listener with feedback to the user.
+    private void setupSubmitButtonClickListener() {
         submitFeedbackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -100,9 +113,50 @@ public class RateUsFragment extends Fragment {
                 } else {
                     Toast.makeText(getContext(), "Please provide a rating or comment", Toast.LENGTH_SHORT).show();
                 }
+             
+                handleSubmitFeedback();
             }
         });
+    }
 
-        return view;
+     //Handles feedback submission with feedback validation and user notification.
+    private void handleSubmitFeedback() {
+
+        float rating = ratingBar.getRating();
+        String comment = feedbackComment.getText().toString().trim();
+
+        // Validate inputs
+        if (isInputValid(rating)) {
+            // Display success message
+            showFeedbackSubmittedToast(rating);
+            clearFeedbackInputs();
+        } else {
+            showFeedbackErrorToast();
+        }
+    }
+
+    private boolean isInputValid(float rating) {
+        if (rating <= 0) {
+            Toast.makeText(getContext(), "Please select a star rating", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return true;
+    }
+
+    //Displays a toast confirming submission of feedback with the selected rating.
+    private void showFeedbackSubmittedToast( float rating) {
+        Toast.makeText(getContext(), "Thank you ! You rated us: " + rating + " stars.", Toast.LENGTH_SHORT).show();
+    }
+
+
+    //Clears the inputs after submission for a clean slate.
+    private void clearFeedbackInputs() {
+        ratingBar.setRating(0);
+        feedbackComment.setText("");
+    }
+
+    // Displays an error toast when no feedback is provided.
+    private void showFeedbackErrorToast() {
+        Toast.makeText(getContext(), "Please correct the errors before submitting", Toast.LENGTH_SHORT).show();
     }
 }

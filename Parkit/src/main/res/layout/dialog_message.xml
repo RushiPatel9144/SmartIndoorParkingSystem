@@ -35,16 +35,7 @@
         android:gravity="end"
         android:layout_marginTop="4dp">
 
-            <Button
-            android:id="@+id/dialog_cancel_button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@string/cancel"
-            android:textColor="@android:color/white"
-            android:background="@drawable/button_background"
-            android:padding="10dp"
-                android:layout_weight="@integer/material_motion_duration_long_1"
-            android:layout_marginEnd="8dp"/>
+
 
             <Button
             android:id="@+id/dialog_confirm_button"
@@ -52,9 +43,21 @@
             android:layout_height="wrap_content"
             android:text="@string/confirm"
             android:textColor="@android:color/white"
-            android:background="@drawable/button_background"
-                android:layout_weight="@integer/material_motion_duration_long_1"
+            android:backgroundTint="@color/theme"
+            android:layout_weight="@integer/material_motion_duration_long_1"
+            android:layout_marginEnd="8dp"
             android:padding="10dp"/>
+
+        <Button
+            android:id="@+id/dialog_cancel_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/cancel"
+            android:textColor="@android:color/white"
+            android:backgroundTint="@android:color/darker_gray"
+            android:padding="10dp"
+            android:layout_weight="@integer/material_motion_duration_long_1"
+            />
 
     </LinearLayout>
 </LinearLayout>

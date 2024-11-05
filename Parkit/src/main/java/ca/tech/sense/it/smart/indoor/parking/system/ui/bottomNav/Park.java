@@ -5,12 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +13,11 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -40,12 +40,13 @@ import java.util.List;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.adapters.BookingManager;
-import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.ParkingSpotDetails;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.ParkingUtility;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.FavoriteManager;
 
 public class Park extends Fragment implements OnMapReadyCallback {
+
+    private static final String TAG = "ParkFragment";
 
     private GoogleMap mMap;
     private FloatingActionButton fabAddToFavorites;
@@ -58,23 +59,20 @@ public class Park extends Fragment implements OnMapReadyCallback {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         parkingUtility = new ParkingUtility();
-        favoriteManager = new FavoriteManager(getContext());
-        bookingManager = BookingManager.getInstance(); // Initialize BookingManager
+        favoriteManager = new FavoriteManager(requireContext());
+        bookingManager = BookingManager.getInstance();
 
-        // Initialize the Places SDK with your API key
+        // Initialize the Places SDK
         if (!Places.isInitialized()) {
-            Places.initialize(requireContext(), "AIzaSyBGsYK3svittnwcoP6dF7WiOow0T4mWedo");
+            Places.initialize(requireContext(), "AIzaSyDv1Ev5porhRyQAUa8s9B96rcLA1OZ6Wzo");
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_park, container, false);
-
         initializeMap();
         initializeAutocomplete();
-        initializeFab(view);
-
         return view;
     }
 
@@ -99,26 +97,44 @@ public class Park extends Fragment implements OnMapReadyCallback {
 
                 @Override
                 public void onError(@NonNull Status status) {
-                    Toast.makeText(getContext(), "Error: " + status.getStatusMessage(), Toast.LENGTH_SHORT).show();
+                    Log.d("tag","Error: " + status.getStatusMessage());
                 }
             });
         }
     }
+
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
+
+        // Enable UI controls
+        mMap.getUiSettings().setZoomControlsEnabled(true);
+        mMap.getUiSettings().setMyLocationButtonEnabled(true);
+        mMap.getUiSettings().setCompassEnabled(true);
+        mMap.getUiSettings().setMapToolbarEnabled(true);
+        mMap.getUiSettings().setScrollGesturesEnabled(true);
+        mMap.getUiSettings().setZoomGesturesEnabled(true);
+        mMap.getUiSettings().setTiltGesturesEnabled(true);
+        mMap.getUiSettings().setRotateGesturesEnabled(true);
+        // Enable traffic, buildings, and indoor maps
+        mMap.setTrafficEnabled(true);
+        mMap.setBuildingsEnabled(true);
+
+        // Map types
+        mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+
         addParkingSpotsToMap();
-        // Set the camera to Toronto (coordinates: latitude 43.65107, longitude -79.347015)
-        LatLng torontoCenter = new LatLng(43.65107, -79.347015); // Coordinates for Toronto
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(torontoCenter, 10)); // Zoom level 10 for a good view of the city
+        LatLng torontoCenter = new LatLng(43.65107, -79.347015); // Toronto coordinates
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(torontoCenter, 10));
+        setupMapListeners();
+    }
+
+    private void setupMapListeners() {
         mMap.setOnMarkerClickListener(clickedMarker -> {
             selectedMarker = clickedMarker;
             showBookingDialog(clickedMarker);
-            fabAddToFavorites.setVisibility(View.VISIBLE);
             return true;
         });
-
-        mMap.setOnMapClickListener(latLng -> fabAddToFavorites.setVisibility(View.GONE));
     }
 
     private void handlePlaceSelected(Place place) {
@@ -136,7 +152,7 @@ public class Park extends Fragment implements OnMapReadyCallback {
             Marker marker = mMap.addMarker(new MarkerOptions()
                     .position(parkingSpot)
                     .title("Parking Spot")
-                    .icon(bitmapDescriptorFromVector(getContext(), R.drawable.park)));
+                    .icon(bitmapDescriptorFromVector(requireContext(), R.drawable.park)));
             marker.setTag(parkingUtility.getSpotDetails(parkingSpot));
         }
     }
@@ -149,18 +165,16 @@ public class Park extends Fragment implements OnMapReadyCallback {
         }
     }
 
-    private void initializeFab(View view) {
-        fabAddToFavorites = view.findViewById(R.id.fab_add_to_favorites);
-        fabAddToFavorites.setOnClickListener(v -> addLocationToFavorites(selectedMarker));
-    }
-
     private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId) {
         Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorResId);
-        vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
-        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        vectorDrawable.draw(canvas);
-        return BitmapDescriptorFactory.fromBitmap(bitmap);
+        if (vectorDrawable != null) {
+            vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
+            Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(bitmap);
+            vectorDrawable.draw(canvas);
+            return BitmapDescriptorFactory.fromBitmap(bitmap);
+        }
+        return null;
     }
 
     private void showBookingDialog(Marker marker) {
@@ -168,35 +182,32 @@ public class Park extends Fragment implements OnMapReadyCallback {
         String title = marker.getTitle();
         String message = details != null ? "Address: " + details.getAddress() + "\nPostcode: " + details.getPostcode() : "";
 
-        // Inflate the custom dialog layout
-        LayoutInflater inflater = getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.dialog_booking_details, null);
-
-        // Set the title and message
+        View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_booking_details, null);
         TextView dialogTitle = dialogView.findViewById(R.id.dialog_title);
         TextView dialogMessage = dialogView.findViewById(R.id.dialog_message);
         dialogTitle.setText(title);
         dialogMessage.setText(message);
 
-        // Create the AlertDialog
-        AlertDialog dialog = new AlertDialog.Builder(getContext())
+        AlertDialog dialog = new AlertDialog.Builder(requireContext())
                 .setView(dialogView)
                 .create();
+        dialog.getWindow().setBackgroundDrawableResource(R.drawable.dialog_background);
+        setupDialogButtons(dialog, marker, dialogView);
+        dialog.show();
+    }
 
-        // Handle the favorite icon click
+    private void setupDialogButtons(AlertDialog dialog, Marker marker, View dialogView) {
         ImageView ivAddToFavorites = dialogView.findViewById(R.id.iv_add_to_favorites);
         ivAddToFavorites.setOnClickListener(v -> {
-            addLocationToFavorites(marker); // Call your method to add to favorites
+            addLocationToFavorites(marker);
             Toast.makeText(getContext(), "Added to Favorites!", Toast.LENGTH_SHORT).show();
         });
 
-        // Set dialog button actions
         Button btnConfirm = dialogView.findViewById(R.id.btn_confirm);
         btnConfirm.setOnClickListener(v -> {
-            // Navigate to BookingDetailsFragment
             BookingDetailsFragment bookingDetailsFragment = new BookingDetailsFragment();
             getParentFragmentManager().beginTransaction()
-                    .replace(R.id.flFragment, bookingDetailsFragment) // Replace with your container ID
+                    .replace(R.id.flFragment, bookingDetailsFragment)
                     .addToBackStack(null)
                     .commit();
             dialog.dismiss();
@@ -204,10 +215,6 @@ public class Park extends Fragment implements OnMapReadyCallback {
 
         Button btnCancel = dialogView.findViewById(R.id.btn_cancel);
         btnCancel.setOnClickListener(v -> dialog.dismiss());
-
-        dialog.show();
     }
-
-
 
 }
