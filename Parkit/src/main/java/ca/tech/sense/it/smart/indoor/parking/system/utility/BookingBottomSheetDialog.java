@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
@@ -33,7 +34,7 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
     private DatabaseReference locationRef;
     private Context context;
     private TextView userNameTextView;
-    private AppCompatSpinner timeSlotSpinner;
+    private Spinner timeSlotSpinner;
     private Button confirmButton, cancelButton;
     private ProgressBar progressBar;
     private TextView addressText;
@@ -57,7 +58,7 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
         View view = LayoutInflater.from(context).inflate(R.layout.dialog_booking, null);
         setContentView(view);
 
-        userNameTextView = view.findViewById(R.id.userNameTextView);
+        userNameTextView = view.findViewById(R.id.dialog_title);
         timeSlotSpinner = view.findViewById(R.id.timeSlotSpinner);
         confirmButton = view.findViewById(R.id.confirmButton);
         cancelButton = view.findViewById(R.id.cancelButton);
