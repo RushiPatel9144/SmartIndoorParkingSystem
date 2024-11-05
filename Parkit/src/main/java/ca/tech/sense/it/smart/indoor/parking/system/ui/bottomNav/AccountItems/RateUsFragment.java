@@ -12,24 +12,30 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RatingBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.model.RateUs;
 import ca.tech.sense.it.smart.indoor.parking.system.model.user.User;
-
 
 public class RateUsFragment extends Fragment {
 
     RatingBar ratingBar;
     EditText feedbackComment;
     Button submitFeedbackButton;
+    TextView optionParkingSpot, optionSecureTransaction, optionUserInterface, optionRealTime;
     FirebaseFirestore db;
     FirebaseAuth auth;
+    List<String> selectedOptions;
 
     public RateUsFragment() {
         // Required empty public constructor
@@ -41,6 +47,7 @@ public class RateUsFragment extends Fragment {
         // Initialize Firestore and FirebaseAuth
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
+        selectedOptions = new ArrayList<>();
     }
 
     @Override
@@ -57,11 +64,21 @@ public class RateUsFragment extends Fragment {
         return view;
     }
 
-    //Initializes UI components by linking them to the XML layout elements.
+    // Initializes UI components by linking them to the XML layout elements.
     private void initializeUIComponents(View view) {
         ratingBar = view.findViewById(R.id.rating_bar);
         feedbackComment = view.findViewById(R.id.feedback_comment);
         submitFeedbackButton = view.findViewById(R.id.submit_feedback_button);
+        optionParkingSpot = view.findViewById(R.id.option_parking_spot);
+        optionSecureTransaction = view.findViewById(R.id.option_secure_transaction);
+        optionUserInterface = view.findViewById(R.id.option_user_interface);
+        optionRealTime = view.findViewById(R.id.option_real_time);
+
+        // Set up option click listeners
+        setOptionClickListener(optionParkingSpot, "Parking Spot Easily Found");
+        setOptionClickListener(optionSecureTransaction, "Secure Transaction");
+        setOptionClickListener(optionUserInterface, "User-Friendly Interface");
+        setOptionClickListener(optionRealTime, "Real-Time Features");
     }
 
     // Sets up the submit button click listener with feedback to the user.
@@ -78,7 +95,7 @@ public class RateUsFragment extends Fragment {
                 String manufacturer = Build.MANUFACTURER;
                 String fullDeviceInfo = manufacturer + " " + deviceModel;
 
-                if (rating > 0 || !comment.isEmpty()) {
+                if (rating > 0 || !comment.isEmpty() || !selectedOptions.isEmpty()) {
                     // Fetch user information from Firestore
                     String uid = auth.getCurrentUser().getUid();
                     db.collection("users").document(uid).get()
@@ -92,7 +109,7 @@ public class RateUsFragment extends Fragment {
                                         String userPhone = user.getPhone();
 
                                         // Create a new RateUs object
-                                        RateUs feedback = new RateUs(rating, comment, fullDeviceInfo, userName, userEmail, userPhone);
+                                        RateUs feedback = new RateUs(rating, comment, fullDeviceInfo, userName, userEmail, userPhone, selectedOptions);
 
                                         // Add a new document with generated ID to the 'feedback' collection
                                         db.collection("feedback").add(feedback)
@@ -106,6 +123,7 @@ public class RateUsFragment extends Fragment {
                                         // Clear the inputs after submission (optional)
                                         ratingBar.setRating(0);
                                         feedbackComment.setText("");
+                                        clearSelectedOptions();
                                     }
                                 }
                             })
@@ -113,52 +131,32 @@ public class RateUsFragment extends Fragment {
                                 Toast.makeText(getContext(), "Error fetching user info: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                             });
                 } else {
-                    Toast.makeText(getContext(), "Please provide a rating or comment", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Please provide a rating, comment, or select an option", Toast.LENGTH_SHORT).show();
                 }
-             
-                handleSubmitFeedback();
             }
         });
     }
 
-     //Handles feedback submission with feedback validation and user notification.
-    private void handleSubmitFeedback() {
-
-        float rating = ratingBar.getRating();
-        String comment = feedbackComment.getText().toString().trim();
-
-        // Validate inputs
-        if (isInputValid(rating)) {
-            // Display success message
-            showFeedbackSubmittedToast(rating);
-            clearFeedbackInputs();
-        } else {
-            showFeedbackErrorToast();
-        }
+    private void setOptionClickListener(TextView optionView, String optionText) {
+        optionView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (selectedOptions.contains(optionText)) {
+                    selectedOptions.remove(optionText);
+                    optionView.setBackgroundResource(R.drawable.box_background);
+                } else {
+                    selectedOptions.add(optionText);
+                    optionView.setBackgroundResource(R.drawable.box_background_selected);
+                }
+            }
+        });
     }
 
-    private boolean isInputValid(float rating) {
-        if (rating <= 0) {
-            Toast.makeText(getContext(), "Please select a star rating", Toast.LENGTH_SHORT).show();
-            return false;
-        }
-        return true;
-    }
-
-    //Displays a toast confirming submission of feedback with the selected rating.
-    private void showFeedbackSubmittedToast( float rating) {
-        Toast.makeText(getContext(), "Thank you ! You rated us: " + rating + " stars.", Toast.LENGTH_SHORT).show();
-    }
-
-
-    //Clears the inputs after submission for a clean slate.
-    private void clearFeedbackInputs() {
-        ratingBar.setRating(0);
-        feedbackComment.setText("");
-    }
-
-    // Displays an error toast when no feedback is provided.
-    private void showFeedbackErrorToast() {
-        Toast.makeText(getContext(), "Please correct the errors before submitting", Toast.LENGTH_SHORT).show();
+    private void clearSelectedOptions() {
+        selectedOptions.clear();
+        optionParkingSpot.setBackgroundResource(R.drawable.box_background);
+        optionSecureTransaction.setBackgroundResource(R.drawable.box_background);
+        optionUserInterface.setBackgroundResource(R.drawable.box_background);
+        optionRealTime.setBackgroundResource(R.drawable.box_background);
     }
 }
