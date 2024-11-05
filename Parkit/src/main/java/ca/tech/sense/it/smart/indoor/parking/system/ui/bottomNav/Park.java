@@ -79,9 +79,14 @@ public class Park extends Fragment implements OnMapReadyCallback {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_park, container, false);
+        return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
         initializeMap();
         initializeAutocomplete();
-        return view;
     }
 
     private void initializeMap() {

@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -32,10 +33,11 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
 
     private Context context;
     private Spinner slotSpinner, timeSlotSpinner;
-    private Button confirmButton, cancelButton, selectDateButton;
+    private Button confirmButton, cancelButton;
     private ProgressBar progressBar;
-    private TextView addressText, postalCodeText, errorTextView, priceTag, confirmationSummary;
+    private TextView addressText, postalCodeText, errorTextView, priceTag, selectedDateTextview;
 
+    private ImageButton selectDateButton;
     private String locationId;
     private String selectedDate;
     private ParkingUtility parkingUtility;
@@ -64,7 +66,7 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
         addressText = view.findViewById(R.id.addressText);
         postalCodeText = view.findViewById(R.id.postalCodeText);
         priceTag = view.findViewById(R.id.priceTag);
-        confirmationSummary = view.findViewById(R.id.confirmationSummary);
+        selectedDateTextview = view.findViewById(R.id.selectedDate);
 
         // Set up the slot spinner
         setupTimeSlots();
@@ -156,7 +158,7 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
             String selectedTimeSlot = timeSlotSpinner.getSelectedItem() != null ? timeSlotSpinner.getSelectedItem().toString() : null;
 
             if (selectedSlot != null && selectedTimeSlot != null && selectedDate != null) {
-                confirmBooking(selectedSlot, selectedTimeSlot);
+                 confirmBooking(selectedSlot, selectedTimeSlot);
             } else {
                 Toast.makeText(context, "Please select a slot, date, and time.", Toast.LENGTH_SHORT).show();
             }
@@ -175,19 +177,19 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
             int day = calendar.get(Calendar.DAY_OF_MONTH);
 
             DatePickerDialog datePickerDialog = new DatePickerDialog(context, (view, selectedYear, selectedMonth, selectedDay) -> {
-                selectedDate = String.format(Locale.getDefault(), "%04d-%02d-%02d", selectedYear, selectedMonth + 1, selectedDay);
-                updateConfirmationSummary();
+                // Format the selected date
+                String selectedDate = String.format(Locale.getDefault(), "%04d-%02d-%02d", selectedYear, selectedMonth + 1, selectedDay);
+
+                // Update the TextView with the selected date
+                selectedDateTextview.setText("Selected Date: " + selectedDate);
             }, year, month, day);
+
             datePickerDialog.show();
+
         });
     }
 
-    private void updateConfirmationSummary() {
-        confirmationSummary.setText(String.format("Summary: Date: %s, Time: TBD, Slot: TBD, Price: %s", selectedDate, priceTag.getText()));
-    }
-
     private void confirmBooking(String slot, String timing) {
-        confirmationSummary.setText(String.format("Summary: Date: %s, Time: %s, Slot: %s, Price: %s", selectedDate, timing, slot, priceTag.getText()));
         Toast.makeText(context, "Booking confirmed", Toast.LENGTH_SHORT).show();
     }
 

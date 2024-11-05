@@ -10,22 +10,13 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Help Heading -->
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="4dp">
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-medium"
                 android:padding="16dp"
                 android:text="Help"
-                android:textColor="@android:color/black"
                 android:textSize="24sp" />
-        </androidx.cardview.widget.CardView>
 
         <!-- Name Field -->
         <androidx.cardview.widget.CardView
@@ -45,7 +36,6 @@
                     android:paddingStart="12dp"
                     android:paddingBottom="4dp"
                     android:text="Name:"
-                    android:textColor="@android:color/black"
                     android:textSize="18sp" />
                 <EditText
                     android:id="@+id/feedback_name"
@@ -80,7 +70,6 @@
                     android:paddingStart="12dp"
                     android:paddingBottom="4dp"
                     android:text="Phone Number:"
-                    android:textColor="@android:color/black"
                     android:textSize="18sp" />
                 <EditText
                     android:id="@+id/feedback_phone"
@@ -116,7 +105,6 @@
                     android:paddingStart="12dp"
                     android:paddingBottom="4dp"
                     android:text="Email:"
-                    android:textColor="@android:color/black"
                     android:textSize="18sp" />
                 <EditText
                     android:id="@+id/feedback_email"
@@ -150,7 +138,6 @@
                     android:paddingStart="12dp"
                     android:paddingBottom="4dp"
                     android:text="Problem description:"
-                    android:textColor="@android:color/black"
                     android:textSize="18sp" />
                 <EditText
                     android:id="@+id/feedback_comment"
@@ -166,25 +153,20 @@
                     android:minHeight="100dp" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
-
         <!-- Submit Button -->
-        <androidx.cardview.widget.CardView
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/submit_feedback_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:text="Submit"
+            android:textColor="@android:color/white"
+            android:backgroundTint="@color/theme"
+            android:padding="12dp"
+            android:textSize="16sp"
             android:layout_margin="8dp"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="4dp">
-            <Button
-                android:id="@+id/submit_feedback_button"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:padding="16dp"
-                android:text="Submit"
-                android:backgroundTint="@color/logo"
-                android:textColor="@android:color/white"
-                android:textSize="18sp"
-                android:layout_marginTop="16dp"/>
-        </androidx.cardview.widget.CardView>
+            app:cornerRadius="8dp" />
+
+
     </LinearLayout>
 </ScrollView>
+    
