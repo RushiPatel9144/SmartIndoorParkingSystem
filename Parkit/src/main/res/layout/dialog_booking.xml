@@ -6,7 +6,8 @@
     android:layout_height="wrap_content"
     android:layout_margin="16dp"
     app:cardElevation="8dp"
-    app:cardCornerRadius="12dp">
+    android:background="@drawable/dialog_background"
+    app:cardCornerRadius="30dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -15,13 +16,6 @@
         android:padding="16dp">
 
         <!-- Title and Favorite Button Card -->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardElevation="4dp"
-            app:cardCornerRadius="8dp"
-            app:strokeColor="@color/theme"
-            android:layout_margin="8dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -47,7 +41,7 @@
                     android:contentDescription="Add to Favorite"
                     android:src="@drawable/star" />
             </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+
 
         <!-- Address and Postal Code Card -->
         <com.google.android.material.card.MaterialCardView

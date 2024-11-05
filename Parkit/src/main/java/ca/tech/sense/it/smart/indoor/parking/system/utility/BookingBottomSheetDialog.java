@@ -1,5 +1,9 @@
 package ca.tech.sense.it.smart.indoor.parking.system.utility;
 
+import static ca.tech.sense.it.smart.indoor.parking.system.R.string.booking_confirmed_and_saved;
+import static ca.tech.sense.it.smart.indoor.parking.system.R.string.please_select_a_slot_date_and_time;
+
+import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -18,14 +22,21 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.model.BookingDetails;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingSlot;
 
@@ -35,13 +46,13 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
     private Spinner slotSpinner, timeSlotSpinner;
     private Button confirmButton, cancelButton;
     private ProgressBar progressBar;
-    private TextView addressText, postalCodeText, errorTextView, priceTag, selectedDateTextview;
+    private TextView addressText, postalCodeText, errorTextView, selectedDateTextview;
 
     private ImageButton selectDateButton;
     private String locationId;
     private String selectedDate;
     private ParkingUtility parkingUtility;
-    private double basePrice = 25.00; // Base price in USD
+
 
     public BookingBottomSheetDialog(@NonNull Context context, String locationId) {
         super(context);
@@ -56,6 +67,7 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
         View view = LayoutInflater.from(context).inflate(R.layout.dialog_booking, null);
         setContentView(view);
 
+
         // Initialize UI elements
         slotSpinner = view.findViewById(R.id.slotSpinner);
         timeSlotSpinner = view.findViewById(R.id.timeSlotSpinner);
@@ -65,7 +77,6 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
         progressBar = view.findViewById(R.id.progressBar);
         addressText = view.findViewById(R.id.addressText);
         postalCodeText = view.findViewById(R.id.postalCodeText);
-        priceTag = view.findViewById(R.id.priceTag);
         selectedDateTextview = view.findViewById(R.id.selectedDate);
 
         // Set up the slot spinner
@@ -73,31 +84,9 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
         setupConfirmButton();
         setupCancelButton();
         setupSelectDateButton();
-        updateCurrencyDisplay();
 
         // Fetch the parking location data when the dialog is opened
         fetchParkingLocationData();
-    }
-
-
-    private void updateCurrencyDisplay() {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-        String currency = preferences.getString("selected_currency", "USD");
-
-        double convertedPrice;
-        switch (currency) {
-            case "INR":
-                convertedPrice = basePrice * 75.0; // Conversion rate USD to INR
-                priceTag.setText(String.format("Price: ₹%.2f", convertedPrice));
-                break;
-            case "CAD":
-                convertedPrice = basePrice * 1.25; // Conversion rate USD to CAD
-                priceTag.setText(String.format("Price: CAD$%.2f", convertedPrice));
-                break;
-            default: // USD
-                priceTag.setText(String.format("Price: $%.2f", basePrice));
-                break;
-        }
     }
 
     private void fetchParkingLocationData() {
@@ -109,17 +98,14 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
                 if (location != null) {
                     addressText.setText(location.getAddress());
                     postalCodeText.setText(location.getPostalCode());
-                    priceTag.setText("Price: $" + location.getPrice());
                     setupSlotSpinnerData(location.getSlots());
-                } else {
-                    setErrorMessage("Location data is not available.");
-                }
+                } else setErrorMessage(context.getString(R.string.location_data_is_not_available));
                 progressBar.setVisibility(View.GONE);
             }
 
             @Override
             public void onFetchFailure(Exception exception) {
-                setErrorMessage("Failed to fetch location data: " + exception.getMessage());
+                setErrorMessage(String.format("%s%s", context.getString(R.string.failed_to_fetch_location_data), exception.getMessage()));
                 progressBar.setVisibility(View.GONE);
             }
         });
@@ -160,7 +146,7 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
             if (selectedSlot != null && selectedTimeSlot != null && selectedDate != null) {
                  confirmBooking(selectedSlot, selectedTimeSlot);
             } else {
-                Toast.makeText(context, "Please select a slot, date, and time.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, please_select_a_slot_date_and_time, Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -176,10 +162,9 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
             int month = calendar.get(Calendar.MONTH);
             int day = calendar.get(Calendar.DAY_OF_MONTH);
 
-            DatePickerDialog datePickerDialog = new DatePickerDialog(context, (view, selectedYear, selectedMonth, selectedDay) -> {
+            @SuppressLint("SetTextI18n") DatePickerDialog datePickerDialog = new DatePickerDialog(context, (view, selectedYear, selectedMonth, selectedDay) -> {
                 // Format the selected date
-                String selectedDate = String.format(Locale.getDefault(), "%04d-%02d-%02d", selectedYear, selectedMonth + 1, selectedDay);
-
+                selectedDate = String.format(Locale.getDefault(), "%04d-%02d-%02d", selectedYear, selectedMonth + 1, selectedDay);
                 // Update the TextView with the selected date
                 selectedDateTextview.setText("Selected Date: " + selectedDate);
             }, year, month, day);
@@ -190,8 +175,42 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
     }
 
     private void confirmBooking(String slot, String timing) {
-        Toast.makeText(context, "Booking confirmed", Toast.LENGTH_SHORT).show();
+        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        String userName = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
+
+        // Fallback to empty string if userName is null
+        if (userName == null) {
+            userName = "";
+        }
+
+        // Create a new BookingDetails object with the selected details
+        BookingDetails bookingDetails = new BookingDetails(
+                userId,
+                userName,
+                timing,
+                addressText.getText().toString(),
+                postalCodeText.getText().toString(),
+                selectedDate,  // Ensure selectedDate is formatted as needed
+                slot
+        );
+
+        // Reference to Firebase Realtime Database for saving bookings
+        DatabaseReference databaseRef = FirebaseDatabase.getInstance()
+                .getReference("bookings")
+                .child(userId)
+                .push();
+
+        databaseRef.setValue(bookingDetails)
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(context, R.string.booking_confirmed_and_saved, Toast.LENGTH_SHORT).show();
+                    dismiss();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(context, context.getString(R.string.failed_to_save_booking) + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
+
+
 
     public void setErrorMessage(String message) {
         if (errorTextView != null) {
@@ -199,4 +218,5 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
             errorTextView.setVisibility(View.VISIBLE);
         }
     }
+
 }
