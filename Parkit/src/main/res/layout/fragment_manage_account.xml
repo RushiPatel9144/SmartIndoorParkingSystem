@@ -20,24 +20,29 @@
             android:text="@string/account_info"
             android:textSize="24sp" />
 
-        <FrameLayout
-            android:layout_width="140dp"
-            android:layout_height="140dp"
-            android:layout_gravity="center"
-            android:layout_marginBottom="16dp"
-            android:background="@drawable/circle_background">
-
-            <ImageView
-                android:id="@+id/profileImageView"
+            <FrameLayout
                 android:layout_width="140dp"
                 android:layout_height="140dp"
-                android:contentDescription="@string/profile_picture"
-                android:scaleType="fitXY"
-                android:src="@drawable/ic_profile_placeholder"/>
+                android:layout_gravity="center"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/circle_background">
 
-        </FrameLayout>
+                <ImageView
+                    android:id="@+id/profileImageView"
+                    android:layout_width="140dp"
+                    android:layout_height="140dp"
+                    android:contentDescription="@string/profile_picture"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/ic_profile_placeholder" />
 
+            </FrameLayout>
 
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            app:cardElevation="4dp"
+            app:cardCornerRadius="8dp">
         <!-- Edit Profile Picture -->
         <LinearLayout
             android:id="@+id/manageProfilePic"
@@ -57,12 +62,14 @@
                 android:textSize="18sp"
                 tools:ignore="RtlSymmetry" />
         </LinearLayout>
+        </androidx.cardview.widget.CardView>
 
-        <!-- Divider -->
-        <View
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#BDBDBD" />
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            app:cardElevation="4dp"
+            app:cardCornerRadius="8dp">
 
         <!-- Edit Name -->
         <LinearLayout
@@ -92,11 +99,15 @@
                 android:textSize="18sp" />
         </LinearLayout>
 
-        <!-- Divider -->
-        <View
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#BDBDBD" />
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            app:cardElevation="4dp"
+            app:cardCornerRadius="8dp">
+
 
         <!-- Edit Email -->
         <LinearLayout
@@ -126,11 +137,15 @@
                 android:textSize="18sp" />
         </LinearLayout>
 
-        <!-- Divider -->
-        <View
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#BDBDBD" />
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            app:cardElevation="4dp"
+            app:cardCornerRadius="8dp">
+
 
         <!-- Edit Phone Number -->
         <LinearLayout
@@ -160,11 +175,15 @@
                 android:textSize="18sp" />
         </LinearLayout>
 
-        <!-- Divider -->
-        <View
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#BDBDBD" />
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            app:cardElevation="4dp"
+            app:cardCornerRadius="8dp">
+
 
         <!-- Change Password -->
         <LinearLayout
@@ -184,11 +203,9 @@
                 android:textSize="18sp" />
         </LinearLayout>
 
-        <!-- Final Divider -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginBottom="16dp"
-            android:background="#BDBDBD" />
+        </androidx.cardview.widget.CardView>
+
+
+
     </LinearLayout>
 </ScrollView>

@@ -36,10 +36,11 @@ import com.google.android.libraries.places.widget.listener.PlaceSelectionListene
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.Arrays;
-import java.util.List;
+import java.util.Map;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
-import ca.tech.sense.it.smart.indoor.parking.system.ui.adapters.BookingManager;
+import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
+import ca.tech.sense.it.smart.indoor.parking.system.utility.BookingBottomSheetDialog;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.ParkingSpotDetails;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.ParkingUtility;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.FavoriteManager;
@@ -53,14 +54,12 @@ public class Park extends Fragment implements OnMapReadyCallback {
     private Marker selectedMarker;
     private ParkingUtility parkingUtility;
     private FavoriteManager favoriteManager;
-    private BookingManager bookingManager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         parkingUtility = new ParkingUtility();
         favoriteManager = new FavoriteManager(requireContext());
-        bookingManager = BookingManager.getInstance();
 
         // Initialize the Places SDK
         if (!Places.isInitialized()) {
@@ -97,7 +96,7 @@ public class Park extends Fragment implements OnMapReadyCallback {
 
                 @Override
                 public void onError(@NonNull Status status) {
-                    Log.d("tag","Error: " + status.getStatusMessage());
+                    Log.d("tag", "Error: " + status.getStatusMessage());
                 }
             });
         }
@@ -129,14 +128,6 @@ public class Park extends Fragment implements OnMapReadyCallback {
         setupMapListeners();
     }
 
-    private void setupMapListeners() {
-        mMap.setOnMarkerClickListener(clickedMarker -> {
-            selectedMarker = clickedMarker;
-            showBookingDialog(clickedMarker);
-            return true;
-        });
-    }
-
     private void handlePlaceSelected(Place place) {
         if (place.getLatLng() != null) {
             mMap.clear();
@@ -147,15 +138,70 @@ public class Park extends Fragment implements OnMapReadyCallback {
     }
 
     private void addParkingSpotsToMap() {
-        List<LatLng> parkingSpots = parkingUtility.getParkingSpots();
-        for (LatLng parkingSpot : parkingSpots) {
-            Marker marker = mMap.addMarker(new MarkerOptions()
-                    .position(parkingSpot)
-                    .title("Parking Spot")
-                    .icon(bitmapDescriptorFromVector(requireContext(), R.drawable.park)));
-            marker.setTag(parkingUtility.getSpotDetails(parkingSpot));
-        }
+        parkingUtility.fetchAllParkingLocations(new ParkingUtility.FetchLocationsCallback() {
+            @Override
+            public void onFetchSuccess(Map<String, ParkingLocation> locations) {
+                for (Map.Entry<String, ParkingLocation> entry : locations.entrySet()) {
+                    ParkingLocation location = entry.getValue();
+
+                    // Check for null values in the ParkingLocation data
+                    if (location.getLatitude() >= -90 && location.getLatitude() <= 90 &&
+                            location.getLongitude() >= -180 && location.getLongitude() <= 180 &&
+                            location.getName() != null) {
+                        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                        Marker marker = mMap.addMarker(new MarkerOptions()
+                                .position(latLng)
+                                .title(location.getName())
+                                .icon(bitmapDescriptorFromVector(requireContext(), R.drawable.park))
+                        );
+
+                        // Set the marker's tag to the document ID or ParkingLocation object for future reference
+                        marker.setTag(location.getId());
+                    } else {
+                        Log.e(TAG, "Missing data for parking location: " + location.getId());
+                    }
+                }
+            }
+
+            @Override
+            public void onFetchFailure(Exception e) {
+                Log.e(TAG, "Error fetching parking locations: ", e);
+                // Optionally, show a message to the user (e.g., a Toast)
+            }
+        });
     }
+
+    private void setupMapListeners() {
+        mMap.setOnMarkerClickListener(clickedMarker -> {
+            selectedMarker = clickedMarker;
+            // Instead of showing the dialog, directly show the BookingBottomSheetDialog
+            showBookingBottomSheet(clickedMarker);
+            return true;
+        });
+    }
+
+    private void showBookingBottomSheet(Marker marker) {
+        // Fetch the parking location ID from the marker tag
+        String parkingLocationId = (String) marker.getTag();
+
+        // Fetch the parking location details from Firebase
+        parkingUtility.fetchParkingLocation(parkingLocationId, new ParkingUtility.FetchLocationCallback() {
+            @Override
+            public void onFetchSuccess(ParkingLocation location) {
+                // Create and show the BookingBottomSheetDialog with location details
+                BookingBottomSheetDialog bookingDialog = new BookingBottomSheetDialog(requireContext());
+                bookingDialog.setParkingLocation(location); // Ensure this method exists in BookingBottomSheetDialog
+                bookingDialog.show();
+            }
+
+            @Override
+            public void onFetchFailure(Exception e) {
+                Log.e(TAG, "Error fetching parking location details: ", e);
+                Toast.makeText(getContext(), "Failed to fetch parking location details.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
 
     private void addLocationToFavorites(Marker marker) {
         if (marker != null) {
@@ -205,16 +251,19 @@ public class Park extends Fragment implements OnMapReadyCallback {
 
         Button btnConfirm = dialogView.findViewById(R.id.btn_confirm);
         btnConfirm.setOnClickListener(v -> {
-            BookingDetailsFragment bookingDetailsFragment = new BookingDetailsFragment();
-            getParentFragmentManager().beginTransaction()
-                    .replace(R.id.flFragment, bookingDetailsFragment)
-                    .addToBackStack(null)
-                    .commit();
+            // Create and show the BookingBottomSheetDialog
+            BookingBottomSheetDialog bookingDialog = new BookingBottomSheetDialog(getContext());
+            bookingDialog.show(); // Show the bottom sheet dialog
+
+            // Dismiss the current dialog
             dialog.dismiss();
         });
 
-        Button btnCancel = dialogView.findViewById(R.id.btn_cancel);
-        btnCancel.setOnClickListener(v -> dialog.dismiss());
+        // Set up the Cancel button
+        Button btnCancel = dialogView.findViewById(R.id.btn_cancel); // Assuming you have a button with this ID
+        btnCancel.setOnClickListener(v -> {
+            // Dismiss the alert dialog
+            dialog.dismiss();
+        });
     }
-
 }

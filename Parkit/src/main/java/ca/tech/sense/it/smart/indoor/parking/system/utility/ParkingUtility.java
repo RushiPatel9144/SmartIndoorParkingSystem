@@ -8,6 +8,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingSensor;
@@ -108,6 +112,26 @@ public class ParkingUtility {
         });
     }
 
+    public void fetchParkingLocationById(String id, FetchLocationCallback callback) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference docRef = db.collection("parkingLocations").document(id);
+
+        docRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+                    ParkingLocation location = document.toObject(ParkingLocation.class);
+                    callback.onFetchSuccess(location);
+                } else {
+                    callback.onFetchFailure(new Exception("Document does not exist"));
+                }
+            } else {
+                callback.onFetchFailure(task.getException());
+            }
+        });
+    }
+
+
     // Fetch slots of a specific parking location
     public void fetchSlotsForLocation(String locationId, final FetchSlotsCallback callback) {
         databaseReference.child(locationId).child("slots").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -146,23 +170,6 @@ public class ParkingUtility {
         void onFetchSuccess(Map<String, ParkingSlot> slots);
 
         void onFetchFailure(Exception exception);
-    }
-
-
-    // Method to fetch parking spots as LatLng objects
-    public List<LatLng> getParkingSpots() {
-        List<LatLng> parkingSpots = new ArrayList<>();
-        parkingSpots.add(new LatLng(43.7289, -79.6077)); // Example for Humber College
-        parkingSpots.add(new LatLng(43.73009, -79.5987)); // Example for SP+ Parking
-        parkingSpots.add(new LatLng(43.731636, -79.61172)); // Example for Green P Parking
-        parkingSpots.add(new LatLng(43.690456, -79.60008)); // Example for Park For U YYZ Airport Parking
-        return parkingSpots;
-    }
-
-    // Method to get details for a parking spot, e.g., address and image resource
-    public ParkingSpotDetails getSpotDetails(LatLng location) {
-        // Example data for simplicity; you may fetch real data from a database or API
-        return new ParkingSpotDetails("123 Example St, Toronto, ON", "M1A 2B3", R.drawable.park);
     }
 
     // Method to get sensor data (if needed)
