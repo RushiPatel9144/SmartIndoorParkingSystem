@@ -12,7 +12,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
@@ -62,6 +69,33 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
         // Fetch the parking location data when the dialog is opened
         fetchParkingLocationData();
     }
+
+    public void setLocationId(String locationId) {
+        this.locationId = locationId;
+        fetchLocationDetails(); // Fetch the details when the location ID is set
+    }
+
+    private void fetchLocationDetails() {
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("parkingLocations").child(locationId);
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    ParkingLocation location = dataSnapshot.getValue(ParkingLocation.class);
+                    if (location != null) {
+                        addressText.setText(location.getAddress());
+                        // Populate other fields like slots, price, etc.
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle possible errors
+            }
+        });
+    }
+
 
     private void fetchParkingLocationData() {
         progressBar.setVisibility(View.VISIBLE); // Show progress bar while fetching
@@ -126,6 +160,7 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
     private void setupProceedToPayment(String timing) {
         // Placeholder for payment processing logic
     }
+
 
     public void setErrorMessage(String message) {
         if (errorTextView != null) {
