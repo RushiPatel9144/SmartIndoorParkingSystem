@@ -34,11 +34,15 @@ import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.BookingBottomSheetDialog;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.ParkingSpotDetails;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.ParkingUtility;
@@ -127,14 +131,6 @@ public class Park extends Fragment implements OnMapReadyCallback {
         setupMapListeners();
     }
 
-    private void setupMapListeners() {
-        mMap.setOnMarkerClickListener(clickedMarker -> {
-            selectedMarker = clickedMarker;
-            showBookingDialog(clickedMarker);
-            return true;
-        });
-    }
-
     private void handlePlaceSelected(Place place) {
         if (place.getLatLng() != null) {
             mMap.clear();
@@ -145,15 +141,72 @@ public class Park extends Fragment implements OnMapReadyCallback {
     }
 
     private void addParkingSpotsToMap() {
-        List<LatLng> parkingSpots = parkingUtility.getParkingSpots();
-        for (LatLng parkingSpot : parkingSpots) {
-            Marker marker = mMap.addMarker(new MarkerOptions()
-                    .position(parkingSpot)
-                    .title("Parking Spot")
-                    .icon(bitmapDescriptorFromVector(requireContext(), R.drawable.park)));
-            marker.setTag(parkingUtility.getSpotDetails(parkingSpot));
-        }
+        parkingUtility.fetchAllParkingLocations(new ParkingUtility.FetchLocationsCallback() {
+            @Override
+            public void onFetchSuccess(Map<String, ParkingLocation> locations) {
+                for (Map.Entry<String, ParkingLocation> entry : locations.entrySet()) {
+                    ParkingLocation location = entry.getValue();
+
+                    // Check for null values in the ParkingLocation data
+                    if (location.getLatitude() >= -90 && location.getLatitude() <= 90 &&
+                            location.getLongitude() >= -180 && location.getLongitude() <= 180 &&
+                            location.getName() != null) {
+                        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                        Marker marker = mMap.addMarker(new MarkerOptions()
+                                .position(latLng)
+                                .title(location.getName())
+                                .icon(bitmapDescriptorFromVector(requireContext(), R.drawable.park))
+                        );
+
+                        // Set the marker's tag to the document ID or ParkingLocation object for future reference
+                        marker.setTag(location.getId());
+                    } else {
+                        Log.e(TAG, "Missing data for parking location: " + location.getId());
+                    }
+                }
+            }
+
+            @Override
+            public void onFetchFailure(Exception e) {
+                Log.e(TAG, "Error fetching parking locations: ", e);
+                // Optionally, show a message to the user (e.g., a Toast)
+            }
+        });
     }
+
+    private void setupMapListeners() {
+        mMap.setOnMarkerClickListener(clickedMarker -> {
+            selectedMarker = clickedMarker;
+            // Instead of showing the dialog, directly show the BookingBottomSheetDialog
+            showBookingBottomSheet(clickedMarker);
+            return true;
+        });
+    }
+
+    private void showBookingBottomSheet(Marker marker) {
+        // Fetch the parking location ID from the marker tag
+        String parkingLocationId = (String) marker.getTag();
+
+        // Fetch the parking location details from Firebase
+        parkingUtility.fetchParkingLocation(parkingLocationId, new ParkingUtility.FetchLocationCallback() {
+            @Override
+            public void onFetchSuccess(ParkingLocation location) {
+                // Create and show the BookingBottomSheetDialog with location details
+                BookingBottomSheetDialog bookingDialog = new BookingBottomSheetDialog(requireContext());
+                bookingDialog.setParkingLocation(location); // Make sure to implement this method in BookingBottomSheetDialog
+                bookingDialog.show();
+            }
+
+            @Override
+            public void onFetchFailure(Exception e) {
+                Log.e(TAG, "Error fetching parking location details: ", e);
+                Toast.makeText(getContext(), "Failed to fetch parking location details.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+
+
 
     private void addLocationToFavorites(Marker marker) {
         if (marker != null) {

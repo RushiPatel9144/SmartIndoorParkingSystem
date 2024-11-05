@@ -3,6 +3,7 @@ package ca.tech.sense.it.smart.indoor.parking.system.utility;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -25,6 +26,7 @@ import java.util.Date;
 import java.util.Objects;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
 
 public class BookingBottomSheetDialog extends BottomSheetDialog {
 
@@ -36,6 +38,13 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
     private ProgressBar progressBar;
     private TextView addressText;
     private TextView postalCodeText;
+    private TextView errorTextView;
+
+    private String locationTitle; // To store the title
+
+    public void setLocationTitle(String title) {
+        this.locationTitle = title;
+    }
 
     public BookingBottomSheetDialog(@NonNull Context context) {
         super(context);
@@ -53,8 +62,9 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
         confirmButton = view.findViewById(R.id.confirmButton);
         cancelButton = view.findViewById(R.id.cancelButton);
         progressBar = view.findViewById(R.id.progressBar);
-        addressText=view.findViewById(R.id.addressText);
-        postalCodeText=view.findViewById(R.id.postalCodeText);
+        addressText = view.findViewById(R.id.addressText);
+        postalCodeText = view.findViewById(R.id.postalCodeText);
+        errorTextView = view.findViewById(R.id.error_text_view);
 
         String userId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
         locationRef = FirebaseDatabase.getInstance().getReference("parkingLocations").child(userId).child("address");
@@ -81,14 +91,14 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
             if (task.isSuccessful()) {
                 DocumentSnapshot document = task.getResult();
                 if (document.exists()) {
-                    String firstName = document.getString("firstName");
-                    if (firstName != null) {
-                        userNameTextView.setText("Hey! "+ firstName);
-                    }
+                    // Handle successful retrieval
+                } else {
+                    Toast.makeText(context, "User info not found", Toast.LENGTH_SHORT).show();
                 }
+            } else {
+                Toast.makeText(context, "Error fetching user info", Toast.LENGTH_SHORT).show();
             }
         });
-
     }
 
     private void setupTimeSlots() {
@@ -102,8 +112,26 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
     private void setupConfirmButton() {
         confirmButton.setOnClickListener(v -> {
             String selectedTimeSlot = timeSlotSpinner.getSelectedItem().toString();
-            setupProceedToPayment(selectedTimeSlot);
+            if (!selectedTimeSlot.isEmpty()) {
+                setupProceedToPayment(selectedTimeSlot);
+            } else {
+                Toast.makeText(context, "Please select a time slot.", Toast.LENGTH_SHORT).show();
+            }
         });
+    }
+
+    public void setParkingLocation(ParkingLocation location) {
+        if (addressText != null) {
+            addressText.setText(location.getAddress());
+        } else {
+            Log.e("BookingBottomSheetDialog", "addressText is null");
+        }
+
+        if (postalCodeText != null) {
+            postalCodeText.setText(location.getPostalCode());
+        } else {
+            Log.e("BookingBottomSheetDialog", "postalCodeText is null");
+        }
     }
 
     private void setupCancelButton() {
@@ -136,5 +164,12 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
             dismiss();
             Toast.makeText(context, "Booking confirmed for " + selectedTimeSlot, Toast.LENGTH_SHORT).show();
         }, 2000); // Simulate a 2-second delay for processing payment
+    }
+
+    public void setErrorMessage(String message) {
+        if (errorTextView != null) {
+            errorTextView.setText(message); // Set the error message
+            errorTextView.setVisibility(View.VISIBLE); // Make it visible
+        }
     }
 }

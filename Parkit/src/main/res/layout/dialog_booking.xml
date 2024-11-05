@@ -2,63 +2,73 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="16dp"
     android:background="@android:color/white"
-    android:elevation="4dp">
+    android:elevation="4dp"
+    android:orientation="vertical"
+    android:padding="16dp">
 
     <TextView
         android:id="@+id/userNameTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:paddingBottom="8dp"
         android:text="User Name"
         android:textSize="24sp"
-        android:textStyle="bold"
-        android:paddingBottom="8dp" />
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/addressText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:paddingBottom="8dp"
         android:text="Address"
-        android:textSize="20sp"
-        android:paddingBottom="8dp" />
+        android:textSize="20sp" />
 
     <TextView
         android:id="@+id/postalCodeText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:paddingBottom="8dp"
         android:text="Postal Code"
-        android:textSize="20sp"
-        android:paddingBottom="8dp" />
+        android:textSize="20sp" />
+
+    <!-- TextView to show error message -->
+    <TextView
+        android:id="@+id/error_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:textColor="@android:color/holo_red_dark"
+        android:textSize="16sp"
+        android:visibility="gone" />
 
     <Spinner
         android:id="@+id/timeSlotSpinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:padding="12dp"
-        android:background="@android:drawable/edit_text" />
+        android:background="@android:drawable/edit_text"
+        android:padding="12dp" />
 
     <Button
         android:id="@+id/confirmButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="Proceed to Payment"
-        android:textColor="@android:color/white"
         android:padding="12dp"
-        android:stateListAnimator="@null" />
+        android:stateListAnimator="@null"
+        android:text="Proceed to Payment"
+        android:textColor="@android:color/white" />
 
     <Button
         android:id="@+id/cancelButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="Cancel"
         android:backgroundTint="@android:color/transparent"
+        android:drawableTop="@android:drawable/ic_menu_close_clear_cancel"
         android:padding="12dp"
-        android:drawableTop="@android:drawable/ic_menu_close_clear_cancel" />
+        android:text="Cancel" />
 
     <ProgressBar
         android:id="@+id/progressBar"
