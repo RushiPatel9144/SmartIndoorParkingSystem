@@ -135,8 +135,7 @@
             android:layout_height="wrap_content"
             android:paddingTop="16dp"
             android:text="Summary: Date: TBD, Time: TBD, Slot: TBD, Price: $25.00"
-            android:textSize="16sp"
-            android:textColor="@android:color/black" />
+            android:textSize="16sp" />
 
         <Button
             android:id="@+id/confirmButton"

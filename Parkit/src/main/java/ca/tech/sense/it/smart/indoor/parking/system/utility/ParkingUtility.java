@@ -91,30 +91,26 @@ public class ParkingUtility {
         });
     }
 
-    public void fetchParkingLocation(String parkingLocationId, FetchLocationCallback callback) {
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("parkingLocations").child(parkingLocationId);
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+    // Fetch specific parking location
+    public void fetchParkingLocation(String locationId, final FetchLocationCallback callback) {
+        databaseReference.child(locationId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    ParkingLocation location = snapshot.getValue(ParkingLocation.class);
-                    if (location != null) {
-                        callback.onFetchSuccess(location);
-                    } else {
-                        callback.onFetchFailure(new Exception("ParkingLocation is null"));
-                    }
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                ParkingLocation location = dataSnapshot.getValue(ParkingLocation.class);
+                if (location != null) {
+                    location.setId(locationId); // Set the ID from Firebase
+                    callback.onFetchSuccess(location);
                 } else {
-                    callback.onFetchFailure(new Exception("No data found for this ID"));
+                    callback.onFetchFailure(new Exception(String.valueOf(R.string.location_not_found)));
                 }
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                callback.onFetchFailure(error.toException());
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                callback.onFetchFailure(databaseError.toException());
             }
         });
     }
-
 
     public void fetchParkingLocationById(String id, FetchLocationCallback callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
