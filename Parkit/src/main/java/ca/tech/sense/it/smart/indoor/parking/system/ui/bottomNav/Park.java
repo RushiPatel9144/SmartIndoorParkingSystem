@@ -149,7 +149,7 @@ public class Park extends Fragment implements OnMapReadyCallback {
                         Marker marker = mMap.addMarker(new MarkerOptions()
                                 .position(latLng)
                                 .title(location.getName())
-                                .icon(bitmapDescriptorFromVector(requireContext(), R.drawable.park))
+                                .icon(bitmapDescriptorFromVector(requireContext(), R.mipmap.ic_parking))
                         );
                         marker.setTag(location.getId());
                     } else {
@@ -220,7 +220,7 @@ public class Park extends Fragment implements OnMapReadyCallback {
         AlertDialog dialog = new AlertDialog.Builder(requireContext())
                 .setView(dialogView)
                 .create();
-        dialog.getWindow().setBackgroundDrawableResource(R.drawable.dialog_background);
+        dialog.getWindow().setBackgroundDrawableResource(R.mipmap.ic_parking);
         setupDialogButtons(dialog, marker, dialogView);
         dialog.show();
     }
