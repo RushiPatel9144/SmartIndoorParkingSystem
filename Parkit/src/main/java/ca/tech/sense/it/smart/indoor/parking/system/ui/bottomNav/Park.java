@@ -34,11 +34,8 @@ import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
@@ -193,7 +190,7 @@ public class Park extends Fragment implements OnMapReadyCallback {
             public void onFetchSuccess(ParkingLocation location) {
                 // Create and show the BookingBottomSheetDialog with location details
                 BookingBottomSheetDialog bookingDialog = new BookingBottomSheetDialog(requireContext());
-                bookingDialog.setParkingLocation(location); // Make sure to implement this method in BookingBottomSheetDialog
+                bookingDialog.setParkingLocation(location); // Ensure this method exists in BookingBottomSheetDialog
                 bookingDialog.show();
             }
 
@@ -204,8 +201,6 @@ public class Park extends Fragment implements OnMapReadyCallback {
             }
         });
     }
-
-
 
 
     private void addLocationToFavorites(Marker marker) {
