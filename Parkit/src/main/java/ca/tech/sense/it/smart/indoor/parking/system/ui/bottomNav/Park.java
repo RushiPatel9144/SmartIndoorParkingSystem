@@ -40,6 +40,7 @@ import java.util.Arrays;
 import java.util.Map;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.model.activity.BookingViewModel;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.BookingBottomSheetDialog;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.ParkingUtility;
@@ -255,6 +256,7 @@ public class Park extends Fragment implements OnMapReadyCallback {
             locationButton.setLayoutParams(layoutParams);
         }
     }
+
 
 
 }
