@@ -1,5 +1,6 @@
 package ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems;
 
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
@@ -13,6 +14,7 @@ import android.widget.Spinner;
 import android.widget.Switch;
 
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -25,6 +27,8 @@ public class SettingsFragment extends Fragment {
     private Switch switchTheme;
     private Spinner spinnerCurrency;
 
+    private NotificationManager notificationManager;
+
     public SettingsFragment() {
         // Required empty public constructor
     }
@@ -32,6 +36,7 @@ public class SettingsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        notificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
     }
 
     @Override
@@ -114,10 +119,8 @@ public class SettingsFragment extends Fragment {
                 editor.apply();
 
                 if (isChecked) {
-                    // Enable notifications
                     enableNotifications();
                 } else {
-                    // Disable notifications
                     disableNotifications();
                 }
             }
@@ -140,10 +143,31 @@ public class SettingsFragment extends Fragment {
     }
 
     private void enableNotifications() {
-        // Logic to enable notifications
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(getActivity(), "default")
+                .setSmallIcon(R.drawable.notifications)
+                .setContentTitle("Notifications Enabled")
+                .setContentText("You will receive notifications")
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
+        notificationManager.notify(1, builder.build());
     }
 
     private void disableNotifications() {
-        // Logic to disable notifications
+        notificationManager.cancelAll();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        savePreferences();
+    }
+
+    private void savePreferences() {
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(getString(R.string.lock_portrait), switchLockPortrait.isChecked());
+        editor.putBoolean(getString(R.string.dark_theme), switchTheme.isChecked());
+        editor.putBoolean("Notification Enabled", switchNotifications.isChecked());
+        editor.apply();
     }
 }

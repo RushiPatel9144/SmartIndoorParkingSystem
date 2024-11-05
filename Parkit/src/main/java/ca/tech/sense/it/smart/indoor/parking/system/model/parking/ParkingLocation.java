@@ -8,19 +8,23 @@ public class ParkingLocation {
     private double latitude;
     private double longitude;
     private String name;
+    private String postalCode;
+    private double price;
     private Map<String, ParkingSlot> slots;
 
     // Constructors
     public ParkingLocation() {
     }
 
-    public ParkingLocation(String id, String address, double latitude, double longitude, String name, Map<String, ParkingSlot> slots) {
+    public ParkingLocation(String id, Map<String, ParkingSlot> slots, String postalCode, String name, double longitude,  double latitude, String address, double price) {
         this.id = id;
+        this.slots = slots;
+        this.postalCode = postalCode;
+        this.name = name;
+        this.longitude = longitude;
         this.address = address;
         this.latitude = latitude;
-        this.longitude = longitude;
-        this.name = name;
-        this.slots = slots;
+        this.price = price;
     }
 
     // Getters and setters
@@ -62,6 +66,22 @@ public class ParkingLocation {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getPostalCode() {
+        return postalCode;
+    }
+
+    public void setPostalCode(String postalCode) {
+        this.postalCode = postalCode;
+    }
+
+    public double getPrice() {
+        return price; // Getter for price
+    }
+
+    public void setPrice(double price) {
+        this.price = price; // Setter for price
     }
 
     public Map<String, ParkingSlot> getSlots() {
