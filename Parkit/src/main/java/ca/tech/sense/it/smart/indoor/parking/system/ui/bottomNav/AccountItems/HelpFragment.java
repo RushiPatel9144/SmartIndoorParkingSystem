@@ -1,6 +1,7 @@
 package ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems;
 
 import android.os.Bundle;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,18 +16,16 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.DocumentReference;
 
-import java.util.HashMap;
-import java.util.Map;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.model.Help;
 
 public class HelpFragment extends Fragment {
 
-    private TextView tvHelpTopic, tvHelpDescription;
-    private EditText etHelpTopic, etHelpDescription;
+    private EditText etName, etPhone, etEmail, etComment;
     private Button btnSubmitHelp;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -37,40 +36,47 @@ public class HelpFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_help, container, false);
 
         // Initialize UI elements
-        tvHelpTopic = view.findViewById(R.id.tvHelpTopic);
-        tvHelpDescription = view.findViewById(R.id.tvHelpDescription);
-        etHelpTopic = view.findViewById(R.id.etHelpTopic);
-        etHelpDescription = view.findViewById(R.id.etHelpDescription);
-        btnSubmitHelp = view.findViewById(R.id.btnSubmitHelp);
+        etName = view.findViewById(R.id.feedback_name);
+        etPhone = view.findViewById(R.id.feedback_phone);
+        etEmail = view.findViewById(R.id.feedback_email);
+        etComment = view.findViewById(R.id.feedback_comment);
+        btnSubmitHelp = view.findViewById(R.id.submit_feedback_button);
 
         // Set up button click listener
         btnSubmitHelp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String helpTopic = etHelpTopic.getText().toString().trim();
-                String helpDescription = etHelpDescription.getText().toString().trim();
+                String name = etName.getText().toString().trim();
+                String phone = etPhone.getText().toString().trim();
+                String email = etEmail.getText().toString().trim();
+                String comment = etComment.getText().toString().trim();
 
-                if (helpTopic.isEmpty() || helpDescription.isEmpty()) {
-                    Toast.makeText(getActivity(), "Please fill in both fields", Toast.LENGTH_SHORT).show();
-                } else {
-                    // Create a new document in 'help' collection
-                    Map<String, Object> help = new HashMap<>();
-                    help.put("topic", helpTopic);
-                    help.put("description", helpDescription);
+                if (name.isEmpty() || phone.isEmpty() || email.isEmpty() || comment.isEmpty()) {
+                    Toast.makeText(getActivity(), "Please fill in all fields", Toast.LENGTH_SHORT).show();
+                }else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                    Toast.makeText(getActivity(), "Please enter a valid email address", Toast.LENGTH_SHORT).show();}
+                else {
+                    // Create a new Help object
+                    Help help = new Help(name, phone, email, comment);
 
+                    // Add the Help object to the 'help' collection
                     db.collection("help").add(help)
                             .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                                 @Override
                                 public void onSuccess(DocumentReference documentReference) {
                                     // Clear the fields
-                                    etHelpTopic.setText("");
-                                    etHelpDescription.setText("");
+                                    etName.setText("");
+                                    etPhone.setText("");
+                                    etEmail.setText("");
+                                    etComment.setText("");
+                                    // Show success message
                                     Toast.makeText(getActivity(), "Help request submitted", Toast.LENGTH_SHORT).show();
                                 }
                             })
                             .addOnFailureListener(new OnFailureListener() {
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
+                                    // Show error message
                                     Toast.makeText(getActivity(), "Error adding document", Toast.LENGTH_SHORT).show();
                                 }
                             });
