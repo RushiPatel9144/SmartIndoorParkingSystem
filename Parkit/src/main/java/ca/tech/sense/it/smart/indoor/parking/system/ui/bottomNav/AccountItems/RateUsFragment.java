@@ -75,6 +75,8 @@ public class RateUsFragment extends Fragment {
                 String comment = feedbackComment.getText().toString();
                 // Get device model
                 String deviceModel = Build.MODEL;
+                String manufacturer = Build.MANUFACTURER;
+                String fullDeviceInfo = manufacturer + " " + deviceModel;
 
                 if (rating > 0 || !comment.isEmpty()) {
                     // Fetch user information from Firestore
@@ -90,7 +92,7 @@ public class RateUsFragment extends Fragment {
                                         String userPhone = user.getPhone();
 
                                         // Create a new RateUs object
-                                        RateUs feedback = new RateUs(rating, comment, deviceModel, userName, userEmail, userPhone);
+                                        RateUs feedback = new RateUs(rating, comment, fullDeviceInfo, userName, userEmail, userPhone);
 
                                         // Add a new document with generated ID to the 'feedback' collection
                                         db.collection("feedback").add(feedback)
