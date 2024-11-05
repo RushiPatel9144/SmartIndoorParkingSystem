@@ -1,6 +1,8 @@
 package ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
@@ -11,11 +13,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
@@ -37,6 +43,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
@@ -54,12 +61,14 @@ public class Park extends Fragment implements OnMapReadyCallback {
     private Marker selectedMarker;
     private ParkingUtility parkingUtility;
     private FavoriteManager favoriteManager;
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1000;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         parkingUtility = new ParkingUtility();
         favoriteManager = new FavoriteManager(requireContext());
+
 
         // Initialize the Places SDK
         if (!Places.isInitialized()) {
@@ -121,7 +130,10 @@ public class Park extends Fragment implements OnMapReadyCallback {
         mMap.setBuildingsEnabled(true);
 
         // Map types
-        mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+        mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+
+        moveMyLocationButton();
+        checkLocationPermissionAndEnableMyLocation();
 
         addParkingSpotsToMap();
         LatLng torontoCenter = new LatLng(43.65107, -79.347015); // Toronto coordinates
@@ -206,44 +218,42 @@ public class Park extends Fragment implements OnMapReadyCallback {
         return null;
     }
 
-    private void showBookingDialog(Marker marker) {
-        ParkingSpotDetails details = (ParkingSpotDetails) marker.getTag();
-        String title = marker.getTitle();
-        String message = details != null ? "Address: " + details.getAddress() + "\nPostcode: " + details.getPostcode() : "";
 
-        View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_booking_details, null);
-        TextView dialogTitle = dialogView.findViewById(R.id.dialog_title);
-        TextView dialogMessage = dialogView.findViewById(R.id.dialog_message);
-        dialogTitle.setText(title);
-        dialogMessage.setText(message);
+    private final ActivityResultLauncher<String> requestPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                if (isGranted) {
+                    enableMyLocation();
+                } else {
+                    Toast.makeText(getContext(), "Location permission denied", Toast.LENGTH_SHORT).show();
+                }
+            });
 
-        AlertDialog dialog = new AlertDialog.Builder(requireContext())
-                .setView(dialogView)
-                .create();
-        dialog.getWindow().setBackgroundDrawableResource(R.mipmap.ic_parking);
-        setupDialogButtons(dialog, marker, dialogView);
-        dialog.show();
+    private void checkLocationPermissionAndEnableMyLocation() {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            enableMyLocation();
+        } else {
+            requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
+        }
     }
 
-    private void setupDialogButtons(AlertDialog dialog, Marker marker, View dialogView) {
-        ImageView ivAddToFavorites = dialogView.findViewById(R.id.iv_add_to_favorites);
-        ivAddToFavorites.setOnClickListener(v -> {
-            addLocationToFavorites(marker);
-            Toast.makeText(getContext(), "Added to Favorites!", Toast.LENGTH_SHORT).show();
-        });
-
-        Button btnConfirm = dialogView.findViewById(R.id.btn_confirm);
-        btnConfirm.setOnClickListener(v -> {
-            String parkingLocationId = (String) marker.getTag(); // Ensure you're using the correct ID
-            BookingBottomSheetDialog bookingDialog = new BookingBottomSheetDialog(getContext(), parkingLocationId);
-            bookingDialog.show();
-            dialog.dismiss(); // Dismiss the current dialog
-        });
-
-        Button btnCancel = dialogView.findViewById(R.id.btn_cancel);
-        btnCancel.setOnClickListener(v -> {
-            dialog.dismiss();
-        });
+    private void enableMyLocation() {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            mMap.setMyLocationEnabled(true);
+            mMap.getUiSettings().setMyLocationButtonEnabled(true);
+        }
     }
+
+    private void moveMyLocationButton() {
+        View locationButton = ((View) getView().findViewById(Integer.parseInt("1")).getParent()).findViewById(Integer.parseInt("2"));
+        if (locationButton != null) {
+            RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) locationButton.getLayoutParams();
+            // Adjust these values to set the desired position
+            layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0); // Remove top alignment
+            layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE); // Align to the bottom
+            layoutParams.setMargins(0, 0, 30, 350); // Adjust margins as needed
+            locationButton.setLayoutParams(layoutParams);
+        }
+    }
+
 
 }
