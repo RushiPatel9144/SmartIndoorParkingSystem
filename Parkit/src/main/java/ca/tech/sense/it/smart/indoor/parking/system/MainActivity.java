@@ -1,9 +1,3 @@
-/*Name: Kunal Dhiman, StudentID: N01540952,  section number: RCB
-  Name: Raghav Sharma, StudentID: N01537255,  section number: RCB
-  Name: NisargKumar Pareshbhai Joshi, StudentID: N01545986,  section number: RCB
-  Name: Rushi Manojkumar Patel, StudentID: N01539144, section number: RCB
- */
-
 package ca.tech.sense.it.smart.indoor.parking.system;
 
 import static ca.tech.sense.it.smart.indoor.parking.system.R.string.notification_permission_denied;
@@ -39,22 +33,20 @@ import ca.tech.sense.it.smart.indoor.parking.system.utility.NotificationHelper;
 
 public class MainActivity extends MenuHandler implements NavigationBarView.OnItemSelectedListener {
 
-    // Declare a BottomNavigationView
     private BottomNavigationView bottomNavigationView;
     private Toolbar toolbar;
-    private FirebaseAuth tempAuth;
-    private FirebaseUser tempUser;
-    // Fragments for bottom navigation
+    private FirebaseAuth firebaseAuth;
+    private FirebaseUser firebaseUser;
     private final Home homeFragment = new Home();
     private final Park parkFragment = new Park();
     private final Activity activityFragment = new Activity();
+    private final ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountFragment accountFragment = new ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountFragment();
     private static final String PREFS_NAME = "MyAppPreferences";
     private static final String KEY_WELCOME_NOTIFICATION_TIMESTAMP = "welcome_notification_timestamp";
     private static final long NOTIFICATION_COOLDOWN = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
     private static final String PREFS__NAME = "UserPrefs";
     private static final String KEY_WELCOME_NOTIFICATION_SENT = "welcome_notification_sent";
     private static final int NOTIFICATION_PERMISSION_CODE = 100;
-    private final ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountFragment accountFragment = new ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountFragment();
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -65,26 +57,35 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
 
         // Initialize Firebase Authentication
         initFirebaseAuth();
+
         // Initialize UI components
         initUIComponents();
+
         // Set BottomNavigationView listener
         bottomNavigationView.setOnItemSelectedListener(this);
         bottomNavigationView.setSelectedItemId(R.id.navigation_home);
 
+        // Request notification permission if needed
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             requestNotificationPermission();
         }
+
+        // Handle back button press
         handleBackButtonPress();
+
+        // Create notification channel
         NotificationHelper.createNotificationChannel(this);
+
+        // Send welcome notifications
         sendWelcomeBackNotification();
         sendNewUserWelcomeNotification();
     }
 
     private void initFirebaseAuth() {
-        tempAuth = FirebaseAuth.getInstance();
-        tempUser = tempAuth.getCurrentUser();
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
 
-        if (tempUser == null) {
+        if (firebaseUser == null) {
             navigateToLoginActivity();
         }
     }
@@ -92,7 +93,6 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
     private void initUIComponents() {
         toolbar = findViewById(R.id.nisToolbar);
         setSupportActionBar(toolbar);
-
         bottomNavigationView = findViewById(R.id.bottom_navigation);
     }
 
@@ -124,22 +124,19 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
         if (itemId == R.id.navigation_home) {
             loadFragments(homeFragment);
             toolbar.setTitle(R.string.home);
-            return true;
         } else if (itemId == R.id.navigation_park) {
             loadFragments(parkFragment);
             toolbar.setTitle(R.string.park);
-            return true;
         } else if (itemId == R.id.navigation_activity) {
             loadFragments(activityFragment);
             toolbar.setTitle(R.string.activity);
-            return true;
         } else if (itemId == R.id.navigation_account) {
             loadFragments(accountFragment);
             toolbar.setTitle(R.string.my_account);
-            return true;
         } else {
             return false;
         }
+        return true;
     }
 
     private void loadFragments(Fragment fragment) {
@@ -154,7 +151,6 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
         startActivity(intent);
         finish();
     }
-
 
     private void requestNotificationPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
@@ -185,18 +181,19 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
     private void sendWelcomeBackNotification() {
         SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         long lastSentTimestamp = sharedPreferences.getLong(KEY_WELCOME_NOTIFICATION_TIMESTAMP, 0);
-
         long currentTime = System.currentTimeMillis();
+
         if (currentTime - lastSentTimestamp > NOTIFICATION_COOLDOWN) {
             NotificationHelper.sendNotification(
                     this,
                     getString(R.string.welcome_back),
                     getString(R.string.we_ve_missed_you_check_out_the_latest_parking_spots_available_for_you),
-                    FirebaseAuth.getInstance().getCurrentUser().getUid()
+                    firebaseAuth.getCurrentUser().getUid()
             );
             sharedPreferences.edit().putLong(KEY_WELCOME_NOTIFICATION_TIMESTAMP, currentTime).apply();
         }
     }
+
     private void sendNewUserWelcomeNotification() {
         SharedPreferences sharedPreferences = getSharedPreferences(PREFS__NAME, MODE_PRIVATE);
         boolean isWelcomeNotificationSent = sharedPreferences.getBoolean(KEY_WELCOME_NOTIFICATION_SENT, false);
@@ -206,13 +203,14 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
                     this,
                     getString(R.string.welcome_to_parkit),
                     getString(R.string.explore_the_app_and_find_parking_spots_nearby),
-                    FirebaseAuth.getInstance().getCurrentUser().getUid()
+                    firebaseAuth.getCurrentUser().getUid()
             );
 
             // Set flag to true to avoid sending again
             sharedPreferences.edit().putBoolean(KEY_WELCOME_NOTIFICATION_SENT, true).apply();
         }
     }
+
     private void applyTheme() {
         SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
         boolean isDarkTheme = sharedPreferences.getBoolean(getString(R.string.dark_theme), false);
@@ -220,7 +218,6 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         } else {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-
         }
     }
 }
