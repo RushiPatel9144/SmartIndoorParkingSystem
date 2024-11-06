@@ -37,6 +37,7 @@ import java.util.Map;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.model.BookingDetails;
+import ca.tech.sense.it.smart.indoor.parking.system.model.activity.Booking;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingSlot;
 
@@ -178,29 +179,32 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         String userName = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
 
-        // Fallback to empty string if userName is null
         if (userName == null) {
             userName = "";
         }
 
-        // Create a new BookingDetails object with the selected details
-        BookingDetails bookingDetails = new BookingDetails(
-                userId,
-                userName,
-                timing,
+        // Convert timing to start and end time in milliseconds
+        String[] times = timing.split(" - ");
+        long startTime = convertToMillis(selectedDate + " " + times[0]);
+        long endTime = convertToMillis(selectedDate + " " + times[1]);
+
+        double price = 25.00; // Replace with actual price
+
+        Booking booking = new Booking(
+                "Booking Title", // Replace with actual title
+                startTime,
+                endTime,
                 addressText.getText().toString(),
-                postalCodeText.getText().toString(),
-                selectedDate,  // Ensure selectedDate is formatted as needed
-                slot
+                slot,
+                price
         );
 
-        // Reference to Firebase Realtime Database for saving bookings
         DatabaseReference databaseRef = FirebaseDatabase.getInstance()
                 .getReference("bookings")
                 .child(userId)
                 .push();
 
-        databaseRef.setValue(bookingDetails)
+        databaseRef.setValue(booking)
                 .addOnSuccessListener(aVoid -> {
                     Toast.makeText(context, R.string.booking_confirmed_and_saved, Toast.LENGTH_SHORT).show();
                     dismiss();
@@ -209,6 +213,19 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
                     Toast.makeText(context, context.getString(R.string.failed_to_save_booking) + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
+
+
+    private long convertToMillis(String dateTime) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
+        try {
+            Date date = sdf.parse(dateTime);
+            return date != null ? date.getTime() : 0;
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
 
 
 
