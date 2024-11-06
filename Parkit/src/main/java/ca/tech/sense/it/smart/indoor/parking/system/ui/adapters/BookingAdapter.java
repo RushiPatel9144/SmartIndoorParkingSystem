@@ -1,3 +1,8 @@
+/*Name: Kunal Dhiman, StudentID: N01540952,  section number: RCB
+  Name: Raghav Sharma, StudentID: N01537255,  section number: RCB
+  Name: NisargKumar Pareshbhai Joshi, StudentID: N01545986,  section number: RCB
+  Name: Rushi Manojkumar Patel, StudentID: N01539144, section number: RCB
+ */
 package ca.tech.sense.it.smart.indoor.parking.system.ui.adapters;
 
 import android.view.LayoutInflater;
@@ -51,6 +56,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingV
 
         private TextView bookingTitle;
         private TextView bookingAddress;
+        private TextView bookingSlotLabel;
         private TextView bookingSlot;
         private TextView bookingTime;
         private TextView bookingPrice;
@@ -59,13 +65,14 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingV
             super(itemView);
             bookingTitle = itemView.findViewById(R.id.booking_title);
             bookingAddress = itemView.findViewById(R.id.booking_address);
+            bookingSlotLabel = itemView.findViewById(R.id.booking_slot_label);
             bookingSlot = itemView.findViewById(R.id.booking_slot);
             bookingTime = itemView.findViewById(R.id.booking_time);
             bookingPrice = itemView.findViewById(R.id.booking_price);
         }
 
         public void bind(Booking booking) {
-            bookingTitle.setText(booking.getTitle());
+            bookingTitle.setText("Park It");
             bookingAddress.setText(booking.getLocation());
             bookingSlot.setText(booking.getSlotNumber());
             bookingTime.setText(formatTime(booking.getStartTime(), booking.getEndTime()));

@@ -121,8 +121,7 @@
                         android:layout_weight="1"
                         android:text="Selected a Date:"
                         android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:textColor="@android:color/black"/>
+                        android:textStyle="bold" />
 
                     <!-- Select Date Button (Calendar Icon) -->
                     <ImageButton
@@ -186,6 +185,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
+
                     android:background="@android:drawable/edit_text"
                     android:padding="10dp" />
             </LinearLayout>
@@ -206,7 +206,6 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/confirm"
-                android:textColor="@android:color/white"
                 android:backgroundTint="@color/theme"
                 android:padding="12dp"
                 android:layout_marginEnd="8dp"/>
