@@ -25,24 +25,19 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
-import com.google.firebase.Firebase;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import ca.tech.sense.it.smart.indoor.parking.system.MainActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.model.user.User;
 
 public class SignUpActivity extends AppCompatActivity {
 
-
-
-    EditText editTextEmail,editTextPassword,editTextConfirmPassword,firstName,lastName,phone;
+    EditText editTextEmail, editTextPassword, editTextConfirmPassword, firstName, lastName, phone;
     MaterialButton button;
     TextView textView;
     ProgressBar progressBar;
@@ -54,10 +49,9 @@ public class SignUpActivity extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
-        // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        if(currentUser != null){ // this will check if the user is already logged in or not, if yes then it will redirect user to main activity
-            Intent intent = new Intent(getApplicationContext(),MainActivity.class);
+        if (currentUser != null) {
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
             startActivity(intent);
             finish();
         }
@@ -74,7 +68,8 @@ public class SignUpActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        //Initialize all the fields
+
+        // Initialize UI elements
         editTextEmail = findViewById(R.id.signup_editTextEmail);
         editTextPassword = findViewById(R.id.signup_editTextPassword);
         editTextConfirmPassword = findViewById(R.id.editTextConfirmPassword);
@@ -88,110 +83,94 @@ public class SignUpActivity extends AppCompatActivity {
         lastName = findViewById(R.id.editTextLastName);
         phone = findViewById(R.id.signup_phoneNumber);
 
-
-        textView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(),LoginActivity.class);
-                startActivity(intent);
-                finish();
-            }
+        // Navigate to Login screen
+        textView.setOnClickListener(v -> {
+            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+            startActivity(intent);
+            finish();
         });
 
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                progressBar.setVisibility(View.VISIBLE);  // Show progress bar
-                String fName = firstName.getText().toString().trim();
-                String lName = lastName.getText().toString().trim();
-                String email = String.valueOf(editTextEmail.getText());
-                String password = editTextPassword.getText().toString().trim();
-                String confirmPassword = editTextConfirmPassword.getText().toString().trim();
-                String phoneNumber = phone.getText().toString() ;
-                
-                // Validate first name
-                if (TextUtils.isEmpty(fName)) {
-                    firstName.setError("Please enter your first name");
-                    progressBar.setVisibility(View.GONE);  // Hide progress bar
-                    return;
-                }
+        // Handle the Sign Up button click
+        button.setOnClickListener(v -> {
+            progressBar.setVisibility(View.VISIBLE);
 
-                // Validate last name
-                if (TextUtils.isEmpty(lName)) {
-                    lastName.setError("Please enter your last name");
-                    progressBar.setVisibility(View.GONE);  // Hide progress bar
-                    return;
-                }
-                // Validate email
-                if (TextUtils.isEmpty(email)) {
-                    editTextEmail.setError(getString(R.string.enter_e_mail));
-                    progressBar.setVisibility(View.GONE);  // Hide progress bar
-                    return;
-                }
-                // Validate email
-                if (TextUtils.isEmpty(phoneNumber)) {
-                    phone.setError("Enter phone number");
-                    progressBar.setVisibility(View.GONE);  // Hide progress bar
-                    return;
-                }
+            // Get user input
+            String fName = firstName.getText().toString().trim();
+            String lName = lastName.getText().toString().trim();
+            String email = editTextEmail.getText().toString().trim();
+            String password = editTextPassword.getText().toString().trim();
+            String confirmPassword = editTextConfirmPassword.getText().toString().trim();
+            String phoneNumber = phone.getText().toString().trim();
 
-                // Validate password
-                if (TextUtils.isEmpty(password)) {
-                    editTextPassword.setError(getString(R.string.enter_passwords));
-                    progressBar.setVisibility(View.GONE);  // Hide progress bar
-                    return;
-                }
+            // Input validation
+            if (TextUtils.isEmpty(fName)) {
+                firstName.setError("Please enter your first name");
+                progressBar.setVisibility(View.GONE);
+                return;
+            }
+            if (TextUtils.isEmpty(lName)) {
+                lastName.setError("Please enter your last name");
+                progressBar.setVisibility(View.GONE);
+                return;
+            }
+            if (TextUtils.isEmpty(email)) {
+                editTextEmail.setError(getString(R.string.enter_e_mail));
+                progressBar.setVisibility(View.GONE);
+                return;
+            }
+            if (TextUtils.isEmpty(phoneNumber)) {
+                phone.setError("Enter phone number");
+                progressBar.setVisibility(View.GONE);
+                return;
+            }
+            if (TextUtils.isEmpty(password)) {
+                editTextPassword.setError(getString(R.string.enter_passwords));
+                progressBar.setVisibility(View.GONE);
+                return;
+            }
+            if (!password.equals(confirmPassword)) {
+                editTextConfirmPassword.setError("Passwords do not match");
+                progressBar.setVisibility(View.GONE);
+                return;
+            }
+            if (!checkBox.isChecked()) {
+                Toast.makeText(SignUpActivity.this, "Please accept the terms and conditions", Toast.LENGTH_SHORT).show();
+                progressBar.setVisibility(View.GONE);
+                return;
+            }
 
-                // Check if passwords match
-                if (!password.equals(confirmPassword)) {
-                    editTextConfirmPassword.setError("Passwords do not match");
-                    progressBar.setVisibility(View.GONE);  // Hide progress bar
-                    return;
-                }
+            // Create user in Firebase Authentication
+            mAuth.createUserWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(task -> {
+                        progressBar.setVisibility(View.GONE);
 
-                // Check if checkbox is checked
-                if (!checkBox.isChecked()) {
-                    Toast.makeText(SignUpActivity.this, "Please accept the terms and conditions", Toast.LENGTH_SHORT).show();
-                    progressBar.setVisibility(View.GONE);  // Hide progress bar
-                    return;
-                }
+                        if (task.isSuccessful()) {
+                            // Sign up successful
+                            Toast.makeText(SignUpActivity.this, getString(R.string.account_created), Toast.LENGTH_SHORT).show();
+                            userID = mAuth.getCurrentUser().getUid();
 
-                // If all validations pass, create the user
-                mAuth.createUserWithEmailAndPassword(email, password)
-                        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                progressBar.setVisibility(View.GONE);  // Hide progress bar after task completion
-                                if (task.isSuccessful()) {
-                                    // Sign up successful
-                                    Toast.makeText(SignUpActivity.this, getString(R.string.account_created), Toast.LENGTH_SHORT).show();
-                                    userID = mAuth.getCurrentUser().getUid();
-                                    DocumentReference documentReference = fireStore.collection("users").document(userID);
-                                    Map<String,Object> user = new HashMap<>();
-                                    user.put("uid",userID);
-                                    user.put("firstName",fName);
-                                    user.put("lastName",lName);
-                                    user.put("email",email);
-                                    user.put("phone",phoneNumber);
-                                    user.put("password",password);
-                                    documentReference.set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                        @Override
-                                        public void onSuccess(Void unused) {
-                                            Log.d("TAG","onSuccess: user profile is " + userID);
-                                        }
+                            // Create User object
+                            User user = new User(userID, fName, lName, email, phoneNumber, null); // Profile photo URL is null for now
+
+                            // Store user data in Firestore
+                            DocumentReference documentReference = fireStore.collection("users").document(userID);
+                            documentReference.set(user)
+                                    .addOnSuccessListener(aVoid -> {
+                                        Log.d("TAG", "User profile is created for " + userID);
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Log.d("TAG", "Error saving user data: " + e.getMessage());
                                     });
 
-                                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                                    startActivity(intent);
-                                    finish();  // Close the sign-up activity
-                                } else {
-                                    // Sign up failed
-                                    Toast.makeText(SignUpActivity.this, getString(R.string.authentication_failed), Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
-            }
+                            // Navigate to MainActivity
+                            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                            startActivity(intent);
+                            finish();
+                        } else {
+                            // Sign up failed
+                            Toast.makeText(SignUpActivity.this, getString(R.string.authentication_failed), Toast.LENGTH_SHORT).show();
+                        }
+                    });
         });
-
     }
 }

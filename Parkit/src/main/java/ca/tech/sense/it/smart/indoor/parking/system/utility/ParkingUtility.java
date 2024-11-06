@@ -1,8 +1,13 @@
 package ca.tech.sense.it.smart.indoor.parking.system.utility;
 
+import static android.content.ContentValues.TAG;
+
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 
-import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -12,14 +17,11 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingSensor;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingSlot;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class ParkingUtility {
@@ -68,7 +70,6 @@ public class ParkingUtility {
                 });
     }
 
-    // Fetch all parking locations
     public void fetchAllParkingLocations(final FetchLocationsCallback callback) {
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -81,18 +82,25 @@ public class ParkingUtility {
                         locations.put(locationSnapshot.getKey(), location);
                     }
                 }
-                callback.onFetchSuccess(locations);
+                new Handler(Looper.getMainLooper()).post(() -> callback.onFetchSuccess(locations));
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                callback.onFetchFailure(databaseError.toException());
+                new Handler(Looper.getMainLooper()).post(() -> callback.onFetchFailure(databaseError.toException()));
             }
         });
     }
 
+
     // Fetch specific parking location
     public void fetchParkingLocation(String locationId, final FetchLocationCallback callback) {
+        if (locationId == null || locationId.isEmpty()) {
+            Log.e(TAG, "Location ID is null or empty");
+            callback.onFetchFailure(new IllegalArgumentException("Location ID cannot be null or empty"));
+            return;
+        }
+
         databaseReference.child(locationId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -101,7 +109,7 @@ public class ParkingUtility {
                     location.setId(locationId); // Set the ID from Firebase
                     callback.onFetchSuccess(location);
                 } else {
-                    callback.onFetchFailure(new Exception(String.valueOf(R.string.location_not_found)));
+                    callback.onFetchFailure(new Exception("location not Found"));
                 }
             }
 
@@ -111,6 +119,7 @@ public class ParkingUtility {
             }
         });
     }
+
 
     public void fetchParkingLocationById(String id, FetchLocationCallback callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();

@@ -8,15 +8,19 @@ public class BookingDetails {
     private String selectedTimeSlot;
     private String address;
     private String postalCode;
-    private Date bookingDate;
+    private String bookingDate;
+    public String parkingSlot;
 
-    public BookingDetails(String userId, String userName, String selectedTimeSlot, String address, String postalCode, Date bookingDate) {
+    public BookingDetails(){}
+
+    public BookingDetails(String userId, String userName, String selectedTimeSlot, String address, String postalCode, String bookingDate, String parkingSlot) {
         this.userId = userId;
         this.userName = userName;
         this.selectedTimeSlot = selectedTimeSlot;
         this.address = address;
         this.postalCode = postalCode;
         this.bookingDate = bookingDate;
+        this.parkingSlot = parkingSlot;
     }
 
     // Getters and Setters
@@ -61,11 +65,12 @@ public class BookingDetails {
         this.postalCode = postalCode;
     }
 
-    public Date getBookingDate() {
+    public String getBookingDate() {
         return bookingDate;
     }
 
-    public void setBookingDate(Date bookingDate) {
+    public void setBookingDate(String bookingDate) {
         this.bookingDate = bookingDate;
     }
+
 }

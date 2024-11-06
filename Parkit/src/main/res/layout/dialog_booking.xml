@@ -6,157 +6,222 @@
     android:layout_height="wrap_content"
     android:layout_margin="16dp"
     app:cardElevation="8dp"
-    app:cardBackgroundColor="@android:color/white"
-    app:cardCornerRadius="12dp">
+    android:background="@drawable/dialog_background"
+    app:cardCornerRadius="30dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="14dp">
+        android:padding="16dp">
 
-        <!-- Title and Favorite Button -->
+        <!-- Title and Favorite Button Card -->
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:padding="12dp">
+
+                <TextView
+                    android:id="@+id/dialog_title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Book a Spot"
+                    android:textSize="22sp"
+                    android:textStyle="bold" />
+
+                <ImageButton
+                    android:id="@+id/iv_add_to_favorites"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Add to Favorite"
+                    android:src="@drawable/star" />
+            </LinearLayout>
+
+
+        <!-- Address and Postal Code Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardElevation="4dp"
+            app:cardCornerRadius="8dp"
+            android:layout_margin="8dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="12dp">
+
+                <TextView
+                    android:id="@+id/addressText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Address"
+                    android:textSize="18sp"/>
+
+                <TextView
+                    android:id="@+id/postalCodeText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="4dp"
+                    android:text="Postal Code"
+                    android:textSize="18sp"/>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Price Tag Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardElevation="4dp"
+            app:cardCornerRadius="8dp"
+            android:layout_margin="8dp">
+
+            <TextView
+                android:id="@+id/priceTag"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="12dp"
+                android:text="Price: $25.00"
+                android:textSize="20sp"
+                android:textColor="@android:color/holo_green_dark" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardElevation="4dp"
+            app:cardCornerRadius="12dp"
+            android:layout_margin="8dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <!-- Date Selection Section -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="8dp">
+
+                    <!-- Selected Date Text -->
+                    <TextView
+                        android:id="@+id/selectedDate"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Selected a Date:"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <!-- Select Date Button (Calendar Icon) -->
+                    <ImageButton
+                        android:id="@+id/selectDateButton"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="Select Date"
+                        android:src="@mipmap/ic_calender"
+                        android:padding="8dp"
+                        android:layout_marginStart="8dp" />
+
+                </LinearLayout>
+
+                <!-- Time Selection Section -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="14dp"
+                    android:text="Select Time"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <!-- Time Slot Spinner -->
+                <Spinner
+                    android:id="@+id/timeSlotSpinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="@android:drawable/edit_text"
+                    android:padding="10dp" />
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+
+        <!-- Slot Selection Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardElevation="4dp"
+            app:cardCornerRadius="8dp"
+            android:layout_margin="8dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="12dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Select a Slot"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <Spinner
+                    android:id="@+id/slotSpinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+
+                    android:background="@android:drawable/edit_text"
+                    android:padding="10dp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Buttons Container -->
         <LinearLayout
-            android:id="@+id/title_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:paddingBottom="6dp">
-
-            <TextView
-                android:id="@+id/dialog_title"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Book a Spot"
-                android:textSize="22sp"
-                android:textStyle="bold"
-                android:textColor="@android:color/black" />
-
-            <ImageButton
-                android:id="@+id/iv_add_to_favorites"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="Add to Favorite"
-                android:src="@drawable/star" />
-        </LinearLayout>
-
-        <!-- Address and Postal Code -->
-        <TextView
-            android:id="@+id/addressText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingBottom="4dp"
-            android:text="Address"
-            android:textSize="18sp"
-            android:textColor="@android:color/black" />
-
-        <TextView
-            android:id="@+id/postalCodeText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingBottom="12dp"
-            android:text="Postal Code"
-            android:textSize="18sp"
-            android:textColor="@android:color/black" />
-
-        <!-- Price Tag -->
-        <TextView
-            android:id="@+id/priceTag"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingBottom="6dp"
-            android:text="Price: $25.00"
-            android:textSize="20sp"
-            android:textColor="@android:color/holo_green_dark" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:paddingTop="8dp">
-
-            <TextView
-                android:id="@+id/selectedDate"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Selected Date:"
-                android:textStyle="bold"
-                android:textSize="16sp"
-                android:textColor="@android:color/black" />
+            android:layout_margin="20dp"
+            android:gravity="center"
+            android:weightSum="2">
 
             <Button
-                android:id="@+id/selectDateButton"
-                android:layout_width="wrap_content"
+                android:id="@+id/confirmButton"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:background="@android:drawable/edit_text"
-                android:text="Pick a Date" />
+                android:layout_weight="1"
+                android:text="@string/confirm"
+                android:backgroundTint="@color/theme"
+                android:padding="12dp"
+                android:layout_marginEnd="8dp"/>
+
+            <Button
+                android:id="@+id/cancelButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/cancel"
+                android:textColor="@android:color/white"
+                android:backgroundTint="@android:color/darker_gray"
+                android:padding="12dp"
+                android:layout_marginEnd="8dp"/>
         </LinearLayout>
 
-        <!-- Time Selection -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingTop="14dp"
-            android:text="Select Time"
-            android:textSize="18sp"
-            android:textStyle="bold" />
-
-        <Spinner
-            android:id="@+id/timeSlotSpinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:background="@android:drawable/edit_text"
-            android:padding="10dp" />
-
-        <!-- Slot Selection -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingTop="16dp"
-            android:text="Select a Slot"
-            android:textSize="18sp"
-            android:textStyle="bold" />
-
-        <Spinner
-            android:id="@+id/slotSpinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:background="@android:drawable/edit_text"
-            android:padding="10dp" />
-
-        <!-- Confirmation Summary -->
-        <TextView
-            android:id="@+id/confirmationSummary"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="16dp"
-            android:text="Summary: Date: TBD, Time: TBD, Slot: TBD, Price: $25.00"
-            android:textSize="16sp" />
-
-        <!-- Buttons -->
-        <Button
-            android:id="@+id/confirmButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:padding="10dp"
-            android:stateListAnimator="@null"
-            android:text="Confirm Booking"
-            android:backgroundTint="@color/theme" />
-
-        <Button
-            android:id="@+id/cancelButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Cancel" />
 
         <!-- Progress Bar -->
         <ProgressBar

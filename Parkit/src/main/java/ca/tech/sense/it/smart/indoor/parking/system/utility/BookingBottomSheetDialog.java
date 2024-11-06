@@ -2,9 +2,10 @@ package ca.tech.sense.it.smart.indoor.parking.system.utility;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
-import android.content.SharedPreferences;
+
 import android.os.Bundle;
-import android.preference.PreferenceManager;
+
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -19,17 +20,23 @@ import androidx.annotation.NonNull;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-
+import com.google.firebase.database.ValueEventListener;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.model.BookingDetails;
+import ca.tech.sense.it.smart.indoor.parking.system.model.activity.Booking;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingSlot;
 
@@ -37,14 +44,14 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
 
     private Context context;
     private Spinner slotSpinner, timeSlotSpinner;
-    private Button confirmButton, cancelButton, selectDateButton;
+    private Button confirmButton, cancelButton;
     private ProgressBar progressBar;
-    private TextView addressText, postalCodeText, errorTextView, priceTag, confirmationSummary;
     private ImageButton starButton;
+    private TextView addressText, postalCodeText, errorTextView, selectedDateTextview, priceTextView;
+    private ImageButton selectDateButton;
     private String locationId;
     private String selectedDate;
     private ParkingUtility parkingUtility;
-    private double basePrice = 25.00; // Base price in USD
 
     public BookingBottomSheetDialog(@NonNull Context context, String locationId) {
         super(context);
@@ -68,39 +75,17 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
         progressBar = view.findViewById(R.id.progressBar);
         addressText = view.findViewById(R.id.addressText);
         postalCodeText = view.findViewById(R.id.postalCodeText);
-        priceTag = view.findViewById(R.id.priceTag);
-        confirmationSummary = view.findViewById(R.id.confirmationSummary);
-        starButton = view.findViewById(R.id.iv_add_to_favorites);
+        selectedDateTextview = view.findViewById(R.id.selectedDate);
+        priceTextView = view.findViewById(R.id.priceTag);
+
         // Set up the slot spinner
         setupTimeSlots();
         setupConfirmButton();
         setupCancelButton();
         setupSelectDateButton();
-        updateCurrencyDisplay();
         setupStarButton();
         // Fetch the parking location data when the dialog is opened
         fetchParkingLocationData();
-    }
-
-
-    private void updateCurrencyDisplay() {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-        String currency = preferences.getString("selected_currency", "USD");
-
-        double convertedPrice;
-        switch (currency) {
-            case "INR":
-                convertedPrice = basePrice * 75.0; // Conversion rate USD to INR
-                priceTag.setText(String.format("Price: ₹%.2f", convertedPrice));
-                break;
-            case "CAD":
-                convertedPrice = basePrice * 1.25; // Conversion rate USD to CAD
-                priceTag.setText(String.format("Price: CAD$%.2f", convertedPrice));
-                break;
-            default: // USD
-                priceTag.setText(String.format("Price: $%.2f", basePrice));
-                break;
-        }
     }
 
     private void fetchParkingLocationData() {
@@ -112,17 +97,17 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
                 if (location != null) {
                     addressText.setText(location.getAddress());
                     postalCodeText.setText(location.getPostalCode());
-                    priceTag.setText("Price: $" + location.getPrice());
                     setupSlotSpinnerData(location.getSlots());
+                    fetchPrice(locationId); // Fetch price for the location
                 } else {
-                    setErrorMessage("Location data is not available.");
+                    setErrorMessage(context.getString(R.string.location_data_is_not_available));
                 }
                 progressBar.setVisibility(View.GONE);
             }
 
             @Override
             public void onFetchFailure(Exception exception) {
-                setErrorMessage("Failed to fetch location data: " + exception.getMessage());
+                setErrorMessage(String.format("%s%s", context.getString(R.string.failed_to_fetch_location_data), exception.getMessage()));
                 progressBar.setVisibility(View.GONE);
             }
         });
@@ -136,6 +121,30 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, slotNames);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         slotSpinner.setAdapter(adapter);
+    }
+
+    private void fetchPrice(String locationId) {
+        DatabaseReference priceRef = FirebaseDatabase.getInstance().getReference("parkingLocations").child(locationId).child("price");
+        priceRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    Double priceValue = snapshot.getValue(Double.class);
+                    double price = (priceValue != null) ? priceValue : 0.0;
+                    Log.d("BookingBottomSheetDialog", "Price fetched: " + price);
+                    priceTextView.setText(String.format(Locale.getDefault(), "Price: $%.2f", price));
+                } else {
+                    Log.e("BookingBottomSheetDialog", "Price not found for location: " + locationId);
+                    priceTextView.setText("Price not available");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("BookingBottomSheetDialog", "Failed to fetch price: " + error.getMessage());
+                priceTextView.setText("Failed to fetch price");
+            }
+        });
     }
 
     private void setupTimeSlots() {
@@ -163,7 +172,7 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
             if (selectedSlot != null && selectedTimeSlot != null && selectedDate != null) {
                 confirmBooking(selectedSlot, selectedTimeSlot);
             } else {
-                Toast.makeText(context, "Please select a slot, date, and time.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, R.string.please_select_a_slot_date_and_time, Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -180,20 +189,82 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
             int day = calendar.get(Calendar.DAY_OF_MONTH);
 
             DatePickerDialog datePickerDialog = new DatePickerDialog(context, (view, selectedYear, selectedMonth, selectedDay) -> {
+                // Format the selected date
                 selectedDate = String.format(Locale.getDefault(), "%04d-%02d-%02d", selectedYear, selectedMonth + 1, selectedDay);
-                updateConfirmationSummary();
+                // Update the TextView with the selected date
+                selectedDateTextview.setText("Selected Date: " + selectedDate);
             }, year, month, day);
+
             datePickerDialog.show();
         });
     }
 
-    private void updateConfirmationSummary() {
-        confirmationSummary.setText(String.format("Summary: Date: %s, Time: TBD, Slot: TBD, Price: %s", selectedDate, priceTag.getText()));
-    }
-
     private void confirmBooking(String slot, String timing) {
-        confirmationSummary.setText(String.format("Summary: Date: %s, Time: %s, Slot: %s, Price: %s", selectedDate, timing, slot, priceTag.getText()));
-        Toast.makeText(context, "Booking confirmed", Toast.LENGTH_SHORT).show();
+        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        String userName = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
+
+        if (userName == null) {
+            userName = "";
+        }
+
+        // Convert timing to start and end time in milliseconds
+        String[] times = timing.split(" - ");
+        long startTime = convertToMillis(selectedDate + " " + times[0]);
+        long endTime = convertToMillis(selectedDate + " " + times[1]);
+
+        // Fetch price from the database
+        DatabaseReference priceRef = FirebaseDatabase.getInstance().getReference("parkingLocations").child(locationId).child("price");
+        priceRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    Double priceValue = snapshot.getValue(Double.class);
+                    double price = (priceValue != null) ? priceValue : 0.0;
+
+                    Booking booking = new Booking(
+                            "Park It", // Use "Park It" as title
+                            startTime,
+                            endTime,
+                            addressText.getText().toString(),
+                            slot,
+                            price
+                    );
+
+                    DatabaseReference databaseRef = FirebaseDatabase.getInstance()
+                            .getReference("bookings")
+                            .child(userId)
+                            .push();
+
+                    databaseRef.setValue(booking)
+                            .addOnSuccessListener(aVoid -> {
+                                Toast.makeText(context, R.string.booking_confirmed_and_saved, Toast.LENGTH_SHORT).show();
+                                dismiss();
+                            })
+                            .addOnFailureListener(e -> {
+                                Toast.makeText(context, context.getString(R.string.failed_to_save_booking) + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            });
+                } else {
+                    Log.e("BookingBottomSheetDialog", "Price not found for location: " + locationId);
+                    Toast.makeText(context, "Price not found for the selected location.", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("BookingBottomSheetDialog", "Failed to fetch price: " + error.getMessage());
+                Toast.makeText(context, context.getString(R.string.failed_to_fetch_price) + error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    private long convertToMillis(String dateTime) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
+        try {
+            Date date = sdf.parse(dateTime);
+            return date != null ? date.getTime() : 0;
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return 0;
+        }
     }
 
     public void setErrorMessage(String message) {
@@ -202,6 +273,7 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
             errorTextView.setVisibility(View.VISIBLE);
         }
     }
+
     private void setupStarButton() {
         starButton.setOnClickListener(v -> {
             // Get the current location details (you can customize this to fetch actual data)

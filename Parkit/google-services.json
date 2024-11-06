@@ -1,8 +1,9 @@
 {
   "project_info": {
     "project_number": "361561575523",
+    "firebase_url": "https://smartindoorparkingsystem-default-rtdb.firebaseio.com",
     "project_id": "smartindoorparkingsystem",
-    "storage_bucket": "smartindoorparkingsystem.appspot.com"
+    "storage_bucket": "smartindoorparkingsystem.firebasestorage.app"
   },
   "client": [
     {
@@ -12,7 +13,20 @@
           "package_name": "ca.tech.sense.it.smart.indoor.parking.system"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "361561575523-5lgalg487pgqjk8aljf1h1d7gkgnt71j.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ca.tech.sense.it.smart.indoor.parking.system",
+            "certificate_hash": "2755a502c47102764b78fd220bd839b3349d810d"
+          }
+        },
+        {
+          "client_id": "361561575523-q5k4o14em2cf6jm5f4fnts6o942078n1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyD3jAUS3SseL0STV94VFaN6sH5fk2Otu-M"
@@ -20,7 +34,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "361561575523-q5k4o14em2cf6jm5f4fnts6o942078n1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
