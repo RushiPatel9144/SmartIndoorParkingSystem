@@ -1,3 +1,8 @@
+/*Name: Kunal Dhiman, StudentID: N01540952,  section number: RCB
+  Name: Raghav Sharma, StudentID: N01537255,  section number: RCB
+  Name: NisargKumar Pareshbhai Joshi, StudentID: N01545986,  section number: RCB
+  Name: Rushi Manojkumar Patel, StudentID: N01539144, section number: RCB
+ */
 package ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav;
 
 import android.Manifest;
@@ -32,15 +37,13 @@ import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+
 import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
-import ca.tech.sense.it.smart.indoor.parking.system.model.Favorites;
+
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.BookingBottomSheetDialog;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.ParkingUtility;
