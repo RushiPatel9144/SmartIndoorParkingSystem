@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -17,9 +18,13 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -35,7 +40,7 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
     private Button confirmButton, cancelButton, selectDateButton;
     private ProgressBar progressBar;
     private TextView addressText, postalCodeText, errorTextView, priceTag, confirmationSummary;
-
+    private ImageButton starButton;
     private String locationId;
     private String selectedDate;
     private ParkingUtility parkingUtility;
@@ -65,14 +70,14 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
         postalCodeText = view.findViewById(R.id.postalCodeText);
         priceTag = view.findViewById(R.id.priceTag);
         confirmationSummary = view.findViewById(R.id.confirmationSummary);
-
+        starButton = view.findViewById(R.id.iv_add_to_favorites);
         // Set up the slot spinner
         setupTimeSlots();
         setupConfirmButton();
         setupCancelButton();
         setupSelectDateButton();
         updateCurrencyDisplay();
-
+        setupStarButton();
         // Fetch the parking location data when the dialog is opened
         fetchParkingLocationData();
     }
@@ -196,5 +201,39 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
             errorTextView.setText(message);
             errorTextView.setVisibility(View.VISIBLE);
         }
+    }
+    private void setupStarButton() {
+        starButton.setOnClickListener(v -> {
+            // Get the current location details (you can customize this to fetch actual data)
+            String locationId = this.locationId; // You can get this from your current instance or layout
+            String address = addressText.getText().toString(); // Get the address from your TextView
+
+            // Save the location to Firebase Realtime Database
+            saveLocationToFavorites(locationId, address);
+        });
+    }
+    private void saveLocationToFavorites(String locationId, String address) {
+        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();  // Get current user ID
+
+        // Create a map to save location data
+        Map<String, Object> locationData = new HashMap<>();
+        locationData.put("locationId", locationId);
+        locationData.put("address", address);
+
+        // Reference to Firebase Realtime Database for user's saved locations
+        DatabaseReference databaseRef = FirebaseDatabase.getInstance()
+                .getReference("users")
+                .child(userId)
+                .child("saved_locations")
+                .child(locationId);
+
+        // Save the location data
+        databaseRef.setValue(locationData)
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(context, "Location saved to favorites", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(context, "Failed to save location: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
 }
