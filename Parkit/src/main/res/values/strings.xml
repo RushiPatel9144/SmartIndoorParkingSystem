@@ -3,7 +3,7 @@
   Name: NisargKumar Pareshbhai Joshi, StudentID: N01545986,  section number: RCB
   Name: Rushi Manojkumar Patel, StudentID: N01539144, section number: RCB
 -->
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Park it</string>
     <string name="book_parking_spots_at_your_fingertips">Book Parking Spots At Your Fingertips</string>
     <string name="drawer_open">Open</string>
@@ -167,13 +167,14 @@
     <string name="error_sending_email">Error sending email</string>
     <string name="lock_screen_to_portrait">Lock Screen to Portrait</string>
     <string name="push_notifications">Push Notifications</string>
-    <string name="theme">Theme</string>
+    <string name="theme">Dark Theme</string>
     <string name="currency">Currency</string>
     <string name="booking_confirmed_and_saved">Booking confirmed and saved!</string>
     <string name="failed_to_save_booking">"Failed to save booking: "</string>
     <string name="please_select_a_slot_date_and_time">Please select a slot, date, and time.</string>
     <string name="failed_to_fetch_location_data">"Failed to fetch location data: "</string>
     <string name="location_data_is_not_available">Location data is not available.</string>
+    <string name="failed_to_fetch_price">failed to fetch price</string>
 
     <string-array name="time_slots">
         <item>9:00 AM - 10:00 AM</item>
@@ -187,5 +188,7 @@
         <item>5:00 PM - 6:00 PM</item>
         <item>6:00 PM - 7:00 PM</item>
     </string-array>
+    <string name="default_web_client_id">361561575523-q5k4o14em2cf6jm5f4fnts6o942078n1.apps.googleusercontent.com</string>
+    <string name="sign_in_with_google" tools:ignore="MissingTranslation">Sign in with Google</string>
 
 </resources>

@@ -5,12 +5,20 @@ public class Booking {
     private long startTime;
     private long endTime;
     private String location;
+    private String slotNumber;
+    private double price;
 
-    public Booking(String title, long startTime, long endTime, String location) {
+    public Booking() {
+        // Default constructor required for calls to DataSnapshot.getValue(Booking.class)
+    }
+
+    public Booking(String title, long startTime, long endTime, String location, String slotNumber, double price) {
         this.title = title;
         this.startTime = startTime;
         this.endTime = endTime;
         this.location = location;
+        this.slotNumber = slotNumber;
+        this.price = price;
     }
 
     public String getTitle() {
@@ -44,5 +52,20 @@ public class Booking {
     public void setLocation(String location) {
         this.location = location;
     }
-}
 
+    public String getSlotNumber() {
+        return slotNumber;
+    }
+
+    public void setSlotNumber(String slotNumber) {
+        this.slotNumber = slotNumber;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+}

@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Locale;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
-
 import ca.tech.sense.it.smart.indoor.parking.system.model.activity.Booking;
 
 public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingViewHolder> {
@@ -51,20 +50,28 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingV
     static class BookingViewHolder extends RecyclerView.ViewHolder {
 
         private TextView bookingTitle;
+        private TextView bookingAddress;
+        private TextView bookingSlotLabel;
+        private TextView bookingSlot;
         private TextView bookingTime;
-        private TextView bookingLocation;
+        private TextView bookingPrice;
 
         public BookingViewHolder(@NonNull View itemView) {
             super(itemView);
             bookingTitle = itemView.findViewById(R.id.booking_title);
+            bookingAddress = itemView.findViewById(R.id.booking_address);
+            bookingSlotLabel = itemView.findViewById(R.id.booking_slot_label);
+            bookingSlot = itemView.findViewById(R.id.booking_slot);
             bookingTime = itemView.findViewById(R.id.booking_time);
-            bookingLocation = itemView.findViewById(R.id.booking_location);
+            bookingPrice = itemView.findViewById(R.id.booking_price);
         }
 
         public void bind(Booking booking) {
-            bookingTitle.setText(booking.getTitle());
+            bookingTitle.setText("Park It");
+            bookingAddress.setText(booking.getLocation());
+            bookingSlot.setText(booking.getSlotNumber());
             bookingTime.setText(formatTime(booking.getStartTime(), booking.getEndTime()));
-            bookingLocation.setText(booking.getLocation());
+            bookingPrice.setText(String.format(Locale.getDefault(), "Price: $%.2f", booking.getPrice()));
         }
 
         private String formatTime(long startTime, long endTime) {
@@ -73,4 +80,3 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingV
         }
     }
 }
-
