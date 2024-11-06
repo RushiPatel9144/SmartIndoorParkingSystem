@@ -65,5 +65,8 @@
     <string name="invalid_e_mail_format">Invalid E-mail format</string>
     <string name="invaild_credentials">Invaild Credentials</string>
     <string name="_1_phone_number">+1 Phone number</string>
+    <string name="default_web_client_id">Y361561575523-q5k4o14em2cf6jm5f4fnts6o942078n1.apps.googleusercontent.com
+</string>
+
 
 </resources>
