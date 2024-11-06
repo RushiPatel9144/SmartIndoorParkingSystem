@@ -247,17 +247,22 @@ public class Park extends Fragment implements OnMapReadyCallback {
 
     private void moveMyLocationButton() {
         if (getView() != null) {
-            View locationButton = ((View) getView().findViewById(Integer.parseInt("1")).getParent()).findViewById(Integer.parseInt("2"));
-            if (locationButton != null) {
-                RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) locationButton.getLayoutParams();
-                // Adjust these values to set the desired position
-                layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0); // Remove top alignment
-                layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE); // Align to the bottom
-                layoutParams.setMargins(0, 0, 30, 350); // Adjust margins as needed
-                locationButton.setLayoutParams(layoutParams);
+            View locationButton = getView().findViewById(Integer.parseInt("1"));
+            if (locationButton != null && locationButton.getParent() != null) {
+                View parent = (View) locationButton.getParent();
+                View myLocationButton = parent.findViewById(Integer.parseInt("2"));
+                if (myLocationButton != null) {
+                    RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) myLocationButton.getLayoutParams();
+                    // Adjust these values to set the desired position
+                    layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0); // Remove top alignment
+                    layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE); // Align to the bottom
+                    layoutParams.setMargins(0, 0, 30, 350); // Adjust margins as needed
+                    myLocationButton.setLayoutParams(layoutParams);
+                }
             }
         }
     }
+
 
 
 
