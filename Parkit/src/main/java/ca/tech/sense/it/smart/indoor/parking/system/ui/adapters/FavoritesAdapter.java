@@ -4,19 +4,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.maps.model.LatLng;
-
 import java.util.List;
+
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 
 public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.FavoriteViewHolder> {
 
-    private List<LatLng> favoriteLocationList;
+    private List<String> favoriteLocationList; // List of addresses
 
-    public FavoritesAdapter(List<LatLng> favoriteLocationList) {
+    public FavoritesAdapter(List<String> favoriteLocationList) {
         this.favoriteLocationList = favoriteLocationList;
     }
 
@@ -29,10 +29,9 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
 
     @Override
     public void onBindViewHolder(@NonNull FavoriteViewHolder holder, int position) {
-        LatLng favoriteLocation = favoriteLocationList.get(position);
+        String favoriteAddress = favoriteLocationList.get(position);
         holder.tvFavoriteTitle.setText("Favorite Location " + (position + 1));
-        holder.tvFavoriteAddress.setText("Lat: " + favoriteLocation.latitude + ", Lng: " + favoriteLocation.longitude);
-        holder.tvFavoritePostalCode.setText("Postal Code: N/A"); // Placeholder, update with actual postal code if available
+        holder.tvFavoriteAddress.setText(favoriteAddress);
     }
 
     @Override
@@ -43,13 +42,11 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
     public static class FavoriteViewHolder extends RecyclerView.ViewHolder {
         TextView tvFavoriteTitle;
         TextView tvFavoriteAddress;
-        TextView tvFavoritePostalCode;
 
         public FavoriteViewHolder(@NonNull View itemView) {
             super(itemView);
             tvFavoriteTitle = itemView.findViewById(R.id.tvFavoriteTitle);
             tvFavoriteAddress = itemView.findViewById(R.id.tvFavoriteAddress);
-            tvFavoritePostalCode = itemView.findViewById(R.id.tvFavoritePostalCode);
         }
     }
 }
