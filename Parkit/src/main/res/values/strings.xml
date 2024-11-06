@@ -190,5 +190,7 @@
     </string-array>
     <string name="default_web_client_id">361561575523-q5k4o14em2cf6jm5f4fnts6o942078n1.apps.googleusercontent.com</string>
     <string name="sign_in_with_google" tools:ignore="MissingTranslation">Sign in with Google</string>
+    <string name="profile_picture_upload_failed">Profile picture upload failed</string>
+    <string name="no_bookings_to_show">No bookings to show</string>
 
 </resources>

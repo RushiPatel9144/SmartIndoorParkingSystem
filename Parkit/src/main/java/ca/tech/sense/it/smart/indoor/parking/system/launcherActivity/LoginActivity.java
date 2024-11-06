@@ -56,7 +56,7 @@ public class LoginActivity extends AppCompatActivity {
     private TextView textView, forgotPasswordTextView;
     private ProgressBar progressBar;
 
-    private static final int RC_SIGN_IN = 1001; // Request code for sign-in
+    public static final int RC_SIGN_IN = 1001; // Request code for sign-in
     private MaterialButton googleSignInButton; // Add this button in your layout
 
     // Firebase Authentication instance

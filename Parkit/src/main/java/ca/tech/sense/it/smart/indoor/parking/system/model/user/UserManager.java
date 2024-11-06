@@ -16,6 +16,9 @@ public class UserManager {
     private static UserManager instance;
     private final FirebaseAuth mAuth;
     private final FirebaseFirestore db;
+
+
+
     private User currentUser;
 
     // Private constructor to prevent direct instantiation
@@ -35,6 +38,9 @@ public class UserManager {
     // Method to get current user data
     public User getCurrentUser() {
         return currentUser;
+    }
+    public void setCurrentUser(User currentUser) {
+        this.currentUser = currentUser;
     }
 
     // Fetch user data from Firestore

@@ -104,4 +104,24 @@ public class DialogUtil {
 
         dialog.show();
     }
+
+    public static void showGoogleSignInDialog(Context context, DialogCallback callback) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("Google Sign-In")
+                .setMessage("Would you like to sign in with your Google account?")
+                .setPositiveButton("Sign In", (dialog, which) -> {
+                    // Handle Google Sign-In logic here
+                    callback.onConfirm();  // Call onConfirm() when user presses Sign In
+                })
+                .setNegativeButton("Cancel", (dialog, which) -> {
+                    callback.onCancel();  // Call onCancel() when user cancels the dialog
+                })
+                .setCancelable(false);  // Optionally make the dialog non-cancelable
+        builder.show();
+    }
+
+//    public interface DialogCallback {
+//        void onConfirm();
+//        void onCancel();
+//    }
 }
