@@ -1,7 +1,14 @@
+/*Name: Kunal Dhiman, StudentID: N01540952,  section number: RCB
+  Name: Raghav Sharma, StudentID: N01537255,  section number: RCB
+  Name: NisargKumar Pareshbhai Joshi, StudentID: N01545986,  section number: RCB
+  Name: Rushi Manojkumar Patel, StudentID: N01539144, section number: RCB
+ */
 package ca.tech.sense.it.smart.indoor.parking.system.utility;
 
 import static android.content.ContentValues.TAG;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -68,7 +75,6 @@ public class ParkingUtility {
                 });
     }
 
-    // Fetch all parking locations
     public void fetchAllParkingLocations(final FetchLocationsCallback callback) {
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -81,15 +87,16 @@ public class ParkingUtility {
                         locations.put(locationSnapshot.getKey(), location);
                     }
                 }
-                callback.onFetchSuccess(locations);
+                new Handler(Looper.getMainLooper()).post(() -> callback.onFetchSuccess(locations));
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                callback.onFetchFailure(databaseError.toException());
+                new Handler(Looper.getMainLooper()).post(() -> callback.onFetchFailure(databaseError.toException()));
             }
         });
     }
+
 
     // Fetch specific parking location
     public void fetchParkingLocation(String locationId, final FetchLocationCallback callback) {
