@@ -5,10 +5,12 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -16,7 +18,11 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -25,6 +31,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.model.Favorites;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingSlot;
 
@@ -35,6 +42,8 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
     private Button confirmButton, cancelButton, selectDateButton;
     private ProgressBar progressBar;
     private TextView addressText, postalCodeText, errorTextView, priceTag, confirmationSummary;
+    private ImageButton ivAddToFavorites;
+    private FavoriteManager favoriteManager;
 
     private String locationId;
     private String selectedDate;
@@ -46,6 +55,7 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
         this.context = context;
         this.locationId = locationId;
         parkingUtility = new ParkingUtility();
+        favoriteManager = new FavoriteManager(context);
     }
 
     @Override
@@ -65,6 +75,7 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
         postalCodeText = view.findViewById(R.id.postalCodeText);
         priceTag = view.findViewById(R.id.priceTag);
         confirmationSummary = view.findViewById(R.id.confirmationSummary);
+        ivAddToFavorites = view.findViewById(R.id.iv_add_to_favorites);
 
         // Set up the slot spinner
         setupTimeSlots();
@@ -72,11 +83,37 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
         setupCancelButton();
         setupSelectDateButton();
         updateCurrencyDisplay();
+        setupFavoriteButton();
 
         // Fetch the parking location data when the dialog is opened
         fetchParkingLocationData();
     }
 
+    private void setupFavoriteButton() {
+        ivAddToFavorites.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addLocationToFavorites();
+            }
+        });
+    }
+
+    private void addLocationToFavorites() {
+        parkingUtility.fetchParkingLocationById(locationId, new ParkingUtility.FetchLocationCallback() {
+            @Override
+            public void onFetchSuccess(ParkingLocation parkingLocation) {
+                LatLng location = new LatLng(parkingLocation.getLatitude(), parkingLocation.getLongitude());
+                favoriteManager.addFavorite(location);
+                Toast.makeText(context, "Location added to favorites!", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFetchFailure(Exception e) {
+                Log.e("BookingBottomSheetDialog", "Error fetching parking location: ", e);
+                Toast.makeText(context, "Failed to add location to favorites.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
     private void updateCurrencyDisplay() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());

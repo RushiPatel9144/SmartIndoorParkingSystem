@@ -40,12 +40,16 @@ import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.model.Favorites;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.BookingBottomSheetDialog;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.ParkingSpotDetails;
@@ -198,13 +202,35 @@ public class Park extends Fragment implements OnMapReadyCallback {
         bookingDialog.show();
     }
 
-    private void addLocationToFavorites(Marker marker) {
-        if (marker != null) {
-            LatLng location = marker.getPosition();
-            favoriteManager.addFavorite(location);
-            Toast.makeText(getContext(), "Location added to favorites!", Toast.LENGTH_SHORT).show();
-        }
-    }
+//    private void addLocationToFavorites(Marker marker) {
+//        if (marker != null) {
+//            String parkingLocationId = (String) marker.getTag();
+//            parkingUtility.fetchParkingLocationById(parkingLocationId, new ParkingUtility.FetchLocationCallback() {
+//                @Override
+//                public void onFetchSuccess(ParkingLocation parkingLocation) {
+//                    String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+//                    DatabaseReference favoritesRef = FirebaseDatabase.getInstance().getReference().child("favorites").child(userId);
+//
+//                    Favorites favoriteLocation = new Favorites(
+//                            parkingLocation.getId(),
+//                            parkingLocation.getAddress(),
+//                            parkingLocation.getName(),
+//                            parkingLocation.getPostalCode()
+//                    );
+//
+//                    favoritesRef.child(parkingLocation.getId()).setValue(favoriteLocation);
+//                    Toast.makeText(getContext(), "Location added to favorites!", Toast.LENGTH_SHORT).show();
+//                }
+//
+//                @Override
+//                public void onFetchFailure(Exception e) {
+//                    Log.e(TAG, "Error fetching parking location: ", e);
+//                    Toast.makeText(getContext(), "Failed to add location to favorites.", Toast.LENGTH_SHORT).show();
+//                }
+//            });
+//        }
+//    }
+
 
     private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId) {
         Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorResId);
