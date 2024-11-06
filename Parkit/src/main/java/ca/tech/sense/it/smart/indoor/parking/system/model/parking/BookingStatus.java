@@ -1,9 +1,9 @@
+/*Name: Kunal Dhiman, StudentID: N01540952,  section number: RCB
+  Name: Raghav Sharma, StudentID: N01537255,  section number: RCB
+  Name: NisargKumar Pareshbhai Joshi, StudentID: N01545986,  section number: RCB
+  Name: Rushi Manojkumar Patel, StudentID: N01539144, section number: RCB
+ */
 package ca.tech.sense.it.smart.indoor.parking.system.model.parking;
-
-import android.annotation.SuppressLint;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class BookingStatus {
     private String status; // "occupied" or "available"

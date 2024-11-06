@@ -25,6 +25,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.model.BookingDetails;
 import ca.tech.sense.it.smart.indoor.parking.system.model.activity.Booking;
@@ -46,9 +48,9 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
     private Spinner slotSpinner, timeSlotSpinner;
     private Button confirmButton, cancelButton;
     private ProgressBar progressBar;
-    private ImageButton starButton;
     private TextView addressText, postalCodeText, errorTextView, selectedDateTextview, priceTextView;
-    private ImageButton selectDateButton;
+    private ImageButton selectDateButton, starButton; // Add starButton
+
     private String locationId;
     private String selectedDate;
     private ParkingUtility parkingUtility;
@@ -72,6 +74,7 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
         confirmButton = view.findViewById(R.id.confirmButton);
         cancelButton = view.findViewById(R.id.cancelButton);
         selectDateButton = view.findViewById(R.id.selectDateButton);
+        starButton = view.findViewById(R.id.iv_add_to_favorites); // Initialize starButton
         progressBar = view.findViewById(R.id.progressBar);
         addressText = view.findViewById(R.id.addressText);
         postalCodeText = view.findViewById(R.id.postalCodeText);
@@ -83,7 +86,8 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
         setupConfirmButton();
         setupCancelButton();
         setupSelectDateButton();
-        setupStarButton();
+        setupStarButton(); // Set up starButton
+
         // Fetch the parking location data when the dialog is opened
         fetchParkingLocationData();
     }
@@ -284,6 +288,7 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
             saveLocationToFavorites(locationId, address);
         });
     }
+
     private void saveLocationToFavorites(String locationId, String address) {
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();  // Get current user ID
 
@@ -293,19 +298,13 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
         locationData.put("address", address);
 
         // Reference to Firebase Realtime Database for user's saved locations
-        DatabaseReference databaseRef = FirebaseDatabase.getInstance()
-                .getReference("users")
-                .child(userId)
-                .child("saved_locations")
-                .child(locationId);
+        DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference("users").child(userId).child("saved_locations").child(locationId);
 
         // Save the location data
-        databaseRef.setValue(locationData)
-                .addOnSuccessListener(aVoid -> {
-                    Toast.makeText(context, "Location saved to favorites", Toast.LENGTH_SHORT).show();
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(context, "Failed to save location: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
+        databaseRef.setValue(locationData).addOnSuccessListener(aVoid -> {
+            Toast.makeText(context, "Location saved to favorites", Toast.LENGTH_SHORT).show();
+        }).addOnFailureListener(e -> {
+            Toast.makeText(context, "Failed to save location: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        });
     }
 }
