@@ -25,16 +25,15 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.model.BookingDetails;
 import ca.tech.sense.it.smart.indoor.parking.system.model.activity.Booking;
@@ -47,8 +46,8 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
     private Spinner slotSpinner, timeSlotSpinner;
     private Button confirmButton, cancelButton;
     private ProgressBar progressBar;
+    private ImageButton starButton;
     private TextView addressText, postalCodeText, errorTextView, selectedDateTextview, priceTextView;
-
     private ImageButton selectDateButton;
     private String locationId;
     private String selectedDate;
@@ -84,7 +83,7 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
         setupConfirmButton();
         setupCancelButton();
         setupSelectDateButton();
-
+        setupStarButton();
         // Fetch the parking location data when the dialog is opened
         fetchParkingLocationData();
     }
@@ -275,4 +274,38 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
         }
     }
 
+    private void setupStarButton() {
+        starButton.setOnClickListener(v -> {
+            // Get the current location details (you can customize this to fetch actual data)
+            String locationId = this.locationId; // You can get this from your current instance or layout
+            String address = addressText.getText().toString(); // Get the address from your TextView
+
+            // Save the location to Firebase Realtime Database
+            saveLocationToFavorites(locationId, address);
+        });
+    }
+    private void saveLocationToFavorites(String locationId, String address) {
+        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();  // Get current user ID
+
+        // Create a map to save location data
+        Map<String, Object> locationData = new HashMap<>();
+        locationData.put("locationId", locationId);
+        locationData.put("address", address);
+
+        // Reference to Firebase Realtime Database for user's saved locations
+        DatabaseReference databaseRef = FirebaseDatabase.getInstance()
+                .getReference("users")
+                .child(userId)
+                .child("saved_locations")
+                .child(locationId);
+
+        // Save the location data
+        databaseRef.setValue(locationData)
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(context, "Location saved to favorites", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(context, "Failed to save location: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+    }
 }
