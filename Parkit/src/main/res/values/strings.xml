@@ -190,5 +190,7 @@
     </string-array>
     <string name="default_web_client_id">361561575523-q5k4o14em2cf6jm5f4fnts6o942078n1.apps.googleusercontent.com</string>
     <string name="sign_in_with_google" tools:ignore="MissingTranslation">Sign in with Google</string>
+    <string name="update_failed">Update Failed</string>
+    <string name="profile_photo_updated">Profile photo updated</string>
 
 </resources>
