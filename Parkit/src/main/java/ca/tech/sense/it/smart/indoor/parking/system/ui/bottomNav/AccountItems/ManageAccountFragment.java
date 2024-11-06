@@ -39,6 +39,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.io.IOException;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.model.user.User;
+import ca.tech.sense.it.smart.indoor.parking.system.model.user.UserManager;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.AuthUtils;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.ImageCropActivity;
@@ -158,51 +160,71 @@ public class ManageAccountFragment extends Fragment {
     }
 
     private void fetchUserInfo() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        User user = UserManager.getInstance().getCurrentUser();
+
         if (user != null) {
+            // Populate UI with cached user data
             String email = user.getEmail();
             if (email != null) {
                 contactDetailsTextView.setText(email);
             }
-            String uid = user.getUid();
-            fetchUserDetailsFromFirestore(uid);
+
+            String firstName = user.getFirstName();
+            String lastName = user.getLastName();
+            String phone = user.getPhone();
+
+            if (firstName != null) {
+                nameTextView.setText(firstName);
+            }
+            if (lastName != null) {
+                nameTextView.append(" " + lastName);
+            }
+            if (phone != null) {
+                phoneNumberTextView.setText(phone);
+            } else {
+                phoneNumberTextView.setText(R.string.add_phone_number);
+            }
+
+            Log.d("Activity", "User data retrieved from cache.");
         } else {
-            showSnackbar(R.string.user_not_authenticated);
+            Log.d("Activity", "User data not available in cache.");
+            showSnackbar(R.string.user_data_not_found);
         }
     }
 
-    private void fetchUserDetailsFromFirestore(String uid) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        DocumentReference docRef = db.collection("users").document(uid);
 
-        docRef.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                DocumentSnapshot document = task.getResult();
-                if (document.exists()) {
-                    String firstName = document.getString("firstName");
-                    String lastName = document.getString("lastName");
-                    String phoneNumber = document.getString("phone");
-
-                    if (firstName != null) {
-                        nameTextView.setText(firstName);
-                    }
-                    if (lastName != null) {
-                        nameTextView.append(" " + lastName);
-                    }
-                    if (phoneNumber != null) {
-                        phoneNumberTextView.setText(phoneNumber);
-                    } else {
-                        phoneNumberTextView.setText(R.string.add_phone_number);
-                    }
-                } else {
-                    showSnackbar(R.string.user_data_not_found);
-                }
-            } else {
-                Log.e("TAG", "Firestore fetch failed: " + task.getException());
-                showSnackbar(R.string.fetch_data_failed);
-            }
-        });
-    }
+//    private void fetchUserDetailsFromFirestore(String uid) {
+//        FirebaseFirestore db = FirebaseFirestore.getInstance();
+//        DocumentReference docRef = db.collection("users").document(uid);
+//
+//        docRef.get().addOnCompleteListener(task -> {
+//            if (task.isSuccessful()) {
+//                DocumentSnapshot document = task.getResult();
+//                if (document.exists()) {
+//                    String firstName = document.getString("firstName");
+//                    String lastName = document.getString("lastName");
+//                    String phoneNumber = document.getString("phone");
+//
+//                    if (firstName != null) {
+//                        nameTextView.setText(firstName);
+//                    }
+//                    if (lastName != null) {
+//                        nameTextView.append(" " + lastName);
+//                    }
+//                    if (phoneNumber != null) {
+//                        phoneNumberTextView.setText(phoneNumber);
+//                    } else {
+//                        phoneNumberTextView.setText(R.string.add_phone_number);
+//                    }
+//                } else {
+//                    showSnackbar(R.string.user_data_not_found);
+//                }
+//            } else {
+//                Log.e("TAG", "Firestore fetch failed: " + task.getException());
+//                showSnackbar(R.string.fetch_data_failed);
+//            }
+//        });
+//    }
 
     private void openGallery() {
         Intent intent = new Intent(Intent.ACTION_PICK);
