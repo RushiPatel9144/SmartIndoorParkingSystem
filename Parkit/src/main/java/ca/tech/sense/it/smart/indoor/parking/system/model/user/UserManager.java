@@ -29,13 +29,13 @@ public class UserManager {
 
     // Singleton instance
     public static synchronized UserManager getInstance() {
+
         if (instance == null) {
             instance = new UserManager();
         }
         return instance;
     }
 
-    // Method to get current user data
     public User getCurrentUser() {
         return currentUser;
     }
@@ -83,3 +83,4 @@ public class UserManager {
         void onUserDataFetched(User user);
     }
 }
+
