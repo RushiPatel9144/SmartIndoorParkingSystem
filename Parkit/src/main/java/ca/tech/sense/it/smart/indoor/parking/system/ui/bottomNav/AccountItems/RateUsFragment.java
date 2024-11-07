@@ -7,10 +7,7 @@ package ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems;
 
 import android.os.Build;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import android.text.TextUtils;
-import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -80,10 +77,10 @@ public class RateUsFragment extends Fragment {
         optionRealTime = view.findViewById(R.id.option_real_time);
 
         // Set up option click listeners
-        setOptionClickListener(optionParkingSpot, "Parking Spot Easily Found");
-        setOptionClickListener(optionSecureTransaction, "Secure Transaction");
-        setOptionClickListener(optionUserInterface, "User-Friendly Interface");
-        setOptionClickListener(optionRealTime, "Real-Time Features");
+        setOptionClickListener(optionParkingSpot, getString(R.string.parking_spot_easily_found));
+        setOptionClickListener(optionSecureTransaction, getString(R.string.secure_transaction));
+        setOptionClickListener(optionUserInterface, getString(R.string.user_friendly_interface));
+        setOptionClickListener(optionRealTime, getString(R.string.real_time_features));
     }
 
     // Sets up the submit button click listener with feedback to the user.
@@ -119,10 +116,10 @@ public class RateUsFragment extends Fragment {
                                         // Add a new document with generated ID to the 'feedback' collection
                                         db.collection("feedback").add(feedback)
                                                 .addOnSuccessListener(documentReference -> {
-                                                    Toast.makeText(getContext(), "Feedback submitted successfully!", Toast.LENGTH_SHORT).show();
+                                                    Toast.makeText(getContext(), getString(R.string.feedback_submitted_successfully), Toast.LENGTH_SHORT).show();
                                                 })
                                                 .addOnFailureListener(e -> {
-                                                    Toast.makeText(getContext(), "Error submitting feedback: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                                    Toast.makeText(getContext(), getString(R.string.error_submitting_feedback) + e.getMessage(), Toast.LENGTH_SHORT).show();
                                                 });
 
                                         // Clear the inputs after submission (optional)
@@ -133,10 +130,10 @@ public class RateUsFragment extends Fragment {
                                 }
                             })
                             .addOnFailureListener(e -> {
-                                Toast.makeText(getContext(), "Error fetching user info: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), getString(R.string.error_fetching_user_info) + e.getMessage(), Toast.LENGTH_SHORT).show();
                             });
                 } else {
-                    Toast.makeText(getContext(), "Please provide a rating, comment, or select an option", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), getString(R.string.please_provide_a_rating_comment_or_select_an_option), Toast.LENGTH_SHORT).show();
                 }
             }
         });

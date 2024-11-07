@@ -118,7 +118,7 @@ public class Park extends Fragment implements OnMapReadyCallback {
 
                 @Override
                 public void onError(@NonNull Status status) {
-                    Log.d(TAG, "Error: " + status.getStatusMessage());
+                    Log.d(TAG, getString(R.string.error)+ status.getStatusMessage());
                 }
             });
         }
@@ -193,6 +193,7 @@ public class Park extends Fragment implements OnMapReadyCallback {
             public void onFetchFailure(Exception e) {
                 Log.e(TAG, getString(R.string.error_fetching_parking_locations), e);
                 Toast.makeText(requireContext(), Toast.LENGTH_SHORT, R.string.failed_to_load_parking_locations).show();
+
             }
         });
     }
@@ -266,6 +267,7 @@ public class Park extends Fragment implements OnMapReadyCallback {
             requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
         }
     }
+
 
     private void registerPermissionLauncher() {
         requestPermissionLauncher = registerForActivityResult(

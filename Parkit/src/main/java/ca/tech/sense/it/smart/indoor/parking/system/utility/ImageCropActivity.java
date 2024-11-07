@@ -48,7 +48,7 @@ public class ImageCropActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progress_bar);  // Assuming you have a ProgressBar in your layout
         cropImageView.setAspectRatio(1, 1);
 
-        Uri imageUri = getIntent().getParcelableExtra("imageUri");
+        Uri imageUri = getIntent().getParcelableExtra(getString(R.string.imageuri));
         if (imageUri != null) {
             cropImageView.setImageUriAsync(imageUri);
         }
@@ -75,7 +75,7 @@ public class ImageCropActivity extends AppCompatActivity {
                 progressBar.setVisibility(View.GONE);
                 if (finalCroppedImageUri != null) {
                     Intent resultIntent = new Intent();
-                    resultIntent.putExtra("croppedImageUri", finalCroppedImageUri.toString());
+                    resultIntent.putExtra(getString(R.string.croppedimageuri), finalCroppedImageUri.toString());
                     setResult(Activity.RESULT_OK, resultIntent);
                 }
                 finish();

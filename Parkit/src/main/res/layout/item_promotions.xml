@@ -26,7 +26,7 @@
                 android:id="@+id/PromotionTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Promotion Title"
+                android:text="@string/promotion_title"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:paddingBottom="4dp"/>
@@ -36,7 +36,7 @@
                 android:id="@+id/PromotionDescription"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Promotion description goes here"
+                android:text="@string/promotion_description_goes_here"
                 android:textSize="16sp"/>
 
         </LinearLayout>
@@ -46,7 +46,7 @@
             android:id="@+id/PromotionDiscount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="20%"
+            android:text="@string/_20"
             android:textSize="24sp"
             android:textStyle="bold"
             android:textColor="@android:color/holo_green_dark"
