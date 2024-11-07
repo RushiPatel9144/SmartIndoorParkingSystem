@@ -5,17 +5,24 @@
  */
 package ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav;
 
+import static ca.tech.sense.it.smart.indoor.parking.system.R.string.location_permission_denied;
+import static ca.tech.sense.it.smart.indoor.parking.system.R.string.unable_to_get_current_location;
+
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
@@ -24,6 +31,8 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -37,9 +46,11 @@ import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
@@ -55,24 +66,15 @@ public class Park extends Fragment implements OnMapReadyCallback {
     private ParkingUtility parkingUtility;
     private ExecutorService executorService;
     private ActivityResultLauncher<String> requestPermissionLauncher;
+    private FusedLocationProviderClient fusedLocationClient;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         parkingUtility = new ParkingUtility();
-        executorService = Executors.newSingleThreadExecutor(); // Executor for background tasks
-
-        // Register the ActivityResultLauncher for permission handling
-        requestPermissionLauncher = registerForActivityResult(
-                new ActivityResultContracts.RequestPermission(),
-                isGranted -> {
-                    if (isGranted) {
-                        enableMyLocation();
-                    } else {
-                        Toast.makeText(getContext(), getString(R.string.location_permission_denied), Toast.LENGTH_SHORT).show();
-                    }
-                }
-        );
+        executorService = Executors.newSingleThreadExecutor(); // Executor for background tasks\
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext());
+        registerPermissionLauncher();
     }
 
     @Override
@@ -127,9 +129,8 @@ public class Park extends Fragment implements OnMapReadyCallback {
         mMap = googleMap;
 
         setupMapUI();
-        moveMyLocationButton();
-        checkLocationPermissionAndEnableMyLocation();
-
+        ImageButton myLocationButton = requireView().findViewById(R.id.my_location_button);
+        myLocationButton.setOnClickListener(v -> checkLocationPermissionAndEnableMyLocation());
         // Asynchronous task to add parking spots
         executorService.execute(this::addParkingSpotsToMap);
 
@@ -141,7 +142,7 @@ public class Park extends Fragment implements OnMapReadyCallback {
 
     private void setupMapUI() {
         mMap.getUiSettings().setZoomControlsEnabled(true);
-        mMap.getUiSettings().setMyLocationButtonEnabled(true);
+        mMap.getUiSettings().setMyLocationButtonEnabled(false);
         mMap.getUiSettings().setCompassEnabled(true);
         mMap.getUiSettings().setMapToolbarEnabled(true);
         mMap.getUiSettings().setScrollGesturesEnabled(true);
@@ -191,7 +192,8 @@ public class Park extends Fragment implements OnMapReadyCallback {
             @Override
             public void onFetchFailure(Exception e) {
                 Log.e(TAG, getString(R.string.error_fetching_parking_locations), e);
-                Toast.makeText(requireContext(), getString(R.string.failed_to_load_parking_locations), Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), Toast.LENGTH_SHORT, R.string.failed_to_load_parking_locations).show();
+
             }
         });
     }
@@ -230,32 +232,54 @@ public class Park extends Fragment implements OnMapReadyCallback {
     private void checkLocationPermissionAndEnableMyLocation() {
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             enableMyLocation();
+        } else{
+            requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
+
+    }}
+
+
+    private void showSettingsSnackbar() {
+        Snackbar.make(requireView(), R.string.location_permission_is_required_to_use_this_feature_please_enable_it_in_settings, Snackbar.LENGTH_INDEFINITE)
+                .setAction(R.string.settings, v -> {
+                    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                    Uri uri = Uri.fromParts("package", requireContext().getPackageName(), null);
+                    intent.setData(uri);
+                    startActivity(intent);
+                })
+                .show();
+    }
+
+
+    private void enableMyLocation() {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            // Get the last known location
+            fusedLocationClient.getLastLocation()
+                    .addOnSuccessListener(requireActivity(), location -> {
+                        if (location != null) {
+                            LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15)); // Zoom level 15 is just an example
+                            mMap.addMarker(new MarkerOptions().position(currentLatLng).title(getString(R.string.you_are_here)));
+                        } else {
+                            Toast.makeText(requireContext(), unable_to_get_current_location, Toast.LENGTH_SHORT).show();
+                        }
+                    });
         } else {
             requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
         }
     }
 
-    private void enableMyLocation() {
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            mMap.setMyLocationEnabled(true);
-        }
+
+    private void registerPermissionLauncher() {
+        requestPermissionLauncher = registerForActivityResult(
+                new ActivityResultContracts.RequestPermission(),
+                isGranted -> {
+                    if (isGranted) {
+                        enableMyLocation();
+                    } else {
+                        Toast.makeText(getContext(), location_permission_denied, Toast.LENGTH_SHORT).show();
+                    }
+                }
+        );
     }
 
-    private void moveMyLocationButton() {
-        if (getView() != null) {
-            View locationButton = getView().findViewById(Integer.parseInt(getString(R.string._1)));
-            if (locationButton != null && locationButton.getParent() != null) {
-                View parent = (View) locationButton.getParent();
-                View myLocationButton = parent.findViewById(Integer.parseInt(getString(R.string._2)));
-                if (myLocationButton != null) {
-                    RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) myLocationButton.getLayoutParams();
-                    // Adjust these values to set the desired position
-                    layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0); // Remove top alignment
-                    layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE); // Align to the bottom
-                    layoutParams.setMargins(0, 0, 30, 350); // Adjust margins as needed
-                    myLocationButton.setLayoutParams(layoutParams);
-                }
-            }
-        }
-    }
 }

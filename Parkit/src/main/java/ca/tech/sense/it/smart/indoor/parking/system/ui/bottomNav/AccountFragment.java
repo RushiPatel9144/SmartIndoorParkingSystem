@@ -93,6 +93,7 @@ public class AccountFragment extends Fragment {
     private void handleLogout() {
         // Clear the in-memory session data
 //        UserSession.clearSession();
+
         FirebaseAuth.getInstance().signOut();
         Intent intent = new Intent(requireActivity(), LoginActivity.class);
         startActivity(intent);

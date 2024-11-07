@@ -1,8 +1,3 @@
-/*Name: Kunal Dhiman, StudentID: N01540952,  section number: RCB
-  Name: Raghav Sharma, StudentID: N01537255,  section number: RCB
-  Name: NisargKumar Pareshbhai Joshi, StudentID: N01545986,  section number: RCB
-  Name: Rushi Manojkumar Patel, StudentID: N01539144, section number: RCB
- */
 package ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems;
 
 import android.Manifest;
@@ -29,12 +24,19 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.IOException;
 
@@ -44,6 +46,7 @@ import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.ImageCropActivity;
 
 public class ManageAccountFragment extends Fragment {
+
     private static final String PREFS_NAME = "AccountPrefs";
     private static final String KEY_PROFILE_PICTURE_URI = "profile_picture_uri";
 
@@ -77,7 +80,7 @@ public class ManageAccountFragment extends Fragment {
                         Uri croppedImageUri = Uri.parse(croppedImageUriString);
                         loadCroppedImage(croppedImageUri);
                         saveProfilePicture(croppedImageUri);
-                        loadProfilePicture();
+                        uploadProfilePicture(croppedImageUri); // Upload new profile picture to Firebase
                     }
                 }
             }
@@ -109,15 +112,16 @@ public class ManageAccountFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_manage_account, container, false);
         bindViews(rootView);
+
         fetchUserInfo();
         loadProfilePicture();
+
         return rootView;
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        loadProfilePicture();
         setupProfilePictureButton();
         setupPasswordResetButton();
         manageEmail();
@@ -156,6 +160,7 @@ public class ManageAccountFragment extends Fragment {
         intent.putExtra(getString(R.string.imageuri), imageUri);
         imageCropLauncher.launch(intent);
     }
+
 
     private void fetchUserInfo() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -211,39 +216,150 @@ public class ManageAccountFragment extends Fragment {
     }
 
     private void loadProfilePicture() {
-        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        String uriString = sharedPreferences.getString(KEY_PROFILE_PICTURE_URI, null);
-        if (uriString != null) {
-            try {
-                Uri uri = Uri.parse(uriString);
-                profilePicture.setImageURI(uri);
-            } catch (Exception e) {
-                profilePicture.setImageResource(R.mipmap.ic_launcher);
-            }
-        } else {
-            profilePicture.setImageResource(R.mipmap.ic_launcher);
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            showSnackbar(R.string.user_not_authenticated);
+            return;
         }
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference userRef = db.collection("users").document(user.getUid());
+
+        userRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+                    String profilePictureUrl = document.getString("profilePictureUrl");
+
+                    if (profilePictureUrl != null) {
+                        // Load the image into ImageView using Glide
+                        Glide.with(requireContext())
+                                .load(profilePictureUrl)
+                                .placeholder(R.mipmap.ic_launcher)  // Placeholder while loading
+                                .into(profilePicture);
+                    } else {
+                        // If there is no profile picture URL, use the default image
+                        profilePicture.setImageResource(R.mipmap.ic_launcher);  // Default image
+                    }
+                } else {
+                    showSnackbar(R.string.user_data_not_found);
+                    profilePicture.setImageResource(R.mipmap.ic_launcher);  // Default image
+                }
+            } else {
+                showSnackbar(R.string.fetch_data_failed);
+                Log.e("ManageAccountFragment", "Failed to fetch user data: " + task.getException());
+                profilePicture.setImageResource(R.mipmap.ic_launcher);  // Default image
+            }
+        });
     }
 
     private void saveProfilePicture(Uri uri) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            showSnackbar(R.string.user_not_authenticated);
+            return;
+        }
+
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageReference = storage.getReference().child("profile_pictures/" + user.getUid() + ".jpg");
+
+        // Upload the image to Firebase Storage
+        UploadTask uploadTask = storageReference.putFile(uri);
+
+        uploadTask.addOnSuccessListener(taskSnapshot -> {
+            storageReference.getDownloadUrl().addOnSuccessListener(downloadUrl -> {
+                saveProfilePictureUrlToFirestore(downloadUrl.toString());
+            });
+        }).addOnFailureListener(e -> {
+            showSnackbar(R.string.update_failed);
+        });
+    }
+
+    private void saveProfilePictureUrlToFirestore(String downloadUrl) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            showSnackbar(R.string.user_not_authenticated);
+            return;
+        }
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference userRef = db.collection("users").document(user.getUid());
+        // UpdLate the user's profile with the new profile picture UR
+        userRef.update("profilePictureUrl", downloadUrl)
+                .addOnSuccessListener(aVoid -> {
+                    showSnackbar(R.string.profile_photo_updated);
+                    loadProfilePicture();
+                })
+                .addOnFailureListener(e -> {
+                    showSnackbar(R.string.update_failed);
+                });
+    }
+
+    private void uploadProfilePicture(Uri imageUri) {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser == null) {
+            showSnackbar(R.string.user_not_found);
+            return;
+        }
+
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference()
+                .child("profile_photos/" + currentUser.getUid() + ".jpg");
+
+        storageRef.putFile(imageUri)
+                .addOnSuccessListener(taskSnapshot -> {
+                    // On success, get the download URL for the uploaded image
+                    storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                                String photoUrl = uri.toString();
+                                saveProfilePhotoToFirestore(photoUrl);
+                                // Optionally, save locally for session usage
+                                saveProfilePictureLocally(photoUrl);
+                                Log.d("ProfilePicture", "Upload successful. URL: " + photoUrl);
+                            })
+                            .addOnFailureListener(e -> {
+                                // Handle failure
+                                Log.e("ProfilePicture", "Upload failed", e);
+                                showSnackbar(R.string.profile_picture_upload_failed);
+                            });
+                })
+                .addOnFailureListener(e -> {
+                    // Handle failure in uploading image
+                    Log.e("ProfilePicture", "Failed to upload image", e);
+                    showSnackbar(R.string.profile_picture_upload_failed);
+                });
+    }
+
+    private void saveProfilePictureLocally(String photoUrl) {
         SharedPreferences sharedPreferences = requireActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(KEY_PROFILE_PICTURE_URI, uri.toString());
-        editor.apply(); // Apply the changes
+        editor.putString(KEY_PROFILE_PICTURE_URI, photoUrl);  // Save the Firebase URL as the key
+        editor.apply();
     }
 
-    private void showSnackbar(int messageId) {
-        if (rootView != null) {
-            Snackbar.make(rootView, messageId, Snackbar.LENGTH_SHORT).show();
+    private void saveProfilePhotoToFirestore(String photoUrl) {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            DocumentReference userRef = FirebaseFirestore.getInstance()
+                    .collection("users")
+                    .document(currentUser.getUid());
+
+            userRef.update("profilePicture", photoUrl)
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            Log.d("Firestore", "Profile picture updated successfully.");
+                        } else {
+                            Log.e("Firestore", "Failed to update profile picture.");
+                        }
+                    });
         }
     }
+
+    private void showSnackbar(int messageResId) {
+        Snackbar.make(rootView, messageResId, Snackbar.LENGTH_SHORT).show();
+    }
+
 
     private boolean isPermissionGranted() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            return ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.READ_MEDIA_IMAGES) == PackageManager.PERMISSION_GRANTED;
-        } else {
-            return ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
-        }
+        return ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED;
     }
 
     private void setupPasswordResetButton() {

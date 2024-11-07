@@ -77,14 +77,14 @@
             android:layout_height="wrap_content"
             app:cornerRadius="16dp" />
 
-        <com.google.android.material.button.MaterialButton
-            app:cornerRadius="16dp"
-            android:layout_marginTop="1dp"
-            android:id="@+id/google_sign_in_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/sign_in_with_google"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
+<!--        <com.google.android.material.button.MaterialButton-->
+<!--            app:cornerRadius="16dp"-->
+<!--            android:layout_marginTop="1dp"-->
+<!--            android:id="@+id/google_sign_in_button"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="@string/sign_in_with_google"-->
+<!--            style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>-->
 
         <TextView
             android:id="@+id/jump_to_signup_page"
@@ -94,6 +94,15 @@
             android:layout_marginTop="16dp"
             android:text="@string/don_t_have_an_account_sign_up"
             android:textColor="#0000FF" />
+
+        <TextView
+            android:id="@+id/forgot_password"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="@string/forgot_password"
+            android:visibility="gone"
+            android:textColor="#0000FF"  /> <!-- Initially invisible -->
 
     </LinearLayout>
 
