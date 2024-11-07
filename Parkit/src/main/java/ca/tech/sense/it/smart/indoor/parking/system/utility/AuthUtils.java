@@ -28,7 +28,25 @@ import ca.tech.sense.it.smart.indoor.parking.system.R;
 
 public class AuthUtils {
 
-    // Updated method signature to use FirebaseAuth instead of String
+    public static void showResetPasswordDialog(Context context, FirebaseAuth auth) {
+        String currentEmail = getCurrentUserEmail(auth);
+        if (currentEmail != null) {
+            DialogUtil.showMessageDialog(context, context.getString(R.string.reset_password),String.format("%s%s", context.getString(R.string.a_password_reset_link_will_be_sent_to), currentEmail)
+                    ,context.getString(R.string.confirm) ,
+                    new DialogUtil.DialogCallback() {
+                        @Override
+                        public void onConfirm() {
+                            sendPasswordResetEmail(currentEmail, auth, context);
+                        }
+                        @Override
+                        public void onCancel() {
+                        }
+                    });
+        } else {
+            Toast.makeText(context, R.string.no_email_found_for_the_current_user, Toast.LENGTH_SHORT).show();
+        }
+    }
+
     public static void resetPasswordd(Context context, FirebaseAuth auth) {
         String currentEmail = getCurrentUserEmail(auth);
         if (currentEmail != null) {

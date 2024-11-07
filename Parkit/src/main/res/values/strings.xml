@@ -157,6 +157,13 @@
     <string name="no_bookings_to_show">No bookings to show</string>
     <string name="update_failed">Update Failed</string>
     <string name="profile_photo_updated">Profile photo updated</string>
+    <string name="location_permission_is_required_to_use_this_feature_please_enable_it_in_settings">Location permission is required to use this feature. Please enable it in settings.</string>
+    <string name="unable_to_get_current_location">Unable to get current location</string>
+    <string name="you_are_here">You are here</string>
+    <string name="location_permission_denied">Location permission denied</string>
+    <string name="failed_to_load_parking_locations">Failed to load parking locations.</string>
+    <string name="error_fetching_parking_locations">Error fetching parking locations</string>
+    <string name="search_for_a_location">Search for a location</string>
 
 
 </resources>

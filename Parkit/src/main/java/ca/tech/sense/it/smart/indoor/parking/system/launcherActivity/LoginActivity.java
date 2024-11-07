@@ -17,6 +17,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -31,7 +32,7 @@ public class LoginActivity extends AppCompatActivity {
 
 
     public static final int RC_SIGN_IN = 1001; // Request code for sign-in
-    private MaterialButton googleSignInButton; // Add this button in your layout
+    private MaterialButton googleSignInButton;
 
     // Firebase Authentication instance
     private FirebaseAuth mAuth;

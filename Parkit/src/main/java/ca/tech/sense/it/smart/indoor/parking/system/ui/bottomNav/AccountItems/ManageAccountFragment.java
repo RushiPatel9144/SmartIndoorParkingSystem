@@ -39,6 +39,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -216,7 +217,6 @@ public class ManageAccountFragment extends Fragment {
             return;
         }
 
-        // Fetch the user's profile picture URL from Firestore
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference userRef = db.collection("users").document(user.getUid());
 
@@ -249,17 +249,12 @@ public class ManageAccountFragment extends Fragment {
     }
 
     private void saveProfilePicture(Uri uri) {
-//        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-//        SharedPreferences.Editor editor = sharedPreferences.edit();
-//        editor.putString(KEY_PROFILE_PICTURE_URI, uri.toString());
-//        editor.apply(); // Apply the changes
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
             showSnackbar(R.string.user_not_authenticated);
             return;
         }
 
-        // Get a reference to Firebase Storage
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageReference = storage.getReference().child("profile_pictures/" + user.getUid() + ".jpg");
 
@@ -267,13 +262,10 @@ public class ManageAccountFragment extends Fragment {
         UploadTask uploadTask = storageReference.putFile(uri);
 
         uploadTask.addOnSuccessListener(taskSnapshot -> {
-            // Once the upload is successful, get the download URL
             storageReference.getDownloadUrl().addOnSuccessListener(downloadUrl -> {
-                // Save the download URL to Firestore
                 saveProfilePictureUrlToFirestore(downloadUrl.toString());
             });
         }).addOnFailureListener(e -> {
-            // Handle any errors during the upload
             showSnackbar(R.string.update_failed);
         });
     }
@@ -284,20 +276,15 @@ public class ManageAccountFragment extends Fragment {
             showSnackbar(R.string.user_not_authenticated);
             return;
         }
-
-        // Get a reference to the Firestore database
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference userRef = db.collection("users").document(user.getUid());
-
         // UpdLate the user's profile with the new profile picture UR
         userRef.update("profilePictureUrl", downloadUrl)
                 .addOnSuccessListener(aVoid -> {
-                    // Successfully updated Firestore
                     showSnackbar(R.string.profile_photo_updated);
-                    loadProfilePicture(); // Reload the profile picture after update
+                    loadProfilePicture();
                 })
                 .addOnFailureListener(e -> {
-                    // Handle any errors while updating Firestore
                     showSnackbar(R.string.update_failed);
                 });
     }
@@ -309,16 +296,13 @@ public class ManageAccountFragment extends Fragment {
             return;
         }
 
-        // Firebase Storage reference where the image will be stored
         StorageReference storageRef = FirebaseStorage.getInstance().getReference()
                 .child("profile_photos/" + currentUser.getUid() + ".jpg");
 
-        // Upload the image to Firebase Storage
         storageRef.putFile(imageUri)
                 .addOnSuccessListener(taskSnapshot -> {
                     // On success, get the download URL for the uploaded image
                     storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                                // Get the download URL and save it to Firestore
                                 String photoUrl = uri.toString();
                                 saveProfilePhotoToFirestore(photoUrl);
                                 // Optionally, save locally for session usage
@@ -413,14 +397,30 @@ public class ManageAccountFragment extends Fragment {
     }
 
     private void setupPasswordResetButton() {
-        managePassword.setOnClickListener(v -> {
-            // Add your password reset handling logic here
-        });
+        managePassword.setOnClickListener(v -> AuthUtils.showResetPasswordDialog(requireContext(), FirebaseAuth.getInstance()));
     }
 
     private void manageEmail() {
         manageEmail.setOnClickListener(v -> {
-            // Handle email management
+            DialogUtil.showMessageDialog(
+                    requireContext(),
+                    getString(R.string.email_update_unavailable),
+                    getString(R.string.changing_your_email_address_is_currently_not_permitted_please_reach_out_to_our_support_team_for_further_assistance),
+                    getString(R.string.help),
+                    new DialogUtil.DialogCallback() {
+                        @Override
+                        public void onConfirm() {
+                            getParentFragmentManager().beginTransaction()
+                                    .replace(R.id.flFragment, new HelpFragment())
+                                    .addToBackStack(null)
+                                    .commit();
+                        }
+                        @Override
+                        public void onCancel() {
+                            // Do nothing, just close the dialog
+                        }
+                    }
+            );
         });
     }
 }

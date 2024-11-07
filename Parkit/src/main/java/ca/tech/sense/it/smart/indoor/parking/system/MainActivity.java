@@ -57,13 +57,11 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
         setContentView(R.layout.activity_main);
         applyTheme();
 
-
         // Initialize Firebase Authentication
         initFirebaseAuth();
 
         // Initialize UI components
         initUIComponents();
-
 
         // Initialize and fetch user data once in MainActivity
         UserManager.getInstance().fetchUserData(user -> {
