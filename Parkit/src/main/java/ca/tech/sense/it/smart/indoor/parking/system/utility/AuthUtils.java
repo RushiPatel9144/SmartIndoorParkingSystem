@@ -5,9 +5,7 @@ import static ca.tech.sense.it.smart.indoor.parking.system.R.string.please_enter
 import static ca.tech.sense.it.smart.indoor.parking.system.R.string.reset_email_sent;
 
 import android.content.Context;
-import android.text.InputType;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -47,7 +45,7 @@ public class AuthUtils {
         }
     }
 
-    public static void resetPasswordd(Context context, FirebaseAuth auth) {
+    public static void resetPassword(Context context, FirebaseAuth auth) {
         String currentEmail = getCurrentUserEmail(auth);
         if (currentEmail != null) {
             // Show a confirmation dialog to send reset email
@@ -98,7 +96,6 @@ public class AuthUtils {
         return null;
     }
 
-    // Utility method to hide the keyboard
     public static void hideKeyboard(Context context, View view) {
         InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
         if (imm != null) {
@@ -169,7 +166,6 @@ public class AuthUtils {
         });
     }
 
-    // Method for Firebase SignIn using Google
 
     public static void signInWithGoogle(Context context, FirebaseAuth mAuth, GoogleSignInAccount account, Runnable onSuccess) {
         AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);

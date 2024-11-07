@@ -1,7 +1,5 @@
 package ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems;
 
-import static ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.LoginActivity.RC_SIGN_IN;
-
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
@@ -28,16 +26,11 @@ import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -48,8 +41,6 @@ import com.google.firebase.storage.UploadTask;
 import java.io.IOException;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
-import ca.tech.sense.it.smart.indoor.parking.system.model.user.User;
-import ca.tech.sense.it.smart.indoor.parking.system.model.user.UserManager;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.AuthUtils;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.ImageCropActivity;
@@ -131,7 +122,6 @@ public class ManageAccountFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        handleGoogleSignIn();
         setupProfilePictureButton();
         setupPasswordResetButton();
         manageEmail();
@@ -171,37 +161,52 @@ public class ManageAccountFragment extends Fragment {
         imageCropLauncher.launch(intent);
     }
 
-    private void fetchUserInfo() {
-        User user = UserManager.getInstance().getCurrentUser();
 
+    private void fetchUserInfo() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
-            // Populate UI with cached user data
             String email = user.getEmail();
             if (email != null) {
                 contactDetailsTextView.setText(email);
             }
-
-            String firstName = user.getFirstName();
-            String lastName = user.getLastName();
-            String phone = user.getPhone();
-
-            if (firstName != null) {
-                nameTextView.setText(firstName);
-            }
-            if (lastName != null) {
-                nameTextView.append(" " + lastName);
-            }
-            if (phone != null) {
-                phoneNumberTextView.setText(phone);
-            } else {
-                phoneNumberTextView.setText(R.string.add_phone_number);
-            }
-
-            Log.d("Activity", "User data retrieved from cache.");
+            String uid = user.getUid();
+            fetchUserDetailsFromFirestore(uid);
         } else {
-            Log.d("Activity", "User data not available in cache.");
-            showSnackbar(R.string.user_data_not_found);
+            showSnackbar(R.string.user_not_authenticated);
         }
+    }
+
+    private void fetchUserDetailsFromFirestore(String uid) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference docRef = db.collection("users").document(uid);
+
+        docRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+                    String firstName = document.getString("firstName");
+                    String lastName = document.getString("lastName");
+                    String phoneNumber = document.getString("phone");
+
+                    if (firstName != null) {
+                        nameTextView.setText(firstName);
+                    }
+                    if (lastName != null) {
+                        nameTextView.append(" " + lastName);
+                    }
+                    if (phoneNumber != null) {
+                        phoneNumberTextView.setText(phoneNumber);
+                    } else {
+                        phoneNumberTextView.setText(R.string.add_phone_number);
+                    }
+                } else {
+                    showSnackbar(R.string.user_data_not_found);
+                }
+            } else {
+                Log.e("TAG", "Firestore fetch failed: " + task.getException());
+                showSnackbar(R.string.fetch_data_failed);
+            }
+        });
     }
 
     private void openGallery() {
@@ -349,45 +354,6 @@ public class ManageAccountFragment extends Fragment {
 
     private void showSnackbar(int messageResId) {
         Snackbar.make(rootView, messageResId, Snackbar.LENGTH_SHORT).show();
-    }
-
-    private void handleGoogleSignIn() {
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        FirebaseUser user = auth.getCurrentUser();
-
-        if (user == null) {
-            // User is not signed in, show the Google Sign-In dialog
-            DialogUtil.showGoogleSignInDialog(requireContext(), new DialogUtil.DialogCallback() {
-                @Override
-                public void onConfirm() {
-                    // Proceed with Google Sign-In
-                    startGoogleSignIn();
-                }
-
-                @Override
-                public void onCancel() {
-                    // Handle cancel action
-                    showSnackbar(R.string.no);
-                }
-            });
-        } else {
-            // Handle signed-in user
-            nameTextView.setText(user.getDisplayName());
-            if (user.getPhotoUrl() != null) {
-                Glide.with(requireContext()).load(user.getPhotoUrl()).into(profilePicture);
-            }
-        }
-    }
-    private void startGoogleSignIn() {
-        // Configure Google Sign-In
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))  // Make sure to use the correct Web Client ID
-                .requestEmail()
-                .build();
-
-        GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(requireContext(), gso);
-        Intent signInIntent = googleSignInClient.getSignInIntent();
-        startActivityForResult(signInIntent, RC_SIGN_IN);  // RC_SIGN_IN is a constant to handle result
     }
 
 
