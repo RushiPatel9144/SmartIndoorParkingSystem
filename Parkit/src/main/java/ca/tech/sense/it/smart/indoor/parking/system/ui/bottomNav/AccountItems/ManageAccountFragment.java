@@ -1,9 +1,6 @@
-/*Name: Kunal Dhiman, StudentID: N01540952,  section number: RCB
-  Name: Raghav Sharma, StudentID: N01537255,  section number: RCB
-  Name: NisargKumar Pareshbhai Joshi, StudentID: N01545986,  section number: RCB
-  Name: Rushi Manojkumar Patel, StudentID: N01539144, section number: RCB
- */
 package ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems;
+
+import static ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.LoginActivity.RC_SIGN_IN;
 
 import android.Manifest;
 import android.app.Activity;
@@ -30,11 +27,18 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -43,11 +47,14 @@ import com.google.firebase.storage.UploadTask;
 import java.io.IOException;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.model.user.User;
+import ca.tech.sense.it.smart.indoor.parking.system.model.user.UserManager;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.AuthUtils;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.ImageCropActivity;
 
 public class ManageAccountFragment extends Fragment {
+
     private static final String PREFS_NAME = "AccountPrefs";
     private static final String KEY_PROFILE_PICTURE_URI = "profile_picture_uri";
 
@@ -81,7 +88,7 @@ public class ManageAccountFragment extends Fragment {
                         Uri croppedImageUri = Uri.parse(croppedImageUriString);
                         loadCroppedImage(croppedImageUri);
                         saveProfilePicture(croppedImageUri);
-                        loadProfilePicture();
+                        uploadProfilePicture(croppedImageUri); // Upload new profile picture to Firebase
                     }
                 }
             }
@@ -113,15 +120,17 @@ public class ManageAccountFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_manage_account, container, false);
         bindViews(rootView);
+
         fetchUserInfo();
         loadProfilePicture();
+
         return rootView;
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        loadProfilePicture();
+        handleGoogleSignIn();
         setupProfilePictureButton();
         setupPasswordResetButton();
         manageEmail();
@@ -162,50 +171,36 @@ public class ManageAccountFragment extends Fragment {
     }
 
     private void fetchUserInfo() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        User user = UserManager.getInstance().getCurrentUser();
+
         if (user != null) {
+            // Populate UI with cached user data
             String email = user.getEmail();
             if (email != null) {
                 contactDetailsTextView.setText(email);
             }
-            String uid = user.getUid();
-            fetchUserDetailsFromFirestore(uid);
-        } else {
-            showSnackbar(R.string.user_not_authenticated);
-        }
-    }
 
-    private void fetchUserDetailsFromFirestore(String uid) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        DocumentReference docRef = db.collection("users").document(uid);
+            String firstName = user.getFirstName();
+            String lastName = user.getLastName();
+            String phone = user.getPhone();
 
-        docRef.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                DocumentSnapshot document = task.getResult();
-                if (document.exists()) {
-                    String firstName = document.getString("firstName");
-                    String lastName = document.getString("lastName");
-                    String phoneNumber = document.getString("phone");
-
-                    if (firstName != null) {
-                        nameTextView.setText(firstName);
-                    }
-                    if (lastName != null) {
-                        nameTextView.append(" " + lastName);
-                    }
-                    if (phoneNumber != null) {
-                        phoneNumberTextView.setText(phoneNumber);
-                    } else {
-                        phoneNumberTextView.setText(R.string.add_phone_number);
-                    }
-                } else {
-                    showSnackbar(R.string.user_data_not_found);
-                }
-            } else {
-                Log.e("TAG", "Firestore fetch failed: " + task.getException());
-                showSnackbar(R.string.fetch_data_failed);
+            if (firstName != null) {
+                nameTextView.setText(firstName);
             }
-        });
+            if (lastName != null) {
+                nameTextView.append(" " + lastName);
+            }
+            if (phone != null) {
+                phoneNumberTextView.setText(phone);
+            } else {
+                phoneNumberTextView.setText(R.string.add_phone_number);
+            }
+
+            Log.d("Activity", "User data retrieved from cache.");
+        } else {
+            Log.d("Activity", "User data not available in cache.");
+            showSnackbar(R.string.user_data_not_found);
+        }
     }
 
     private void openGallery() {
@@ -307,45 +302,125 @@ public class ManageAccountFragment extends Fragment {
                 });
     }
 
-    private void showSnackbar(int messageId) {
-        if (rootView != null) {
-            Snackbar.make(rootView, messageId, Snackbar.LENGTH_SHORT).show();
+    private void uploadProfilePicture(Uri imageUri) {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser == null) {
+            showSnackbar(R.string.user_not_found);
+            return;
+        }
+
+        // Firebase Storage reference where the image will be stored
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference()
+                .child("profile_photos/" + currentUser.getUid() + ".jpg");
+
+        // Upload the image to Firebase Storage
+        storageRef.putFile(imageUri)
+                .addOnSuccessListener(taskSnapshot -> {
+                    // On success, get the download URL for the uploaded image
+                    storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                                // Get the download URL and save it to Firestore
+                                String photoUrl = uri.toString();
+                                saveProfilePhotoToFirestore(photoUrl);
+                                // Optionally, save locally for session usage
+                                saveProfilePictureLocally(photoUrl);
+                                Log.d("ProfilePicture", "Upload successful. URL: " + photoUrl);
+                            })
+                            .addOnFailureListener(e -> {
+                                // Handle failure
+                                Log.e("ProfilePicture", "Upload failed", e);
+                                showSnackbar(R.string.profile_picture_upload_failed);
+                            });
+                })
+                .addOnFailureListener(e -> {
+                    // Handle failure in uploading image
+                    Log.e("ProfilePicture", "Failed to upload image", e);
+                    showSnackbar(R.string.profile_picture_upload_failed);
+                });
+    }
+
+    private void saveProfilePictureLocally(String photoUrl) {
+        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(KEY_PROFILE_PICTURE_URI, photoUrl);  // Save the Firebase URL as the key
+        editor.apply();
+    }
+
+    private void saveProfilePhotoToFirestore(String photoUrl) {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            DocumentReference userRef = FirebaseFirestore.getInstance()
+                    .collection("users")
+                    .document(currentUser.getUid());
+
+            userRef.update("profilePicture", photoUrl)
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            Log.d("Firestore", "Profile picture updated successfully.");
+                        } else {
+                            Log.e("Firestore", "Failed to update profile picture.");
+                        }
+                    });
         }
     }
 
-    private boolean isPermissionGranted() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            return ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.READ_MEDIA_IMAGES) == PackageManager.PERMISSION_GRANTED;
+    private void showSnackbar(int messageResId) {
+        Snackbar.make(rootView, messageResId, Snackbar.LENGTH_SHORT).show();
+    }
+
+    private void handleGoogleSignIn() {
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseUser user = auth.getCurrentUser();
+
+        if (user == null) {
+            // User is not signed in, show the Google Sign-In dialog
+            DialogUtil.showGoogleSignInDialog(requireContext(), new DialogUtil.DialogCallback() {
+                @Override
+                public void onConfirm() {
+                    // Proceed with Google Sign-In
+                    startGoogleSignIn();
+                }
+
+                @Override
+                public void onCancel() {
+                    // Handle cancel action
+                    showSnackbar(R.string.no);
+                }
+            });
         } else {
-            return ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+            // Handle signed-in user
+            nameTextView.setText(user.getDisplayName());
+            if (user.getPhotoUrl() != null) {
+                Glide.with(requireContext()).load(user.getPhotoUrl()).into(profilePicture);
+            }
         }
+    }
+    private void startGoogleSignIn() {
+        // Configure Google Sign-In
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))  // Make sure to use the correct Web Client ID
+                .requestEmail()
+                .build();
+
+        GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(requireContext(), gso);
+        Intent signInIntent = googleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent, RC_SIGN_IN);  // RC_SIGN_IN is a constant to handle result
+    }
+
+
+    private boolean isPermissionGranted() {
+        return ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED;
     }
 
     private void setupPasswordResetButton() {
-        managePassword.setOnClickListener(v -> AuthUtils.showResetPasswordDialog(requireContext(), FirebaseAuth.getInstance()));
+        managePassword.setOnClickListener(v -> {
+            // Add your password reset handling logic here
+        });
     }
 
     private void manageEmail() {
         manageEmail.setOnClickListener(v -> {
-            DialogUtil.showMessageDialog(
-                    requireContext(),
-                    getString(R.string.email_update_unavailable),
-                    getString(R.string.changing_your_email_address_is_currently_not_permitted_please_reach_out_to_our_support_team_for_further_assistance),
-                    getString(R.string.help),
-                    new DialogUtil.DialogCallback() {
-                        @Override
-                        public void onConfirm() {
-                            getParentFragmentManager().beginTransaction()
-                                    .replace(R.id.flFragment, new HelpFragment())
-                                    .addToBackStack(null)
-                                    .commit();
-                        }
-                        @Override
-                        public void onCancel() {
-                            // Do nothing, just close the dialog
-                        }
-                    }
-            );
+            // Handle email management
         });
     }
 }

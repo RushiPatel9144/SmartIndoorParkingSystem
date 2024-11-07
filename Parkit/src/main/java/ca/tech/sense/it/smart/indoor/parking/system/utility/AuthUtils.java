@@ -1,16 +1,9 @@
-/*Name: Kunal Dhiman, StudentID: N01540952,  section number: RCB
-  Name: Raghav Sharma, StudentID: N01537255,  section number: RCB
-  Name: NisargKumar Pareshbhai Joshi, StudentID: N01545986,  section number: RCB
-  Name: Rushi Manojkumar Patel, StudentID: N01539144, section number: RCB
- */
-
 package ca.tech.sense.it.smart.indoor.parking.system.utility;
 
 import static ca.tech.sense.it.smart.indoor.parking.system.R.string.error_sending_email;
 import static ca.tech.sense.it.smart.indoor.parking.system.R.string.please_enter_your_email;
 import static ca.tech.sense.it.smart.indoor.parking.system.R.string.reset_email_sent;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -35,33 +28,39 @@ import ca.tech.sense.it.smart.indoor.parking.system.R;
 
 public class AuthUtils {
 
-    public static void showResetPasswordDialog(Context context, FirebaseAuth auth) {
+    // Updated method signature to use FirebaseAuth instead of String
+    public static void resetPasswordd(Context context, FirebaseAuth auth) {
         String currentEmail = getCurrentUserEmail(auth);
         if (currentEmail != null) {
-            DialogUtil.showMessageDialog(context, context.getString(R.string.reset_password),String.format("%s%s", context.getString(R.string.a_password_reset_link_will_be_sent_to), currentEmail)
-                     ,context.getString(R.string.confirm) ,
+            // Show a confirmation dialog to send reset email
+            DialogUtil.showMessageDialog(context, context.getString(R.string.reset_password),
+                    String.format("%s%s", context.getString(R.string.a_password_reset_link_will_be_sent_to), currentEmail),
+                    context.getString(R.string.confirm),
                     new DialogUtil.DialogCallback() {
                         @Override
                         public void onConfirm() {
-                            sendPasswordResetEmail(currentEmail, auth, context);
+                            sendPasswordResetEmail(currentEmail, auth, context); // Send reset email
                         }
+
                         @Override
                         public void onCancel() {
+                            // Handle cancel if needed
                         }
                     });
         } else {
+            // If the current email is not found
             Toast.makeText(context, R.string.no_email_found_for_the_current_user, Toast.LENGTH_SHORT).show();
         }
     }
 
-
-
+    // Updated method signature to match the usage with FirebaseAuth
     public static void sendPasswordResetEmail(String email, FirebaseAuth auth, Context context) {
         if (email.isEmpty()) {
             Toast.makeText(context, please_enter_your_email, Toast.LENGTH_SHORT).show();
             return;
         }
 
+        // Send password reset email
         auth.sendPasswordResetEmail(email)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
@@ -72,6 +71,7 @@ public class AuthUtils {
                 });
     }
 
+    // Updated method to return email using FirebaseAuth instance
     public static String getCurrentUserEmail(FirebaseAuth auth) {
         FirebaseUser user = auth.getCurrentUser();
         if (user != null) {

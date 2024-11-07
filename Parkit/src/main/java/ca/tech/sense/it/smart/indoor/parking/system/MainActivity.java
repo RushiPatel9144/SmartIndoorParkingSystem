@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 import android.Manifest;
@@ -25,6 +26,7 @@ import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.LoginActivity;
+import ca.tech.sense.it.smart.indoor.parking.system.model.user.UserManager;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.Activity;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.Home;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.Park;
@@ -55,11 +57,23 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
         setContentView(R.layout.activity_main);
         applyTheme();
 
+
         // Initialize Firebase Authentication
         initFirebaseAuth();
 
         // Initialize UI components
         initUIComponents();
+
+
+        // Initialize and fetch user data once in MainActivity
+        UserManager.getInstance().fetchUserData(user -> {
+            if (user != null) {
+                Log.d("MainActivity", "User data loaded: " + user.getEmail());
+                // You can update the UI or continue with app flow
+            } else {
+                Log.d("MainActivity", "Failed to load user data.");
+            }
+        });
 
         // Set BottomNavigationView listener
         bottomNavigationView.setOnItemSelectedListener(this);
