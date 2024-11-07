@@ -72,7 +72,7 @@ public class ManageAccountFragment extends Fragment {
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
-                    String croppedImageUriString = result.getData().getStringExtra("croppedImageUri");
+                    String croppedImageUriString = result.getData().getStringExtra(getString(R.string.croppedimageuri));
                     if (croppedImageUriString != null) {
                         Uri croppedImageUri = Uri.parse(croppedImageUriString);
                         loadCroppedImage(croppedImageUri);
@@ -153,7 +153,7 @@ public class ManageAccountFragment extends Fragment {
 
     private void cropImage(Uri imageUri) {
         Intent intent = new Intent(getActivity(), ImageCropActivity.class);
-        intent.putExtra("imageUri", imageUri);
+        intent.putExtra(getString(R.string.imageuri), imageUri);
         imageCropLauncher.launch(intent);
     }
 
@@ -206,7 +206,7 @@ public class ManageAccountFragment extends Fragment {
 
     private void openGallery() {
         Intent intent = new Intent(Intent.ACTION_PICK);
-        intent.setType("image/*");
+        intent.setType(getString(R.string.image1));
         imagePickerLauncher.launch(intent);
     }
 

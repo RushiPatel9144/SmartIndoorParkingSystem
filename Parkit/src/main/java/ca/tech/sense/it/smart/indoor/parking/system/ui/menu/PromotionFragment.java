@@ -99,7 +99,7 @@ public class PromotionFragment extends Fragment {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(getContext(), "Failed to load promotions.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), getString(R.string.failed_to_load_promotions), Toast.LENGTH_SHORT).show();
             }
         });
     }

@@ -69,7 +69,7 @@ public class Park extends Fragment implements OnMapReadyCallback {
                     if (isGranted) {
                         enableMyLocation();
                     } else {
-                        Toast.makeText(getContext(), "Location permission denied", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), getString(R.string.location_permission_denied), Toast.LENGTH_SHORT).show();
                     }
                 }
         );
@@ -106,7 +106,7 @@ public class Park extends Fragment implements OnMapReadyCallback {
                 getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment);
         if (autocompleteFragment != null) {
             autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG));
-            autocompleteFragment.setHint("Search for a location");
+            autocompleteFragment.setHint(getString(R.string.search_for_a_location));
             autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
                 @Override
                 public void onPlaceSelected(@NonNull Place place) {
@@ -116,7 +116,7 @@ public class Park extends Fragment implements OnMapReadyCallback {
 
                 @Override
                 public void onError(@NonNull Status status) {
-                    Log.d(TAG, "Error: " + status.getStatusMessage());
+                    Log.d(TAG, getString(R.string.error)+ status.getStatusMessage());
                 }
             });
         }
@@ -190,8 +190,8 @@ public class Park extends Fragment implements OnMapReadyCallback {
 
             @Override
             public void onFetchFailure(Exception e) {
-                Log.e(TAG, "Error fetching parking locations", e);
-                Toast.makeText(requireContext(), "Failed to load parking locations.", Toast.LENGTH_SHORT).show();
+                Log.e(TAG, getString(R.string.error_fetching_parking_locations), e);
+                Toast.makeText(requireContext(), getString(R.string.failed_to_load_parking_locations), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -243,10 +243,10 @@ public class Park extends Fragment implements OnMapReadyCallback {
 
     private void moveMyLocationButton() {
         if (getView() != null) {
-            View locationButton = getView().findViewById(Integer.parseInt("1"));
+            View locationButton = getView().findViewById(Integer.parseInt(getString(R.string._1)));
             if (locationButton != null && locationButton.getParent() != null) {
                 View parent = (View) locationButton.getParent();
-                View myLocationButton = parent.findViewById(Integer.parseInt("2"));
+                View myLocationButton = parent.findViewById(Integer.parseInt(getString(R.string._2)));
                 if (myLocationButton != null) {
                     RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) myLocationButton.getLayoutParams();
                     // Adjust these values to set the desired position

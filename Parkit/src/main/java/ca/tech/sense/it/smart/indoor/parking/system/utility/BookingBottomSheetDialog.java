@@ -37,7 +37,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
-import ca.tech.sense.it.smart.indoor.parking.system.model.BookingDetails;
 import ca.tech.sense.it.smart.indoor.parking.system.model.activity.Booking;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingSlot;
@@ -139,14 +138,14 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
                     priceTextView.setText(String.format(Locale.getDefault(), "Price: $%.2f", price));
                 } else {
                     Log.e("BookingBottomSheetDialog", "Price not found for location: " + locationId);
-                    priceTextView.setText("Price not available");
+                    priceTextView.setText(R.string.price_not_available);
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Log.e("BookingBottomSheetDialog", "Failed to fetch price: " + error.getMessage());
-                priceTextView.setText("Failed to fetch price");
+                priceTextView.setText(R.string.failed_to_fetch_price_1);
             }
         });
     }
@@ -249,7 +248,7 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
                             });
                 } else {
                     Log.e("BookingBottomSheetDialog", "Price not found for location: " + locationId);
-                    Toast.makeText(context, "Price not found for the selected location.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, R.string.price_not_found_for_the_selected_location, Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -302,9 +301,9 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
 
         // Save the location data
         databaseRef.setValue(locationData).addOnSuccessListener(aVoid -> {
-            Toast.makeText(context, "Location saved to favorites", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, R.string.location_saved_to_favorites, Toast.LENGTH_SHORT).show();
         }).addOnFailureListener(e -> {
-            Toast.makeText(context, "Failed to save location: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, context.getString(R.string.failed_to_save_location) + e.getMessage(), Toast.LENGTH_SHORT).show();
         });
     }
 }

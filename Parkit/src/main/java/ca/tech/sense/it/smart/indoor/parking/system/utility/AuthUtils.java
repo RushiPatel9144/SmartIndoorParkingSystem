@@ -10,11 +10,8 @@ import static ca.tech.sense.it.smart.indoor.parking.system.R.string.error_sendin
 import static ca.tech.sense.it.smart.indoor.parking.system.R.string.please_enter_your_email;
 import static ca.tech.sense.it.smart.indoor.parking.system.R.string.reset_email_sent;
 
-import android.app.AlertDialog;
+
 import android.content.Context;
-import android.text.InputType;
-import android.util.Log;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;

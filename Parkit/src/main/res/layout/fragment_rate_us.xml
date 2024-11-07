@@ -19,7 +19,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-medium"
                 android:padding="16dp"
-                android:text="Rate Us"
+                android:text="@string/rate_us"
                 android:textSize="24sp" />
 
         <!-- Star Rating Bar -->
@@ -41,7 +41,7 @@
                     android:layout_height="wrap_content"
                     android:paddingStart="12dp"
                     android:paddingBottom="4dp"
-                    android:text="Rating"
+                    android:text="@string/rating"
                     android:textSize="18sp" />
                 <RatingBar
                     android:id="@+id/rating_bar"
@@ -73,7 +73,7 @@
                     android:layout_height="wrap_content"
                     android:paddingStart="12dp"
                     android:paddingBottom="4dp"
-                    android:text="Leave a Feedback:"
+                    android:text="@string/leave_a_feedback"
                     android:textSize="18sp" />
 
                 <GridLayout
@@ -92,7 +92,7 @@
                         android:layout_rowWeight="1"
                         android:padding="16dp"
                         android:background="@drawable/box_background"
-                        android:text="Parking Spot Easily Found"
+                        android:text="@string/parking_spot_easily_found"
                         android:gravity="center"
                         android:layout_margin="4dp"
                         android:textSize="16sp"
@@ -107,7 +107,7 @@
                         android:layout_rowWeight="1"
                         android:padding="16dp"
                         android:background="@drawable/box_background"
-                        android:text="Secure Transaction"
+                        android:text="@string/secure_transaction"
                         android:gravity="center"
                         android:layout_margin="4dp"
                         android:textSize="16sp"
@@ -122,7 +122,7 @@
                         android:layout_rowWeight="1"
                         android:padding="16dp"
                         android:background="@drawable/box_background"
-                        android:text="User-Friendly Interface"
+                        android:text="@string/user_friendly_interface"
                         android:gravity="center"
                         android:layout_margin="4dp"
                         android:textSize="16sp"
@@ -137,7 +137,7 @@
                         android:layout_rowWeight="1"
                         android:padding="16dp"
                         android:background="@drawable/box_background"
-                        android:text="Real-time features"
+                        android:text="@string/real_time_features"
                         android:gravity="center"
                         android:layout_margin="4dp"
                         android:textSize="16sp"
@@ -166,7 +166,7 @@
                     android:layout_height="wrap_content"
                     android:paddingStart="12dp"
                     android:paddingBottom="4dp"
-                    android:text="Comment"
+                    android:text="@string/comment"
                     android:textSize="18sp" />
                 <EditText
                     android:id="@+id/feedback_comment"
@@ -175,7 +175,7 @@
                     android:layout_marginBottom="16dp"
                     android:background="?attr/selectableItemBackground"
                     android:padding="12dp"
-                    android:hint="Tell us about your experience (Optional)"
+                    android:hint="@string/tell_us_about_your_experience_optional"
                     android:textColor="#716F6F"
                     android:textSize="18sp"
                     android:gravity="top"
@@ -189,7 +189,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:padding="12dp"
-                android:text="Submit Feedback"
+                android:text="@string/submit_feedback"
                 android:backgroundTint="@color/logo"
                 android:layout_marginTop="16dp"/>
     </LinearLayout>

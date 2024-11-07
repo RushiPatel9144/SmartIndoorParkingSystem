@@ -74,7 +74,7 @@ public class FavoritesFragment extends Fragment {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(getContext(), "Failed to load favorite locations: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), getString(R.string.failed_to_load_favorite_locations) + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -85,7 +85,7 @@ public class FavoritesFragment extends Fragment {
             adapter = new FavoritesAdapter(favoriteLocations);
             recyclerView.setAdapter(adapter);
         } else {
-            Toast.makeText(getContext(), "No favorite locations found.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(),getString(R.string.no_favorite_locations_found), Toast.LENGTH_SHORT).show();
         }
     }
 }
