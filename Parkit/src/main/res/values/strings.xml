@@ -190,5 +190,10 @@
     </string-array>
     <string name="default_web_client_id">361561575523-q5k4o14em2cf6jm5f4fnts6o942078n1.apps.googleusercontent.com</string>
     <string name="sign_in_with_google" tools:ignore="MissingTranslation">Sign in with Google</string>
+    <string name="park_it">Park It</string>
+    <string name="please_fill_in_all_fields">Please fill in all fields</string>
+    <string name="please_enter_a_valid_email_address">Please enter a valid email address</string>
+    <string name="help_request_submitted">Help request submitted</string>
+    <string name="error_adding_document">Error adding document</string>
 
 </resources>
