@@ -64,6 +64,8 @@
     <string name="invaild_credentials">Invaild Credentials</string>
     <string name="account_info">Account Info</string>
     <string name="profile_picture">Profile Picture</string>
+    <string name="profile_photo_updated">Profile Photo Upadated</string>
+    <string name="profile_picture_upload_failed">Profile picture upload failed</string>
     <string name="edit_profile_picture">Edit Profile Picture</string>
     <string name="edit">Edit</string>
     <string name="name">Name</string>
@@ -75,6 +77,7 @@
     <string name="error_loading_image">Unable to Load Image! Try Again</string>
     <string name="error_crop_failed">Unable to Crop Image !\n</string>
     <string name="name_updated_successfully">Name Updated Successfully.</string>
+    <string name="update_failed">Update Failed</string>
     <string name="error_updating_name">Error Updating Name</string>
     <string name="user_not_authenticated">User Not Authenticated</string>
     <string name="ok">OK</string>

@@ -6,24 +6,19 @@
 package ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav;
 
 import static ca.tech.sense.it.smart.indoor.parking.system.R.string.location_permission_denied;
-import static ca.tech.sense.it.smart.indoor.parking.system.R.string.unable_to_get_current_location;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -46,11 +41,9 @@ import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
-import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Arrays;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
@@ -238,18 +231,6 @@ public class Park extends Fragment implements OnMapReadyCallback {
     }}
 
 
-    private void showSettingsSnackbar() {
-        Snackbar.make(requireView(), R.string.location_permission_is_required_to_use_this_feature_please_enable_it_in_settings, Snackbar.LENGTH_INDEFINITE)
-                .setAction(R.string.settings, v -> {
-                    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                    Uri uri = Uri.fromParts("package", requireContext().getPackageName(), null);
-                    intent.setData(uri);
-                    startActivity(intent);
-                })
-                .show();
-    }
-
-
     private void enableMyLocation() {
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             // Get the last known location
@@ -258,9 +239,9 @@ public class Park extends Fragment implements OnMapReadyCallback {
                         if (location != null) {
                             LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15)); // Zoom level 15 is just an example
-                            mMap.addMarker(new MarkerOptions().position(currentLatLng).title(getString(R.string.you_are_here)));
+                            mMap.addMarker(new MarkerOptions().position(currentLatLng).title("You are here"));
                         } else {
-                            Toast.makeText(requireContext(), unable_to_get_current_location, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(requireContext(), "Unable to get current location", Toast.LENGTH_SHORT).show();
                         }
                     });
         } else {
