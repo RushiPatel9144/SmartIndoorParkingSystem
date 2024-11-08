@@ -73,5 +73,6 @@
     <string name="sign_in">Sign In</string>
     <string name="parkit">ParkIt</string>
     <string name="create_an_account">Create an account</string>
+    <string name="remember_me">Remember Me</string>
 
 </resources>
