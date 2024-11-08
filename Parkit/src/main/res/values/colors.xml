@@ -19,4 +19,5 @@
     <color name="colorAccent">#369765</color>
     <color name="offWhite">#F0F0F0</color>
     <color name="gray">#808080</color>
+    <color name="semi_transparent_black">#80000000</color>
 </resources>

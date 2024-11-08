@@ -23,7 +23,9 @@
         android:supportsRtl="true"
         android:theme="@style/Base.Theme.SmartIndoorParkingSystem"
         tools:targetApi="31">
-
+        <activity
+            android:name=".launcherActivity.FirstActivity"
+            android:exported="false" />
         <activity
             android:name=".utility.ImageCropActivity"
             android:exported="false"
@@ -52,7 +54,7 @@
             android:resource="@array/preloaded_fonts" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyCBb9Vk3FUhAz6Tf7ixMIk5xqu3IGlZRd0"/>
+            android:value="AIzaSyCBb9Vk3FUhAz6Tf7ixMIk5xqu3IGlZRd0" />
     </application>
 
 </manifest>

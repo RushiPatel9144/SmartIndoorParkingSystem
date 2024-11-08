@@ -164,6 +164,9 @@
     <string name="failed_to_load_parking_locations">Failed to load parking locations.</string>
     <string name="error_fetching_parking_locations">Error fetching parking locations</string>
     <string name="search_for_a_location">Search for a location</string>
+    <string name="sign_in">Sign In</string>
+    <string name="parkit">ParkIt</string>
+    <string name="create_an_account">Create an account</string>
 
 
 </resources>
