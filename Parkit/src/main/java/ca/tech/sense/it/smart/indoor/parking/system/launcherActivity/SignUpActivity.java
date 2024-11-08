@@ -155,11 +155,11 @@ public class SignUpActivity extends AppCompatActivity {
                             userID = mAuth.getCurrentUser().getUid();
 
                             // Create User object
-                            User user = new User(userID, fName, lName, email, phoneNumber, null); // Profile photo URL is null for now
+                            User localUser = new User(userID, fName, lName, email, phoneNumber, null); // Profile photo URL is null for now
 
                             // Store user data in Firestore
                             DocumentReference documentReference = fireStore.collection("users").document(userID);
-                            documentReference.set(user)
+                            documentReference.set(localUser)
                                     .addOnSuccessListener(aVoid -> {
                                         Log.d("TAG", "User profile is created for " + userID);
                                     })
