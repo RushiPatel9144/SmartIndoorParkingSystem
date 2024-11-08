@@ -8,6 +8,7 @@ package ca.tech.sense.it.smart.indoor.parking.system.launcherActivity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -28,6 +29,7 @@ import androidx.media3.common.MediaLibraryInfo;
 
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
@@ -48,6 +50,9 @@ public class LoginActivity extends AppCompatActivity {
     private MaterialButton buttonLogin;
     private TextView textView, forgotPasswordTextView;
     private ProgressBar progressBar;
+    private SharedPreferences sharedPreferences;
+    private MaterialCheckBox rememberMeCheckBox;
+
 
     // Firebase Authentication instance
     private FirebaseAuth mAuth;
@@ -62,6 +67,9 @@ public class LoginActivity extends AppCompatActivity {
 
         initializeUIElements();
         mAuth = FirebaseAuth.getInstance();
+        sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+
+
 
         checkIfUserLoggedIn();
         setOnClickListeners();
@@ -72,6 +80,14 @@ public class LoginActivity extends AppCompatActivity {
     public void onStart() {
         super.onStart();
         checkIfUserLoggedIn();
+        // Check if "Remember Me" is selected and auto-fill credentials
+        if (sharedPreferences.contains("email") && sharedPreferences.contains("password")) {
+            String savedEmail = sharedPreferences.getString("email", "");
+            String savedPassword = sharedPreferences.getString("password", "");
+            editTextEmail.setText(savedEmail);
+            editTextPassword.setText(savedPassword);
+            rememberMeCheckBox.setChecked(true);
+        }
     }
 
     private void setUpWindowInsets() {
@@ -89,6 +105,7 @@ public class LoginActivity extends AppCompatActivity {
         buttonLogin = findViewById(R.id.login_btn);
         progressBar = findViewById(R.id.login_progressBar);
         forgotPasswordTextView = findViewById(R.id.forgot_password);
+        rememberMeCheckBox = findViewById(R.id.remember_me_checkbox);
     }
 
     private void checkIfUserLoggedIn() {
@@ -132,6 +149,17 @@ public class LoginActivity extends AppCompatActivity {
                 .addOnCompleteListener(task -> {
                     progressBar.setVisibility(View.GONE);
                     if (task.isSuccessful()) {
+                        if (rememberMeCheckBox.isChecked()) {
+                            // Save email and password to SharedPreferences if "Remember Me" is checked
+                            SharedPreferences.Editor editor = sharedPreferences.edit();
+                            editor.putString("email", email);
+                            editor.putString("password", password);
+                            editor.apply();
+                        } else {
+                            // Clear saved credentials if "Remember Me" is unchecked
+                            sharedPreferences.edit().remove("email").remove("password").apply();
+                        }
+
                         Toast.makeText(LoginActivity.this, getString(R.string.login_successful), Toast.LENGTH_SHORT).show();
                         navigateToMainActivity();
                     } else {

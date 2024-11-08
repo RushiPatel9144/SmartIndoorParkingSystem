@@ -4,7 +4,7 @@
     <selectionStates>
       <SelectionState runConfigName="Parkit">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2024-11-08T18:12:00.451722700Z">
+        <DropdownSelection timestamp="2024-11-08T21:48:19.237301500Z">
           <Target type="DEFAULT_BOOT">
             <handle>
               <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\n01539144\.android\avd\Medium_Phone.avd" />
