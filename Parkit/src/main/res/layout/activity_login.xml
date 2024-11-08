@@ -36,17 +36,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/email"
+        android:layout_marginStart="7dp"
+        android:layout_marginEnd="7dp"
         app:boxBackgroundColor="@color/colorAccentLight"
         app:startIconTint="@color/colorAccent"
         app:startIconContentDescription="email_icon_desc"
-        app:startIconDrawable="@drawable/ic_baseline_email_24"
+        app:startIconDrawable="@drawable/baseline_email_24"
 
         >
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/login_email_editext"
-            android:elevation="10dp"
-            android:layout_marginLeft="7dp"
-            android:layout_marginRight="7dp"
+            android:inputType="textEmailAddress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             />
@@ -56,14 +56,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="9dp"
+        android:layout_marginStart="7dp"
+        android:layout_marginEnd="7dp"
         android:hint="@string/password"
+        app:startIconDrawable="@drawable/baseline_enhanced_encryption_24"
+        app:startIconTint="@color/colorAccent"
+        app:boxBackgroundColor="@color/colorAccentLight"
         app:endIconDrawable="@drawable/baseline_remove_red_eye_24"
         app:endIconMode="password_toggle">
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/login_password_editext"
-            android:elevation="10dp"
-            android:layout_marginLeft="7dp"
-            android:layout_marginRight="7dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textPassword"/>
