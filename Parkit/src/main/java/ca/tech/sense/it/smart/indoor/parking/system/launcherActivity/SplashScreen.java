@@ -26,13 +26,16 @@ public class SplashScreen extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
 
+
+
+
         TextView splashText = findViewById(R.id.splash_text);
         Animation textAnimation = AnimationUtils.loadAnimation(this, R.anim.text_animation);
         splashText.startAnimation(textAnimation);
 
         // Handler to transition to the Login activity after the splash screen
         new Handler().postDelayed(() -> {
-            Intent intent = new Intent(SplashScreen.this, LoginActivity.class);
+            Intent intent = new Intent(SplashScreen.this, FirstActivity.class);
             startActivity(intent);
             finish();
         }, SPLASH_SCREEN_TIME_OUT);
