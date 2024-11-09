@@ -25,16 +25,15 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.adapters.FavoritesAdapter;
 
 public class FavoritesFragment extends Fragment {
     private RecyclerView recyclerView;
-    private FavoritesAdapter adapter;
     private List<String> favoriteLocations; // Use List<String> to store addresses
     private DatabaseReference databaseRef;
-    private String userId;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -44,7 +43,7 @@ public class FavoritesFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         // Initialize Firebase references
-        userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        String userId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
         databaseRef = FirebaseDatabase.getInstance().getReference("users").child(userId).child("saved_locations");
 
         // Load favorite locations from Firebase
@@ -80,6 +79,7 @@ public class FavoritesFragment extends Fragment {
     }
 
     private void updateRecyclerView() {
+        FavoritesAdapter adapter;
         if (favoriteLocations != null && !favoriteLocations.isEmpty()) {
             // Set the adapter and bind the favorite locations list
             adapter = new FavoritesAdapter(favoriteLocations);

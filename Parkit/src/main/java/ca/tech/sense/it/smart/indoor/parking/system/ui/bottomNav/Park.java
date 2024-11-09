@@ -258,7 +258,7 @@ public class Park extends Fragment implements OnMapReadyCallback {
         requestPermissionLauncher = registerForActivityResult(
                 new ActivityResultContracts.RequestPermission(),
                 isGranted -> {
-                    if (isGranted) {
+                    if (Boolean.TRUE.equals(isGranted)) {
                         enableMyLocation();
                     } else {
                         Toast.makeText(getContext(), location_permission_denied, Toast.LENGTH_SHORT).show();
