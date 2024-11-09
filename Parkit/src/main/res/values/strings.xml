@@ -244,6 +244,11 @@
     <string name="promotion_title">Promotion Title</string>
     <string name="promotion_description_goes_here">Promotion description goes here</string>
     <string name="_20">20%</string>
+    <string name="dashboard">Dashboard</string>
+    <string name="transactions">Transactions</string>
+    <string name="locations">Locations</string>
+    <string name="sign_in_as_owner">Sign in as owner</string>
+    <string name="owner_dashboard">Owner Dashboard</string>
 
 
 </resources>

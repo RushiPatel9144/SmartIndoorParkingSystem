@@ -11,6 +11,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.owner.OwnerActivity;
 
 public class FirstActivity extends AppCompatActivity {
 
@@ -33,6 +34,11 @@ public class FirstActivity extends AppCompatActivity {
 
     public void goToSignUp(View view) {
         Intent intent = new Intent(this, SignUpActivity.class);
+        startActivity(intent);
+    }
+
+    public void goToOwner(View view){
+        Intent intent = new Intent(this, OwnerActivity.class);
         startActivity(intent);
     }
 }

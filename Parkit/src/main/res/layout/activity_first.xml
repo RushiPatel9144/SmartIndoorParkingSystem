@@ -70,4 +70,24 @@
         android:onClick="goToSignUp"
         android:textStyle="normal" />
 
+    <!-- Sign Up as Owner Button -->
+    <Button
+        android:id="@+id/firstSignUpAsOwnerBut"
+        android:fontFamily="@font/poppins_medium"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|top"
+        android:layout_marginTop="550dp"
+        android:background="@drawable/blur_button_bg"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:paddingStart="30dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="30dp"
+        android:paddingBottom="10dp"
+        android:elevation="10dp"
+        android:text="@string/sign_in_as_owner"
+        android:onClick="goToOwner"
+        android:textColor="@android:color/white" />
+
 </FrameLayout>

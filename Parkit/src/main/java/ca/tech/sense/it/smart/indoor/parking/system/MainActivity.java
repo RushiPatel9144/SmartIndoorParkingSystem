@@ -42,7 +42,7 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
     private final Home homeFragment = new Home();
     private final Park parkFragment = new Park();
     private final Activity activityFragment = new Activity();
-    private final ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountFragment accountFragment = new ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountFragment();
+    private final ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountFragment accountFragment = new ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountFragment(R.id.flFragment);
     private static final String PREFS_NAME = "MyAppPreferences";
     private static final String KEY_WELCOME_NOTIFICATION_TIMESTAMP = "welcome_notification_timestamp";
     private static final long NOTIFICATION_COOLDOWN = 24 * 60 * 60 * 1000; // 24 hours in milliseconds

@@ -19,13 +19,14 @@ import androidx.fragment.app.FragmentTransaction;
 import com.google.firebase.auth.FirebaseAuth;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.FirstActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.LoginActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems.*;
 
 public class AccountFragment extends Fragment {
-
-    public AccountFragment() {
-        // Required empty public constructor
+    private final int containerViewId;
+    public AccountFragment(int containerViewId) {
+        this.containerViewId = containerViewId;
     }
 
     @Override
@@ -85,7 +86,7 @@ public class AccountFragment extends Fragment {
     private void openFragment(Fragment fragment) {
         FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.flFragment, fragment);
+        fragmentTransaction.replace(containerViewId, fragment);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
@@ -95,7 +96,7 @@ public class AccountFragment extends Fragment {
 //        UserSession.clearSession();
 
         FirebaseAuth.getInstance().signOut();
-        Intent intent = new Intent(requireActivity(), LoginActivity.class);
+        Intent intent = new Intent(requireActivity(), FirstActivity.class);
         startActivity(intent);
         requireActivity().finish();
     }
