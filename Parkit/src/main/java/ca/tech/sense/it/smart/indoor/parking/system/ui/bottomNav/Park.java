@@ -14,6 +14,8 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -78,15 +80,13 @@ public class Park extends Fragment implements OnMapReadyCallback {
     @Override
     public void onResume() {
         super.onResume();
-        executorService.execute(() -> {
-            requireActivity().runOnUiThread(() -> {
-                if (!Places.isInitialized()) {
-                    Places.initialize(requireContext(), "AIzaSyCBb9Vk3FUhAz6Tf7ixMIk5xqu3IGlZRd0"); // Initialize Places API only once
-                }
-                initializeMap();
-                initializeAutocomplete();
-            });
-        });
+        executorService.execute(() -> requireActivity().runOnUiThread(() -> {
+            if (!Places.isInitialized()) {
+                Places.initialize(requireContext(), "AIzaSyCBb9Vk3FUhAz6Tf7ixMIk5xqu3IGlZRd0"); // Initialize Places API only once
+            }
+            initializeMap();
+            initializeAutocomplete();
+        }));
     }
 
     private void initializeMap() {
@@ -100,7 +100,7 @@ public class Park extends Fragment implements OnMapReadyCallback {
         AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
                 getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment);
         if (autocompleteFragment != null) {
-            autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG));
+            autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.DISPLAY_NAME, Place.Field.LOCATION));
             autocompleteFragment.setHint(getString(R.string.search_for_a_location));
             autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
                 @Override
@@ -149,15 +149,18 @@ public class Park extends Fragment implements OnMapReadyCallback {
     }
 
     private void handlePlaceSelected(Place place) {
-        if (place.getLatLng() != null) {
+        if (place.getLocation() != null) {
             requireActivity().runOnUiThread(() -> {
                 mMap.clear(); // Clear any existing markers
-                mMap.addMarker(new MarkerOptions().position(place.getLatLng()).title(place.getName()));
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(), 15));
+                mMap.addMarker(new MarkerOptions().position(place.getLocation()).title(place.getDisplayName()));
+                // Add a slight delay before animating the camera
+                new Handler(Looper.getMainLooper()).postDelayed(() -> mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(place.getLocation(), 15)), 500); // 500 milliseconds delay
                 addParkingSpotsToMap(); // Add parking spots after place selection
             });
         }
     }
+
+
 
     private void addParkingSpotsToMap() {
         // Fetch parking locations in the background
@@ -175,6 +178,7 @@ public class Park extends Fragment implements OnMapReadyCallback {
                                         .title(location.getName())
                                         .icon(bitmapDescriptorFromVector(requireContext(), R.mipmap.ic_parking))
                                 );
+                                assert marker != null;
                                 marker.setTag(location.getId());
                             }
                         }
