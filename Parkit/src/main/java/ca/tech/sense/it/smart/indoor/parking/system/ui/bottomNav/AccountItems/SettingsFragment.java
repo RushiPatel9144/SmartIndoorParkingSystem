@@ -120,7 +120,7 @@ public class SettingsFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putBoolean("Notification Enabled", isChecked);
+                editor.putBoolean(getString(R.string.notification_enabled), isChecked);
                 editor.apply();
 
                 if (isChecked) {
@@ -150,8 +150,8 @@ public class SettingsFragment extends Fragment {
     private void enableNotifications() {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(getActivity(), "default")
                 .setSmallIcon(R.drawable.notifications)
-                .setContentTitle("Notifications Enabled")
-                .setContentText("You will receive notifications")
+                .setContentTitle(getString(R.string.notifications_enabled))
+                .setContentText(getString(R.string.you_will_receive_notifications))
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
         notificationManager.notify(1, builder.build());
@@ -172,7 +172,7 @@ public class SettingsFragment extends Fragment {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean(getString(R.string.lock_portrait), switchLockPortrait.isChecked());
         editor.putBoolean(getString(R.string.dark_theme), switchTheme.isChecked());
-        editor.putBoolean("Notification Enabled", switchNotifications.isChecked());
+        editor.putBoolean(getString(R.string.notifications_enabled), switchNotifications.isChecked());
         editor.apply();
     }
 }

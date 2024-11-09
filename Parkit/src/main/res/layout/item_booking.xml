@@ -17,7 +17,7 @@
             android:id="@+id/booking_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Park It"
+            android:text="@string/park_it"
             android:textSize="18sp"
             android:textStyle="bold" />
 
@@ -25,7 +25,7 @@
             android:id="@+id/booking_address"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Booking Address"
+            android:text="@string/booking_address"
             android:textSize="14sp"
             android:paddingTop="4dp" />
 
@@ -39,7 +39,7 @@
                 android:id="@+id/booking_slot_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Slot Number:"
+                android:text="@string/slot_number"
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
@@ -47,7 +47,7 @@
                 android:id="@+id/booking_slot"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Slot Number"
+                android:text="@string/slot_number_1"
                 android:textSize="14sp"
                 android:paddingStart="4dp" />
         </LinearLayout>
@@ -56,7 +56,7 @@
             android:id="@+id/booking_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Booking Time"
+            android:text="@string/booking_time"
             android:textSize="14sp"
             android:paddingTop="4dp" />
 
@@ -64,7 +64,7 @@
             android:id="@+id/booking_price"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Price: $25"
+            android:text="@string/price_25"
             android:textSize="14sp"
             android:paddingTop="4dp"
             android:textColor="@android:color/holo_green_dark" />
