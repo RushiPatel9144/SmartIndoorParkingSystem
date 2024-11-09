@@ -16,9 +16,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -66,7 +71,7 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
         priceTextView = view.findViewById(R.id.priceTag);
 
         // Set up the slot spinner
-        setupTimeSlots();
+        setupSlotSpinnerData(new HashMap<>());
         setupConfirmButton();
         setupCancelButton();
         setupSelectDateButton();
@@ -74,6 +79,10 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
 
         // Fetch the parking location data when the dialog is opened
         fetchParkingLocationData();
+
+        // Set up the time slots with the current date as default
+        selectedDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+        setupTimeSlots(selectedDate);
     }
 
     private void fetchParkingLocationData() {
@@ -111,22 +120,56 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
         slotSpinner.setAdapter(adapter);
     }
 
-    private void setupTimeSlots() {
-        List<String> timeSlots = generateTimeSlots();
+    private void setupTimeSlots(String selectedDate) {
+        List<String> timeSlots = generateTimeSlots(selectedDate);
+        if (timeSlots.isEmpty()) {
+            timeSlots.add("Choose another date");
+            confirmButton.setEnabled(false);
+        } else {
+            confirmButton.setEnabled(true);
+        }
         ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, timeSlots);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         timeSlotSpinner.setAdapter(adapter);
     }
 
-    private List<String> generateTimeSlots() {
+
+
+    private List<String> generateTimeSlots(String selectedDate) {
         List<String> timeSlots = new ArrayList<>();
+        Calendar now = Calendar.getInstance();
+
+        // Parse the selected date
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        Calendar selectedCalendar = Calendar.getInstance();
+        try {
+            Date date = sdf.parse(selectedDate);
+            if (date != null) {
+                selectedCalendar.setTime(date);
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
         for (int hour = 0; hour < 24; hour++) {
             String startTime = String.format(Locale.getDefault(), "%02d:00", hour);
             String endTime = String.format(Locale.getDefault(), "%02d:00", (hour + 1) % 24);
-            timeSlots.add(startTime + " - " + endTime);
+
+            // Create a calendar instance for the start time
+            Calendar slotTime = (Calendar) selectedCalendar.clone();
+            slotTime.set(Calendar.HOUR_OF_DAY, hour);
+            slotTime.set(Calendar.MINUTE, 0);
+            slotTime.set(Calendar.SECOND, 0);
+            slotTime.set(Calendar.MILLISECOND, 0);
+
+            // Add the time slot if it is in the future
+            if (slotTime.after(now)) {
+                timeSlots.add(startTime + " - " + endTime);
+            }
         }
         return timeSlots;
     }
+
 
     private void setupConfirmButton() {
         confirmButton.setOnClickListener(v -> {
@@ -158,11 +201,17 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
             @SuppressLint("SetTextI18n") DatePickerDialog datePickerDialog = new DatePickerDialog(context, (view, selectedYear, selectedMonth, selectedDay) -> {
                 selectedDate = String.format(Locale.getDefault(), "%04d-%02d-%02d", selectedYear, selectedMonth + 1, selectedDay);
                 selectedDateTextview.setText("Selected Date: " + selectedDate);
+                setupTimeSlots(selectedDate); // Update time slots based on the selected date
             }, year, month, day);
+
+            // Set the minimum date to today
+            datePickerDialog.getDatePicker().setMinDate(calendar.getTimeInMillis());
 
             datePickerDialog.show();
         });
     }
+
+
 
     private void setupStarButton() {
         starButton.setOnClickListener(v -> {
