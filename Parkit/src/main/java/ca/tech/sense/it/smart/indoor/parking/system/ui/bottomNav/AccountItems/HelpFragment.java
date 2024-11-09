@@ -12,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -57,9 +56,9 @@ public class HelpFragment extends Fragment {
                 String comment = etComment.getText().toString().trim();
 
                 if (name.isEmpty() || phone.isEmpty() || email.isEmpty() || comment.isEmpty()) {
-                    Toast.makeText(getActivity(), "Please fill in all fields", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), getString(R.string.please_fill_in_all_fields), Toast.LENGTH_SHORT).show();
                 }else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                    Toast.makeText(getActivity(), "Please enter a valid email address", Toast.LENGTH_SHORT).show();}
+                    Toast.makeText(getActivity(), getString(R.string.please_enter_a_valid_email_address), Toast.LENGTH_SHORT).show();}
                 else {
                     // Create a new Help object
                     Help help = new Help(name, phone, email, comment);
@@ -75,14 +74,14 @@ public class HelpFragment extends Fragment {
                                     etEmail.setText("");
                                     etComment.setText("");
                                     // Show success message
-                                    Toast.makeText(getActivity(), "Help request submitted", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getActivity(), getString(R.string.help_request_submitted), Toast.LENGTH_SHORT).show();
                                 }
                             })
                             .addOnFailureListener(new OnFailureListener() {
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
                                     // Show error message
-                                    Toast.makeText(getActivity(), "Error adding document", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getActivity(), getString(R.string.error_adding_document), Toast.LENGTH_SHORT).show();
                                 }
                             });
                 }

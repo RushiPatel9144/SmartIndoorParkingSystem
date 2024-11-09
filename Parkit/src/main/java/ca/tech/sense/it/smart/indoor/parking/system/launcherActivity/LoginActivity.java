@@ -9,6 +9,8 @@ package ca.tech.sense.it.smart.indoor.parking.system.launcherActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -41,14 +43,17 @@ import java.util.Objects;
 
 import ca.tech.sense.it.smart.indoor.parking.system.MainActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.network.BaseActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends BaseActivity {
 
     // UI Elements
     private EditText editTextEmail, editTextPassword;
     private MaterialButton buttonLogin;
-    private TextView textView, forgotPasswordTextView;
+    private TextView textView;
+
+    private TextView forgotPasswordTextView;
     private ProgressBar progressBar;
     private SharedPreferences sharedPreferences;
     private MaterialCheckBox rememberMeCheckBox;
@@ -258,4 +263,7 @@ public class LoginActivity extends AppCompatActivity {
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
+
+
+
 }

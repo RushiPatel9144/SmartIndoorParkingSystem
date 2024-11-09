@@ -9,6 +9,7 @@
     <color name="lavender">#8692f7</color>
     <color name="theme">#369765</color>
     <color name="dark_theme">#369765</color>
+    <color name="light_theme">#DBEBDF</color>
     <color name="icon_color">#FFFFFF</color>
     <color name="icon_text">#5d2213</color>
     <color name="colorPrimaryLight">#6200EE</color>

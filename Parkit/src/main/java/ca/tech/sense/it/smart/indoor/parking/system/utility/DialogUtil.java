@@ -13,6 +13,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.util.Objects;
+
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 
 public class DialogUtil {
@@ -46,7 +48,7 @@ public class DialogUtil {
                 .setView(dialogView)
                 .create();
 
-        dialog.getWindow().setBackgroundDrawableResource(R.drawable.dialog_background);
+        Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawableResource(R.drawable.dialog_background);
         dialog.show();
 
         cancelButton.setOnClickListener(v -> {
@@ -85,7 +87,7 @@ public class DialogUtil {
                 .setView(dialogView)
                 .create();
 
-        dialog.getWindow().setBackgroundDrawableResource(R.drawable.dialog_background);
+        Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawableResource(R.drawable.dialog_background);
         dialog.show();
 
         cancelButton.setOnClickListener(v -> {

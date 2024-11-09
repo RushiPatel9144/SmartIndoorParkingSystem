@@ -40,13 +40,13 @@ public class Activity extends Fragment {
         new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
             switch (position) {
                 case 0:
-                    tab.setText("Active");
+                    tab.setText(getString(R.string.active));
                     break;
                 case 1:
-                    tab.setText("Upcoming");
+                    tab.setText(getString(R.string.upcoming));
                     break;
                 case 2:
-                    tab.setText("History");
+                    tab.setText(getString(R.string.history));
                     break;
             }
         }).attach();
