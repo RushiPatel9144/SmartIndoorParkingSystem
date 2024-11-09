@@ -23,7 +23,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -85,15 +84,13 @@ public class Park extends Fragment implements OnMapReadyCallback {
     @Override
     public void onResume() {
         super.onResume();
-        executorService.execute(() -> {
-            requireActivity().runOnUiThread(() -> {
-                if (!Places.isInitialized()) {
-                    Places.initialize(requireContext(), "AIzaSyCBb9Vk3FUhAz6Tf7ixMIk5xqu3IGlZRd0"); // Initialize Places API only once
-                }
-                initializeMap();
-                initializeAutocomplete();
-            });
-        });
+        executorService.execute(() -> requireActivity().runOnUiThread(() -> {
+            if (!Places.isInitialized()) {
+                Places.initialize(requireContext(), "AIzaSyCBb9Vk3FUhAz6Tf7ixMIk5xqu3IGlZRd0"); // Initialize Places API only once
+            }
+            initializeMap();
+            initializeAutocomplete();
+        }));
     }
 
     private void initializeMap() {
@@ -107,7 +104,7 @@ public class Park extends Fragment implements OnMapReadyCallback {
         AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
                 getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment);
         if (autocompleteFragment != null) {
-            autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG));
+            autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.DISPLAY_NAME, Place.Field.LOCATION));
             autocompleteFragment.setHint(getString(R.string.search_for_a_location));
             autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
                 @Override
@@ -156,11 +153,11 @@ public class Park extends Fragment implements OnMapReadyCallback {
     }
 
     private void handlePlaceSelected(Place place) {
-        if (place.getLatLng() != null) {
+        if (place.getLocation()!= null) {
             requireActivity().runOnUiThread(() -> {
-                mMap.clear(); // Clear any existing markers
-                mMap.addMarker(new MarkerOptions().position(place.getLatLng()).title(place.getName()));
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(), 15));
+                mMap.clear();
+                mMap.addMarker(new MarkerOptions().position(place.getLocation()).title(place.getDisplayName()));
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(place.getLocation(), 15));
                 addParkingSpotsToMap(); // Add parking spots after place selection
             });
         }
@@ -182,7 +179,7 @@ public class Park extends Fragment implements OnMapReadyCallback {
                                         .title(location.getName())
                                         .icon(bitmapDescriptorFromVector(requireContext(), R.mipmap.ic_parking))
                                 );
-                                marker.setTag(location.getId());
+                                Objects.requireNonNull(marker).setTag(location.getId());
                             }
                         }
                     }
@@ -271,7 +268,7 @@ public class Park extends Fragment implements OnMapReadyCallback {
         requestPermissionLauncher = registerForActivityResult(
                 new ActivityResultContracts.RequestPermission(),
                 isGranted -> {
-                    if (isGranted) {
+                    if (Boolean.TRUE.equals(isGranted)) {
                         enableMyLocation();
                     } else {
                         Toast.makeText(getContext(), location_permission_denied, Toast.LENGTH_SHORT).show();

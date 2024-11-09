@@ -39,8 +39,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import ca.tech.sense.it.smart.indoor.parking.system.MainActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.model.user.User;
+import ca.tech.sense.it.smart.indoor.parking.system.network.BaseActivity;
 
-public class SignUpActivity extends AppCompatActivity {
+public class SignUpActivity extends BaseActivity {
 
     EditText editTextEmail, editTextPassword, editTextConfirmPassword, firstName, lastName, phone;
     MaterialButton button;

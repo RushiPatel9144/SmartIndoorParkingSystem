@@ -4,6 +4,7 @@
   Name: Rushi Manojkumar Patel, StudentID: N01539144, section number: RCB
  */
 package ca.tech.sense.it.smart.indoor.parking.system.ui.menu;
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,8 +35,8 @@ import ca.tech.sense.it.smart.indoor.parking.system.utility.PromotionHelper;
 public class PromotionFragment extends Fragment {
     private RecyclerView recyclerView;
     private PromotionAdapter adapter;
-    private List<Promotion> promotionList = new ArrayList<>();
-    private DatabaseReference promotionsRef;
+    private final List<Promotion> promotionList = new ArrayList<>();
+
 
     // Views for "No Promotions" message
     private ImageView imgNoPromotions;
@@ -68,10 +69,12 @@ public class PromotionFragment extends Fragment {
     }
 
     private void fetchPromotions() {
+        DatabaseReference promotionsRef;
 
         promotionsRef = FirebaseDatabase.getInstance().getReference("Promotions");
 
         promotionsRef.addValueEventListener(new ValueEventListener() {
+            @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 promotionList.clear();

@@ -26,6 +26,8 @@ import ca.tech.sense.it.smart.indoor.parking.system.R;
 
 public class AuthUtils {
 
+    private AuthUtils(){}
+
     public static void showResetPasswordDialog(Context context, FirebaseAuth auth) {
         String currentEmail = getCurrentUserEmail(auth);
         if (currentEmail != null) {
