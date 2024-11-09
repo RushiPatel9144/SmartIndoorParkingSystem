@@ -24,10 +24,8 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+
 import com.bumptech.glide.Glide;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -37,6 +35,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+
 
 import java.io.IOException;
 
@@ -75,7 +74,7 @@ public class ManageAccountFragment extends Fragment {
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
-                    String croppedImageUriString = result.getData().getStringExtra("croppedImageUri");
+                    String croppedImageUriString = result.getData().getStringExtra(getString(R.string.croppedimageuri));
                     if (croppedImageUriString != null) {
                         Uri croppedImageUri = Uri.parse(croppedImageUriString);
                         loadCroppedImage(croppedImageUri);
@@ -157,7 +156,7 @@ public class ManageAccountFragment extends Fragment {
 
     private void cropImage(Uri imageUri) {
         Intent intent = new Intent(getActivity(), ImageCropActivity.class);
-        intent.putExtra("imageUri", imageUri);
+        intent.putExtra(getString(R.string.imageuri), imageUri);
         imageCropLauncher.launch(intent);
     }
 
@@ -211,7 +210,7 @@ public class ManageAccountFragment extends Fragment {
 
     private void openGallery() {
         Intent intent = new Intent(Intent.ACTION_PICK);
-        intent.setType("image/*");
+        intent.setType(getString(R.string.image1));
         imagePickerLauncher.launch(intent);
     }
 

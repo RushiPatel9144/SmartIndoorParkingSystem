@@ -6,24 +6,21 @@
 package ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav;
 
 import static ca.tech.sense.it.smart.indoor.parking.system.R.string.location_permission_denied;
-import static ca.tech.sense.it.smart.indoor.parking.system.R.string.unable_to_get_current_location;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.Settings;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -46,11 +43,9 @@ import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
-import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Arrays;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
@@ -85,15 +80,13 @@ public class Park extends Fragment implements OnMapReadyCallback {
     @Override
     public void onResume() {
         super.onResume();
-        executorService.execute(() -> {
-            requireActivity().runOnUiThread(() -> {
-                if (!Places.isInitialized()) {
-                    Places.initialize(requireContext(), "AIzaSyCBb9Vk3FUhAz6Tf7ixMIk5xqu3IGlZRd0"); // Initialize Places API only once
-                }
-                initializeMap();
-                initializeAutocomplete();
-            });
-        });
+        executorService.execute(() -> requireActivity().runOnUiThread(() -> {
+            if (!Places.isInitialized()) {
+                Places.initialize(requireContext(), "AIzaSyCBb9Vk3FUhAz6Tf7ixMIk5xqu3IGlZRd0"); // Initialize Places API only once
+            }
+            initializeMap();
+            initializeAutocomplete();
+        }));
     }
 
     private void initializeMap() {
@@ -107,7 +100,7 @@ public class Park extends Fragment implements OnMapReadyCallback {
         AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
                 getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment);
         if (autocompleteFragment != null) {
-            autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG));
+            autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.DISPLAY_NAME, Place.Field.LOCATION));
             autocompleteFragment.setHint(getString(R.string.search_for_a_location));
             autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
                 @Override
@@ -118,7 +111,7 @@ public class Park extends Fragment implements OnMapReadyCallback {
 
                 @Override
                 public void onError(@NonNull Status status) {
-                    Log.d(TAG, "Error: " + status.getStatusMessage());
+                    Log.d(TAG, getString(R.string.error)+ status.getStatusMessage());
                 }
             });
         }
@@ -156,15 +149,18 @@ public class Park extends Fragment implements OnMapReadyCallback {
     }
 
     private void handlePlaceSelected(Place place) {
-        if (place.getLatLng() != null) {
+        if (place.getLocation() != null) {
             requireActivity().runOnUiThread(() -> {
                 mMap.clear(); // Clear any existing markers
-                mMap.addMarker(new MarkerOptions().position(place.getLatLng()).title(place.getName()));
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(), 15));
+                mMap.addMarker(new MarkerOptions().position(place.getLocation()).title(place.getDisplayName()));
+                // Add a slight delay before animating the camera
+                new Handler(Looper.getMainLooper()).postDelayed(() -> mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(place.getLocation(), 15)), 500); // 500 milliseconds delay
                 addParkingSpotsToMap(); // Add parking spots after place selection
             });
         }
     }
+
+
 
     private void addParkingSpotsToMap() {
         // Fetch parking locations in the background
@@ -182,6 +178,7 @@ public class Park extends Fragment implements OnMapReadyCallback {
                                         .title(location.getName())
                                         .icon(bitmapDescriptorFromVector(requireContext(), R.mipmap.ic_parking))
                                 );
+                                assert marker != null;
                                 marker.setTag(location.getId());
                             }
                         }
@@ -193,6 +190,7 @@ public class Park extends Fragment implements OnMapReadyCallback {
             public void onFetchFailure(Exception e) {
                 Log.e(TAG, getString(R.string.error_fetching_parking_locations), e);
                 Toast.makeText(requireContext(), Toast.LENGTH_SHORT, R.string.failed_to_load_parking_locations).show();
+
             }
         });
     }
@@ -237,18 +235,6 @@ public class Park extends Fragment implements OnMapReadyCallback {
     }}
 
 
-    private void showSettingsSnackbar() {
-        Snackbar.make(requireView(), R.string.location_permission_is_required_to_use_this_feature_please_enable_it_in_settings, Snackbar.LENGTH_INDEFINITE)
-                .setAction(R.string.settings, v -> {
-                    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                    Uri uri = Uri.fromParts("package", requireContext().getPackageName(), null);
-                    intent.setData(uri);
-                    startActivity(intent);
-                })
-                .show();
-    }
-
-
     private void enableMyLocation() {
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             // Get the last known location
@@ -257,15 +243,16 @@ public class Park extends Fragment implements OnMapReadyCallback {
                         if (location != null) {
                             LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15)); // Zoom level 15 is just an example
-                            mMap.addMarker(new MarkerOptions().position(currentLatLng).title(getString(R.string.you_are_here)));
+                            mMap.addMarker(new MarkerOptions().position(currentLatLng).title("You are here"));
                         } else {
-                            Toast.makeText(requireContext(), unable_to_get_current_location, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(requireContext(), "Unable to get current location", Toast.LENGTH_SHORT).show();
                         }
                     });
         } else {
             requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
         }
     }
+
 
     private void registerPermissionLauncher() {
         requestPermissionLauncher = registerForActivityResult(

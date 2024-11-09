@@ -11,7 +11,7 @@
         android:id="@+id/tvPromotionsTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Promotions"
+        android:text="@string/promotions"
         android:textSize="24sp"
         android:textStyle="bold"
         android:paddingBottom="16dp"/>
@@ -41,7 +41,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="8dp"
-        android:text="No promotions available"
+        android:text="@string/no_promotions_available"
         android:textSize="16sp"
         android:textColor="#A9A9A9"
         android:visibility="gone" />
