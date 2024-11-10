@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
-    id 'com.google.gms.google-services'
+    alias(libs.plugins.gms.google.services)
+    alias(libs.plugins.kotlin.android)
 }
 
 android {
@@ -10,7 +11,8 @@ android {
     defaultConfig {
         applicationId "ca.tech.sense.it.smart.indoor.parking.system"
         minSdk 29
-        targetSdk 34
+        //noinspection EditedTargetSdkVersion
+        targetSdk 35
         versionCode 1
         versionName "1.0"
 
@@ -30,6 +32,9 @@ android {
     buildFeatures {
         viewBinding true
     }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
 }
 
 
@@ -43,7 +48,6 @@ dependencies {
     implementation libs.activity
     implementation libs.constraintlayout
     implementation libs.filament.android
-    implementation libs.firebase.auth
     implementation libs.recyclerview
     implementation libs.firebase.database
     implementation libs.firebase.firestore
@@ -53,6 +57,8 @@ dependencies {
     implementation libs.media3.exoplayer
     implementation libs.firebase.storage
     implementation libs.security.identity.credential
+    implementation libs.core.ktx
+    implementation libs.androidx.material3.android
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
@@ -64,9 +70,11 @@ dependencies {
     implementation 'com.vanniktech:android-image-cropper:4.6.0'
     implementation 'com.google.android.libraries.places:places:4.0.0'
     implementation 'de.hdodenhof:circleimageview:3.1.0'
-    implementation 'com.google.android.gms:play-services-auth:21.2.0'
-    implementation 'com.google.firebase:firebase-auth:23.0.0'
-    implementation "androidx.credentials:credentials:1.5.0-beta01"
-    implementation "com.google.android.libraries.identity.googleid:googleid:1.1.1"
-
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
+    implementation(libs.googleid)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth.ktx)
+    implementation libs.play.services.auth
+    implementation libs.firebase.auth.v2105
 }

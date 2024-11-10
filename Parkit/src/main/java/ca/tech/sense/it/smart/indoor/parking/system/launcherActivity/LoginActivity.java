@@ -3,141 +3,139 @@
   Name: NisargKumar Pareshbhai Joshi, StudentID: N01545986,  section number: RCB
   Name: Rushi Manojkumar Patel, StudentID: N01539144, section number: RCB
  */
-package ca.tech.sense.it.smart.indoor.parking.system.launcherActivity;
+    package ca.tech.sense.it.smart.indoor.parking.system.launcherActivity;
 
 
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.IntentFilter;
-import android.net.ConnectivityManager;
-import android.os.Bundle;
-import android.text.TextUtils;
-import android.util.Log;
-import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.Toast;
+    import android.content.Context;
+    import android.content.Intent;
+    import android.os.Bundle;
+    import android.text.TextUtils;
+    import android.util.Log;
+    import android.view.View;
+    import android.view.inputmethod.InputMethodManager;
+    import android.widget.EditText;
+    import android.widget.ProgressBar;
+    import android.widget.TextView;
+    import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-import androidx.media3.common.MediaLibraryInfo;
+    import androidx.activity.EdgeToEdge;
+    import androidx.annotation.NonNull;
+    import androidx.core.graphics.Insets;
+    import androidx.core.view.ViewCompat;
+    import androidx.core.view.WindowInsetsCompat;
 
-import com.google.android.gms.tasks.Task;
-import com.google.android.material.button.MaterialButton;
-import com.google.android.material.checkbox.MaterialCheckBox;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthException;
-import com.google.firebase.auth.FirebaseAuthInvalidUserException;
-import com.google.firebase.auth.FirebaseAuthUserCollisionException;
-import com.google.firebase.auth.FirebaseUser;
+    import com.google.android.gms.tasks.Task;
+    import com.google.android.material.button.MaterialButton;
+    import com.google.android.material.checkbox.MaterialCheckBox;
+    import com.google.firebase.auth.AuthResult;
+    import com.google.firebase.auth.FirebaseAuth;
+    import com.google.firebase.auth.FirebaseAuthException;
+    import com.google.firebase.auth.FirebaseAuthInvalidUserException;
+    import com.google.firebase.auth.FirebaseAuthUserCollisionException;
+    import com.google.firebase.auth.FirebaseUser;
 
-import java.util.Objects;
+    import java.util.Objects;
 
-import ca.tech.sense.it.smart.indoor.parking.system.MainActivity;
-import ca.tech.sense.it.smart.indoor.parking.system.R;
-import ca.tech.sense.it.smart.indoor.parking.system.network.BaseActivity;
-import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
+    import ca.tech.sense.it.smart.indoor.parking.system.MainActivity;
+    import ca.tech.sense.it.smart.indoor.parking.system.R;
+    import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.CredentialManagerGoogle.CoroutineHelper;
+    import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.CredentialManagerGoogle.GoogleAuthClient;
+    import ca.tech.sense.it.smart.indoor.parking.system.network.BaseActivity;
+    import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
 
 public class LoginActivity extends BaseActivity {
 
-    // UI Elements
-    private EditText editTextEmail, editTextPassword;
-    private MaterialButton buttonLogin;
-    private TextView textView;
+        // UI Elements
+        private EditText editTextEmail, editTextPassword;
+        private MaterialButton buttonLogin;
+        private TextView textView;
 
-    private TextView forgotPasswordTextView;
-    private ProgressBar progressBar;
-    private SharedPreferences sharedPreferences;
-    private MaterialCheckBox rememberMeCheckBox;
+        private TextView forgotPasswordTextView;
+        private ProgressBar progressBar;
+        private MaterialCheckBox rememberMeCheckBox;
 
+        private GoogleAuthClient googleAuthClient;
 
-    // Firebase Authentication instance
-    private FirebaseAuth mAuth;
-
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_login);
-        setUpWindowInsets();
-
-        initializeUIElements();
-        mAuth = FirebaseAuth.getInstance();
-        sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        private MaterialButton googleButton;
+        // Firebase Authentication instance
+        private FirebaseAuth mAuth;
 
 
+        @Override
+        protected void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            EdgeToEdge.enable(this);
+            setContentView(R.layout.activity_login);
+            setUpWindowInsets();
 
-        checkIfUserLoggedIn();
-        setOnClickListeners();
-        forgetPassword();
-    }
+            initializeUIElements();
+            mAuth = FirebaseAuth.getInstance();
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        checkIfUserLoggedIn();
-        // Check if "Remember Me" is selected and auto-fill credentials
-        if (sharedPreferences.contains("email") && sharedPreferences.contains("password")) {
-            String savedEmail = sharedPreferences.getString("email", "");
-            String savedPassword = sharedPreferences.getString("password", "");
-            editTextEmail.setText(savedEmail);
-            editTextPassword.setText(savedPassword);
-            rememberMeCheckBox.setChecked(true);
+            googleAuthClient = new GoogleAuthClient(this);
+
+            checkIfUserLoggedIn();
+            setOnClickListeners();
+            forgetPassword();
         }
-    }
 
-    private void setUpWindowInsets() {
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.loginActivity), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
-    }
-
-    private void initializeUIElements() {
-        editTextEmail = findViewById(R.id.login_email_editext);
-        editTextPassword = findViewById(R.id.login_password_editext);
-        textView = findViewById(R.id.jump_to_signup_page);
-        buttonLogin = findViewById(R.id.login_btn);
-        progressBar = findViewById(R.id.login_progressBar);
-        forgotPasswordTextView = findViewById(R.id.forgot_password);
-        rememberMeCheckBox = findViewById(R.id.remember_me_checkbox);
-    }
-
-    private void checkIfUserLoggedIn() {
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser != null) {
-            navigateToMainActivity();
+        @Override
+        public void onStart() {
+            super.onStart();
+            checkIfUserLoggedIn();
         }
-    }
 
-    private void navigateToMainActivity() {
-        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-        startActivity(intent);
-        finish();
-    }
+        private void setUpWindowInsets() {
+            ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.loginActivity), (v, insets) -> {
+                Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+                v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+                return insets;
+            });
+        }
 
-    private void setOnClickListeners() {
-        textView.setOnClickListener(v -> {
-            Intent intent = new Intent(getApplicationContext(), SignUpActivity.class);
+        private void initializeUIElements() {
+            editTextEmail = findViewById(R.id.login_email_editext);
+            editTextPassword = findViewById(R.id.login_password_editext);
+            textView = findViewById(R.id.jump_to_signup_page);
+            buttonLogin = findViewById(R.id.login_btn);
+            progressBar = findViewById(R.id.login_progressBar);
+            forgotPasswordTextView = findViewById(R.id.forgot_password);
+            rememberMeCheckBox = findViewById(R.id.remember_me_checkbox);
+            googleButton = findViewById(R.id.btnGoogleSignIn);
+        }
+
+        private void checkIfUserLoggedIn() {
+            FirebaseUser currentUser = mAuth.getCurrentUser();
+            if (currentUser != null) {
+                navigateToMainActivity();
+            }
+        }
+
+        private void navigateToMainActivity() {
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
             startActivity(intent);
             finish();
-        });
+        }
 
-        buttonLogin.setOnClickListener(v -> {
-            hideKeyboard(v);
-            performLogin();
-        });
+        private void setOnClickListeners() {
+            textView.setOnClickListener(v -> {
+                Intent intent = new Intent(getApplicationContext(), SignUpActivity.class);
+                startActivity(intent);
+                finish();
+            });
 
+            buttonLogin.setOnClickListener(v -> {
+                hideKeyboard(v);
+                performLogin();
+            });
+
+            googleButton.setOnClickListener(v -> signInWithGoogle());
+        }
+
+    private void signInWithGoogle() {
+        CoroutineHelper.Companion.signInWithGoogle(this, googleAuthClient);
+        if (googleAuthClient.isSingedIn()){
+            navigateToMainActivity();
+        }
     }
 
     private void performLogin() {
@@ -154,17 +152,6 @@ public class LoginActivity extends BaseActivity {
                 .addOnCompleteListener(task -> {
                     progressBar.setVisibility(View.GONE);
                     if (task.isSuccessful()) {
-                        if (rememberMeCheckBox.isChecked()) {
-                            // Save email and password to SharedPreferences if "Remember Me" is checked
-                            SharedPreferences.Editor editor = sharedPreferences.edit();
-                            editor.putString("email", email);
-                            editor.putString("password", password);
-                            editor.apply();
-                        } else {
-                            // Clear saved credentials if "Remember Me" is unchecked
-                            sharedPreferences.edit().remove("email").remove("password").apply();
-                        }
-
                         Toast.makeText(LoginActivity.this, getString(R.string.login_successful), Toast.LENGTH_SHORT).show();
                         navigateToMainActivity();
                     } else {
