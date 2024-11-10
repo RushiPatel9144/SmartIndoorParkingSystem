@@ -15,15 +15,15 @@
       },
       "oauth_client": [
         {
-          "client_id": "361561575523-5lgalg487pgqjk8aljf1h1d7gkgnt71j.apps.googleusercontent.com",
+          "client_id": "361561575523-ved6tudqji6ond87kqnpb27iibe8b915.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "ca.tech.sense.it.smart.indoor.parking.system",
-            "certificate_hash": "2755a502c47102764b78fd220bd839b3349d810d"
+            "certificate_hash": "628dd5f045205934c51b616be57e780cbbbc3e8e"
           }
         },
         {
-          "client_id": "361561575523-q5k4o14em2cf6jm5f4fnts6o942078n1.apps.googleusercontent.com",
+          "client_id": "361561575523-vh9n3c4q3brm58ejsqgj8s9henk085i5.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -36,7 +36,7 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "361561575523-q5k4o14em2cf6jm5f4fnts6o942078n1.apps.googleusercontent.com",
+              "client_id": "361561575523-vh9n3c4q3brm58ejsqgj8s9henk085i5.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

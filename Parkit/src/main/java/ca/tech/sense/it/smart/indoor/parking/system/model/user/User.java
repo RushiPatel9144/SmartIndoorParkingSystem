@@ -7,10 +7,10 @@ package ca.tech.sense.it.smart.indoor.parking.system.model.user;
 
 public class User {
     private String uid;       // Unique user ID
-    private String firstName;      // User's name
+    private String firstName; // User's name
     private String lastName;
     private String email;     // User's email address
-    private String phone;      // User's phone number
+    private String phone;     // User's phone number
     private String profilePhotoUrl;
 
     public User() {
