@@ -148,6 +148,7 @@ public class LoginActivity extends BaseActivity {
     private void setOnClickListeners() {
         textView.setOnClickListener(v -> {
             Intent intent = new Intent(getApplicationContext(), SignUpActivity.class);
+            intent.putExtra("userType", loginAsType);
             startActivity(intent);
             finish();
         });
