@@ -5,7 +5,10 @@
  */
 package ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav;
 
+
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,19 +22,20 @@ import androidx.fragment.app.FragmentTransaction;
 import com.google.firebase.auth.FirebaseAuth;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
-import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.LoginActivity;
+import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.FirstActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems.*;
 
 public class AccountFragment extends Fragment {
-
-    public AccountFragment() {
-        // Required empty public constructor
+    private final int containerViewId;
+    private SharedPreferences sharedPreferences;
+    public AccountFragment(int containerViewId) {
+        this.containerViewId = containerViewId;
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_account, container, false);
-
+        sharedPreferences = getContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
         setupClickListeners(view);
 
         return view;
@@ -85,17 +89,17 @@ public class AccountFragment extends Fragment {
     private void openFragment(Fragment fragment) {
         FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.flFragment, fragment);
+        fragmentTransaction.replace(containerViewId, fragment);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
 
     private void handleLogout() {
-        // Clear the in-memory session data
-//        UserSession.clearSession();
-
         FirebaseAuth.getInstance().signOut();
-        Intent intent = new Intent(requireActivity(), LoginActivity.class);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove("authToken");
+        editor.apply();
+        Intent intent = new Intent(requireActivity(), FirstActivity.class);
         startActivity(intent);
         requireActivity().finish();
     }

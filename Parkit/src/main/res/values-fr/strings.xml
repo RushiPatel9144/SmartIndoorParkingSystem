@@ -70,5 +70,10 @@
     <string name="profile_picture_upload_failed">Profile picture upload failed</string>
     <string name="update_failed">Update Failed</string>
     <string name="profile_photo_updated">Profile photo updated</string>
+    <string name="sign_in">Sign In</string>
+    <string name="parkit">ParkIt</string>
+    <string name="create_an_account">Create an account</string>
+    <string name="remember_me">Remember Me</string>
+    <string name="sign_in_as_user">Sign in as user</string>
 
 </resources>
