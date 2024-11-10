@@ -82,17 +82,18 @@ public class LoginActivity extends BaseActivity {
         forgetPassword();
     }
 
+
+
     @Override
     public void onStart() {
         super.onStart();
         checkIfUserLoggedIn();
-        // Check if "Remember Me" is selected and auto-fill credentials
-        if (sharedPreferences.contains("email") && sharedPreferences.contains("password")) {
-            String savedEmail = sharedPreferences.getString("email", "");
-            String savedPassword = sharedPreferences.getString("password", "");
-            editTextEmail.setText(savedEmail);
-            editTextPassword.setText(savedPassword);
-            rememberMeCheckBox.setChecked(true);
+        String token = sharedPreferences.getString("authToken", null);
+
+        if (token != null) {
+            // Token is present, so user is already logged in
+            // You can validate the token with Firebase if needed, but for simplicity, we navigate directly
+            navigateBasedOnRole();
         }
     }
 
@@ -112,6 +113,7 @@ public class LoginActivity extends BaseActivity {
         progressBar = findViewById(R.id.login_progressBar);
         forgotPasswordTextView = findViewById(R.id.forgot_password);
         rememberMeCheckBox = findViewById(R.id.remember_me_checkbox);
+
     }
 
     private void checkIfUserLoggedIn() {
@@ -174,24 +176,26 @@ public class LoginActivity extends BaseActivity {
                 .addOnCompleteListener(task -> {
                     progressBar.setVisibility(View.GONE);
                     if (task.isSuccessful()) {
-                        if (rememberMeCheckBox.isChecked()) {
-                            // Save email and password to SharedPreferences if "Remember Me" is checked
-                            SharedPreferences.Editor editor = sharedPreferences.edit();
-                            editor.putString("email", email);
-                            editor.putString("password", password);
-                            editor.apply();
-                        } else {
-                            // Clear saved credentials if "Remember Me" is unchecked
-                            sharedPreferences.edit().remove("email").remove("password").apply();
+                        // Get the Firebase ID token
+                        FirebaseUser user = mAuth.getCurrentUser();
+                        if (user != null) {
+                            user.getIdToken(true) // Force refresh to get a new token
+                                    .addOnCompleteListener(tokenTask -> {
+                                        if (tokenTask.isSuccessful()) {
+                                            String idToken = tokenTask.getResult().getToken();
+                                            saveAuthToken(idToken);  // Save the token in SharedPreferences
+                                        } else {
+                                            Toast.makeText(LoginActivity.this, "Failed to get token", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
                         }
 
                         Toast.makeText(LoginActivity.this, getString(R.string.login_successful), Toast.LENGTH_SHORT).show();
-                        // Check if the user is trying to log in as an owner
+
+                        // Proceed based on login type
                         if ("owner".equals(loginAsType)) {
-                            // Check if the user has an owner profile
                             checkIfUserIsOwner(email);
                         } else {
-                            // Proceed as a regular user
                             navigateToMainActivity();
                         }
                     } else {
@@ -199,6 +203,13 @@ public class LoginActivity extends BaseActivity {
                     }
                 });
     }
+
+    private void saveAuthToken(String token) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("authToken", token);
+        editor.apply();
+    }
+
 
     private void checkIfUserIsOwner(String email) {
         FirebaseFirestore fireStore = FirebaseFirestore.getInstance();
@@ -272,7 +283,7 @@ public class LoginActivity extends BaseActivity {
     }
 
     public void forgetPassword() {
-        forgotPasswordTextView.setOnClickListener(v -> DialogUtil.showInputDialog(LoginActivity.this, "Enter Your Registered Email", "someone@gmail.com", new DialogUtil.InputDialogCallback() {
+        forgotPasswordTextView.setOnClickListener(v -> DialogUtil.showInputDialog(LoginActivity.this, "Enter Your Registered Email", "someone@mail.com", new DialogUtil.InputDialogCallback() {
             @Override
             public void onConfirm(String inputText) {
                 if (TextUtils.isEmpty(inputText)) {

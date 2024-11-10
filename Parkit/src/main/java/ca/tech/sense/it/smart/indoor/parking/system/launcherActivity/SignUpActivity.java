@@ -25,6 +25,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.Objects;
+
 import ca.tech.sense.it.smart.indoor.parking.system.MainActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.model.user.User;
@@ -67,6 +69,8 @@ public class SignUpActivity extends AppCompatActivity {
         // Get the user type passed from the login screen
         Intent intent = getIntent();
         String userType = intent.getStringExtra("userType");
+
+
 
 
         // Navigate to Login screen
@@ -131,6 +135,7 @@ public class SignUpActivity extends AppCompatActivity {
                     });
         });
     }
+
 
     private boolean validateInput(String fName, String lName, String email, String password, String confirmPassword, String phoneNumber) {
         if (TextUtils.isEmpty(fName)) {
