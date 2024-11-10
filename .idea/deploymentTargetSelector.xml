@@ -3,11 +3,13 @@
   <component name="deploymentTargetSelector">
     <selectionStates>
       <SelectionState runConfigName="Parkit">
-        <option name="selectionMode" value="DIALOG" />
-        <DropdownSelection timestamp="2024-11-10T02:37:01.994866Z">
+        
+        <option name="selectionMode" value="DROPDOWN" />
+        <DropdownSelection timestamp="2024-11-10T22:21:17.434041600Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\ragha\.android\avd\Pixel_8a_API_35.avd" />
+              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\kunal\.android\avd\Pixel_8_Pro_API_31.avd" />
+
             </handle>
           </Target>
         </DropdownSelection>

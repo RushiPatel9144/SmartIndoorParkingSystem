@@ -5,8 +5,6 @@
  */
 package ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav;
 
-import static ca.tech.sense.it.smart.indoor.parking.system.R.string.location_permission_denied;
-
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -22,11 +20,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.Toast;
+
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -43,15 +43,18 @@ import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import ca.tech.sense.it.smart.indoor.parking.system.R;
 
+import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.BookingBottomSheetDialog;
+import ca.tech.sense.it.smart.indoor.parking.system.utility.BookingManager;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.ParkingUtility;
 
 public class Park extends Fragment implements OnMapReadyCallback {
@@ -67,7 +70,7 @@ public class Park extends Fragment implements OnMapReadyCallback {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         parkingUtility = new ParkingUtility();
-        executorService = Executors.newSingleThreadExecutor(); // Executor for background tasks\
+        executorService = Executors.newSingleThreadExecutor(); // Executor for background tasks
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext());
         registerPermissionLauncher();
     }
@@ -111,7 +114,7 @@ public class Park extends Fragment implements OnMapReadyCallback {
 
                 @Override
                 public void onError(@NonNull Status status) {
-                    Log.d(TAG, getString(R.string.error)+ status.getStatusMessage());
+                    Log.d(TAG, getString(R.string.error) + status.getStatusMessage());
                 }
             });
         }
@@ -160,8 +163,6 @@ public class Park extends Fragment implements OnMapReadyCallback {
         }
     }
 
-
-
     private void addParkingSpotsToMap() {
         // Fetch parking locations in the background
         parkingUtility.fetchAllParkingLocations(new ParkingUtility.FetchLocationsCallback() {
@@ -190,7 +191,6 @@ public class Park extends Fragment implements OnMapReadyCallback {
             public void onFetchFailure(Exception e) {
                 Log.e(TAG, getString(R.string.error_fetching_parking_locations), e);
                 Toast.makeText(requireContext(), Toast.LENGTH_SHORT, R.string.failed_to_load_parking_locations).show();
-
             }
         });
     }
@@ -210,7 +210,14 @@ public class Park extends Fragment implements OnMapReadyCallback {
 
     private void showBookingBottomSheet(Marker marker) {
         String parkingLocationId = (String) marker.getTag();
-        BookingBottomSheetDialog bookingDialog = new BookingBottomSheetDialog(requireContext(), parkingLocationId);
+        // Create an instance of ExecutorService
+        ExecutorService executorService = Executors.newFixedThreadPool(4);
+
+        // Get instances of FirebaseDatabase and FirebaseAuth
+        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        BookingManager bookingManager = new BookingManager(executorService, firebaseDatabase, firebaseAuth);
+        BookingBottomSheetDialog bookingDialog = new BookingBottomSheetDialog(requireContext(), parkingLocationId, bookingManager);
         bookingDialog.show();
     }
 
@@ -229,11 +236,10 @@ public class Park extends Fragment implements OnMapReadyCallback {
     private void checkLocationPermissionAndEnableMyLocation() {
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             enableMyLocation();
-        } else{
+        } else {
             requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
-
-    }}
-
+        }
+    }
 
     private void enableMyLocation() {
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -253,7 +259,6 @@ public class Park extends Fragment implements OnMapReadyCallback {
         }
     }
 
-
     private void registerPermissionLauncher() {
         requestPermissionLauncher = registerForActivityResult(
                 new ActivityResultContracts.RequestPermission(),
@@ -261,10 +266,9 @@ public class Park extends Fragment implements OnMapReadyCallback {
                     if (Boolean.TRUE.equals(isGranted)) {
                         enableMyLocation();
                     } else {
-                        Toast.makeText(getContext(), location_permission_denied, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), R.string.location_permission_denied, Toast.LENGTH_SHORT).show();
                     }
                 }
         );
     }
-
 }
