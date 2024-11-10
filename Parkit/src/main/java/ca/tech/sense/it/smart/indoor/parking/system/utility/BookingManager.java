@@ -72,8 +72,6 @@ public class BookingManager {
 
     public void confirmBooking(String locationId, String slot, String timing, String selectedDate, String address, Runnable onSuccess, Consumer<Exception> onFailure) {
         String userId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
-        FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
-
         String[] times = timing.split(" - ");
         long startTime = convertToMillis(selectedDate + " " + times[0]);
         long endTime = convertToMillis(selectedDate + " " + times[1]);
@@ -96,8 +94,9 @@ public class BookingManager {
                     );
 
                     DatabaseReference databaseRef = FirebaseDatabase.getInstance()
-                            .getReference("bookings")
+                            .getReference("users")
                             .child(userId)
+                            .child("bookings")
                             .push();
 
                     databaseRef.setValue(booking)
