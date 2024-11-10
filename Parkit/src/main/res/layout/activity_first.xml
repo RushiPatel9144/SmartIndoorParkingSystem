@@ -52,42 +52,26 @@
         android:paddingEnd="30dp"
         android:paddingBottom="10dp"
         android:elevation="10dp"
-        android:text="@string/sign_in"
-        android:onClick="goToLogin"
+        android:text="@string/sign_in_as_user"
         android:textColor="@android:color/white" />
-
-    <TextView
-        android:id="@+id/firstSignUpBut"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="515dp"
-        android:fontFamily="@font/poppins_medium"
-        android:layout_marginBottom="50dp"
-        android:text="@string/create_an_account"
-        android:textColor="@android:color/white"
-        android:textSize="16sp"
-        android:onClick="goToSignUp"
-        android:textStyle="normal" />
 
     <!-- Sign Up as Owner Button -->
     <Button
         android:id="@+id/firstSignUpAsOwnerBut"
-        android:fontFamily="@font/poppins_medium"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal|top"
-        android:layout_marginTop="550dp"
-        android:background="@drawable/blur_button_bg"
         android:layout_marginLeft="25dp"
+        android:layout_marginTop="520dp"
         android:layout_marginRight="25dp"
+        android:background="@drawable/blur_button_bg"
+        android:elevation="10dp"
+        android:fontFamily="@font/poppins_medium"
         android:paddingStart="30dp"
         android:paddingTop="10dp"
         android:paddingEnd="30dp"
         android:paddingBottom="10dp"
-        android:elevation="10dp"
         android:text="@string/sign_in_as_owner"
-        android:onClick="goToOwner"
         android:textColor="@android:color/white" />
 
 </FrameLayout>

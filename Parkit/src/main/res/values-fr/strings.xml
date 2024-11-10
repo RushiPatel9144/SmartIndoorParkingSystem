@@ -74,5 +74,6 @@
     <string name="parkit">ParkIt</string>
     <string name="create_an_account">Create an account</string>
     <string name="remember_me">Remember Me</string>
+    <string name="sign_in_as_user">Sign in as user</string>
 
 </resources>
