@@ -25,8 +25,12 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+
+import java.util.Objects;
+
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.LoginActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.model.user.UserManager;
+import ca.tech.sense.it.smart.indoor.parking.system.network.BaseActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.Activity;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.Home;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.Park;
@@ -38,7 +42,6 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
     private BottomNavigationView bottomNavigationView;
     private Toolbar toolbar;
     private FirebaseAuth firebaseAuth;
-    private FirebaseUser firebaseUser;
     private final Home homeFragment = new Home();
     private final Park parkFragment = new Park();
     private final Activity activityFragment = new Activity();
@@ -95,7 +98,7 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
 
     private void initFirebaseAuth() {
         firebaseAuth = FirebaseAuth.getInstance();
-        firebaseUser = firebaseAuth.getCurrentUser();
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
 
         if (firebaseUser == null) {
             navigateToLoginActivity();
@@ -164,6 +167,7 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
         finish();
     }
 
+    @SuppressLint("InlinedApi")
     private void requestNotificationPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -195,16 +199,20 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
         long lastSentTimestamp = sharedPreferences.getLong(KEY_WELCOME_NOTIFICATION_TIMESTAMP, 0);
         long currentTime = System.currentTimeMillis();
 
-        if (currentTime - lastSentTimestamp > NOTIFICATION_COOLDOWN) {
+        FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+        if (currentUser != null && (currentTime - lastSentTimestamp > NOTIFICATION_COOLDOWN)) {
             NotificationHelper.sendNotification(
                     this,
                     getString(R.string.welcome_back),
                     getString(R.string.we_ve_missed_you_check_out_the_latest_parking_spots_available_for_you),
-                    firebaseAuth.getCurrentUser().getUid()
+                    currentUser.getUid()
             );
             sharedPreferences.edit().putLong(KEY_WELCOME_NOTIFICATION_TIMESTAMP, currentTime).apply();
+        } else if (currentUser == null) {
+            Log.d("MainActivity", "No user is currently signed in.");
         }
     }
+
 
     private void sendNewUserWelcomeNotification() {
         SharedPreferences sharedPreferences = getSharedPreferences(PREFS__NAME, MODE_PRIVATE);
@@ -215,7 +223,7 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
                     this,
                     getString(R.string.welcome_to_parkit),
                     getString(R.string.explore_the_app_and_find_parking_spots_nearby),
-                    firebaseAuth.getCurrentUser().getUid()
+                    Objects.requireNonNull(firebaseAuth.getCurrentUser()).getUid()
             );
 
             // Set flag to true to avoid sending again

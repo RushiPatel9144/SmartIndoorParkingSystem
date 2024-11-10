@@ -1,11 +1,10 @@
 package ca.tech.sense.it.smart.indoor.parking.system.utility;
 
+import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.Context;
 
 import android.os.Bundle;
-
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -15,56 +14,47 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
-
 import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
+
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
 import ca.tech.sense.it.smart.indoor.parking.system.R;
-import ca.tech.sense.it.smart.indoor.parking.system.model.activity.Booking;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingSlot;
 
 public class BookingBottomSheetDialog extends BottomSheetDialog {
 
-    private Context context;
+    private final Context context;
     private Spinner slotSpinner, timeSlotSpinner;
     private Button confirmButton, cancelButton;
     private ProgressBar progressBar;
     private TextView addressText, postalCodeText, errorTextView, selectedDateTextview, priceTextView;
-    private ImageButton selectDateButton, starButton; // Add starButton
+    private ImageButton selectDateButton, starButton;
 
-    private String locationId;
+    private final String locationId;
     private String selectedDate;
-    private ParkingUtility parkingUtility;
+    private final BookingManager bookingManager;
 
     public BookingBottomSheetDialog(@NonNull Context context, String locationId) {
         super(context);
         this.context = context;
         this.locationId = locationId;
-        parkingUtility = new ParkingUtility();
+        bookingManager = new BookingManager();
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        View view = LayoutInflater.from(context).inflate(R.layout.dialog_booking, null);
+        @SuppressLint("InflateParams") View view = LayoutInflater.from(context).inflate(R.layout.dialog_booking, null);
         setContentView(view);
 
         // Initialize UI elements
@@ -73,7 +63,7 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
         confirmButton = view.findViewById(R.id.confirmButton);
         cancelButton = view.findViewById(R.id.cancelButton);
         selectDateButton = view.findViewById(R.id.selectDateButton);
-        starButton = view.findViewById(R.id.iv_add_to_favorites); // Initialize starButton
+        starButton = view.findViewById(R.id.iv_add_to_favorites);
         progressBar = view.findViewById(R.id.progressBar);
         addressText = view.findViewById(R.id.addressText);
         postalCodeText = view.findViewById(R.id.postalCodeText);
@@ -81,27 +71,31 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
         priceTextView = view.findViewById(R.id.priceTag);
 
         // Set up the slot spinner
-        setupTimeSlots();
+        setupSlotSpinnerData(new HashMap<>());
         setupConfirmButton();
         setupCancelButton();
         setupSelectDateButton();
-        setupStarButton(); // Set up starButton
+        setupStarButton();
 
         // Fetch the parking location data when the dialog is opened
         fetchParkingLocationData();
+
+        // Set up the time slots with the current date as default
+        selectedDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+        setupTimeSlots(selectedDate);
     }
 
     private void fetchParkingLocationData() {
         progressBar.setVisibility(View.VISIBLE);
 
-        parkingUtility.fetchParkingLocation(locationId, new ParkingUtility.FetchLocationCallback() {
+        bookingManager.fetchParkingLocation(locationId, new BookingManager.FetchLocationCallback() {
             @Override
             public void onFetchSuccess(ParkingLocation location) {
                 if (location != null) {
                     addressText.setText(location.getAddress());
                     postalCodeText.setText(location.getPostalCode());
                     setupSlotSpinnerData(location.getSlots());
-                    fetchPrice(locationId); // Fetch price for the location
+                    bookingManager.fetchPrice(locationId, price -> priceTextView.setText(String.format(Locale.getDefault(), "Price: $%.2f", price)));
                 } else {
                     setErrorMessage(context.getString(R.string.location_data_is_not_available));
                 }
@@ -126,46 +120,56 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
         slotSpinner.setAdapter(adapter);
     }
 
-    private void fetchPrice(String locationId) {
-        DatabaseReference priceRef = FirebaseDatabase.getInstance().getReference("parkingLocations").child(locationId).child("price");
-        priceRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    Double priceValue = snapshot.getValue(Double.class);
-                    double price = (priceValue != null) ? priceValue : 0.0;
-                    Log.d("BookingBottomSheetDialog", "Price fetched: " + price);
-                    priceTextView.setText(String.format(Locale.getDefault(), "Price: $%.2f", price));
-                } else {
-                    Log.e("BookingBottomSheetDialog", "Price not found for location: " + locationId);
-                    priceTextView.setText(R.string.price_not_available);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.e("BookingBottomSheetDialog", "Failed to fetch price: " + error.getMessage());
-                priceTextView.setText(R.string.failed_to_fetch_price_1);
-            }
-        });
-    }
-
-    private void setupTimeSlots() {
-        List<String> timeSlots = generateTimeSlots();
+    private void setupTimeSlots(String selectedDate) {
+        List<String> timeSlots = generateTimeSlots(selectedDate);
+        if (timeSlots.isEmpty()) {
+            timeSlots.add("Choose another date");
+            confirmButton.setEnabled(false);
+        } else {
+            confirmButton.setEnabled(true);
+        }
         ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, timeSlots);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         timeSlotSpinner.setAdapter(adapter);
     }
 
-    private List<String> generateTimeSlots() {
+
+
+    private List<String> generateTimeSlots(String selectedDate) {
         List<String> timeSlots = new ArrayList<>();
+        Calendar now = Calendar.getInstance();
+
+        // Parse the selected date
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        Calendar selectedCalendar = Calendar.getInstance();
+        try {
+            Date date = sdf.parse(selectedDate);
+            if (date != null) {
+                selectedCalendar.setTime(date);
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
         for (int hour = 0; hour < 24; hour++) {
             String startTime = String.format(Locale.getDefault(), "%02d:00", hour);
             String endTime = String.format(Locale.getDefault(), "%02d:00", (hour + 1) % 24);
-            timeSlots.add(startTime + " - " + endTime);
+
+            // Create a calendar instance for the start time
+            Calendar slotTime = (Calendar) selectedCalendar.clone();
+            slotTime.set(Calendar.HOUR_OF_DAY, hour);
+            slotTime.set(Calendar.MINUTE, 0);
+            slotTime.set(Calendar.SECOND, 0);
+            slotTime.set(Calendar.MILLISECOND, 0);
+
+            // Add the time slot if it is in the future
+            if (slotTime.after(now)) {
+                timeSlots.add(startTime + " - " + endTime);
+            }
         }
         return timeSlots;
     }
+
 
     private void setupConfirmButton() {
         confirmButton.setOnClickListener(v -> {
@@ -173,7 +177,10 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
             String selectedTimeSlot = timeSlotSpinner.getSelectedItem() != null ? timeSlotSpinner.getSelectedItem().toString() : null;
 
             if (selectedSlot != null && selectedTimeSlot != null && selectedDate != null) {
-                confirmBooking(selectedSlot, selectedTimeSlot);
+                bookingManager.confirmBooking(locationId, selectedSlot, selectedTimeSlot, selectedDate, addressText.getText().toString(), () -> {
+                    Toast.makeText(context, R.string.booking_confirmed_and_saved, Toast.LENGTH_SHORT).show();
+                    dismiss();
+                }, error -> Toast.makeText(context, context.getString(R.string.failed_to_save_booking) + error.getMessage(), Toast.LENGTH_SHORT).show());
             } else {
                 Toast.makeText(context, R.string.please_select_a_slot_date_and_time, Toast.LENGTH_SHORT).show();
             }
@@ -191,83 +198,26 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
             int month = calendar.get(Calendar.MONTH);
             int day = calendar.get(Calendar.DAY_OF_MONTH);
 
-            DatePickerDialog datePickerDialog = new DatePickerDialog(context, (view, selectedYear, selectedMonth, selectedDay) -> {
-                // Format the selected date
+            @SuppressLint("SetTextI18n") DatePickerDialog datePickerDialog = new DatePickerDialog(context, (view, selectedYear, selectedMonth, selectedDay) -> {
                 selectedDate = String.format(Locale.getDefault(), "%04d-%02d-%02d", selectedYear, selectedMonth + 1, selectedDay);
-                // Update the TextView with the selected date
                 selectedDateTextview.setText("Selected Date: " + selectedDate);
+                setupTimeSlots(selectedDate); // Update time slots based on the selected date
             }, year, month, day);
+
+            // Set the minimum date to today
+            datePickerDialog.getDatePicker().setMinDate(calendar.getTimeInMillis());
 
             datePickerDialog.show();
         });
     }
 
-    private void confirmBooking(String slot, String timing) {
-        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        String userName = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
 
-        if (userName == null) {
-            userName = "";
-        }
 
-        // Convert timing to start and end time in milliseconds
-        String[] times = timing.split(" - ");
-        long startTime = convertToMillis(selectedDate + " " + times[0]);
-        long endTime = convertToMillis(selectedDate + " " + times[1]);
-
-        // Fetch price from the database
-        DatabaseReference priceRef = FirebaseDatabase.getInstance().getReference("parkingLocations").child(locationId).child("price");
-        priceRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    Double priceValue = snapshot.getValue(Double.class);
-                    double price = (priceValue != null) ? priceValue : 0.0;
-
-                    Booking booking = new Booking(
-                            "Park It", // Use "Park It" as title
-                            startTime,
-                            endTime,
-                            addressText.getText().toString(),
-                            slot,
-                            price
-                    );
-
-                    DatabaseReference databaseRef = FirebaseDatabase.getInstance()
-                            .getReference("bookings")
-                            .child(userId)
-                            .push();
-
-                    databaseRef.setValue(booking)
-                            .addOnSuccessListener(aVoid -> {
-                                Toast.makeText(context, R.string.booking_confirmed_and_saved, Toast.LENGTH_SHORT).show();
-                                dismiss();
-                            })
-                            .addOnFailureListener(e -> {
-                                Toast.makeText(context, context.getString(R.string.failed_to_save_booking) + e.getMessage(), Toast.LENGTH_SHORT).show();
-                            });
-                } else {
-                    Log.e("BookingBottomSheetDialog", "Price not found for location: " + locationId);
-                    Toast.makeText(context, R.string.price_not_found_for_the_selected_location, Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.e("BookingBottomSheetDialog", "Failed to fetch price: " + error.getMessage());
-                Toast.makeText(context, context.getString(R.string.failed_to_fetch_price) + error.getMessage(), Toast.LENGTH_SHORT).show();
-            }
+    private void setupStarButton() {
+        starButton.setOnClickListener(v -> {
+            String address = addressText.getText().toString();
+            bookingManager.saveLocationToFavorites(locationId, address, () -> Toast.makeText(context, R.string.location_saved_to_favorites, Toast.LENGTH_SHORT).show(), error -> Toast.makeText(context, context.getString(R.string.failed_to_save_location) + error.getMessage(), Toast.LENGTH_SHORT).show());
         });
-    }
-    private long convertToMillis(String dateTime) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
-        try {
-            Date date = sdf.parse(dateTime);
-            return date != null ? date.getTime() : 0;
-        } catch (ParseException e) {
-            e.printStackTrace();
-            return 0;
-        }
     }
 
     public void setErrorMessage(String message) {
@@ -277,33 +227,4 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
         }
     }
 
-    private void setupStarButton() {
-        starButton.setOnClickListener(v -> {
-            // Get the current location details (you can customize this to fetch actual data)
-            String locationId = this.locationId; // You can get this from your current instance or layout
-            String address = addressText.getText().toString(); // Get the address from your TextView
-
-            // Save the location to Firebase Realtime Database
-            saveLocationToFavorites(locationId, address);
-        });
-    }
-
-    private void saveLocationToFavorites(String locationId, String address) {
-        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();  // Get current user ID
-
-        // Create a map to save location data
-        Map<String, Object> locationData = new HashMap<>();
-        locationData.put("locationId", locationId);
-        locationData.put("address", address);
-
-        // Reference to Firebase Realtime Database for user's saved locations
-        DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference("users").child(userId).child("saved_locations").child(locationId);
-
-        // Save the location data
-        databaseRef.setValue(locationData).addOnSuccessListener(aVoid -> {
-            Toast.makeText(context, R.string.location_saved_to_favorites, Toast.LENGTH_SHORT).show();
-        }).addOnFailureListener(e -> {
-            Toast.makeText(context, context.getString(R.string.failed_to_save_location) + e.getMessage(), Toast.LENGTH_SHORT).show();
-        });
-    }
 }
