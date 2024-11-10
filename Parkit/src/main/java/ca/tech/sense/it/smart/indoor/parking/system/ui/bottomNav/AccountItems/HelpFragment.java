@@ -20,6 +20,8 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.DocumentReference;
 
@@ -32,6 +34,7 @@ public class HelpFragment extends Fragment {
     private EditText etName, etPhone, etEmail, etComment;
     private Button btnSubmitHelp;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private FirebaseAuth auth = FirebaseAuth.getInstance();
 
     @Nullable
     @Override
@@ -46,6 +49,28 @@ public class HelpFragment extends Fragment {
         etComment = view.findViewById(R.id.feedback_comment);
         btnSubmitHelp = view.findViewById(R.id.submit_feedback_button);
 
+
+        // Fetch user data from Firestore and autofill fields
+        String currentUserID = auth.getCurrentUser().getUid();
+        db.collection("users").document(currentUserID).get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if (documentSnapshot.exists()) {
+                            etName.setText(documentSnapshot.getString("firstName") + " " + documentSnapshot.getString("lastName"));
+                            etPhone.setText(documentSnapshot.getString("phone"));
+                            etEmail.setText(documentSnapshot.getString("email"));
+                        } else {
+                            Toast.makeText(getActivity(), getString(R.string.user_not_found), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(getActivity(), "Error fetching data", Toast.LENGTH_SHORT).show();
+                    }
+                });
         // Set up button click listener
         btnSubmitHelp.setOnClickListener(new View.OnClickListener() {
             @Override
