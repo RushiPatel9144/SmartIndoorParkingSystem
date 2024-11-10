@@ -34,6 +34,7 @@ import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Objects;
 
@@ -185,12 +186,49 @@ public class LoginActivity extends BaseActivity {
                         }
 
                         Toast.makeText(LoginActivity.this, getString(R.string.login_successful), Toast.LENGTH_SHORT).show();
-                        navigateBasedOnRole();
+                        // Check if the user is trying to log in as an owner
+                        if ("owner".equals(loginAsType)) {
+                            // Check if the user has an owner profile
+                            checkIfUserIsOwner(email);
+                        } else {
+                            // Proceed as a regular user
+                            navigateToMainActivity();
+                        }
                     } else {
                         handleLoginError(task);
                     }
                 });
     }
+
+    private void checkIfUserIsOwner(String email) {
+        FirebaseFirestore fireStore = FirebaseFirestore.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+
+        if (currentUser != null) {
+            String userID = currentUser.getUid();
+
+            // Check if the user has an owner profile in the Firestore
+            fireStore.collection("owners").document(userID).get()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            if (task.getResult().exists()) {
+                                // User has an owner profile, navigate to the owner dashboard
+                                navigateToOwnerDashboard();
+                            } else {
+                                // User does not have an owner profile, show error message
+                                Toast.makeText(LoginActivity.this,
+                                        "You need to sign up as an owner first.",
+                                        Toast.LENGTH_LONG).show();
+                            }
+                        } else {
+                            Toast.makeText(LoginActivity.this,
+                                    "Error checking owner profile.",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }
+    }
+
 
     private boolean validateInput(String email, String password) {
         if (TextUtils.isEmpty(email)) {
