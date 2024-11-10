@@ -5,7 +5,6 @@
  */
 package ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav;
 
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -18,9 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-
 import com.google.firebase.auth.FirebaseAuth;
-
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.FirstActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems.*;
@@ -35,7 +32,7 @@ public class AccountFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_account, container, false);
-        sharedPreferences = getContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+        sharedPreferences = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
         setupClickListeners(view);
 
         return view;

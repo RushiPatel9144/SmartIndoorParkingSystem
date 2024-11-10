@@ -48,6 +48,9 @@ public class Activity extends Fragment {
                 case 2:
                     tab.setText(getString(R.string.history));
                     break;
+                default:
+                    tab.setText(getString(R.string.active));
+                    break;
             }
         }).attach();
 
