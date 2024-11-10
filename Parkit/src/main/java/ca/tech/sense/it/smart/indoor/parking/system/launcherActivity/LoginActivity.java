@@ -1,7 +1,8 @@
-/*Name: Kunal Dhiman, StudentID: N01540952,  section number: RCB
-  Name: Raghav Sharma, StudentID: N01537255,  section number: RCB
-  Name: NisargKumar Pareshbhai Joshi, StudentID: N01545986,  section number: RCB
+/*Name: Kunal Dhiman, StudentID: N01540952, section number: RCB
+  Name: Raghav Sharma, StudentID: N01537255, section number: RCB
+  Name: NisargKumar Pareshbhai Joshi, StudentID: N01545986, section number: RCB
   Name: Rushi Manojkumar Patel, StudentID: N01539144, section number: RCB
+
  */
     package ca.tech.sense.it.smart.indoor.parking.system.launcherActivity;
 
@@ -42,6 +43,8 @@
     import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.CredentialManagerGoogle.GoogleAuthClient;
     import ca.tech.sense.it.smart.indoor.parking.system.network.BaseActivity;
     import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
+    import ca.tech.sense.it.smart.indoor.parking.system.owner.OwnerActivity;
+
 
 public class LoginActivity extends BaseActivity {
 
@@ -49,33 +52,58 @@ public class LoginActivity extends BaseActivity {
         private EditText editTextEmail, editTextPassword;
         private MaterialButton buttonLogin;
         private TextView textView;
-
         private TextView forgotPasswordTextView;
         private ProgressBar progressBar;
         private MaterialCheckBox rememberMeCheckBox;
-
         private GoogleAuthClient googleAuthClient;
+  
+    private SharedPreferences sharedPreferences;
+  
+    private String loginAsType;  // Variable to store whether it's a user or owner login
+
 
         private MaterialButton googleButton;
         // Firebase Authentication instance
         private FirebaseAuth mAuth;
+        
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_login);
+        setUpWindowInsets();
 
-
-        @Override
-        protected void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            EdgeToEdge.enable(this);
-            setContentView(R.layout.activity_login);
-            setUpWindowInsets();
 
             initializeUIElements();
             mAuth = FirebaseAuth.getInstance();
 
+
             googleAuthClient = new GoogleAuthClient(this);
 
-            checkIfUserLoggedIn();
-            setOnClickListeners();
-            forgetPassword();
+        // Retrieve the "login_as" value passed from FirstActivity
+        loginAsType = getIntent().getStringExtra("login_as");
+
+        // Check if the user is already logged in
+        checkIfUserLoggedIn();
+
+        // Set the OnClickListeners for buttons
+        setOnClickListeners();
+        forgetPassword();
+    }
+
+
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        checkIfUserLoggedIn();
+        String token = sharedPreferences.getString("authToken", null);
+
+        if (token != null) {
+            // Token is present, so user is already logged in
+            // You can validate the token with Firebase if needed, but for simplicity, we navigate directly
+            navigateBasedOnRole();
+
         }
 
         @Override
@@ -101,6 +129,24 @@ public class LoginActivity extends BaseActivity {
             forgotPasswordTextView = findViewById(R.id.forgot_password);
             rememberMeCheckBox = findViewById(R.id.remember_me_checkbox);
             googleButton = findViewById(R.id.btnGoogleSignIn);
+
+    private void checkIfUserLoggedIn() {
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
+            navigateBasedOnRole();
+        }
+    }
+
+    private void navigateBasedOnRole() {
+        // Check if the login type is for an owner or user
+        if (loginAsType != null) {
+            if (loginAsType.equals("owner")) {
+                navigateToOwnerDashboard();  // Owner-specific activity
+            } else {
+                navigateToMainActivity();  // User-specific activity
+            }
+        } else {
+            navigateToMainActivity();  // Default to user if no type is passed
         }
 
         private void checkIfUserLoggedIn() {
@@ -112,6 +158,17 @@ public class LoginActivity extends BaseActivity {
 
         private void navigateToMainActivity() {
             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            
+    private void navigateToOwnerDashboard() {
+        Intent intent = new Intent(getApplicationContext(), OwnerActivity.class); // Assuming this is the owner's dashboard
+        startActivity(intent);
+        finish();
+    }
+
+    private void setOnClickListeners() {
+        textView.setOnClickListener(v -> {
+            Intent intent = new Intent(getApplicationContext(), SignUpActivity.class);
+            intent.putExtra("userType", loginAsType);
             startActivity(intent);
             finish();
         }
@@ -152,13 +209,70 @@ public class LoginActivity extends BaseActivity {
                 .addOnCompleteListener(task -> {
                     progressBar.setVisibility(View.GONE);
                     if (task.isSuccessful()) {
+                        // Get the Firebase ID token
+                        FirebaseUser user = mAuth.getCurrentUser();
+                        if (user != null) {
+                            user.getIdToken(true) // Force refresh to get a new token
+                                    .addOnCompleteListener(tokenTask -> {
+                                        if (tokenTask.isSuccessful()) {
+                                            String idToken = tokenTask.getResult().getToken();
+                                            saveAuthToken(idToken);  // Save the token in SharedPreferences
+                                        } else {
+                                            Toast.makeText(LoginActivity.this, "Failed to get token", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                        }
+
                         Toast.makeText(LoginActivity.this, getString(R.string.login_successful), Toast.LENGTH_SHORT).show();
-                        navigateToMainActivity();
+
+                        // Proceed based on login type
+                        if ("owner".equals(loginAsType)) {
+                            checkIfUserIsOwner(email);
+                        } else {
+                            navigateToMainActivity();
+                        }
                     } else {
                         handleLoginError(task);
                     }
                 });
     }
+
+    private void saveAuthToken(String token) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("authToken", token);
+        editor.apply();
+    }
+
+
+    private void checkIfUserIsOwner(String email) {
+        FirebaseFirestore fireStore = FirebaseFirestore.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+
+        if (currentUser != null) {
+            String userID = currentUser.getUid();
+
+            // Check if the user has an owner profile in the Firestore
+            fireStore.collection("owners").document(userID).get()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            if (task.getResult().exists()) {
+                                // User has an owner profile, navigate to the owner dashboard
+                                navigateToOwnerDashboard();
+                            } else {
+                                // User does not have an owner profile, show error message
+                                Toast.makeText(LoginActivity.this,
+                                        "You need to sign up as an owner first.",
+                                        Toast.LENGTH_LONG).show();
+                            }
+                        } else {
+                            Toast.makeText(LoginActivity.this,
+                                    "Error checking owner profile.",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }
+    }
+
 
     private boolean validateInput(String email, String password) {
         if (TextUtils.isEmpty(email)) {
@@ -202,7 +316,7 @@ public class LoginActivity extends BaseActivity {
     }
 
     public void forgetPassword() {
-        forgotPasswordTextView.setOnClickListener(v -> DialogUtil.showInputDialog(LoginActivity.this, "Enter Your Registered Email", "someone@gmail.com", new DialogUtil.InputDialogCallback() {
+        forgotPasswordTextView.setOnClickListener(v -> DialogUtil.showInputDialog(LoginActivity.this, "Enter Your Registered Email", "someone@mail.com", new DialogUtil.InputDialogCallback() {
             @Override
             public void onConfirm(String inputText) {
                 if (TextUtils.isEmpty(inputText)) {
@@ -238,7 +352,7 @@ public class LoginActivity extends BaseActivity {
                                 }
                             });
                         } else {
-                            Log.d( " ",R.string.error + Objects.requireNonNull(task.getException()).getMessage());
+                            Log.d("LoginActivity", R.string.error + Objects.requireNonNull(task.getException()).getMessage());
                         }
                     }
                 });
@@ -250,7 +364,4 @@ public class LoginActivity extends BaseActivity {
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
-
-
-
 }

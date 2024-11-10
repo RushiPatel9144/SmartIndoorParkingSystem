@@ -249,6 +249,9 @@
     <string name="locations">Locations</string>
     <string name="sign_in_as_owner">Sign in as owner</string>
     <string name="owner_dashboard">Owner Dashboard</string>
+    <string name="sign_in_as_user">Sign in as user</string>
+    <string name="sign_up_as_owner">Sign Up as Owner</string>
+    <string name="sign_up_as_user">Sign Up as User</string>
 
 
 </resources>
