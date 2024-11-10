@@ -19,20 +19,30 @@ public class FirstActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_first);
+
+        // Handle window insets for proper UI layout on edge-to-edge screens
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.firstmain), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        // Initialize the buttons and set click listeners
+        findViewById(R.id.firstSignInBut).setOnClickListener(this::goToLoginAsUser);
+        findViewById(R.id.firstSignUpAsOwnerBut).setOnClickListener(this::goToLoginAsOwner);
     }
 
-    public void goToLogin(View view) {
+    // Navigate to Login Activity as User
+    public void goToLoginAsUser(View view) {
         Intent intent = new Intent(this, LoginActivity.class);
+        intent.putExtra("login_as", "user"); // Pass the type of login
         startActivity(intent);
     }
 
-    public void goToSignUp(View view) {
-        Intent intent = new Intent(this, SignUpActivity.class);
+    // Navigate to Login Activity as Owner
+    public void goToLoginAsOwner(View view) {
+        Intent intent = new Intent(this, LoginActivity.class);
+        intent.putExtra("login_as", "owner"); // Pass the type of login
         startActivity(intent);
     }
 }

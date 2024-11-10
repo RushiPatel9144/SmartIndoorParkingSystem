@@ -1,22 +1,19 @@
-/*Name: Kunal Dhiman, StudentID: N01540952,  section number: RCB
-  Name: Raghav Sharma, StudentID: N01537255,  section number: RCB
-  Name: NisargKumar Pareshbhai Joshi, StudentID: N01545986,  section number: RCB
-  Name: Rushi Manojkumar Patel, StudentID: N01539144, section number: RCB
- */
-package ca.tech.sense.it.smart.indoor.parking.system.model.user;
+package ca.tech.sense.it.smart.indoor.parking.system.model.owner;
 
-public class User {
-    private String uid;       // Unique user ID
-    private String firstName; // User's name
+public class Owner {
+    private String uid;
+    private String firstName;
     private String lastName;
-    private String email;     // User's email address
-    private String phone;     // User's phone number
+    private String email;
+    private String phone;
     private String profilePhotoUrl;
 
-    public User() {
+    // Default constructor required for calls to DataSnapshot.getValue(Owner.class)
+    public Owner() {
     }
 
-    public User(String uid, String firstName, String lastName, String email, String phone, String profilePhotoUrl) {
+    // Parameterized constructor
+    public Owner(String uid, String firstName, String lastName, String email, String phone, String profilePhotoUrl) {
         this.uid = uid;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -25,7 +22,7 @@ public class User {
         this.profilePhotoUrl = profilePhotoUrl;
     }
 
-    // Getters and setters
+    // Getters and Setters
     public String getUid() {
         return uid;
     }

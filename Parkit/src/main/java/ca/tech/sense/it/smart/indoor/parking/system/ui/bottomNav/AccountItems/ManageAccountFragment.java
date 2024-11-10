@@ -165,11 +165,21 @@ public class ManageAccountFragment extends Fragment {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             String email = user.getEmail();
+            String name = user.getDisplayName();
+            String phoneNumber = user.getPhoneNumber();
             if (email != null) {
                 contactDetailsTextView.setText(email);
             }
-            String uid = user.getUid();
-            fetchUserDetailsFromFirestore(uid);
+            if (name != null){
+                nameTextView.setText(name);
+            }
+            if (phoneNumber != null){
+                phoneNumberTextView.setText(phoneNumber);
+            }
+            if(name == null && phoneNumber == null){
+                String uid = user.getUid();
+                fetchUserDetailsFromFirestore(uid);
+            }
         } else {
             showSnackbar(R.string.user_not_authenticated);
         }
