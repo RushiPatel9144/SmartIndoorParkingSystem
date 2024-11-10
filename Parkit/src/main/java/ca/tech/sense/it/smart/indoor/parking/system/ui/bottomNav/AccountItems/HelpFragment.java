@@ -6,12 +6,14 @@
 package ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -33,6 +35,7 @@ public class HelpFragment extends Fragment {
 
     private EditText etName, etPhone, etEmail, etComment;
     private Button btnSubmitHelp;
+    private ProgressBar progressBar;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private FirebaseAuth auth = FirebaseAuth.getInstance();
 
@@ -48,6 +51,7 @@ public class HelpFragment extends Fragment {
         etEmail = view.findViewById(R.id.feedback_email);
         etComment = view.findViewById(R.id.feedback_comment);
         btnSubmitHelp = view.findViewById(R.id.submit_feedback_button);
+        progressBar = view.findViewById(R.id.progress_bar);
 
 
         // Fetch user data from Firestore and autofill fields
@@ -97,6 +101,14 @@ public class HelpFragment extends Fragment {
                     etComment.requestFocus();
                 }
                 else {
+                    // Show progress bar and hide submit button
+                    progressBar.setVisibility(View.VISIBLE);
+                    btnSubmitHelp.setVisibility(View.GONE);
+
+                    // Simulate delay of 5 seconds
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
                     // Create a new Help object
                     Help help = new Help(name, phone, email, comment);
 
@@ -121,6 +133,12 @@ public class HelpFragment extends Fragment {
                                     Toast.makeText(getActivity(), getString(R.string.error_adding_document), Toast.LENGTH_SHORT).show();
                                 }
                             });
+
+                            // Hide progress bar and show submit button
+                            progressBar.setVisibility(View.GONE);
+                            btnSubmitHelp.setVisibility(View.VISIBLE);
+                        }
+                    }, 5000); // 5 seconds delay
                 }
             }
         });
