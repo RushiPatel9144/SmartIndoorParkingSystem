@@ -80,10 +80,22 @@ public class HelpFragment extends Fragment {
                 String email = etEmail.getText().toString().trim();
                 String comment = etComment.getText().toString().trim();
 
-                if (name.isEmpty() || phone.isEmpty() || email.isEmpty() || comment.isEmpty()) {
-                    Toast.makeText(getActivity(), getString(R.string.please_fill_in_all_fields), Toast.LENGTH_SHORT).show();
-                }else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                    Toast.makeText(getActivity(), getString(R.string.please_enter_a_valid_email_address), Toast.LENGTH_SHORT).show();}
+                if (name.isEmpty()) {
+                    etName.setError("Please fill the name");
+                    etName.requestFocus();
+                } else if (phone.isEmpty()) {
+                    etPhone.setError("Please fill the phone number");
+                    etPhone.requestFocus();
+                } else if (email.isEmpty()) {
+                    etEmail.setError("Please fill the email address");
+                    etEmail.requestFocus();
+                } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                    etEmail.setError(getString(R.string.please_enter_a_valid_email_address));
+                    etEmail.requestFocus();
+                } else if (comment.isEmpty()) {
+                    etComment.setError("Please describe the issue");
+                    etComment.requestFocus();
+                }
                 else {
                     // Create a new Help object
                     Help help = new Help(name, phone, email, comment);
