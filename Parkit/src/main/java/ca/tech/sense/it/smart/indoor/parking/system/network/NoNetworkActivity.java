@@ -8,11 +8,9 @@ import android.util.Log;
 import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
-
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 
 public class NoNetworkActivity extends AppCompatActivity {

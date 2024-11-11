@@ -40,6 +40,7 @@ import com.google.firebase.storage.UploadTask;
 import java.io.IOException;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.AuthUtils;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.ImageCropActivity;
@@ -225,7 +226,7 @@ public class ManageAccountFragment extends Fragment {
     }
 
     private void loadProfilePicture() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = FirebaseAuthSingleton.getInstance().getCurrentUser();
         if (user == null) {
             showSnackbar(R.string.user_not_authenticated);
             return;
@@ -238,14 +239,16 @@ public class ManageAccountFragment extends Fragment {
             if (task.isSuccessful()) {
                 DocumentSnapshot document = task.getResult();
                 if (document.exists()) {
-                    String profilePictureUrl = document.getString("profilePictureUrl");
+                    String profilePictureUrl = document.getString("profilePhotoUrl");
 
                     if (profilePictureUrl != null) {
                         // Load the image into ImageView using Glide
                         Glide.with(requireContext())
                                 .load(profilePictureUrl)
-                                .placeholder(R.mipmap.ic_launcher)  // Placeholder while loading
+                                .placeholder(R.drawable.ic_profile_placeholder)  // Placeholder while loading
+                                .circleCrop()  // Apply circular crop transformation
                                 .into(profilePicture);
+
                     } else {
                         // If there is no profile picture URL, use the default image
                         profilePicture.setImageResource(R.mipmap.ic_launcher);  // Default image
@@ -270,18 +273,12 @@ public class ManageAccountFragment extends Fragment {
         }
 
         FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageReference = storage.getReference().child("profile_pictures/" + user.getUid() + ".jpg");
+        StorageReference storageReference = storage.getReference().child("profile_photos/" + user.getUid() + ".jpg");
 
         // Upload the image to Firebase Storage
         UploadTask uploadTask = storageReference.putFile(uri);
 
-        uploadTask.addOnSuccessListener(taskSnapshot -> {
-            storageReference.getDownloadUrl().addOnSuccessListener(downloadUrl -> {
-                saveProfilePictureUrlToFirestore(downloadUrl.toString());
-            });
-        }).addOnFailureListener(e -> {
-            showSnackbar(R.string.update_failed);
-        });
+        uploadTask.addOnSuccessListener(taskSnapshot -> storageReference.getDownloadUrl().addOnSuccessListener(downloadUrl -> saveProfilePictureUrlToFirestore(downloadUrl.toString()))).addOnFailureListener(e -> showSnackbar(R.string.update_failed));
     }
 
     private void saveProfilePictureUrlToFirestore(String downloadUrl) {
@@ -293,14 +290,12 @@ public class ManageAccountFragment extends Fragment {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference userRef = db.collection("users").document(user.getUid());
         // UpdLate the user's profile with the new profile picture UR
-        userRef.update("profilePictureUrl", downloadUrl)
+        userRef.update("profilePhotoUrl", downloadUrl)
                 .addOnSuccessListener(aVoid -> {
                     showSnackbar(R.string.profile_photo_updated);
                     loadProfilePicture();
                 })
-                .addOnFailureListener(e -> {
-                    showSnackbar(R.string.update_failed);
-                });
+                .addOnFailureListener(e -> showSnackbar(R.string.update_failed));
     }
 
     private void uploadProfilePicture(Uri imageUri) {
@@ -344,13 +339,13 @@ public class ManageAccountFragment extends Fragment {
     }
 
     private void saveProfilePhotoToFirestore(String photoUrl) {
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser currentUser = FirebaseAuthSingleton.getInstance().getCurrentUser();
         if (currentUser != null) {
             DocumentReference userRef = FirebaseFirestore.getInstance()
                     .collection("users")
                     .document(currentUser.getUid());
 
-            userRef.update("profilePicture", photoUrl)
+            userRef.update("profilePhotoUrl", photoUrl)
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
                             Log.d("Firestore", "Profile picture updated successfully.");
