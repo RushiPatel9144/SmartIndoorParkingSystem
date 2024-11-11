@@ -171,11 +171,9 @@ public class LoginActivity extends BaseActivity {
     }
 
     private void signInWithGoogle() {
-        CoroutineHelper.Companion.signInWithGoogle(this, googleAuthClient);
-        if (googleAuthClient.isSingedIn()){
-            navigateBasedOnRole();
-        }
+        CoroutineHelper.Companion.signInWithGoogle(this, googleAuthClient, this::navigateToMainActivity);
     }
+
 
     private void performLogin() {
         progressBar.setVisibility(View.VISIBLE);

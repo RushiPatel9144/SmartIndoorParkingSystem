@@ -252,6 +252,17 @@
     <string name="sign_in_as_user">Sign in as user</string>
     <string name="sign_up_as_owner">Sign Up as Owner</string>
     <string name="sign_up_as_user">Sign Up as User</string>
+    <string name="failed_to_upload_image">Failed to upload Image</string>
+    <string name="profile_picture_updated_successfully">Profile Picture Updated Successfully</string>
+    <string name="failed_to_update_profile_picture">Failed to update profile picture</string>
+    <string name="set_phone_number">Set Phone Number</string>
+    <string name="invalid_phone_number">Invalid Phone Number</string>
+    <string name="phone_number_updated">Phone Number Updated</string>
+    <string name="phone_number_update_failed">Phone Number Updated Failed</string>
+    <string name="firestore_fetch_failed">Firestore fetched failed</string>
+    <string name="failed_to_fetch_user_data">Failed to fetch user data</string>
+    <string name="upload_successful_url">upload successful</string>
+    <string name="upload_failed">upload failed</string>
 
 
 </resources>
