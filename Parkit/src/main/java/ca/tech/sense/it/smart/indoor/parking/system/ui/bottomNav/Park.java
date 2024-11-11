@@ -53,8 +53,8 @@ import java.util.concurrent.Executors;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
-import ca.tech.sense.it.smart.indoor.parking.system.utility.BookingBottomSheetDialog;
-import ca.tech.sense.it.smart.indoor.parking.system.utility.BookingManager;
+import ca.tech.sense.it.smart.indoor.parking.system.booking.BookingBottomSheetDialog;
+import ca.tech.sense.it.smart.indoor.parking.system.booking.BookingManager;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.ParkingUtility;
 
 public class Park extends Fragment implements OnMapReadyCallback {

@@ -20,7 +20,6 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -40,8 +39,9 @@ import java.util.Objects;
 
 import ca.tech.sense.it.smart.indoor.parking.system.MainActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
-import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.CredentialManagerGoogle.CoroutineHelper;
-import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.CredentialManagerGoogle.GoogleAuthClient;
+import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSingleton;
+import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.credentialManagerGoogle.CoroutineHelper;
+import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.credentialManagerGoogle.GoogleAuthClient;
 import ca.tech.sense.it.smart.indoor.parking.system.network.BaseActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.owner.OwnerActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
@@ -61,7 +61,7 @@ public class LoginActivity extends BaseActivity {
     private String loginAsType;  // Variable to store whether it's a user or owner login
 
     // Firebase Authentication instance
-    private FirebaseAuth mAuth;
+    FirebaseAuth mAuth;
     private MaterialButton googleButton;
 
     @Override
@@ -72,7 +72,7 @@ public class LoginActivity extends BaseActivity {
         setUpWindowInsets();
 
         initializeUIElements();
-        mAuth = FirebaseAuth.getInstance();
+        mAuth = FirebaseAuthSingleton.getInstance();
         sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
 
         // Retrieve the "login_as" value passed from FirstActivity

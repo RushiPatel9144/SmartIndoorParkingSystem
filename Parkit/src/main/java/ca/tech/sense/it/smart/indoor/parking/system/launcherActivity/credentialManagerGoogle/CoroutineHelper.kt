@@ -1,4 +1,4 @@
-package ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.CredentialManagerGoogle
+package ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.credentialManagerGoogle
 
 import android.content.Context
 import android.widget.Toast

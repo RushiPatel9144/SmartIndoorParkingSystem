@@ -1,4 +1,4 @@
-package ca.tech.sense.it.smart.indoor.parking.system.utility;
+package ca.tech.sense.it.smart.indoor.parking.system.booking;
 
 import androidx.annotation.NonNull;
 import java.text.ParseException;
