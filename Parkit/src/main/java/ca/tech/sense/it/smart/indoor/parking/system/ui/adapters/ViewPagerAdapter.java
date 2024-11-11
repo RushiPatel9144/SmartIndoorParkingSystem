@@ -17,6 +17,7 @@ import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.activity.Histor
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.activity.UpcomingFragment;
 
 public class ViewPagerAdapter extends FragmentStateAdapter {
+    static final String TAG = "ViewPagerAdapter";
     public ViewPagerAdapter(@NonNull FragmentActivity fragmentActivity) {
         super(fragmentActivity);
     }
@@ -26,13 +27,13 @@ public class ViewPagerAdapter extends FragmentStateAdapter {
     public Fragment createFragment(int position) {
         switch (position) {
             case 0:
-                Log.d("ViewPagerAdapter", "Creating ActiveFragment");
+                Log.d(TAG, "Creating ActiveFragment");
                 return new ActiveFragment();
             case 1:
-                Log.d("ViewPagerAdapter", "Creating UpcomingFragment");
+                Log.d(TAG, "Creating UpcomingFragment");
                 return new UpcomingFragment();
             case 2:
-                Log.d("ViewPagerAdapter", "Creating HistoryFragment");
+                Log.d(TAG, "Creating HistoryFragment");
                 return new HistoryFragment();
             default:
                 return new ActiveFragment();

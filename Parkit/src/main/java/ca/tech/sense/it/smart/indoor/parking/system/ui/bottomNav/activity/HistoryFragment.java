@@ -29,7 +29,6 @@ import ca.tech.sense.it.smart.indoor.parking.system.model.activity.BookingViewMo
 import ca.tech.sense.it.smart.indoor.parking.system.ui.adapters.BookingAdapter;
 
 public class HistoryFragment extends Fragment {
-
     private BookingViewModel bookingViewModel;
     private BookingAdapter bookingAdapter;
     private TextView noBookingsText;
@@ -56,7 +55,11 @@ public class HistoryFragment extends Fragment {
             }
         });
 
+        // Fetch user bookings
+        bookingViewModel.fetchUserBookings();
+
         return view;
     }
 }
+
 

@@ -5,6 +5,7 @@
  */
 package ca.tech.sense.it.smart.indoor.parking.system.ui.adapters;
 
+import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,6 +48,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingV
         return bookingList.size();
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     public void updateBookings(List<Booking> bookings) {
         this.bookingList = bookings;
         notifyDataSetChanged();

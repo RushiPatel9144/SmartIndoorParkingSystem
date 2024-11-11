@@ -1,4 +1,4 @@
-package ca.tech.sense.it.smart.indoor.parking.system.utility;
+package ca.tech.sense.it.smart.indoor.parking.system.booking;
 
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
@@ -44,11 +44,12 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
     private String selectedDate;
     private final BookingManager bookingManager;
 
-    public BookingBottomSheetDialog(@NonNull Context context, String locationId) {
+    // Constructor with dependency injection
+    public BookingBottomSheetDialog(@NonNull Context context, String locationId, BookingManager bookingManager) {
         super(context);
         this.context = context;
         this.locationId = locationId;
-        bookingManager = new BookingManager();
+        this.bookingManager = bookingManager;
     }
 
     @Override
@@ -58,17 +59,7 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
         setContentView(view);
 
         // Initialize UI elements
-        slotSpinner = view.findViewById(R.id.slotSpinner);
-        timeSlotSpinner = view.findViewById(R.id.timeSlotSpinner);
-        confirmButton = view.findViewById(R.id.confirmButton);
-        cancelButton = view.findViewById(R.id.cancelButton);
-        selectDateButton = view.findViewById(R.id.selectDateButton);
-        starButton = view.findViewById(R.id.iv_add_to_favorites);
-        progressBar = view.findViewById(R.id.progressBar);
-        addressText = view.findViewById(R.id.addressText);
-        postalCodeText = view.findViewById(R.id.postalCodeText);
-        selectedDateTextview = view.findViewById(R.id.selectedDate);
-        priceTextView = view.findViewById(R.id.priceTag);
+        initializeUIElements(view);
 
         // Set up the slot spinner
         setupSlotSpinnerData(new HashMap<>());
@@ -85,6 +76,22 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
         setupTimeSlots(selectedDate);
     }
 
+    // Method to initialize UI elements
+    private void initializeUIElements(View view) {
+        slotSpinner = view.findViewById(R.id.slotSpinner);
+        timeSlotSpinner = view.findViewById(R.id.timeSlotSpinner);
+        confirmButton = view.findViewById(R.id.confirmButton);
+        cancelButton = view.findViewById(R.id.cancelButton);
+        selectDateButton = view.findViewById(R.id.selectDateButton);
+        starButton = view.findViewById(R.id.iv_add_to_favorites);
+        progressBar = view.findViewById(R.id.progressBar);
+        addressText = view.findViewById(R.id.addressText);
+        postalCodeText = view.findViewById(R.id.postalCodeText);
+        selectedDateTextview = view.findViewById(R.id.selectedDate);
+        priceTextView = view.findViewById(R.id.priceTag);
+    }
+
+    // Method to fetch parking location data from Firebase
     private void fetchParkingLocationData() {
         progressBar.setVisibility(View.VISIBLE);
 
@@ -110,6 +117,7 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
         });
     }
 
+    // Method to set up slot spinner data
     private void setupSlotSpinnerData(Map<String, ParkingSlot> slots) {
         List<String> slotNames = new ArrayList<>();
         for (Map.Entry<String, ParkingSlot> entry : slots.entrySet()) {
@@ -120,6 +128,7 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
         slotSpinner.setAdapter(adapter);
     }
 
+    // Method to set up time slots based on the selected date
     private void setupTimeSlots(String selectedDate) {
         List<String> timeSlots = generateTimeSlots(selectedDate);
         if (timeSlots.isEmpty()) {
@@ -133,8 +142,7 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
         timeSlotSpinner.setAdapter(adapter);
     }
 
-
-
+    // Method to generate time slots for the selected date
     private List<String> generateTimeSlots(String selectedDate) {
         List<String> timeSlots = new ArrayList<>();
         Calendar now = Calendar.getInstance();
@@ -170,7 +178,7 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
         return timeSlots;
     }
 
-
+    // Method to set up the confirm button
     private void setupConfirmButton() {
         confirmButton.setOnClickListener(v -> {
             String selectedSlot = slotSpinner.getSelectedItem() != null ? slotSpinner.getSelectedItem().toString() : null;
@@ -187,10 +195,12 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
         });
     }
 
+    // Method to set up the cancel button
     private void setupCancelButton() {
         cancelButton.setOnClickListener(v -> dismiss());
     }
 
+    // Method to set up the select date button
     private void setupSelectDateButton() {
         selectDateButton.setOnClickListener(v -> {
             Calendar calendar = Calendar.getInstance();
@@ -211,8 +221,7 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
         });
     }
 
-
-
+    // Method to set up the star button for saving location to favorites
     private void setupStarButton() {
         starButton.setOnClickListener(v -> {
             String address = addressText.getText().toString();
@@ -220,11 +229,11 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
         });
     }
 
+    // Method to set error message
     public void setErrorMessage(String message) {
         if (errorTextView != null) {
             errorTextView.setText(message);
             errorTextView.setVisibility(View.VISIBLE);
         }
     }
-
 }
