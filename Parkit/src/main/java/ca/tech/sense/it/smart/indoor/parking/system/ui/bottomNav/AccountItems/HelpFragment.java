@@ -5,10 +5,7 @@
  */
 package ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.os.Handler;
 import android.util.Patterns;
 import android.view.LayoutInflater;
@@ -17,7 +14,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -31,9 +27,6 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.DocumentReference;
 
-
-import java.util.concurrent.TimeUnit;
-
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.model.Help;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
@@ -45,10 +38,6 @@ public class HelpFragment extends Fragment {
     private ProgressBar progressBar;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private FirebaseAuth auth = FirebaseAuth.getInstance();
-    private SharedPreferences sharedPreferences;
-    private static final String PREFS_NAME = "HelpPrefs";
-    private static final String LAST_SUBMISSION_TIME = "LastSubmissionTime";
-    private static final long TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
 
 
     @Nullable
@@ -65,9 +54,6 @@ public class HelpFragment extends Fragment {
         btnSubmitHelp = view.findViewById(R.id.submit_feedback_button);
         progressBar = view.findViewById(R.id.progress_bar);
 
-
-        // Initialize SharedPreferences
-        sharedPreferences = getActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
 
         // Fetch user data from Firestore and autofill fields
         String currentUserID = auth.getCurrentUser().getUid();
@@ -90,15 +76,6 @@ public class HelpFragment extends Fragment {
                         Toast.makeText(getActivity(), "Error fetching data", Toast.LENGTH_SHORT).show();
                     }
                 });
-        // Check if the user can submit feedback
-        long lastSubmissionTime = sharedPreferences.getLong(LAST_SUBMISSION_TIME, 0);
-        long currentTime = System.currentTimeMillis();
-        if (currentTime - lastSubmissionTime < TWENTY_FOUR_HOURS) {
-            long remainingTime = TWENTY_FOUR_HOURS - (currentTime - lastSubmissionTime);
-            startTimer(remainingTime);
-            btnSubmitHelp.setEnabled(false);
-            btnSubmitHelp.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
-        }
 
         // Set up button click listener
         btnSubmitHelp.setOnClickListener(new View.OnClickListener() {
@@ -148,11 +125,6 @@ public class HelpFragment extends Fragment {
                                     etEmail.setText("");
                                     etComment.setText("");
 
-                                    // Save the current time as the last submission time
-                                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                                    editor.putLong(LAST_SUBMISSION_TIME, System.currentTimeMillis());
-                                    editor.apply();
-
                                     // Show confirmation dialog
                                     DialogUtil.showConfirmationDialog(getActivity(), "Confirmation", getString(R.string.help_request_submitted), getString(R.string.ok), new DialogUtil.ConfirmDialogCallback() {
                                         @Override
@@ -160,11 +132,6 @@ public class HelpFragment extends Fragment {
                                             // Dialog will be dismissed automatically
                                         }
                                     });
-
-                                    // Disable the submit button and start the timer
-                                    btnSubmitHelp.setEnabled(false);
-                                    btnSubmitHelp.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
-                                    startTimer(TWENTY_FOUR_HOURS);
 
                                 }
                             })
@@ -186,24 +153,5 @@ public class HelpFragment extends Fragment {
         });
 
         return view;
-    }
-
-    private void startTimer(long duration) {
-        new CountDownTimer(duration, 1000) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-                long hours = TimeUnit.MILLISECONDS.toHours(millisUntilFinished);
-                long minutes = TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished) % 60;
-                long seconds = TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) % 60;
-                btnSubmitHelp.setText(String.format("%02d:%02d:%02d", hours, minutes, seconds));
-            }
-
-            @Override
-            public void onFinish() {
-                btnSubmitHelp.setEnabled(true);
-                btnSubmitHelp.setBackgroundColor(getResources().getColor(R.color.theme));
-                btnSubmitHelp.setText(R.string.submit);
-            }
-        }.start();
     }
 }
