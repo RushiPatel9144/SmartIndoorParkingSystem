@@ -31,6 +31,11 @@ public class DialogUtil {
         void onCancel();
     }
 
+    // New callback interface for confirmation dialog
+    public interface ConfirmDialogCallback {
+        void onConfirm();
+    }
+
     // Method to show an input dialog
     public static void showInputDialog(Context context, String title, String hint, InputDialogCallback callback) {
         LayoutInflater inflater = LayoutInflater.from(context);
@@ -96,6 +101,36 @@ public class DialogUtil {
                 callback.onCancel();
             }
         });
+
+        confirmButton.setOnClickListener(v -> {
+            dialog.dismiss();
+            if (callback != null) {
+                callback.onConfirm();
+            }
+        });
+
+        dialog.show();
+    }
+
+    // New method to show a confirmation dialog with only an OK button
+    public static void showConfirmationDialog(Context context, String title, String message, String confirm, ConfirmDialogCallback callback) {
+        LayoutInflater inflater = LayoutInflater.from(context);
+        View dialogView = inflater.inflate(R.layout.dialog_confirm, null);
+
+        TextView dialogTitle = dialogView.findViewById(R.id.dialog_title);
+        TextView dialogMessage = dialogView.findViewById(R.id.dialog_message);
+        Button confirmButton = dialogView.findViewById(R.id.dialog_confirm_button);
+
+        dialogTitle.setText(title);
+        dialogMessage.setText(message);
+        confirmButton.setText(confirm);
+
+        AlertDialog dialog = new AlertDialog.Builder(context)
+                .setView(dialogView)
+                .create();
+
+        Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawableResource(R.drawable.dialog_background);
+        dialog.show();
 
         confirmButton.setOnClickListener(v -> {
             dialog.dismiss();
