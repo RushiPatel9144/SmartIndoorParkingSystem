@@ -52,9 +52,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
-import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
 import ca.tech.sense.it.smart.indoor.parking.system.booking.BookingBottomSheetDialog;
 import ca.tech.sense.it.smart.indoor.parking.system.booking.BookingManager;
+import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
+
 import ca.tech.sense.it.smart.indoor.parking.system.utility.ParkingUtility;
 
 public class Park extends Fragment implements OnMapReadyCallback {
@@ -216,7 +217,7 @@ public class Park extends Fragment implements OnMapReadyCallback {
         // Get instances of FirebaseDatabase and FirebaseAuth
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-        BookingManager bookingManager = new BookingManager(executorService, firebaseDatabase, firebaseAuth);
+        BookingManager bookingManager = new BookingManager(executorService, firebaseDatabase, firebaseAuth,getContext());
         BookingBottomSheetDialog bookingDialog = new BookingBottomSheetDialog(requireContext(), parkingLocationId, bookingManager);
         bookingDialog.show();
     }
