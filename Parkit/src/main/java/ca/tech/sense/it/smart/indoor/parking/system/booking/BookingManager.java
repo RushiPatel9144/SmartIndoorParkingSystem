@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.model.activity.Booking;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
 import java.util.concurrent.*;
@@ -63,7 +64,7 @@ public class BookingManager {
                     if (location != null) {
                         callback.onFetchSuccess(location);
                     } else {
-                        callback.onFetchFailure(new Exception("Location data is not available"));
+                        callback.onFetchFailure(new Exception(String.valueOf(R.string.location_data_is_not_available)));
                     }
                 }
 
@@ -120,12 +121,12 @@ public class BookingManager {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         String status = snapshot.child("status").getValue(String.class);
-                        if ("occupied".equals(status)) {
+                        if (context.getString(R.string.occupied).equals(status)) {
                             // Slot is occupied, notify the user
                             new Handler(Looper.getMainLooper()).post(() ->
-                                    Toast.makeText(context, "Selected slot is already occupied. Please choose a different time slot.", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(context, R.string.selected_slot_is_already_occupied_please_choose_a_different_time_slot, Toast.LENGTH_SHORT).show()
                             );
-                            onFailure.accept(new Exception("Selected slot is already occupied."));
+                            onFailure.accept(new Exception(context.getString(R.string.selected_slot_is_already_occupied)));
                         } else {
                             // Slot is available, proceed with booking
                             DatabaseReference priceRef = firebaseDatabase.getReference("parkingLocations").child(locationId).child("price");

@@ -123,10 +123,15 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
         for (Map.Entry<String, ParkingSlot> entry : slots.entrySet()) {
             slotNames.add(entry.getValue().getId());
         }
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, slotNames);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        slotSpinner.setAdapter(adapter);
+
+        // Check if slotNames is not null and not empty
+        if (slotNames != null && !slotNames.isEmpty()) {
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, slotNames);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            slotSpinner.setAdapter(adapter);
+        }
     }
+
 
     // Method to set up time slots based on the selected date
     private void setupTimeSlots(String selectedDate) {

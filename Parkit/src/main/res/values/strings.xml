@@ -263,6 +263,9 @@
     <string name="failed_to_fetch_user_data">Failed to fetch user data</string>
     <string name="upload_successful_url">upload successful</string>
     <string name="upload_failed">upload failed</string>
+    <string name="occupied">Occupied</string>
+    <string name="selected_slot_is_already_occupied_please_choose_a_different_time_slot">Selected slot is already occupied, please choose a different time slot.</string>
+    <string name="selected_slot_is_already_occupied">Selected slot is already occupied</string>
 
 
 </resources>
