@@ -11,6 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
+
+import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSingleton;
+import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseDatabaseSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.model.Notification;
 
 public class NotificationRepository {
@@ -18,8 +21,10 @@ public class NotificationRepository {
     private final DatabaseReference notificationsRef;
 
     public NotificationRepository() {
-        String userId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
-        notificationsRef = FirebaseDatabase.getInstance().getReference("users").child(userId).child("notifications");
+        FirebaseAuth firebaseAuth = FirebaseAuthSingleton.getInstance();
+        String userId = Objects.requireNonNull(firebaseAuth.getCurrentUser()).getUid();
+        FirebaseDatabase firebaseDatabase = FirebaseDatabaseSingleton.getInstance();
+        notificationsRef = firebaseDatabase.getReference("users").child(userId).child("notifications");
     }
 
     public void fetchNotifications(Consumer<List<Notification>> callback) {
