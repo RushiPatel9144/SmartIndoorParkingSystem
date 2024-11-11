@@ -5,10 +5,11 @@
  */
 package ca.tech.sense.it.smart.indoor.parking.system.model.activity;
 
+import android.app.Application;
 import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -20,11 +21,20 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.Executors;
 
-public class BookingViewModel extends ViewModel {
+import ca.tech.sense.it.smart.indoor.parking.system.booking.BookingManager;
+
+public class BookingViewModel extends AndroidViewModel {
     private final MutableLiveData<List<Booking>> activeBookingsLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<Booking>> upcomingBookingsLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<Booking>> historyBookingsLiveData = new MutableLiveData<>();
+    private final BookingManager bookingManager;
+
+    public BookingViewModel(@NonNull Application application) {
+        super(application);
+        bookingManager = new BookingManager(Executors.newSingleThreadExecutor(), FirebaseDatabase.getInstance(), FirebaseAuth.getInstance(), application.getApplicationContext());
+    }
 
     public LiveData<List<Booking>> getActiveBookings() {
         return activeBookingsLiveData;
@@ -55,6 +65,8 @@ public class BookingViewModel extends ViewModel {
                     if (booking != null) {
                         if (booking.getEndTime() < currentTime) {
                             historyBookings.add(booking);
+                            // Expire the pass key for completed bookings
+                            bookingManager.expirePassKey(userId, bookingSnapshot.getKey());
                         } else if (booking.getStartTime() > currentTime) {
                             upcomingBookings.add(booking);
                         } else {

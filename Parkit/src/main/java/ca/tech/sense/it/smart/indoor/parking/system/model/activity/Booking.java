@@ -12,20 +12,23 @@ public class Booking {
     private String location;
     private String slotNumber;
     private double price;
+    private String passKey; // Add passKey field
 
     public Booking() {
         // Default constructor required for calls to DataSnapshot.getValue(Booking.class)
     }
 
-    public Booking(String title, long startTime, long endTime, String location, String slotNumber, double price) {
+    public Booking(String title, long startTime, long endTime, String location, String slotNumber, double price, String passKey) {
         this.title = title;
         this.startTime = startTime;
         this.endTime = endTime;
         this.location = location;
         this.slotNumber = slotNumber;
         this.price = price;
+        this.passKey = passKey; // Initialize passKey
     }
 
+    // Getters and setters for all fields, including passKey
     public String getTitle() {
         return title;
     }
@@ -72,5 +75,13 @@ public class Booking {
 
     public void setPrice(double price) {
         this.price = price;
+    }
+
+    public String getPassKey() {
+        return passKey;
+    }
+
+    public void setPassKey(String passKey) {
+        this.passKey = passKey;
     }
 }

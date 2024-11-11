@@ -62,6 +62,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingV
         private TextView bookingSlot;
         private TextView bookingTime;
         private TextView bookingPrice;
+        private TextView bookingPassKey; // Add TextView for pass key
 
         public BookingViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -71,6 +72,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingV
             bookingSlot = itemView.findViewById(R.id.booking_slot);
             bookingTime = itemView.findViewById(R.id.booking_time);
             bookingPrice = itemView.findViewById(R.id.booking_price);
+            bookingPassKey = itemView.findViewById(R.id.booking_pass_key); // Initialize pass key TextView
         }
 
         public void bind(Booking booking) {
@@ -79,6 +81,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingV
             bookingSlot.setText(booking.getSlotNumber());
             bookingTime.setText(formatTime(booking.getStartTime(), booking.getEndTime()));
             bookingPrice.setText(String.format(Locale.getDefault(), "Price: $%.2f", booking.getPrice()));
+            bookingPassKey.setText(booking.getPassKey()); // Bind pass key
         }
 
         private String formatTime(long startTime, long endTime) {
