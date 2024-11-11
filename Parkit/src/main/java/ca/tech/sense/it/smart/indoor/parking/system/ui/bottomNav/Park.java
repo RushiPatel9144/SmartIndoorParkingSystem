@@ -216,7 +216,7 @@ public class Park extends Fragment implements OnMapReadyCallback {
         // Get instances of FirebaseDatabase and FirebaseAuth
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-        BookingManager bookingManager = new BookingManager(executorService, firebaseDatabase, firebaseAuth);
+        BookingManager bookingManager = new BookingManager(executorService, firebaseDatabase, firebaseAuth,getContext());
         BookingBottomSheetDialog bookingDialog = new BookingBottomSheetDialog(requireContext(), parkingLocationId, bookingManager);
         bookingDialog.show();
     }
