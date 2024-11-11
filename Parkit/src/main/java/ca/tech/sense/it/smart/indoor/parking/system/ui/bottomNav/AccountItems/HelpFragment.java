@@ -43,7 +43,6 @@ public class HelpFragment extends Fragment {
     private EditText etName, etPhone, etEmail, etComment;
     private Button btnSubmitHelp;
     private ProgressBar progressBar;
-    private TextView tvTimer;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private FirebaseAuth auth = FirebaseAuth.getInstance();
     private SharedPreferences sharedPreferences;
@@ -65,7 +64,7 @@ public class HelpFragment extends Fragment {
         etComment = view.findViewById(R.id.feedback_comment);
         btnSubmitHelp = view.findViewById(R.id.submit_feedback_button);
         progressBar = view.findViewById(R.id.progress_bar);
-        tvTimer = view.findViewById(R.id.timer_text);
+
 
         // Initialize SharedPreferences
         sharedPreferences = getActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
@@ -190,22 +189,20 @@ public class HelpFragment extends Fragment {
     }
 
     private void startTimer(long duration) {
-        tvTimer.setVisibility(View.VISIBLE);
         new CountDownTimer(duration, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
                 long hours = TimeUnit.MILLISECONDS.toHours(millisUntilFinished);
                 long minutes = TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished) % 60;
                 long seconds = TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) % 60;
-                tvTimer.setText(String.format("%02d:%02d:%02d", hours, minutes, seconds));
+                btnSubmitHelp.setText(String.format("%02d:%02d:%02d", hours, minutes, seconds));
             }
 
             @Override
             public void onFinish() {
                 btnSubmitHelp.setEnabled(true);
                 btnSubmitHelp.setBackgroundColor(getResources().getColor(R.color.theme));
-                tvTimer.setText("");
-                tvTimer.setVisibility(View.GONE);
+                btnSubmitHelp.setText(R.string.submit);
             }
         }.start();
     }

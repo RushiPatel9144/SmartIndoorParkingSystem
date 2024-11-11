@@ -174,18 +174,6 @@
             android:layout_gravity="center"
             android:visibility="gone"/>
 
-        <!-- Timer TextView -->
-        <TextView
-            android:id="@+id/timer_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:textSize="16sp"
-            android:textColor="@android:color/black"
-            android:gravity="center"
-            android:visibility="gone"
-            android:padding="16dp"/>
-
     </LinearLayout>
 </ScrollView>
     
