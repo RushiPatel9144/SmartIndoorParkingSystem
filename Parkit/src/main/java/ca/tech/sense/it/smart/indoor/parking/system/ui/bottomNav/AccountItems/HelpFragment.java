@@ -30,6 +30,7 @@ import com.google.firebase.firestore.DocumentReference;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.model.Help;
+import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
 
 public class HelpFragment extends Fragment {
 
@@ -122,8 +123,14 @@ public class HelpFragment extends Fragment {
                                     etPhone.setText("");
                                     etEmail.setText("");
                                     etComment.setText("");
-                                    // Show success message
-                                    Toast.makeText(getActivity(), getString(R.string.help_request_submitted), Toast.LENGTH_SHORT).show();
+
+                                    // Show confirmation dialog
+                                    DialogUtil.showConfirmationDialog(getActivity(), "Confirmation", getString(R.string.help_request_submitted), getString(R.string.ok), new DialogUtil.ConfirmDialogCallback() {
+                                        @Override
+                                        public void onConfirm() {
+                                            // Dialog will be dismissed automatically
+                                        }
+                                    });
                                 }
                             })
                             .addOnFailureListener(new OnFailureListener() {
