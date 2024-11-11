@@ -121,23 +121,30 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
     private void setupSlotSpinnerData(Map<String, ParkingSlot> slots) {
         List<String> slotNames = new ArrayList<>();
         for (Map.Entry<String, ParkingSlot> entry : slots.entrySet()) {
-            slotNames.add(entry.getValue().getId());
+            if (entry.getValue() != null && entry.getValue().getId() != null) {
+                slotNames.add(entry.getValue().getId());
+            }
         }
 
-        // Check if slotNames is not null and not empty
-        if (slotNames != null && !slotNames.isEmpty()) {
+        if (!slotNames.isEmpty()) {
             ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, slotNames);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             slotSpinner.setAdapter(adapter);
+        } else {
+            // Handle the case where there are no slots available
+            slotNames.add(context.getString(R.string.no_slots_available));
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, slotNames);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            slotSpinner.setAdapter(adapter);
+            slotSpinner.setEnabled(false);
         }
     }
-
 
     // Method to set up time slots based on the selected date
     private void setupTimeSlots(String selectedDate) {
         List<String> timeSlots = generateTimeSlots(selectedDate);
         if (timeSlots.isEmpty()) {
-            timeSlots.add("Choose another date");
+            timeSlots.add(context.getString(R.string.choose_another_date));
             confirmButton.setEnabled(false);
         } else {
             confirmButton.setEnabled(true);

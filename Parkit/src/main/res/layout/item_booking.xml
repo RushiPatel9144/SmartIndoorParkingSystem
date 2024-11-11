@@ -68,5 +68,14 @@
             android:textSize="14sp"
             android:paddingTop="4dp"
             android:textColor="@android:color/holo_green_dark" />
+
+        <TextView
+            android:id="@+id/booking_pass_key"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pass Key"
+            android:textSize="16sp"
+            android:layout_marginTop="8dp"/>
+
     </LinearLayout>
 </androidx.cardview.widget.CardView>

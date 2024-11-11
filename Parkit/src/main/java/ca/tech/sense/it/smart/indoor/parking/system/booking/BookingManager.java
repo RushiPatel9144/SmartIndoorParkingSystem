@@ -19,6 +19,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Random;
 import java.util.function.Consumer;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
@@ -64,7 +65,7 @@ public class BookingManager {
                     if (location != null) {
                         callback.onFetchSuccess(location);
                     } else {
-                        callback.onFetchFailure(new Exception(String.valueOf(R.string.location_data_is_not_available)));
+                        callback.onFetchFailure(new Exception(context.getString(R.string.location_data_is_not_available)));
                     }
                 }
 
@@ -75,6 +76,7 @@ public class BookingManager {
             });
         });
     }
+
 
     // Method to fetch the price of a parking location from Firebase
     public void fetchPrice(String locationId, Consumer<Double> onSuccess) {
@@ -100,7 +102,6 @@ public class BookingManager {
         });
     }
 
-    // Method to confirm a booking and save it to Firebase
     public void confirmBooking(String locationId, String slot, String timing, String selectedDate, String address, Runnable onSuccess, Consumer<Exception> onFailure) {
         // Add a delay of 5 seconds
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
@@ -121,12 +122,12 @@ public class BookingManager {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         String status = snapshot.child("status").getValue(String.class);
-                        if (context.getString(R.string.occupied).equals(status)) {
+                        if ("occupied".equals(status)) {
                             // Slot is occupied, notify the user
                             new Handler(Looper.getMainLooper()).post(() ->
-                                    Toast.makeText(context, R.string.selected_slot_is_already_occupied_please_choose_a_different_time_slot, Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(context, "Selected slot is already occupied. Please choose a different time slot.", Toast.LENGTH_SHORT).show()
                             );
-                            onFailure.accept(new Exception(context.getString(R.string.selected_slot_is_already_occupied)));
+                            onFailure.accept(new Exception("Selected slot is already occupied."));
                         } else {
                             // Slot is available, proceed with booking
                             DatabaseReference priceRef = firebaseDatabase.getReference("parkingLocations").child(locationId).child("price");
@@ -137,13 +138,16 @@ public class BookingManager {
                                         Double priceValue = snapshot.getValue(Double.class);
                                         double price = (priceValue != null) ? priceValue : 0.0;
 
+                                        String passKey = generatePassKey(); // Generate the pass key
+
                                         Booking booking = new Booking(
                                                 "Park It", // Use "Park It" as title
                                                 startTime,
                                                 endTime,
                                                 address,
                                                 slot,
-                                                price
+                                                price,
+                                                passKey // Add the pass key to the booking
                                         );
 
                                         DatabaseReference databaseRef = firebaseDatabase
@@ -182,6 +186,14 @@ public class BookingManager {
             });
         }, 2000); // 2 seconds delay
     }
+
+    // Method to generate a 4-digit pass key
+    private String generatePassKey() {
+        Random random = new Random();
+        int passKey = 1000 + random.nextInt(9000); // Generates a random 4-digit number
+        return String.valueOf(passKey);
+    }
+
 
     // Method to update the hourly status of a parking slot
     private void updateHourlyStatus(String locationId, String slot, String date, String hour, String status, Runnable onSuccess, Consumer<Exception> onFailure) {
@@ -244,4 +256,23 @@ public class BookingManager {
         long currentTimeMillis = System.currentTimeMillis();
         return endTimeMillis - currentTimeMillis;
     }
+
+    public void expirePassKey(String userId, String bookingId) {
+        DatabaseReference bookingRef = firebaseDatabase.getReference("users")
+                .child(userId)
+                .child("bookings")
+                .child(bookingId)
+                .child("passKey");
+
+        bookingRef.setValue(null) // Remove the pass key
+                .addOnSuccessListener(aVoid -> {
+                    // Pass key expired successfully
+                    Toast.makeText(context, "Pass key expired.", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    // Handle the error
+                    Toast.makeText(context, "Failed to expire pass key: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+    }
+
 }
