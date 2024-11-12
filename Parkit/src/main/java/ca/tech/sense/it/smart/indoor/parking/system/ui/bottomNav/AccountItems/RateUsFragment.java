@@ -8,11 +8,14 @@ package ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems;
 import android.os.Build;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
+
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -102,49 +105,63 @@ public class RateUsFragment extends Fragment {
                     Toast.makeText(getContext(), "Please provide Ratings", Toast.LENGTH_SHORT).show();
                     return;
                 }
-//                if (comment.isEmpty()) {
-//                    feedbackComment.setError("Please provide a comment");
-//                    return;
-//                }
                 if (selectedOptions.isEmpty()) {
                     Toast.makeText(getContext(), "Please select an option", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                // Fetch user information from Firestore
-                String uid = auth.getCurrentUser().getUid();
-                db.collection("users").document(uid).get()
-                        .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                            @Override
-                            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                User user = documentSnapshot.toObject(User.class);
-                                if (user != null) {
-                                    String userName = user.getFirstName() + " " + user.getLastName();
-                                    String userEmail = user.getEmail();
-                                    String userPhone = user.getPhone();
+                // Show progress bar and hide submit button
+                ProgressBar progressBar = getView().findViewById(R.id.progress_bar);
+                progressBar.setVisibility(View.VISIBLE);
+                submitFeedbackButton.setVisibility(View.GONE);
 
-                                    // Create a new RateUs object
-                                    RateUs feedback = new RateUs(rating, comment, fullDeviceInfo, userName, userEmail, userPhone, selectedOptions);
 
-                                    // Add a new document with generated ID to the 'feedback' collection
-                                    db.collection("feedback").add(feedback)
-                                            .addOnSuccessListener(documentReference -> {
-                                                Toast.makeText(getContext(), getString(R.string.feedback_submitted_successfully), Toast.LENGTH_SHORT).show();
-                                            })
-                                            .addOnFailureListener(e -> {
-                                                Toast.makeText(getContext(), getString(R.string.error_submitting_feedback) + e.getMessage(), Toast.LENGTH_SHORT).show();
-                                            });
+                // Introduce a delay of 5 seconds
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        // Fetch user information from Firestore
+                        String uid = auth.getCurrentUser().getUid();
+                        db.collection("users").document(uid).get()
+                                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                    @Override
+                                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                        User user = documentSnapshot.toObject(User.class);
+                                        if (user != null) {
+                                            String userName = user.getFirstName() + " " + user.getLastName();
+                                            String userEmail = user.getEmail();
+                                            String userPhone = user.getPhone();
 
-                                    // Clear the inputs after submission (optional)
-                                    ratingBar.setRating(0);
-                                    feedbackComment.setText("");
-                                    clearSelectedOptions();
-                                }
-                            }
-                        })
-                        .addOnFailureListener(e -> {
-                            Toast.makeText(getContext(), getString(R.string.error_fetching_user_info) + e.getMessage(), Toast.LENGTH_SHORT).show();
-                        });
+                                            // Create a new RateUs object
+                                            RateUs feedback = new RateUs(rating, comment, fullDeviceInfo, userName, userEmail, userPhone, selectedOptions);
+
+                                            // Add a new document with generated ID to the 'feedback' collection
+                                            db.collection("feedback").add(feedback)
+                                                    .addOnSuccessListener(documentReference -> {
+                                                        progressBar.setVisibility(View.GONE);
+                                                        submitFeedbackButton.setVisibility(View.VISIBLE);
+                                                        Toast.makeText(getContext(), getString(R.string.feedback_submitted_successfully), Toast.LENGTH_SHORT).show();
+                                                    })
+                                                    .addOnFailureListener(e -> {
+                                                        progressBar.setVisibility(View.GONE);
+                                                        submitFeedbackButton.setVisibility(View.VISIBLE);
+                                                        Toast.makeText(getContext(), getString(R.string.error_submitting_feedback) + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                                    });
+
+                                            // Clear the inputs after submission (optional)
+                                            ratingBar.setRating(0);
+                                            feedbackComment.setText("");
+                                            clearSelectedOptions();
+                                        }
+                                    }
+                                })
+                                .addOnFailureListener(e -> {
+                                    progressBar.setVisibility(View.GONE);
+                                    submitFeedbackButton.setVisibility(View.VISIBLE);
+                                    Toast.makeText(getContext(), getString(R.string.error_fetching_user_info) + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                });
+                    }
+                }, 5000); // 5 seconds delay
             }
         });
     }
