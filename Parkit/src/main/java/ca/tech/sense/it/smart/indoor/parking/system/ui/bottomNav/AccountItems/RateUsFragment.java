@@ -1,33 +1,31 @@
-/*Name: Kunal Dhiman, StudentID: N01540952,  section number: RCB
-  Name: Raghav Sharma, StudentID: N01537255,  section number: RCB
-  Name: NisargKumar Pareshbhai Joshi, StudentID: N01545986,  section number: RCB
-  Name: Rushi Manojkumar Patel, StudentID: N01539144, section number: RCB
- */
 package ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems;
 
 import android.os.Build;
 import android.os.Bundle;
-import androidx.fragment.app.Fragment;
+import android.os.CountDownTimer;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
-import ca.tech.sense.it.smart.indoor.parking.system.model.RateUs;
-import ca.tech.sense.it.smart.indoor.parking.system.model.user.User;
+import ca.tech.sense.it.smart.indoor.parking.system.viewModel.RateUsViewModel;
+import ca.tech.sense.it.smart.indoor.parking.system.utility.RateUsViewModelFactory;
+import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
+
 
 public class RateUsFragment extends Fragment {
 
@@ -35,9 +33,9 @@ public class RateUsFragment extends Fragment {
     EditText feedbackComment;
     Button submitFeedbackButton;
     TextView optionParkingSpot, optionSecureTransaction, optionUserInterface, optionRealTime;
-    FirebaseFirestore db;
-    FirebaseAuth auth;
+    ProgressBar progressBar;
     List<String> selectedOptions;
+    RateUsViewModel rateUsViewModel;
 
     public RateUsFragment() {
         // Required empty public constructor
@@ -46,10 +44,9 @@ public class RateUsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Initialize Firestore and FirebaseAuth
-        db = FirebaseFirestore.getInstance();
-        auth = FirebaseAuth.getInstance();
         selectedOptions = new ArrayList<>();
+        RateUsViewModelFactory factory = new RateUsViewModelFactory(requireContext());
+        rateUsViewModel = new ViewModelProvider(this, factory).get(RateUsViewModel.class);
     }
 
     @Override
@@ -59,6 +56,16 @@ public class RateUsFragment extends Fragment {
 
         // Initialize UI components
         initializeUIComponents(view);
+
+        // Check if the user can submit feedback
+        long lastSubmissionTime = rateUsViewModel.getLastSubmissionTime();
+        long currentTime = System.currentTimeMillis();
+        if (currentTime - lastSubmissionTime < rateUsViewModel.getTwentyFourHours()) {
+            long remainingTime = rateUsViewModel.getTwentyFourHours() - (currentTime - lastSubmissionTime);
+            startTimer(remainingTime);
+            submitFeedbackButton.setEnabled(false);
+            submitFeedbackButton.setBackgroundColor(ContextCompat.getColor(getContext(), android.R.color.darker_gray));
+        }
 
         // Set up click listener for feedback submission
         setupSubmitButtonClickListener();
@@ -75,6 +82,7 @@ public class RateUsFragment extends Fragment {
         optionSecureTransaction = view.findViewById(R.id.option_secure_transaction);
         optionUserInterface = view.findViewById(R.id.option_user_interface);
         optionRealTime = view.findViewById(R.id.option_real_time);
+        progressBar = view.findViewById(R.id.progress_bar);
 
         // Set up option click listeners
         setOptionClickListener(optionParkingSpot, getString(R.string.parking_spot_easily_found));
@@ -97,44 +105,33 @@ public class RateUsFragment extends Fragment {
                 String manufacturer = Build.MANUFACTURER;
                 String fullDeviceInfo = manufacturer + " " + deviceModel;
 
-                if (rating > 0 || !comment.isEmpty() || !selectedOptions.isEmpty()) {
-                    // Fetch user information from Firestore
-                    String uid = auth.getCurrentUser().getUid();
-                    db.collection("users").document(uid).get()
-                            .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                @Override
-                                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                    User user = documentSnapshot.toObject(User.class);
-                                    if (user != null) {
-                                        String userName = user.getFirstName() + " " + user.getLastName();
-                                        String userEmail = user.getEmail();
-                                        String userPhone = user.getPhone();
+                // Show progress bar and hide submit button
+                progressBar.setVisibility(View.VISIBLE);
+                submitFeedbackButton.setVisibility(View.GONE);
 
-                                        // Create a new RateUs object
-                                        RateUs feedback = new RateUs(rating, comment, fullDeviceInfo, userName, userEmail, userPhone, selectedOptions);
-
-                                        // Add a new document with generated ID to the 'feedback' collection
-                                        db.collection("feedback").add(feedback)
-                                                .addOnSuccessListener(documentReference -> {
-                                                    Toast.makeText(getContext(), getString(R.string.feedback_submitted_successfully), Toast.LENGTH_SHORT).show();
-                                                })
-                                                .addOnFailureListener(e -> {
-                                                    Toast.makeText(getContext(), getString(R.string.error_submitting_feedback) + e.getMessage(), Toast.LENGTH_SHORT).show();
-                                                });
-
-                                        // Clear the inputs after submission (optional)
-                                        ratingBar.setRating(0);
-                                        feedbackComment.setText("");
-                                        clearSelectedOptions();
-                                    }
-                                }
-                            })
-                            .addOnFailureListener(e -> {
-                                Toast.makeText(getContext(), getString(R.string.error_fetching_user_info) + e.getMessage(), Toast.LENGTH_SHORT).show();
-                            });
-                } else {
-                    Toast.makeText(getContext(), getString(R.string.please_provide_a_rating_comment_or_select_an_option), Toast.LENGTH_SHORT).show();
-                }
+                rateUsViewModel.submitFeedback(rating, comment, selectedOptions, fullDeviceInfo, getContext(), () -> {
+                    progressBar.setVisibility(View.GONE);
+                    submitFeedbackButton.setVisibility(View.VISIBLE);
+                    // Clear the inputs after submission
+                    ratingBar.setRating(0);
+                    feedbackComment.setText("");
+                    clearSelectedOptions();
+                    // Show confirmation dialog
+                    DialogUtil.showConfirmationDialog(getActivity(), "Confirmation", getString(R.string.feedback_submitted_successfully), getString(R.string.ok), new DialogUtil.ConfirmDialogCallback() {
+                        @Override
+                        public void onConfirm() {
+                            // Dialog will be dismissed automatically
+                        }
+                    });
+                    // Disable the submit button and start the timer
+                    submitFeedbackButton.setEnabled(false);
+                    submitFeedbackButton.setBackgroundColor(ContextCompat.getColor(getContext(), android.R.color.darker_gray));
+                    startTimer(rateUsViewModel.getTwentyFourHours());
+                }, () -> {
+                    progressBar.setVisibility(View.GONE);
+                    submitFeedbackButton.setVisibility(View.VISIBLE);
+                    Toast.makeText(getContext(), getString(R.string.error_submitting_feedback), Toast.LENGTH_SHORT).show();
+                });
             }
         });
     }
@@ -160,5 +157,24 @@ public class RateUsFragment extends Fragment {
         optionSecureTransaction.setBackgroundResource(R.drawable.box_background);
         optionUserInterface.setBackgroundResource(R.drawable.box_background);
         optionRealTime.setBackgroundResource(R.drawable.box_background);
+    }
+
+    private void startTimer(long duration) {
+        new CountDownTimer(duration, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                long hours = TimeUnit.MILLISECONDS.toHours(millisUntilFinished);
+                long minutes = TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished) % 60;
+                long seconds = TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) % 60;
+                submitFeedbackButton.setText(String.format("%02d:%02d:%02d", hours, minutes, seconds));
+            }
+
+            @Override
+            public void onFinish() {
+                submitFeedbackButton.setEnabled(true);
+                submitFeedbackButton.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.theme));
+                submitFeedbackButton.setText(R.string.submit_feedback);
+            }
+        }.start();
     }
 }
