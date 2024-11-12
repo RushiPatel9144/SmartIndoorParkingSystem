@@ -129,13 +129,6 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
             ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, slotNames);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             slotSpinner.setAdapter(adapter);
-        } else {
-            // Handle the case where there are no slots available
-            slotNames.add(context.getString(R.string.no_slots_available));
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, slotNames);
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            slotSpinner.setAdapter(adapter);
-            slotSpinner.setEnabled(false);
         }
     }
 

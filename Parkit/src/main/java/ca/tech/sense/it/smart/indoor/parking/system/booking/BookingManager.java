@@ -103,7 +103,6 @@ public class BookingManager {
     }
 
     public void confirmBooking(String locationId, String slot, String timing, String selectedDate, String address, Runnable onSuccess, Consumer<Exception> onFailure) {
-        // Add a delay of 5 seconds
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             executorService.submit(() -> {
                 String userId = Objects.requireNonNull(firebaseAuth.getCurrentUser()).getUid();
@@ -111,80 +110,96 @@ public class BookingManager {
                 long startTime = convertToMillis(selectedDate + " " + times[0]);
                 long endTime = convertToMillis(selectedDate + " " + times[1]);
 
-                DatabaseReference slotRef = firebaseDatabase.getReference("parkingLocations")
-                        .child(locationId)
-                        .child("slots")
-                        .child(slot)
-                        .child("hourlyStatus")
-                        .child(selectedDate + " " + times[0]);
-
-                slotRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        String status = snapshot.child("status").getValue(String.class);
-                        if ("occupied".equals(status)) {
-                            // Slot is occupied, notify the user
-                            new Handler(Looper.getMainLooper()).post(() ->
-                                    Toast.makeText(context, "Selected slot is already occupied. Please choose a different time slot.", Toast.LENGTH_SHORT).show()
-                            );
-                            onFailure.accept(new Exception("Selected slot is already occupied."));
-                        } else {
-                            // Slot is available, proceed with booking
-                            DatabaseReference priceRef = firebaseDatabase.getReference("parkingLocations").child(locationId).child("price");
-                            priceRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                    if (snapshot.exists()) {
-                                        Double priceValue = snapshot.getValue(Double.class);
-                                        double price = (priceValue != null) ? priceValue : 0.0;
-
-                                        String passKey = generatePassKey(); // Generate the pass key
-
-                                        Booking booking = new Booking(
-                                                "Park It", // Use "Park It" as title
-                                                startTime,
-                                                endTime,
-                                                address,
-                                                slot,
-                                                price,
-                                                passKey // Add the pass key to the booking
-                                        );
-
-                                        DatabaseReference databaseRef = firebaseDatabase
-                                                .getReference("users")
-                                                .child(userId)
-                                                .child("bookings")
-                                                .push();
-
-                                        databaseRef.setValue(booking)
-                                                .addOnSuccessListener(aVoid -> {
-                                                    updateHourlyStatus(locationId, slot, selectedDate, times[0], "occupied", () -> {
-                                                        scheduleStatusUpdate(locationId, slot, selectedDate, times[1], onSuccess, onFailure);
-                                                        // Show toast message
-                                                        Toast.makeText(context, "Booking confirmed!", Toast.LENGTH_SHORT).show();
-                                                    }, onFailure);
-                                                })
-                                                .addOnFailureListener(onFailure::accept);
-                                    } else {
-                                        onFailure.accept(new Exception("Price not found for location: " + locationId));
-                                    }
-                                }
-
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError error) {
-                                    onFailure.accept(error.toException());
-                                }
-                            });
-                        }
+                checkSlotAvailability(locationId, slot, selectedDate, times[0], status -> {
+                    if ("occupied".equals(status)) {
+                        notifyUserSlotOccupied(onFailure);
+                    } else {
+                        fetchPriceAndConfirmBooking(locationId, slot, selectedDate, times, startTime, endTime, address, userId, onSuccess, onFailure);
                     }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        onFailure.accept(error.toException());
-                    }
-                });
+                }, onFailure);
             });
         }, 2000); // 2 seconds delay
+    }
+
+    private void checkSlotAvailability(String locationId, String slot, String selectedDate, String time, Consumer<String> onStatusChecked, Consumer<Exception> onFailure) {
+        DatabaseReference slotRef = firebaseDatabase.getReference("parkingLocations")
+                .child(locationId)
+                .child("slots")
+                .child(slot)
+                .child("hourlyStatus")
+                .child(selectedDate + " " + time);
+
+        slotRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String status = snapshot.child("status").getValue(String.class);
+                onStatusChecked.accept(status);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                onFailure.accept(error.toException());
+            }
+        });
+    }
+
+    private void notifyUserSlotOccupied(Consumer<Exception> onFailure) {
+        new Handler(Looper.getMainLooper()).post(() ->
+                Toast.makeText(context, "Selected slot is already occupied. Please choose a different time slot.", Toast.LENGTH_SHORT).show()
+        );
+        onFailure.accept(new Exception("Selected slot is already occupied."));
+    }
+
+    private void fetchPriceAndConfirmBooking(String locationId, String slot, String selectedDate, String[] times, long startTime, long endTime, String address, String userId, Runnable onSuccess, Consumer<Exception> onFailure) {
+        DatabaseReference priceRef = firebaseDatabase.getReference("parkingLocations").child(locationId).child("price");
+        priceRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    Double priceValue = snapshot.getValue(Double.class);
+                    double price = (priceValue != null) ? priceValue : 0.0;
+
+                    String passKey = generatePassKey(); // Generate the pass key
+
+                    Booking booking = new Booking(
+                            "Park It", // Use "Park It" as title
+                            startTime,
+                            endTime,
+                            address,
+                            slot,
+                            price,
+                            passKey // Add the pass key to the booking
+                    );
+
+                    saveBooking(userId, booking, locationId, slot, selectedDate, times, onSuccess, onFailure);
+                } else {
+                    onFailure.accept(new Exception("Price not found for location: " + locationId));
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                onFailure.accept(error.toException());
+            }
+        });
+    }
+
+    private void saveBooking(String userId, Booking booking, String locationId, String slot, String selectedDate, String[] times, Runnable onSuccess, Consumer<Exception> onFailure) {
+        DatabaseReference databaseRef = firebaseDatabase
+                .getReference("users")
+                .child(userId)
+                .child("bookings")
+                .push();
+
+        databaseRef.setValue(booking)
+                .addOnSuccessListener(aVoid -> {
+                    updateHourlyStatus(locationId, slot, selectedDate, times[0], "occupied", () -> {
+                        scheduleStatusUpdate(locationId, slot, selectedDate, times[1], onSuccess, onFailure);
+                        // Show toast message
+                        Toast.makeText(context, "Booking confirmed!", Toast.LENGTH_SHORT).show();
+                    }, onFailure);
+                })
+                .addOnFailureListener(onFailure::accept);
     }
 
     // Method to generate a 4-digit pass key
