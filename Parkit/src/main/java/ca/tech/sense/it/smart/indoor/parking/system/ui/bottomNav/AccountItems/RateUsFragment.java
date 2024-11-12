@@ -5,10 +5,13 @@
  */
 package ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +30,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.model.RateUs;
@@ -42,6 +46,10 @@ public class RateUsFragment extends Fragment {
     FirebaseFirestore db;
     FirebaseAuth auth;
     List<String> selectedOptions;
+    SharedPreferences sharedPreferences;
+    private static final String PREFS_NAME = "RateUsPrefs";
+    private static final String LAST_SUBMISSION_TIME = "LastSubmissionTime";
+    private static final long TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
 
     public RateUsFragment() {
         // Required empty public constructor
@@ -54,6 +62,7 @@ public class RateUsFragment extends Fragment {
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
         selectedOptions = new ArrayList<>();
+        sharedPreferences = getActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
     }
 
     @Override
@@ -63,6 +72,16 @@ public class RateUsFragment extends Fragment {
 
         // Initialize UI components
         initializeUIComponents(view);
+
+        // Check if the user can submit feedback
+        long lastSubmissionTime = sharedPreferences.getLong(LAST_SUBMISSION_TIME, 0);
+        long currentTime = System.currentTimeMillis();
+        if (currentTime - lastSubmissionTime < TWENTY_FOUR_HOURS) {
+            long remainingTime = TWENTY_FOUR_HOURS - (currentTime - lastSubmissionTime);
+            startTimer(remainingTime);
+            submitFeedbackButton.setEnabled(false);
+            submitFeedbackButton.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
+        }
 
         // Set up click listener for feedback submission
         setupSubmitButtonClickListener();
@@ -141,6 +160,14 @@ public class RateUsFragment extends Fragment {
                                                     .addOnSuccessListener(documentReference -> {
                                                         progressBar.setVisibility(View.GONE);
                                                         submitFeedbackButton.setVisibility(View.VISIBLE);
+                                                        // Clear the inputs after submission
+                                                        ratingBar.setRating(0);
+                                                        feedbackComment.setText("");
+                                                        clearSelectedOptions();
+                                                        // Save the current time as the last submission time
+                                                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                                                        editor.putLong(LAST_SUBMISSION_TIME, System.currentTimeMillis());
+                                                        editor.apply();
                                                         // Show confirmation dialog
                                                         DialogUtil.showConfirmationDialog(getActivity(), "Confirmation", getString(R.string.feedback_submitted_successfully), getString(R.string.ok), new DialogUtil.ConfirmDialogCallback() {
                                                             @Override
@@ -148,6 +175,10 @@ public class RateUsFragment extends Fragment {
                                                                 // Dialog will be dismissed automatically
                                                             }
                                                         });
+                                                        // Disable the submit button and start the timer
+                                                        submitFeedbackButton.setEnabled(false);
+                                                        submitFeedbackButton.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
+                                                        startTimer(TWENTY_FOUR_HOURS);
                                                     })
                                                     .addOnFailureListener(e -> {
                                                         progressBar.setVisibility(View.GONE);
@@ -155,10 +186,6 @@ public class RateUsFragment extends Fragment {
                                                         Toast.makeText(getContext(), getString(R.string.error_submitting_feedback) + e.getMessage(), Toast.LENGTH_SHORT).show();
                                                     });
 
-                                            // Clear the inputs after submission (optional)
-                                            ratingBar.setRating(0);
-                                            feedbackComment.setText("");
-                                            clearSelectedOptions();
                                         }
                                     }
                                 })
@@ -194,5 +221,24 @@ public class RateUsFragment extends Fragment {
         optionSecureTransaction.setBackgroundResource(R.drawable.box_background);
         optionUserInterface.setBackgroundResource(R.drawable.box_background);
         optionRealTime.setBackgroundResource(R.drawable.box_background);
+    }
+
+    private void startTimer(long duration) {
+        new CountDownTimer(duration, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                long hours = TimeUnit.MILLISECONDS.toHours(millisUntilFinished);
+                long minutes = TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished) % 60;
+                long seconds = TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) % 60;
+                submitFeedbackButton.setText(String.format("%02d:%02d:%02d", hours, minutes, seconds));
+            }
+
+            @Override
+            public void onFinish() {
+                submitFeedbackButton.setEnabled(true);
+                submitFeedbackButton.setBackgroundColor(getResources().getColor(R.color.theme));
+                submitFeedbackButton.setText(R.string.submit_feedback);
+            }
+        }.start();
     }
 }
