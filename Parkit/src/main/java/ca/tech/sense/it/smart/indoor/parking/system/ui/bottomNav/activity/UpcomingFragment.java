@@ -36,6 +36,7 @@ public class UpcomingFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_upcoming, container, false);
         RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
         noBookingsText = view.findViewById(R.id.no_bookings_text);
+        TextView passKeyTextView = view.findViewById(R.id.booking_pass_key);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         bookingAdapter = new BookingAdapter(new ArrayList<>());
         recyclerView.setAdapter(bookingAdapter);
@@ -53,7 +54,7 @@ public class UpcomingFragment extends Fragment {
         });
 
         // Fetch user bookings
-        bookingViewModel.fetchUserBookings();
+        bookingViewModel.fetchUserBookings(passKeyTextView);
 
         return view;
     }
