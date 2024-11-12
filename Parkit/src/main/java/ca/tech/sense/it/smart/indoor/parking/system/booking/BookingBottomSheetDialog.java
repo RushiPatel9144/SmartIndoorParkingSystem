@@ -121,12 +121,11 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
     private void setupSlotSpinnerData(Map<String, ParkingSlot> slots) {
         List<String> slotNames = new ArrayList<>();
         for (Map.Entry<String, ParkingSlot> entry : slots.entrySet()) {
-            if (entry.getValue() != null && entry.getValue().getId() != null) {
-                slotNames.add(entry.getValue().getId());
-            }
+            slotNames.add(entry.getValue().getId());
         }
 
-        if (!slotNames.isEmpty()) {
+        // Check if slotNames is not null and not empty
+        if (slotNames != null && !slotNames.isEmpty()) {
             ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, slotNames);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             slotSpinner.setAdapter(adapter);

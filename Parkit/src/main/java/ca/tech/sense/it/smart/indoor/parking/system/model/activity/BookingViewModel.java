@@ -6,8 +6,6 @@
 package ca.tech.sense.it.smart.indoor.parking.system.model.activity;
 
 import android.app.Application;
-import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
@@ -50,8 +48,7 @@ public class BookingViewModel extends AndroidViewModel {
         return historyBookingsLiveData;
     }
 
-
-    public void fetchUserBookings(TextView passKeyTextView) {
+    public void fetchUserBookings() {
         String userId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
         DatabaseReference bookingsRef = FirebaseDatabase.getInstance().getReference("users").child(userId).child("bookings");
 
@@ -69,7 +66,7 @@ public class BookingViewModel extends AndroidViewModel {
                         if (booking.getEndTime() < currentTime) {
                             historyBookings.add(booking);
                             // Expire the pass key for completed bookings
-                            bookingManager.expirePassKey(userId, bookingSnapshot.getKey(), passKeyTextView);
+                            bookingManager.expirePassKey(userId, bookingSnapshot.getKey());
                         } else if (booking.getStartTime() > currentTime) {
                             upcomingBookings.add(booking);
                         } else {

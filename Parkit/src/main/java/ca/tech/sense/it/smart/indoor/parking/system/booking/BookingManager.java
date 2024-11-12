@@ -3,12 +3,9 @@ package ca.tech.sense.it.smart.indoor.parking.system.booking;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import com.google.firebase.auth.FirebaseAuth;
@@ -260,7 +257,7 @@ public class BookingManager {
         return endTimeMillis - currentTimeMillis;
     }
 
-    public void expirePassKey(String userId, String bookingId, TextView passKeyTextView) {
+    public void expirePassKey(String userId, String bookingId) {
         DatabaseReference bookingRef = firebaseDatabase.getReference("users")
                 .child(userId)
                 .child("bookings")
@@ -269,15 +266,13 @@ public class BookingManager {
 
         bookingRef.setValue(null) // Remove the pass key
                 .addOnSuccessListener(aVoid -> {
-                    // Pass key expired successfully, update the TextView
-                    passKeyTextView.setText("Expired");
-                    passKeyTextView.setTextColor(ContextCompat.getColor(context, android.R.color.holo_red_dark));
+                    // Pass key expired successfully
+                   // Toast.makeText(context, "Pass key expired.", Toast.LENGTH_SHORT).show();
                 })
                 .addOnFailureListener(e -> {
                     // Handle the error
                     Toast.makeText(context, "Failed to expire pass key: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
-
 
 }
