@@ -9,6 +9,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import android.os.CountDownTimer;
@@ -80,7 +82,7 @@ public class RateUsFragment extends Fragment {
             long remainingTime = TWENTY_FOUR_HOURS - (currentTime - lastSubmissionTime);
             startTimer(remainingTime);
             submitFeedbackButton.setEnabled(false);
-            submitFeedbackButton.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
+            submitFeedbackButton.setBackgroundColor(ContextCompat.getColor(getContext(), android.R.color.darker_gray));
         }
 
         // Set up click listener for feedback submission
@@ -177,7 +179,7 @@ public class RateUsFragment extends Fragment {
                                                         });
                                                         // Disable the submit button and start the timer
                                                         submitFeedbackButton.setEnabled(false);
-                                                        submitFeedbackButton.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
+                                                        submitFeedbackButton.setBackgroundColor(ContextCompat.getColor(getContext(), android.R.color.darker_gray));
                                                         startTimer(TWENTY_FOUR_HOURS);
                                                     })
                                                     .addOnFailureListener(e -> {
@@ -236,7 +238,7 @@ public class RateUsFragment extends Fragment {
             @Override
             public void onFinish() {
                 submitFeedbackButton.setEnabled(true);
-                submitFeedbackButton.setBackgroundColor(getResources().getColor(R.color.theme));
+                submitFeedbackButton.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.theme));
                 submitFeedbackButton.setText(R.string.submit_feedback);
             }
         }.start();
