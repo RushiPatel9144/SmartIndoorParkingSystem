@@ -7,6 +7,9 @@ package ca.tech.sense.it.smart.indoor.parking.system.utility;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -123,6 +126,44 @@ public class DialogUtil {
 
         dialogTitle.setText(title);
         dialogMessage.setText(message);
+        confirmButton.setText(confirm);
+
+        AlertDialog dialog = new AlertDialog.Builder(context)
+                .setView(dialogView)
+                .create();
+
+        Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawableResource(R.drawable.dialog_background);
+        dialog.show();
+
+        confirmButton.setOnClickListener(v -> {
+            dialog.dismiss();
+            if (callback != null) {
+                callback.onConfirm();
+            }
+        });
+
+        dialog.show();
+    }
+
+    // New method to show a confirmation dialog with the email in bold
+    public static void showConfirmationDialogWithEmail(Context context, String title, String message, String email, String confirm, ConfirmDialogCallback callback) {
+        LayoutInflater inflater = LayoutInflater.from(context);
+        View dialogView = inflater.inflate(R.layout.dialog_confirm, null);
+
+        TextView dialogTitle = dialogView.findViewById(R.id.dialog_title);
+        TextView dialogMessage = dialogView.findViewById(R.id.dialog_message);
+        Button confirmButton = dialogView.findViewById(R.id.dialog_confirm_button);
+
+        dialogTitle.setText(title);
+
+        // Create a SpannableString to bold the email
+        String fullMessage = message + "\n\nWe will reach you out soon on " + email;
+        SpannableString spannableString = new SpannableString(fullMessage);
+        int start = fullMessage.indexOf(email);
+        int end = start + email.length();
+        spannableString.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        dialogMessage.setText(spannableString);
         confirmButton.setText(confirm);
 
         AlertDialog dialog = new AlertDialog.Builder(context)

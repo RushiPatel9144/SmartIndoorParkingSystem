@@ -126,13 +126,13 @@ public class HelpFragment extends Fragment {
                                     etComment.setText("");
 
                                     // Show confirmation dialog
-                                    DialogUtil.showConfirmationDialog(getActivity(), "Confirmation", getString(R.string.help_request_submitted), getString(R.string.ok), new DialogUtil.ConfirmDialogCallback() {
+                                    String message = getString(R.string.help_request_submitted);
+                                    DialogUtil.showConfirmationDialogWithEmail(getActivity(), "Confirmation", message, email, getString(R.string.ok), new DialogUtil.ConfirmDialogCallback() {
                                         @Override
                                         public void onConfirm() {
                                             // Dialog will be dismissed automatically
                                         }
                                     });
-
                                 }
                             })
                             .addOnFailureListener(new OnFailureListener() {
