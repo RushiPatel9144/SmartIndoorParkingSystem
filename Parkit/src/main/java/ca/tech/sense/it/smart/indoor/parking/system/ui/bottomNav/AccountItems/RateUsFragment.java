@@ -31,6 +31,7 @@ import java.util.List;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.model.RateUs;
 import ca.tech.sense.it.smart.indoor.parking.system.model.user.User;
+import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
 
 public class RateUsFragment extends Fragment {
 
@@ -140,7 +141,13 @@ public class RateUsFragment extends Fragment {
                                                     .addOnSuccessListener(documentReference -> {
                                                         progressBar.setVisibility(View.GONE);
                                                         submitFeedbackButton.setVisibility(View.VISIBLE);
-                                                        Toast.makeText(getContext(), getString(R.string.feedback_submitted_successfully), Toast.LENGTH_SHORT).show();
+                                                        // Show confirmation dialog
+                                                        DialogUtil.showConfirmationDialog(getActivity(), "Confirmation", getString(R.string.feedback_submitted_successfully), getString(R.string.ok), new DialogUtil.ConfirmDialogCallback() {
+                                                            @Override
+                                                            public void onConfirm() {
+                                                                // Dialog will be dismissed automatically
+                                                            }
+                                                        });
                                                     })
                                                     .addOnFailureListener(e -> {
                                                         progressBar.setVisibility(View.GONE);
