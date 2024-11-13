@@ -9,11 +9,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
+import java.util.Objects;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 
@@ -65,11 +68,13 @@ public class OnboardingFragment extends Fragment {
         TextView descriptionTextView = view.findViewById(R.id.onBoard_descriptionTextView);
         ImageView imageView = view.findViewById(R.id.onBoard_imageView);
         Button getStartedButton = view.findViewById(R.id.onBoard_getStartedButton);
+        ProgressBar progressBar = view.findViewById(R.id.onBoard_progressBar); // Get ProgressBar from fragment
+
 
         titleTextView.setText(title);
         descriptionTextView.setText(description);
         imageView.setImageResource(imageResId);
-
+        progressBar.setProgress(0);
 
 
         // Show "Get Started" button only if this is the last page
@@ -87,5 +92,12 @@ public class OnboardingFragment extends Fragment {
         }
 
         return view;
+    }
+
+    public void updateProgress(int progress) {
+        ProgressBar progressBar = requireView().findViewById(R.id.onBoard_progressBar);
+        if (progressBar != null) {
+            progressBar.setProgress(progress);
+        }
     }
 }

@@ -1,4 +1,3 @@
-<!-- res/layout/fragment_onboarding.xml -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -11,9 +10,8 @@
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
         android:src="@drawable/firstactivitybg" />
-    <!-- Semi-Transparent Overlay to Dim Background -->
-    <!-- 50% opaque black overlay -->
 
+    <!-- Semi-Transparent Overlay to Dim Background -->
     <View
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -33,18 +31,14 @@
         android:textSize="34sp"
         android:textStyle="bold" />
 
-
     <ImageView
         android:id="@+id/onBoard_imageView"
-        android:layout_gravity="center_horizontal|top"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:layout_marginTop="275dp"
+        android:layout_gravity="center_horizontal|center_vertical"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
         android:layout_marginEnd="20dp"
         android:layout_marginStart="20dp"
         android:src="@drawable/baseline_add_location_24" />
-
-
 
     <TextView
         android:id="@+id/onBoard_descriptionTextView"
@@ -56,9 +50,23 @@
         android:layout_marginEnd="20dp"
         android:layout_marginStart="20dp"
         android:layout_gravity="center_horizontal|center_vertical"
-        android:layout_marginTop="100dp"
-         />
+        android:layout_marginTop="200dp" />
 
+    <!-- Beautiful Progress Bar -->
+    <ProgressBar
+        android:id="@+id/onBoard_progressBar"
+        style="@android:style/Widget.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="8dp"
+        android:layout_gravity="center_horizontal|bottom"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="140dp"
+        android:indeterminateDrawable="@android:drawable/progress_horizontal"
+        android:max="100"
+        android:progress="0"
+        android:progressDrawable="@android:drawable/progress_horizontal"
+        android:progressTint="@color/colorAccent" />
     <Button
         android:id="@+id/onBoard_getStartedButton"
         android:layout_gravity="center_horizontal|bottom"
@@ -73,6 +81,8 @@
         android:elevation="10dp"
         android:textColor="@android:color/white"
         android:text="@string/get_started"
-        android:visibility="gone"
-         /> <!-- Set visibility to 'gone' by default -->
+        android:visibility="gone" /> <!-- Set visibility to 'gone' by default -->
+
+
+
 </FrameLayout>

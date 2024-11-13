@@ -306,6 +306,12 @@
         vestibulum. Fusce dictum libero quis erat maximus, vitae volutpat diam dignissim.
     </string>
     <string name="get_started">Get Started</string>
+    <string name="onboard_title1">Welcome to Parkit!</string>
+    <string name="onboard_title2">Discover Nearby Parking</string>
+    <string name="onboard_title3">Pay and Park with Ease</string>
+    <string name="onboard_text1">Whether you\'re looking for a parking spot or offering one, Parkit makes parking easier for everyone. Let\'s get started!</string>
+    <string name="onboard_text2">Finding a spot is a breeze. Browse nearby parking locations and get to your destination faster, whether you’re a user or an owner.</string>
+    <string name="onboard_text3">Enjoy a smooth, secure payment experience. No matter if you\'re parking or providing a spot, managing payments has never been easier.</string>
 
 
 </resources>
