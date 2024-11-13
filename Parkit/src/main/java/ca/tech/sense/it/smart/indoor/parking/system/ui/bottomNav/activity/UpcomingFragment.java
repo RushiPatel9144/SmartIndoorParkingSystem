@@ -24,9 +24,11 @@ import java.util.ArrayList;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.model.activity.BookingViewModel;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.adapters.BookingAdapter;
+import ca.tech.sense.it.smart.indoor.parking.system.viewModel.CancelBookingViewModel;
 
 public class UpcomingFragment extends Fragment {
     private BookingViewModel bookingViewModel;
+    private CancelBookingViewModel cancelBookingViewModel;
     private BookingAdapter bookingAdapter;
     private TextView noBookingsText;
 
@@ -37,7 +39,8 @@ public class UpcomingFragment extends Fragment {
         RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
         noBookingsText = view.findViewById(R.id.no_bookings_text);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        bookingAdapter = new BookingAdapter(new ArrayList<>());
+        cancelBookingViewModel = new ViewModelProvider(requireActivity()).get(CancelBookingViewModel.class);
+        bookingAdapter = new BookingAdapter(new ArrayList<>(), cancelBookingViewModel, false);
         recyclerView.setAdapter(bookingAdapter);
 
         bookingViewModel = new ViewModelProvider(requireActivity()).get(BookingViewModel.class);

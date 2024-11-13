@@ -93,5 +93,23 @@
                 android:textColor="@android:color/holo_red_dark"/>
         </LinearLayout>
 
+        <Button
+            android:id="@+id/cancel_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cancel Booking"
+            android:layout_gravity="end"
+            android:paddingTop="8dp"
+            android:textColor="@android:color/holo_red_dark" />
+
+        <Button
+            android:id="@+id/action_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Action"
+            android:layout_gravity="end"
+            android:paddingTop="8dp"
+            android:textColor="@android:color/holo_red_dark" />
+
     </LinearLayout>
 </androidx.cardview.widget.CardView>

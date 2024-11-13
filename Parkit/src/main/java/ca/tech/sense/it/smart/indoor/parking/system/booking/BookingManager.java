@@ -166,9 +166,10 @@ public class BookingManager {
                             startTime,
                             endTime,
                             address,
-                            slot,
                             price,
-                            passKey // Add the pass key to the booking
+                            slot,
+                            passKey,
+                            locationId // Add the locationId to the booking
                     );
 
                     saveBooking(userId, booking, locationId, slot, selectedDate, times, onSuccess, onFailure);
@@ -184,6 +185,7 @@ public class BookingManager {
         });
     }
 
+
     private void saveBooking(String userId, Booking booking, String locationId, String slot, String selectedDate, String[] times, Runnable onSuccess, Consumer<Exception> onFailure) {
         DatabaseReference databaseRef = firebaseDatabase
                 .getReference("users")
@@ -191,16 +193,23 @@ public class BookingManager {
                 .child("bookings")
                 .push();
 
-        databaseRef.setValue(booking)
-                .addOnSuccessListener(aVoid -> {
-                    updateHourlyStatus(locationId, slot, selectedDate, times[0], "occupied", () -> {
-                        scheduleStatusUpdate(locationId, slot, selectedDate, times[1], onSuccess, onFailure);
-                        // Show toast message
-                        Toast.makeText(context, "Booking confirmed!", Toast.LENGTH_SHORT).show();
-                    }, onFailure);
-                })
-                .addOnFailureListener(onFailure::accept);
+        String bookingId = databaseRef.getKey();
+        if (bookingId != null) {
+            booking.setId(bookingId); // Set the booking ID
+            databaseRef.setValue(booking)
+                    .addOnSuccessListener(aVoid -> {
+                        updateHourlyStatus(locationId, slot, selectedDate, times[0], "occupied", () -> {
+                            scheduleStatusUpdate(locationId, slot, selectedDate, times[1], onSuccess, onFailure);
+                            // Show toast message
+                            Toast.makeText(context, "Booking confirmed!", Toast.LENGTH_SHORT).show();
+                        }, onFailure);
+                    })
+                    .addOnFailureListener(onFailure::accept);
+        } else {
+            onFailure.accept(new Exception("Failed to generate booking ID"));
+        }
     }
+
 
     // Method to generate a 4-digit pass key
     private String generatePassKey() {
@@ -290,4 +299,73 @@ public class BookingManager {
                 });
     }
 
+    public void cancelBooking(String userId, String bookingId, Runnable onSuccess, Consumer<Exception> onFailure) {
+        if (bookingId == null) {
+            onFailure.accept(new Exception("Booking ID is null"));
+            return;
+        }
+
+        DatabaseReference bookingRef = firebaseDatabase.getReference("users").child(userId).child("bookings").child(bookingId);
+        bookingRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Booking booking = snapshot.getValue(Booking.class);
+                if (booking != null) {
+                    // Remove the booking
+                    bookingRef.removeValue()
+                            .addOnSuccessListener(aVoid -> {
+                                // Update the slot status to "available"
+                                updateSlotStatusToAvailable(booking.getLocationId(), booking.getSlotNumber(), booking.getStartTime(), booking.getEndTime(), onSuccess, onFailure);
+                            })
+                            .addOnFailureListener(onFailure::accept);
+                } else {
+                    onFailure.accept(new Exception("Booking not found"));
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                onFailure.accept(error.toException());
+            }
+        });
+    }
+
+    public void clearBookingHistory(String userId, String bookingId, Runnable onSuccess, Consumer<Exception> onFailure) {
+        if (bookingId == null) {
+            onFailure.accept(new Exception("Booking ID is null"));
+            return;
+        }
+
+        DatabaseReference bookingRef = firebaseDatabase.getReference("users").child(userId).child("bookings").child(bookingId);
+        bookingRef.removeValue()
+                .addOnSuccessListener(aVoid -> onSuccess.run())
+                .addOnFailureListener(onFailure::accept);
+    }
+
+    public void clearAllBookingHistory(String userId, Runnable onSuccess, Consumer<Exception> onFailure) {
+        DatabaseReference bookingsRef = firebaseDatabase.getReference("users").child(userId).child("bookings");
+        bookingsRef.removeValue()
+                .addOnSuccessListener(aVoid -> onSuccess.run())
+                .addOnFailureListener(onFailure::accept);
+    }
+
+    private void updateSlotStatusToAvailable(String locationId, String slot, long startTime, long endTime, Runnable onSuccess, Consumer<Exception> onFailure) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
+        String startDateTime = sdf.format(new Date(startTime));
+        String endDateTime = sdf.format(new Date(endTime));
+
+        DatabaseReference slotRef = firebaseDatabase.getReference("parkingLocations")
+                .child(locationId)
+                .child("slots")
+                .child(slot)
+                .child("hourlyStatus");
+
+        Map<String, Object> statusUpdate = new HashMap<>();
+        statusUpdate.put(startDateTime + "/status", "available");
+        statusUpdate.put(endDateTime + "/status", "available");
+
+        slotRef.updateChildren(statusUpdate)
+                .addOnSuccessListener(aVoid -> onSuccess.run())
+                .addOnFailureListener(onFailure::accept);
+    }
 }
