@@ -27,9 +27,18 @@ public class OnboardingActivity extends AppCompatActivity {
         viewPager = findViewById(R.id.viewPager);
 
         fragmentList = new ArrayList<>();
-        fragmentList.add(OnboardingFragment.newInstance("Welcome!", "Discover features", R.drawable.activity,false));
-        fragmentList.add(OnboardingFragment.newInstance("Easy Parking", "Find nearby spots easily", R.drawable.activity,false));
-        fragmentList.add(OnboardingFragment.newInstance("Hassle-Free Payments", "Pay and park with ease", R.drawable.activity_background,true));
+        fragmentList.add(OnboardingFragment.newInstance("Welcome to Parkit!",
+                "Whether you're looking for a parking spot or offering one, Parkit makes parking easier for everyone. Let's get started!",
+                R.drawable.onboardone, false));
+
+        fragmentList.add(OnboardingFragment.newInstance("Discover Nearby Parking",
+                "Finding a spot is a breeze. Browse nearby parking locations and get to your destination faster, whether you’re a user or an owner.",
+                R.drawable.onboardtwo, false));
+
+        fragmentList.add(OnboardingFragment.newInstance("Pay and Park with Ease",
+                "Enjoy a smooth, secure payment experience. No matter if you're parking or providing a spot, managing payments has never been easier.",
+                R.drawable.onboardthree, true));
+
 
         ViewPagerAdapter adapter = new ViewPagerAdapter(this);
         viewPager.setAdapter(adapter);
