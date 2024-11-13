@@ -27,7 +27,7 @@ import ca.tech.sense.it.smart.indoor.parking.system.R;
 
 public class PaymentActivity extends AppCompatActivity {
     private PaymentSheet paymentSheet;
-
+    private String currency;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,12 +56,12 @@ public class PaymentActivity extends AppCompatActivity {
         OkHttpClient client = new OkHttpClient();
         String url = "https://parkit-cd4c2ec26f90.herokuapp.com/create-payment-intent";
 
-        // Assuming you have an amount value (in cents) that you want to charge
-        int amount = 1000; // Example: $10.00, in cents
-
+        int amount = 4500; //  in cents
+        currency = "cad";
         JSONObject jsonRequest = new JSONObject();
         try {
             jsonRequest.put("amount", amount);
+            jsonRequest.put("currency",currency);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -106,7 +106,7 @@ public class PaymentActivity extends AppCompatActivity {
         final PaymentSheet.GooglePayConfiguration googlePayConfiguration =
                 new PaymentSheet.GooglePayConfiguration(
                         PaymentSheet.GooglePayConfiguration.Environment.Test,
-                        "CAD"
+                        currency
                 );
 
         final PaymentSheet.Configuration configuration = new PaymentSheet.Configuration
