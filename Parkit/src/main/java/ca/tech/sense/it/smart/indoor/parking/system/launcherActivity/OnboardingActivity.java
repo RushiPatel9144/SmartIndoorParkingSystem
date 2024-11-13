@@ -18,18 +18,23 @@ import ca.tech.sense.it.smart.indoor.parking.system.R;
 public class OnboardingActivity extends AppCompatActivity {
 
     private ViewPager2 viewPager;
+    private ProgressBar progressBar;
     private List<Fragment> fragmentList;
 
     int totalPages = 3;
-    int progressStep = 33;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_onboarding);
 
+        // Initialize the ProgressBar
+        progressBar = findViewById(R.id.onBoard_progressBar);
+
+        // Initialize ViewPager2
         viewPager = findViewById(R.id.viewPager);
 
+        // Set up the fragment list
         fragmentList = new ArrayList<>();
         fragmentList.add(OnboardingFragment.newInstance(getString(R.string.onboard_title1),
                 getString(R.string.onboard_text1),
@@ -43,21 +48,31 @@ public class OnboardingActivity extends AppCompatActivity {
                 getString(R.string.onboard_text3),
                 R.drawable.onboardthree, true));
 
+        // Set up ViewPager Adapter
         ViewPagerAdapter adapter = new ViewPagerAdapter(this);
         viewPager.setAdapter(adapter);
 
         // Add page change listener to update progress
         viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                super.onPageScrolled(position, positionOffset, positionOffsetPixels);
+
+                // Calculate the progress based on the current position and the offset during swipe
+                int progress = (int) (((float) position + positionOffset) / (totalPages - 1) * 100);
+
+                // Update the progress bar during the swipe
+                progressBar.setProgress(progress);
+            }
+
+            @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
 
-                // Calculate progress (e.g., 33% for first page, 66% for second, 100% for last)
-                int progress = progressStep * (position + 1);
-
-                // Update the progress bar in the current fragment
-                OnboardingFragment currentFragment = (OnboardingFragment) fragmentList.get(position);
-                currentFragment.updateProgress(progress);
+                // Ensure the progress bar reaches 100% when the last page is selected
+                if (position == totalPages - 1) {
+                    progressBar.setProgress(100);
+                }
             }
         });
     }
