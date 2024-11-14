@@ -29,8 +29,8 @@ import ca.tech.sense.it.smart.indoor.parking.system.viewModel.CancelBookingViewM
 
 public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingViewHolder> {
     private List<Booking> bookingList;
-    private CancelBookingViewModel cancelBookingViewModel;
-    private int layoutResourceId;
+    private final CancelBookingViewModel cancelBookingViewModel;
+    private final int layoutResourceId;
 
     public BookingAdapter(List<Booking> bookingList, CancelBookingViewModel cancelBookingViewModel, int layoutResourceId) {
         this.bookingList = bookingList;
@@ -62,14 +62,13 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingV
         notifyDataSetChanged();
     }
 
-    class BookingViewHolder extends RecyclerView.ViewHolder {
-        private TextView bookingTitle;
-        private TextView bookingAddress;
-        private TextView bookingSlot;
-        private TextView bookingTime;
-        private TextView bookingPrice;
-        private TextView bookingPassKey;
-        private Button cancelButton;
+    public class BookingViewHolder extends RecyclerView.ViewHolder {
+        private final TextView bookingTitle;
+        private final TextView bookingAddress;
+        private final TextView bookingSlot;
+        private final TextView bookingTime;
+        private final TextView bookingPrice;
+        private final TextView bookingPassKey;
 
         public BookingViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -79,11 +78,11 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingV
             bookingTime = itemView.findViewById(R.id.booking_time);
             bookingPrice = itemView.findViewById(R.id.booking_price);
             bookingPassKey = itemView.findViewById(R.id.booking_pass_key);
-            cancelButton = itemView.findViewById(R.id.cancel_button);
+            Button cancelButton = itemView.findViewById(R.id.cancel_button);
 
             if (cancelButton != null) {
                 cancelButton.setOnClickListener(v -> {
-                    int position = getAdapterPosition();
+                    int position = getBindingAdapterPosition();
                     if (position != RecyclerView.NO_POSITION) {
                         Booking booking = bookingList.get(position);
                         showCancelConfirmationDialog(itemView.getContext(), booking);
@@ -97,11 +96,16 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingV
                     .setTitle("Cancel Booking")
                     .setMessage("Are you sure you want to cancel this booking?")
                     .setPositiveButton("Yes", (dialog, which) -> {
-                        cancelBookingViewModel.cancelBooking(booking.getId(), () -> {
-                            bookingList.remove(getAdapterPosition());
-                            notifyItemRemoved(getAdapterPosition());
-                            Toast.makeText(context, "Booking cancelled", Toast.LENGTH_SHORT).show();
-                        }, error -> Toast.makeText(context, "Failed to cancel booking: " + error.getMessage(), Toast.LENGTH_SHORT).show());
+                        int position = getBindingAdapterPosition();
+                        if (position != RecyclerView.NO_POSITION && position < bookingList.size()) {
+                            cancelBookingViewModel.cancelBooking(booking.getId(), () -> {
+                                if (position < bookingList.size()) {
+                                    bookingList.remove(position);
+                                    notifyItemRemoved(position);
+                                    Toast.makeText(context, "Booking cancelled", Toast.LENGTH_SHORT).show();
+                                }
+                            }, error -> Toast.makeText(context, "Failed to cancel booking: " + error.getMessage(), Toast.LENGTH_SHORT).show());
+                        }
                     })
                     .setNegativeButton("No", null)
                     .show();
@@ -121,5 +125,5 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingV
             return sdf.format(new Date(startTime)) + " - " + sdf.format(new Date(endTime));
         }
     }
-}
 
+}
