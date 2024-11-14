@@ -6,6 +6,10 @@
 package ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.activity;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,19 +18,16 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
-
 import java.util.ArrayList;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.model.activity.BookingViewModel;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.adapters.BookingAdapter;
+import ca.tech.sense.it.smart.indoor.parking.system.viewModel.CancelBookingViewModel;
 
 public class ActiveFragment extends Fragment {
     private BookingViewModel bookingViewModel;
+    private CancelBookingViewModel cancelBookingViewModel;
     private BookingAdapter bookingAdapter;
     private TextView noBookingsText;
 
@@ -37,7 +38,8 @@ public class ActiveFragment extends Fragment {
         RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
         noBookingsText = view.findViewById(R.id.no_bookings_text);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        bookingAdapter = new BookingAdapter(new ArrayList<>());
+        cancelBookingViewModel = new ViewModelProvider(requireActivity()).get(CancelBookingViewModel.class);
+        bookingAdapter = new BookingAdapter(new ArrayList<>(), cancelBookingViewModel, R.layout.item_booking_active);
         recyclerView.setAdapter(bookingAdapter);
 
         bookingViewModel = new ViewModelProvider(requireActivity()).get(BookingViewModel.class);
@@ -58,4 +60,3 @@ public class ActiveFragment extends Fragment {
         return view;
     }
 }
-
