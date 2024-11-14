@@ -15,7 +15,6 @@ import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 import com.stripe.android.PaymentConfiguration;
 import com.stripe.android.paymentsheet.PaymentSheet;
-import com.stripe.android.paymentsheet.PaymentSheet.GooglePayConfiguration;
 import com.stripe.android.paymentsheet.PaymentSheetResult;
 
 import org.json.JSONException;
@@ -39,12 +38,12 @@ public class PaymentActivity extends AppCompatActivity {
 
         paymentSheet = new PaymentSheet(this, paymentSheetResult -> {
             if (paymentSheetResult instanceof PaymentSheetResult.Completed) {
-                Toast.makeText(this, "Payment successful!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.payment_successful, Toast.LENGTH_SHORT).show();
             } else if (paymentSheetResult instanceof PaymentSheetResult.Failed) {
                 PaymentSheetResult.Failed result = (PaymentSheetResult.Failed) paymentSheetResult;
-                Toast.makeText(this, "Payment failed: " + result.getError().toString(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, String.format("%s%s", getString(R.string.payment_failed), result.getError()), Toast.LENGTH_SHORT).show();
             } else if (paymentSheetResult instanceof PaymentSheetResult.Canceled) {
-                Toast.makeText(this, "Payment canceled", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.payment_canceled, Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -82,7 +81,7 @@ public class PaymentActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onResponse(Response response) throws IOException {
+            public void onResponse(Response response) {
                 if (response.isSuccessful()) {
                     try {
                         JSONObject jsonResponse = new JSONObject(response.body().string());
@@ -110,7 +109,7 @@ public class PaymentActivity extends AppCompatActivity {
                 );
 
         final PaymentSheet.Configuration configuration = new PaymentSheet.Configuration
-                .Builder("Example, Inc.")
+                .Builder("ParkIt")
                 .googlePay(googlePayConfiguration)
                 .build();
 

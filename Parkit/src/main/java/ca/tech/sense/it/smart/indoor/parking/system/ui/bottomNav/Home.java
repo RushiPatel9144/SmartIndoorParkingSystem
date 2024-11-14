@@ -31,9 +31,6 @@ public class Home extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_home, container, false);
-        Intent intent = new Intent(getContext(), PaymentActivity.class); // Pass the type of login
-        startActivity(intent);
-        return view;
+        return inflater.inflate(R.layout.fragment_home, container, false);
     }
 }

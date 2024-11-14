@@ -46,7 +46,8 @@ import ca.tech.sense.it.smart.indoor.parking.system.network.BaseActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.owner.OwnerActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
 
-public class LoginActivity extends BaseActivity {
+public class
+LoginActivity extends BaseActivity {
 
     // UI Elements
     private EditText editTextEmail, editTextPassword;
