@@ -6,6 +6,8 @@
 package ca.tech.sense.it.smart.indoor.parking.system.ui.adapters;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,18 +30,18 @@ import ca.tech.sense.it.smart.indoor.parking.system.viewModel.CancelBookingViewM
 public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingViewHolder> {
     private List<Booking> bookingList;
     private CancelBookingViewModel cancelBookingViewModel;
-    private boolean isHistory;
+    private int layoutResourceId;
 
-    public BookingAdapter(List<Booking> bookingList, CancelBookingViewModel cancelBookingViewModel, boolean isHistory) {
+    public BookingAdapter(List<Booking> bookingList, CancelBookingViewModel cancelBookingViewModel, int layoutResourceId) {
         this.bookingList = bookingList;
         this.cancelBookingViewModel = cancelBookingViewModel;
-        this.isHistory = isHistory;
+        this.layoutResourceId = layoutResourceId;
     }
 
     @NonNull
     @Override
     public BookingViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_booking, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(layoutResourceId, parent, false);
         return new BookingViewHolder(view);
     }
 
@@ -67,7 +69,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingV
         private TextView bookingTime;
         private TextView bookingPrice;
         private TextView bookingPassKey;
-        private Button actionButton;
+        private Button cancelButton;
 
         public BookingViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -77,29 +79,32 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingV
             bookingTime = itemView.findViewById(R.id.booking_time);
             bookingPrice = itemView.findViewById(R.id.booking_price);
             bookingPassKey = itemView.findViewById(R.id.booking_pass_key);
-            actionButton = itemView.findViewById(R.id.action_button);
+            cancelButton = itemView.findViewById(R.id.cancel_button);
 
-            actionButton.setOnClickListener(v -> {
-                int position = getAdapterPosition();
-                if (position != RecyclerView.NO_POSITION) {
-                    Booking booking = bookingList.get(position);
-                    if (isHistory) {
-                        // Clear booking history
-                        cancelBookingViewModel.clearBookingHistory(booking.getId(), () -> {
-                            bookingList.remove(position);
-                            notifyItemRemoved(position);
-                            Toast.makeText(itemView.getContext(), "Booking history cleared", Toast.LENGTH_SHORT).show();
-                        }, error -> Toast.makeText(itemView.getContext(), "Failed to clear booking history: " + error.getMessage(), Toast.LENGTH_SHORT).show());
-                    } else {
-                        // Cancel booking
-                        cancelBookingViewModel.cancelBooking(booking.getId(), () -> {
-                            bookingList.remove(position);
-                            notifyItemRemoved(position);
-                            Toast.makeText(itemView.getContext(), "Booking cancelled", Toast.LENGTH_SHORT).show();
-                        }, error -> Toast.makeText(itemView.getContext(), "Failed to cancel booking: " + error.getMessage(), Toast.LENGTH_SHORT).show());
+            if (cancelButton != null) {
+                cancelButton.setOnClickListener(v -> {
+                    int position = getAdapterPosition();
+                    if (position != RecyclerView.NO_POSITION) {
+                        Booking booking = bookingList.get(position);
+                        showCancelConfirmationDialog(itemView.getContext(), booking);
                     }
-                }
-            });
+                });
+            }
+        }
+
+        private void showCancelConfirmationDialog(Context context, Booking booking) {
+            new AlertDialog.Builder(context)
+                    .setTitle("Cancel Booking")
+                    .setMessage("Are you sure you want to cancel this booking?")
+                    .setPositiveButton("Yes", (dialog, which) -> {
+                        cancelBookingViewModel.cancelBooking(booking.getId(), () -> {
+                            bookingList.remove(getAdapterPosition());
+                            notifyItemRemoved(getAdapterPosition());
+                            Toast.makeText(context, "Booking cancelled", Toast.LENGTH_SHORT).show();
+                        }, error -> Toast.makeText(context, "Failed to cancel booking: " + error.getMessage(), Toast.LENGTH_SHORT).show());
+                    })
+                    .setNegativeButton("No", null)
+                    .show();
         }
 
         public void bind(Booking booking) {
@@ -109,7 +114,6 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingV
             bookingTime.setText(formatTime(booking.getStartTime(), booking.getEndTime()));
             bookingPrice.setText(String.format(Locale.getDefault(), "Price: $%.2f", booking.getPrice()));
             bookingPassKey.setText(booking.getPassKey());
-            actionButton.setText(isHistory ? "Clear History" : "Cancel Booking");
         }
 
         private String formatTime(long startTime, long endTime) {
@@ -118,3 +122,4 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingV
         }
     }
 }
+

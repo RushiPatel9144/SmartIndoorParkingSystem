@@ -13,6 +13,7 @@ import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
 import ca.tech.sense.it.smart.indoor.parking.system.booking.BookingManager;
+import ca.tech.sense.it.smart.indoor.parking.system.model.activity.Booking;
 
 public class CancelBookingViewModel extends AndroidViewModel {
     private final BookingManager bookingManager;
@@ -27,15 +28,17 @@ public class CancelBookingViewModel extends AndroidViewModel {
         bookingManager.cancelBooking(userId, bookingId, onSuccess, onFailure);
     }
 
-    public void clearBookingHistory(String bookingId, Runnable onSuccess, Consumer<Exception> onFailure) {
-        String userId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
-        bookingManager.clearBookingHistory(userId, bookingId, onSuccess, onFailure);
-    }
-
     public void clearAllBookingHistory(Runnable onSuccess, Consumer<Exception> onFailure) {
         String userId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
-        bookingManager.clearAllBookingHistory(userId, onSuccess, onFailure);
+        bookingManager.clearAllBookingHistory(userId, bookings -> {
+            long currentTime = System.currentTimeMillis();
+            for (Booking booking : bookings) {
+                if (booking.getEndTime() < currentTime) {
+                    bookingManager.clearBookingHistory(userId, booking.getId(), onSuccess, onFailure);
+                }
+            }
+            onSuccess.run();
+        }, onFailure);
     }
 }
-
 

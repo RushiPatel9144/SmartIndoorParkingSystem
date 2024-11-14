@@ -6,6 +6,10 @@
 package ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.activity;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,11 +17,6 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -40,7 +39,7 @@ public class UpcomingFragment extends Fragment {
         noBookingsText = view.findViewById(R.id.no_bookings_text);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         cancelBookingViewModel = new ViewModelProvider(requireActivity()).get(CancelBookingViewModel.class);
-        bookingAdapter = new BookingAdapter(new ArrayList<>(), cancelBookingViewModel, false);
+        bookingAdapter = new BookingAdapter(new ArrayList<>(), cancelBookingViewModel, R.layout.item_booking_upcoming);
         recyclerView.setAdapter(bookingAdapter);
 
         bookingViewModel = new ViewModelProvider(requireActivity()).get(BookingViewModel.class);
@@ -61,3 +60,4 @@ public class UpcomingFragment extends Fragment {
         return view;
     }
 }
+

@@ -14,8 +14,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -342,12 +345,28 @@ public class BookingManager {
                 .addOnFailureListener(onFailure::accept);
     }
 
-    public void clearAllBookingHistory(String userId, Runnable onSuccess, Consumer<Exception> onFailure) {
+    public void clearAllBookingHistory(String userId, Consumer<List<Booking>> onSuccess, Consumer<Exception> onFailure) {
         DatabaseReference bookingsRef = firebaseDatabase.getReference("users").child(userId).child("bookings");
-        bookingsRef.removeValue()
-                .addOnSuccessListener(aVoid -> onSuccess.run())
-                .addOnFailureListener(onFailure::accept);
+        bookingsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                List<Booking> bookings = new ArrayList<>();
+                for (DataSnapshot bookingSnapshot : snapshot.getChildren()) {
+                    Booking booking = bookingSnapshot.getValue(Booking.class);
+                    if (booking != null) {
+                        bookings.add(booking);
+                    }
+                }
+                onSuccess.accept(bookings);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                onFailure.accept(new Exception(error.getMessage()));
+            }
+        });
     }
+
 
     private void updateSlotStatusToAvailable(String locationId, String slot, long startTime, long endTime, Runnable onSuccess, Consumer<Exception> onFailure) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
