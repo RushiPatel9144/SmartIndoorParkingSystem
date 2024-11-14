@@ -16,6 +16,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -43,6 +48,8 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
     private final String locationId;
     private String selectedDate;
     private final BookingManager bookingManager;
+    private DatabaseReference firebaseDatabase;
+
 
     // Constructor with dependency injection
     public BookingBottomSheetDialog(@NonNull Context context, String locationId, BookingManager bookingManager) {
@@ -57,6 +64,9 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
         super.onCreate(savedInstanceState);
         @SuppressLint("InflateParams") View view = LayoutInflater.from(context).inflate(R.layout.dialog_booking, null);
         setContentView(view);
+
+        // Initialize Firebase database reference
+        firebaseDatabase = FirebaseDatabase.getInstance().getReference();
 
         // Initialize UI elements
         initializeUIElements(view);
@@ -225,12 +235,31 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
         });
     }
 
-    // Method to set up the star button for saving location to favorites
     private void setupStarButton() {
         starButton.setOnClickListener(v -> {
             String address = addressText.getText().toString();
             String postalCode = postalCodeText.getText().toString(); // Assuming you have a TextView for postal code
-            bookingManager.saveLocationToFavorites(locationId, address, postalCode, () -> Toast.makeText(context, R.string.location_saved_to_favorites, Toast.LENGTH_SHORT).show(), error -> Toast.makeText(context, context.getString(R.string.failed_to_save_location) + error.getMessage(), Toast.LENGTH_SHORT).show());
+
+            // Fetch latitude and longitude from the "parkingLocation" database
+            DatabaseReference parkingLocationRef = firebaseDatabase.child("parkingLocations").child(locationId);
+            parkingLocationRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    Double latitude = snapshot.child("latitude").getValue(Double.class);
+                    Double longitude = snapshot.child("longitude").getValue(Double.class);
+
+                    if (latitude != null && longitude != null) {
+                        bookingManager.saveLocationToFavorites(locationId, address, postalCode, latitude, longitude, () -> Toast.makeText(context, R.string.location_saved_to_favorites, Toast.LENGTH_SHORT).show(), error -> Toast.makeText(context, context.getString(R.string.failed_to_save_location) + error.getMessage(), Toast.LENGTH_SHORT).show());
+                    } else {
+                        Toast.makeText(context, "Failed to fetch the coordinates", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Toast.makeText(context, "Failed to fetch the coordinates" + error.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
         });
     }
 
