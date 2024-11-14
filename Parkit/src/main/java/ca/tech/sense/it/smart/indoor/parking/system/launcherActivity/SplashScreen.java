@@ -8,6 +8,7 @@ package ca.tech.sense.it.smart.indoor.parking.system.launcherActivity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.animation.Animation;
@@ -33,9 +34,20 @@ public class SplashScreen extends AppCompatActivity {
         Animation textAnimation = AnimationUtils.loadAnimation(this, R.anim.text_animation);
         splashText.startAnimation(textAnimation);
 
-        // Handler to transition to the Login activity after the splash screen
+        // Handler to transition based on onboarding status
         new Handler().postDelayed(() -> {
-            Intent intent = new Intent(SplashScreen.this, FirstActivity.class);
+            SharedPreferences preferences = getSharedPreferences("app_preferences", MODE_PRIVATE);
+            boolean isFirstTime = preferences.getBoolean("isFirstTime", true);
+
+            Intent intent;
+            if (isFirstTime) {
+                // Navigate to OnboardingActivity for first-time users
+                intent = new Intent(SplashScreen.this, OnboardingActivity.class);
+            } else {
+                // Navigate to FirstActivity if onboarding has been completed
+                intent = new Intent(SplashScreen.this, FirstActivity.class);
+            }
+
             startActivity(intent);
             finish();
         }, SPLASH_SCREEN_TIME_OUT);

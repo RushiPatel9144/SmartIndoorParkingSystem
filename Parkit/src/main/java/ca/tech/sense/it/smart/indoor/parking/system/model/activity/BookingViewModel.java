@@ -63,6 +63,7 @@ public class BookingViewModel extends AndroidViewModel {
                 for (DataSnapshot bookingSnapshot : snapshot.getChildren()) {
                     Booking booking = bookingSnapshot.getValue(Booking.class);
                     if (booking != null) {
+                        booking.setId(bookingSnapshot.getKey()); // Set the booking ID
                         if (booking.getEndTime() < currentTime) {
                             historyBookings.add(booking);
                             // Expire the pass key for completed bookings
@@ -79,6 +80,7 @@ public class BookingViewModel extends AndroidViewModel {
                 upcomingBookingsLiveData.setValue(upcomingBookings);
                 historyBookingsLiveData.setValue(historyBookings);
             }
+
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
