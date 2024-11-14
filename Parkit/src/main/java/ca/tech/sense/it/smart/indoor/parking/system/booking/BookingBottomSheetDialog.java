@@ -29,14 +29,16 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.model.activity.Booking;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingSlot;
+import ca.tech.sense.it.smart.indoor.parking.system.payment.PaymentBottomSheetDialog;
 
 public class BookingBottomSheetDialog extends BottomSheetDialog {
 
     private final Context context;
     private Spinner slotSpinner, timeSlotSpinner;
-    private Button confirmButton, cancelButton;
+    private Button proceedToPaymentButton, cancelButton;
     private ProgressBar progressBar;
     private TextView addressText, postalCodeText, errorTextView, selectedDateTextview, priceTextView;
     private ImageButton selectDateButton, starButton;
@@ -64,7 +66,7 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
 
         // Set up the slot spinner
         setupSlotSpinnerData(new HashMap<>());
-        setupConfirmButton();
+        setupProceedToPaymentButton();
         setupCancelButton();
         setupSelectDateButton();
         setupStarButton();
@@ -81,7 +83,7 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
     private void initializeUIElements(View view) {
         slotSpinner = view.findViewById(R.id.slotSpinner);
         timeSlotSpinner = view.findViewById(R.id.timeSlotSpinner);
-        confirmButton = view.findViewById(R.id.confirmButton);
+        proceedToPaymentButton = view.findViewById(R.id.proceedToPaymentButton);
         cancelButton = view.findViewById(R.id.cancelButton);
         selectDateButton = view.findViewById(R.id.selectDateButton);
         starButton = view.findViewById(R.id.iv_add_to_favorites);
@@ -148,9 +150,9 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
         List<String> timeSlots = generateTimeSlots(selectedDate);
         if (timeSlots.isEmpty()) {
             timeSlots.add(context.getString(R.string.choose_another_date));
-            confirmButton.setEnabled(false);
+            proceedToPaymentButton.setEnabled(false);
         } else {
-            confirmButton.setEnabled(true);
+            proceedToPaymentButton.setEnabled(true);
         }
         ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, timeSlots);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -193,17 +195,28 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
         return timeSlots;
     }
 
-    // Method to set up the confirm button
-    private void setupConfirmButton() {
-        confirmButton.setOnClickListener(v -> {
+    // Method to set up the proceed to payment button
+    private void setupProceedToPaymentButton() {
+        proceedToPaymentButton.setOnClickListener(v -> {
             String selectedSlot = slotSpinner.getSelectedItem() != null ? slotSpinner.getSelectedItem().toString() : null;
             String selectedTimeSlot = timeSlotSpinner.getSelectedItem() != null ? timeSlotSpinner.getSelectedItem().toString() : null;
 
             if (selectedSlot != null && selectedTimeSlot != null && selectedDate != null) {
-                bookingManager.confirmBooking(locationId, selectedSlot, selectedTimeSlot, selectedDate, addressText.getText().toString(), () -> {
-                    Toast.makeText(context, R.string.booking_confirmed_and_saved, Toast.LENGTH_SHORT).show();
-                    dismiss();
-                }, error -> Toast.makeText(context, context.getString(R.string.failed_to_save_booking) + error.getMessage(), Toast.LENGTH_SHORT).show());
+                // Create a Booking object with the selected details
+                Booking booking = new Booking(
+                        "Park It", // Use "Park It" as title
+                        convertToMillis(selectedDate + " " + selectedTimeSlot.split(" - ")[0]),
+                        convertToMillis(selectedDate + " " + selectedTimeSlot.split(" - ")[1]),
+                        addressText.getText().toString(),
+                        Double.parseDouble(priceTextView.getText().toString().replace("Price: $", "")),
+                        selectedSlot,
+                        bookingManager.generatePassKey(), // Generate the pass key
+                        locationId // Add the locationId to the booking
+                );
+
+                // Open the PaymentBottomSheetDialog
+                PaymentBottomSheetDialog paymentDialog = new PaymentBottomSheetDialog(context, booking, bookingManager, BookingBottomSheetDialog.this);
+                paymentDialog.show();
             } else {
                 Toast.makeText(context, R.string.please_select_a_slot_date_and_time, Toast.LENGTH_SHORT).show();
             }
@@ -249,6 +262,18 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
         if (errorTextView != null) {
             errorTextView.setText(message);
             errorTextView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    // Helper method to convert date and time to milliseconds
+    private long convertToMillis(String dateTime) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
+        try {
+            Date date = sdf.parse(dateTime);
+            return date != null ? date.getTime() : 0;
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return 0;
         }
     }
 }

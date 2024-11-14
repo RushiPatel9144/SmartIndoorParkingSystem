@@ -215,11 +215,12 @@ public class BookingManager {
 
 
     // Method to generate a 4-digit pass key
-    private String generatePassKey() {
+    public String generatePassKey() {
         Random random = new Random();
         int passKey = 1000 + random.nextInt(9000); // Generates a random 4-digit number
         return String.valueOf(passKey);
     }
+
 
 
     // Method to update the hourly status of a parking slot
