@@ -6,6 +6,7 @@
 
 package ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -15,6 +16,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.LoginActivity;
+import ca.tech.sense.it.smart.indoor.parking.system.stripe.PaymentActivity;
 
 public class Home extends Fragment {
 
