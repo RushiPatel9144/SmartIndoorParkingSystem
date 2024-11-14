@@ -6,29 +6,41 @@
 package ca.tech.sense.it.smart.indoor.parking.system.model.activity;
 
 public class Booking {
+    private String id;
     private String title;
     private long startTime;
     private long endTime;
     private String location;
-    private String slotNumber;
     private double price;
-    private String passKey; // Add passKey field
+    private String slotNumber;
+    private String passKey;
+    private String locationId; // Add this field
 
+    // Default constructor required for calls to DataSnapshot.getValue(Booking.class)
     public Booking() {
-        // Default constructor required for calls to DataSnapshot.getValue(Booking.class)
     }
 
-    public Booking(String title, long startTime, long endTime, String location, String slotNumber, double price, String passKey) {
+    // Add a constructor that includes the locationId
+    public Booking(String title, long startTime, long endTime, String location, double price, String slotNumber, String passKey, String locationId) {
         this.title = title;
         this.startTime = startTime;
         this.endTime = endTime;
         this.location = location;
-        this.slotNumber = slotNumber;
         this.price = price;
-        this.passKey = passKey; // Initialize passKey
+        this.slotNumber = slotNumber;
+        this.passKey = passKey;
+        this.locationId = locationId;
     }
 
-    // Getters and setters for all fields, including passKey
+    // Getters and setters for all fields, including locationId
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
     public String getTitle() {
         return title;
     }
@@ -61,14 +73,6 @@ public class Booking {
         this.location = location;
     }
 
-    public String getSlotNumber() {
-        return slotNumber;
-    }
-
-    public void setSlotNumber(String slotNumber) {
-        this.slotNumber = slotNumber;
-    }
-
     public double getPrice() {
         return price;
     }
@@ -77,11 +81,27 @@ public class Booking {
         this.price = price;
     }
 
+    public String getSlotNumber() {
+        return slotNumber;
+    }
+
+    public void setSlotNumber(String slotNumber) {
+        this.slotNumber = slotNumber;
+    }
+
     public String getPassKey() {
         return passKey;
     }
 
     public void setPassKey(String passKey) {
         this.passKey = passKey;
+    }
+
+    public String getLocationId() {
+        return locationId;
+    }
+
+    public void setLocationId(String locationId) {
+        this.locationId = locationId;
     }
 }

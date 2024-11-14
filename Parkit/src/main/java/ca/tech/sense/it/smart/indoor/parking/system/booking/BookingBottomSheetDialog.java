@@ -5,6 +5,7 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -129,13 +130,23 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
 
     // Method to set up slot spinner data
     private void setupSlotSpinnerData(Map<String, ParkingSlot> slots) {
-        List<String> slotNames = new ArrayList<>();
-        for (Map.Entry<String, ParkingSlot> entry : slots.entrySet()) {
-            slotNames.add(entry.getValue().getId());
+        if (slots == null || slots.isEmpty() || slotSpinner == null || context == null) {
+            return; // Exit the method if any critical component is null
         }
 
-        // Check if slotNames is not null and not empty
-        if (slotNames != null && !slotNames.isEmpty()) {
+        List<String> slotNames = new ArrayList<>();
+        for (Map.Entry<String, ParkingSlot> entry : slots.entrySet()) {
+            ParkingSlot slot = entry.getValue();
+            if (slot != null && slot.getId() != null) {
+                slotNames.add(slot.getId());
+            } else {
+                // Log or handle null values for debugging
+                Log.e("setupSlotSpinnerData", "Null slot or slot ID encountered in slots map.");
+            }
+        }
+
+        // Only set the adapter if slotNames is not empty
+        if (!slotNames.isEmpty()) {
             ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, slotNames);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             slotSpinner.setAdapter(adapter);
