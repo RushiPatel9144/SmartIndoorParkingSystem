@@ -229,9 +229,11 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
     private void setupStarButton() {
         starButton.setOnClickListener(v -> {
             String address = addressText.getText().toString();
-            bookingManager.saveLocationToFavorites(locationId, address, () -> Toast.makeText(context, R.string.location_saved_to_favorites, Toast.LENGTH_SHORT).show(), error -> Toast.makeText(context, context.getString(R.string.failed_to_save_location) + error.getMessage(), Toast.LENGTH_SHORT).show());
+            String postalCode = postalCodeText.getText().toString(); // Assuming you have a TextView for postal code
+            bookingManager.saveLocationToFavorites(locationId, address, postalCode, () -> Toast.makeText(context, R.string.location_saved_to_favorites, Toast.LENGTH_SHORT).show(), error -> Toast.makeText(context, context.getString(R.string.failed_to_save_location) + error.getMessage(), Toast.LENGTH_SHORT).show());
         });
     }
+
 
     // Method to set error message
     public void setErrorMessage(String message) {

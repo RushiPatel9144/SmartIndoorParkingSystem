@@ -60,10 +60,11 @@ public class FavoritesFragment extends Fragment {
                 for (DataSnapshot data : snapshot.getChildren()) {
                     // Retrieve data from Firebase
                     String address = data.child("address").getValue(String.class);
+                    String postalCode = data.child("postalCode").getValue(String.class); // Fetch postal code
 
                     // Add data to the list if the address is available
-                    if (address != null) {
-                        favoriteLocations.add(address);
+                    if (address != null && postalCode != null) {
+                        favoriteLocations.add(address + "\n" + postalCode); // Combine address and postal code
                     }
                 }
 
@@ -77,6 +78,7 @@ public class FavoritesFragment extends Fragment {
             }
         });
     }
+
 
     private void updateRecyclerView() {
         FavoritesAdapter adapter;
