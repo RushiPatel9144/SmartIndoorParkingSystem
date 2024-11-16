@@ -35,7 +35,7 @@
     <string name="favorites">Favorites</string>
     <string name="support">Support</string>
     <string name="sign_up">Sign Up</string>
-    <string name="already_have_an_account_login_here">Already have an account? Login here</string>
+    <string name="already_have_an_account">Already have an account?</string>
     <string name="i_accept_the_terms_of_use_and_privacy_policy">I accept the Terms of Use and Privacy Policy.</string>
     <string name="confirm_password">Confirm Password</string>
     <string name="password">Password</string>
@@ -315,6 +315,8 @@
     <string name="onboard_text1">Whether you\'re looking for a parking spot or offering one, Parkit makes parking easier for everyone. Let\'s get started!</string>
     <string name="onboard_text2">Finding a spot is a breeze. Browse nearby parking locations and get to your destination faster, whether you’re a user or an owner.</string>
     <string name="onboard_text3">Enjoy a smooth, secure payment experience. No matter if you\'re parking or providing a spot, managing payments has never been easier.</string>
+    <string name="don_t_have_an_account">Don\'t have an account ?</string>
+    <string name="user">User</string>
 
 
 </resources>

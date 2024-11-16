@@ -1,6 +1,5 @@
-package ca.tech.sense.it.smart.indoor.parking.system.launcherActivity;
+package ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.userLogin;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -14,18 +13,10 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-
-import java.util.Objects;
 
 import ca.tech.sense.it.smart.indoor.parking.system.MainActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
@@ -33,7 +24,7 @@ import ca.tech.sense.it.smart.indoor.parking.system.model.user.User;
 import ca.tech.sense.it.smart.indoor.parking.system.model.owner.Owner; // Import Owner class
 import ca.tech.sense.it.smart.indoor.parking.system.owner.OwnerActivity;
 
-public class SignUpActivity extends AppCompatActivity {
+public class UserSignUpActivity extends AppCompatActivity {
 
     // Variables
     private EditText editTextEmail, editTextPassword, editTextConfirmPassword, firstName, lastName, phone;
@@ -75,7 +66,7 @@ public class SignUpActivity extends AppCompatActivity {
 
         // Navigate to Login screen
         textView.setOnClickListener(v -> {
-            Intent loginIntent = new Intent(getApplicationContext(), LoginActivity.class);
+            Intent loginIntent = new Intent(getApplicationContext(), UserLoginActivity.class);
             startActivity(loginIntent);
             finish();
         });
@@ -104,7 +95,7 @@ public class SignUpActivity extends AppCompatActivity {
                         progressBar.setVisibility(View.GONE);
 
                         if (task.isSuccessful()) {
-                            Toast.makeText(SignUpActivity.this, getString(R.string.account_created), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(UserSignUpActivity.this, getString(R.string.account_created), Toast.LENGTH_SHORT).show();
                             userID = mAuth.getCurrentUser().getUid();
 
                             // Create either a User or Owner object based on the user type
@@ -130,7 +121,7 @@ public class SignUpActivity extends AppCompatActivity {
                             // Navigate to MainActivity
 
                         } else {
-                            Toast.makeText(SignUpActivity.this, getString(R.string.authentication_failed), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(UserSignUpActivity.this, getString(R.string.authentication_failed), Toast.LENGTH_SHORT).show();
                         }
                     });
         });
@@ -163,7 +154,7 @@ public class SignUpActivity extends AppCompatActivity {
             return false;
         }
         if (!checkBox.isChecked()) {
-            Toast.makeText(SignUpActivity.this, "Please accept the terms and conditions", Toast.LENGTH_SHORT).show();
+            Toast.makeText(UserSignUpActivity.this, "Please accept the terms and conditions", Toast.LENGTH_SHORT).show();
             return false;
         }
         return true;

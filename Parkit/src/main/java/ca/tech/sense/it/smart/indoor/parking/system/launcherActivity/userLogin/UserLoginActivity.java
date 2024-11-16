@@ -3,7 +3,7 @@
   Name: NisargKumar Pareshbhai Joshi, StudentID: N01545986, section number: RCB
   Name: Rushi Manojkumar Patel, StudentID: N01539144, section number: RCB
 */
-package ca.tech.sense.it.smart.indoor.parking.system.launcherActivity;
+package ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.userLogin;
 
 import android.content.Context;
 import android.content.Intent;
@@ -46,8 +46,7 @@ import ca.tech.sense.it.smart.indoor.parking.system.network.BaseActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.owner.OwnerActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
 
-public class
-LoginActivity extends BaseActivity {
+public class UserLoginActivity extends BaseActivity {
 
     // UI Elements
     private EditText editTextEmail, editTextPassword;
@@ -157,7 +156,7 @@ LoginActivity extends BaseActivity {
 
     private void setOnClickListeners() {
         textView.setOnClickListener(v -> {
-            Intent intent = new Intent(getApplicationContext(), SignUpActivity.class);
+            Intent intent = new Intent(getApplicationContext(), UserSignUpActivity.class);
             intent.putExtra("userType", loginAsType);
             startActivity(intent);
             finish();
@@ -199,12 +198,12 @@ LoginActivity extends BaseActivity {
                                             String idToken = tokenTask.getResult().getToken();
                                             saveAuthToken(idToken);  // Save the token in SharedPreferences
                                         } else {
-                                            Toast.makeText(LoginActivity.this, "Failed to get token", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(UserLoginActivity.this, "Failed to get token", Toast.LENGTH_SHORT).show();
                                         }
                                     });
                         }
 
-                        Toast.makeText(LoginActivity.this, getString(R.string.login_successful), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(UserLoginActivity.this, getString(R.string.login_successful), Toast.LENGTH_SHORT).show();
 
                         // Proceed based on login type
                         if ("owner".equals(loginAsType)) {
@@ -241,12 +240,12 @@ LoginActivity extends BaseActivity {
                                 navigateToOwnerDashboard();
                             } else {
                                 // User does not have an owner profile, show error message
-                                Toast.makeText(LoginActivity.this,
+                                Toast.makeText(UserLoginActivity.this,
                                         "You need to sign up as an owner first.",
                                         Toast.LENGTH_LONG).show();
                             }
                         } else {
-                            Toast.makeText(LoginActivity.this,
+                            Toast.makeText(UserLoginActivity.this,
                                     "Error checking owner profile.",
                                     Toast.LENGTH_SHORT).show();
                         }
@@ -285,7 +284,7 @@ LoginActivity extends BaseActivity {
                     forgotPasswordTextView.setVisibility(View.VISIBLE);
                     break;
                 default:
-                    Toast.makeText(LoginActivity.this, getString(R.string.authentication_failed), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(UserLoginActivity.this, getString(R.string.authentication_failed), Toast.LENGTH_SHORT).show();
                     break;
             }
         }
@@ -297,11 +296,11 @@ LoginActivity extends BaseActivity {
     }
 
     public void forgetPassword() {
-        forgotPasswordTextView.setOnClickListener(v -> DialogUtil.showInputDialog(LoginActivity.this, "Enter Your Registered Email", "someone@mail.com", new DialogUtil.InputDialogCallback() {
+        forgotPasswordTextView.setOnClickListener(v -> DialogUtil.showInputDialog(UserLoginActivity.this, "Enter Your Registered Email", "someone@mail.com", new DialogUtil.InputDialogCallback() {
             @Override
             public void onConfirm(String inputText) {
                 if (TextUtils.isEmpty(inputText)) {
-                    Toast.makeText(LoginActivity.this, "Email cannot be empty", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(UserLoginActivity.this, "Email cannot be empty", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 sendPasswordResetEmail(inputText);
@@ -318,17 +317,17 @@ LoginActivity extends BaseActivity {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         Objects.requireNonNull(mAuth.getCurrentUser()).delete();
-                        Toast.makeText(LoginActivity.this, R.string.this_email_is_not_registered, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(UserLoginActivity.this, R.string.this_email_is_not_registered, Toast.LENGTH_SHORT).show();
                     } else {
                         if (task.getException() instanceof FirebaseAuthUserCollisionException) {
                             mAuth.sendPasswordResetEmail(email).addOnCompleteListener(task1 -> {
                                 if (task1.isSuccessful()) {
-                                    Toast.makeText(LoginActivity.this, R.string.reset_link_sent_to_your_email, Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(UserLoginActivity.this, R.string.reset_link_sent_to_your_email, Toast.LENGTH_SHORT).show();
                                 } else {
                                     if (task1.getException() instanceof FirebaseAuthInvalidUserException) {
-                                        Toast.makeText(LoginActivity.this, R.string.this_email_is_not_registered, Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(UserLoginActivity.this, R.string.this_email_is_not_registered, Toast.LENGTH_SHORT).show();
                                     } else {
-                                        Toast.makeText(LoginActivity.this, getString(R.string.error) + task1.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(UserLoginActivity.this, getString(R.string.error) + task1.getException().getMessage(), Toast.LENGTH_SHORT).show();
                                     }
                                 }
                             });

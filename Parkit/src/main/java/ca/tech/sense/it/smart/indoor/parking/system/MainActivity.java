@@ -28,9 +28,8 @@ import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Objects;
 
-import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.LoginActivity;
+import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.userLogin.UserLoginActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.model.user.UserManager;
-import ca.tech.sense.it.smart.indoor.parking.system.network.BaseActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.Activity;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.Home;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.Park;
@@ -162,7 +161,7 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
     }
 
     private void navigateToLoginActivity() {
-        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+        Intent intent = new Intent(getApplicationContext(), UserLoginActivity.class);
         startActivity(intent);
         finish();
     }

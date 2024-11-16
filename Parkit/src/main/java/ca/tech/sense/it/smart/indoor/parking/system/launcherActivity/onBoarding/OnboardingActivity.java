@@ -1,4 +1,4 @@
-package ca.tech.sense.it.smart.indoor.parking.system.launcherActivity;
+package ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.onBoarding;
 
 import android.os.Bundle;
 import android.widget.ProgressBar;

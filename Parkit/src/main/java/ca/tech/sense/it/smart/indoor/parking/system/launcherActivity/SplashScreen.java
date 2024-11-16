@@ -16,6 +16,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.onBoarding.OnboardingActivity;
 
 @SuppressLint("CustomSplashScreen")
 public class SplashScreen extends AppCompatActivity {
