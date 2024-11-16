@@ -28,11 +28,12 @@ import java.util.List;
 import java.util.Objects;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.model.Favorites;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.adapters.FavoritesAdapter;
 
 public class FavoritesFragment extends Fragment {
     private RecyclerView recyclerView;
-    private List<String> favoriteLocations; // Use List<String> to store addresses
+    private List<Favorites> favoriteLocations; // Use List<String> to store addresses
     private DatabaseReference databaseRef;
 
     @Override
@@ -59,15 +60,17 @@ public class FavoritesFragment extends Fragment {
                 favoriteLocations = new ArrayList<>();
                 for (DataSnapshot data : snapshot.getChildren()) {
                     // Retrieve data from Firebase
+
+                    String id = data.child("locationId").getValue(String.class);
                     String address = data.child("address").getValue(String.class);
                     String postalCode = data.child("postalCode").getValue(String.class); // Fetch postal code
+                    String name = data.child("name").getValue(String.class);
 
-                    // Add data to the list if the address is available
-                    if (address != null && postalCode != null) {
-                        favoriteLocations.add(address + "\n" + postalCode); // Combine address and postal code
+                    // Add data to the list if the address and name are available
+                    if (id != null && address != null && postalCode != null && name != null) {
+                        favoriteLocations.add(new Favorites(id, address, name, postalCode));
                     }
                 }
-
                 // Update RecyclerView with the fetched data
                 updateRecyclerView();
             }

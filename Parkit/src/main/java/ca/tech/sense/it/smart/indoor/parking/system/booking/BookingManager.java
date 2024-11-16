@@ -250,21 +250,23 @@ public class BookingManager {
             updateHourlyStatus(locationId, slot, date, hour, "available", onSuccess, onFailure);
         }, delay, TimeUnit.MILLISECONDS);
     }
-    // Method to save a parking location to the user's favorites in Firebase
-    public void saveLocationToFavorites(String locationId, String address, String postalCode, Runnable onSuccess, Consumer<Exception> onFailure) {
+
+    public void saveLocationToFavorites(String locationId, String address, String postalCode, String name, Runnable onSuccess, Consumer<Exception> onFailure) {
         executorService.submit(() -> {
             String userId = Objects.requireNonNull(firebaseAuth.getCurrentUser()).getUid();
 
             Map<String, Object> locationData = new HashMap<>();
             locationData.put("locationId", locationId);
             locationData.put("address", address);
-            locationData.put("postalCode", postalCode); // Add postal code to the data
+            locationData.put("postalCode", postalCode);
+            locationData.put("name", name); // Add name to the data
 
             DatabaseReference databaseRef = firebaseDatabase.getReference("users").child(userId).child("saved_locations").child(locationId);
 
             databaseRef.setValue(locationData).addOnSuccessListener(aVoid -> onSuccess.run()).addOnFailureListener(onFailure::accept);
         });
     }
+
 
     // Helper method to convert date and time to milliseconds
     private long convertToMillis(String dateTime) {

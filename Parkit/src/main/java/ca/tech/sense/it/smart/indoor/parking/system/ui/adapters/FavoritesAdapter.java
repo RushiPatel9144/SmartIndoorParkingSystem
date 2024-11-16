@@ -16,12 +16,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.model.Favorites;
 
 public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.FavoriteViewHolder> {
 
-    private List<String> favoriteLocationList; // List of addresses
+    private List<Favorites> favoriteLocationList; // List of addresses
 
-    public FavoritesAdapter(List<String> favoriteLocationList) {
+    public FavoritesAdapter(List<Favorites> favoriteLocationList) {
         this.favoriteLocationList = favoriteLocationList;
     }
 
@@ -34,9 +35,9 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
 
     @Override
     public void onBindViewHolder(@NonNull FavoriteViewHolder holder, int position) {
-        String favoriteAddress = favoriteLocationList.get(position);
-        holder.tvFavoriteTitle.setText("Favorite Location " + (position + 1));
-        holder.tvFavoriteAddress.setText(favoriteAddress);
+        Favorites favorite = favoriteLocationList.get(position);
+        holder.tvFavoriteTitle.setText(favorite.getName());
+        holder.tvFavoriteAddress.setText(favorite.getAddress() + "\n" + favorite.getPostalCode());
     }
 
     @Override

@@ -17,6 +17,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -256,9 +261,28 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
             String address = addressText.getText().toString();
             String postalCode = postalCodeText.getText().toString(); // Assuming you have a TextView for postal code
 
-            bookingManager.saveLocationToFavorites(locationId, address, postalCode, () -> Toast.makeText(context, R.string.location_saved_to_favorites, Toast.LENGTH_SHORT).show(), error -> Toast.makeText(context, context.getString(R.string.failed_to_save_location) + error.getMessage(), Toast.LENGTH_SHORT).show());
+            // Fetch the name from the database
+            DatabaseReference locationRef = FirebaseDatabase.getInstance().getReference("parkingLocations").child(locationId);
+            locationRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    String name = snapshot.child("name").getValue(String.class); // Fetch name
+
+                    if (name != null) {
+                        bookingManager.saveLocationToFavorites(locationId, address, postalCode, name, () -> Toast.makeText(context, R.string.location_saved_to_favorites, Toast.LENGTH_SHORT).show(), error -> Toast.makeText(context, context.getString(R.string.failed_to_save_location) + error.getMessage(), Toast.LENGTH_SHORT).show());
+                    } else {
+                        Toast.makeText(context, "Failed to fetch the name", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Toast.makeText(context, "Failed to fetch the name" + error.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
         });
     }
+
 
 
     // Method to set error message
