@@ -333,6 +333,8 @@
     <string name="failed_to_parse_server_response">Failed to parse server response</string>
     <string name="booking_confirmed">Booking Confirmed</string>
     <string name="booking_data_is_missing">Booking data is missing.</string>
+    <string name="channel_name">Channel Name</string>
+    <string name="channel_description">Descriotion\n</string>
 
 
 </resources>
