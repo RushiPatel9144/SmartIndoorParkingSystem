@@ -315,6 +315,24 @@
     <string name="onboard_text1">Whether you\'re looking for a parking spot or offering one, Parkit makes parking easier for everyone. Let\'s get started!</string>
     <string name="onboard_text2">Finding a spot is a breeze. Browse nearby parking locations and get to your destination faster, whether you’re a user or an owner.</string>
     <string name="onboard_text3">Enjoy a smooth, secure payment experience. No matter if you\'re parking or providing a spot, managing payments has never been easier.</string>
+    <string name="book_now">Book Now</string>
+    <string name="platform_fee">Platform Fee</string>
+    <string name="_0_00">$0.00</string>
+    <string name="subtotal">Subtotal</string>
+    <string name="total_breakdown">Total Breakdown</string>
+    <string name="apply">Apply</string>
+    <string name="enter_promo_code">Enter Promo Code</string>
+    <string name="parking_name">Parking Name</string>
+    <string name="booking_summary">Booking Summary</string>
+    <string name="checkout">Checkout</string>
+    <string name="gst_hst">GST/HST</string>
+    <string name="total">Total</string>
+    <string name="pay_now">Pay Now</string>
+    <string name="booking_data_is_missing_or_invalid">Booking data is missing or invalid.</string>
+    <string name="failed_to_connect_to_server">Failed to connect to server</string>
+    <string name="failed_to_parse_server_response">Failed to parse server response</string>
+    <string name="booking_confirmed">Booking Confirmed</string>
+    <string name="booking_data_is_missing">Booking data is missing.</string>
 
 
 </resources>

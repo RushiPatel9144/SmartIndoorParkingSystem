@@ -4,9 +4,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-
-
-
     <androidx.viewpager2.widget.ViewPager2
         android:theme="@style/Base.Theme.SmartIndoorParkingSystem"
         android:id="@+id/viewPager"

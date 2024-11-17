@@ -35,10 +35,6 @@
             android:exported="true"
             android:theme="@style/Base.Theme.SmartIndoorParkingSystem" />
         <activity
-            android:name=".stripe.PaymentActivity"
-            android:exported="false"
-            android:theme="@style/AppTheme.TransparentBackground" />
-        <activity
             android:name=".launcherActivity.OwnerSignUpActivity"
             android:exported="false" />
         <activity

@@ -7,7 +7,6 @@ package ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -53,12 +52,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
-import ca.tech.sense.it.smart.indoor.parking.system.booking.BookingBottomSheetDialog;
 import ca.tech.sense.it.smart.indoor.parking.system.booking.BookingBottomSheetDialogFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.booking.BookingManager;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
 
-import ca.tech.sense.it.smart.indoor.parking.system.stripe.PaymentActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.ParkingUtility;
 
 public class Park extends Fragment implements OnMapReadyCallback {
@@ -151,7 +148,6 @@ public class Park extends Fragment implements OnMapReadyCallback {
         mMap.getUiSettings().setRotateGesturesEnabled(true);
 
         mMap.setTrafficEnabled(true);
-        mMap.setBuildingsEnabled(true);
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
     }
 

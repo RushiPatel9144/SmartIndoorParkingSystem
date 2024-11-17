@@ -3,6 +3,8 @@ package ca.tech.sense.it.smart.indoor.parking.system.booking;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -50,9 +52,10 @@ public class PaymentActivity extends AppCompatActivity {
     private TextView totalTextView;
     private Button applyPromoCodeButton;
     private Button confirmButton;
+    private Button cancelButton;
 
     private PaymentSheet paymentSheet;
-    private String currency = "cad";
+    private final String currency = "cad";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +70,7 @@ public class PaymentActivity extends AppCompatActivity {
                 setBookingDetails();
                 calculateTotalBreakdown();
             } else {
-                showToast("Booking data is missing or invalid.");
+                showToast(getString(R.string.booking_data_is_missing_or_invalid));
             }
         }
 
@@ -97,6 +100,7 @@ public class PaymentActivity extends AppCompatActivity {
         totalTextView = findViewById(R.id.totalTextView);
         applyPromoCodeButton = findViewById(R.id.applyPromoCodeButton);
         confirmButton = findViewById(R.id.confirmButton);
+        cancelButton = findViewById(R.id.cancelButton);
     }
 
     private void setBookingDetails() {
@@ -124,6 +128,7 @@ public class PaymentActivity extends AppCompatActivity {
     private void setButtonListeners() {
         applyPromoCodeButton.setOnClickListener(v -> showToast("Apply Promo Code functionality to be added"));
         confirmButton.setOnClickListener(v -> fetchClientSecret());
+        cancelButton.setOnClickListener(v -> finish());
     }
 
     private void fetchClientSecret() {
@@ -151,7 +156,7 @@ public class PaymentActivity extends AppCompatActivity {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Request request, IOException e) {
-                runOnUiThread(() -> showToast("Failed to connect to server"));
+                runOnUiThread(() -> showToast(getString(R.string.failed_to_connect_to_server)));
             }
 
             @Override
@@ -162,7 +167,7 @@ public class PaymentActivity extends AppCompatActivity {
                         String clientSecret = jsonResponse.getString("clientSecret");
                         runOnUiThread(() -> startPaymentFlow(clientSecret));
                     } catch (JSONException e) {
-                        runOnUiThread(() -> showToast("Failed to parse server response"));
+                        runOnUiThread(() -> showToast(getString(R.string.failed_to_parse_server_response)));
                     }
                 } else {
                     runOnUiThread(() -> showToast("Server error: " + response.message()));
@@ -178,28 +183,45 @@ public class PaymentActivity extends AppCompatActivity {
 
     private void onPaymentSheetResult(PaymentSheetResult paymentSheetResult) {
         if (paymentSheetResult instanceof PaymentSheetResult.Completed) {
-            confirmBooking();
-            showToast("Payment Successful");
+            // Use Handler with Looper.getMainLooper() for a delay
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                confirmBooking();
+                finish();
+            }, 2000); // 2-second delay
         } else if (paymentSheetResult instanceof PaymentSheetResult.Failed) {
             showToast("Payment Failed: " + ((PaymentSheetResult.Failed) paymentSheetResult).getError());
+            finish();
         } else if (paymentSheetResult instanceof PaymentSheetResult.Canceled) {
             showToast("Payment Canceled");
+            finish();
         }
     }
 
     private void confirmBooking() {
-        if (booking != null) {
+        if (booking == null) {
+            showToast(getString(R.string.booking_data_is_missing));
+            return;
+        }
+        // Extract valid time slot and date
+        String selectedTimeSlot = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date(booking.getStartTime())) + " - " +
+                new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date(booking.getEndTime()));
+        String selectedDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date(booking.getStartTime()));
+
+        try {
             bookingManager.confirmBooking(
-                    booking.getLocationId(),
-                    booking.getSlotNumber(),
-                    "Time Slot", // Update with the actual time slot
-                    "Date", // Update with the actual date
-                    booking.getLocation(),
-                    () -> showToast("Booking Confirmed"),
-                    error -> showToast("Failed to save booking: " + error.getMessage())
-            );
+                    booking.getLocationId(),        // Pass location ID
+                    booking.getSlotNumber(),       // Pass slot number
+                    selectedTimeSlot,              // Valid time slot
+                    selectedDate,                  // Valid date
+                    booking.getLocation(),         // Location
+                    () -> showToast(getString(R.string.booking_confirmed)),
+                    error -> showToast("Failed to save booking: " + error.getMessage()));
+        } catch (Exception e) {
+            // Catch unexpected exceptions
+            showToast("An unexpected error occurred: " + e.getMessage());
         }
     }
+
 
     private void showToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();

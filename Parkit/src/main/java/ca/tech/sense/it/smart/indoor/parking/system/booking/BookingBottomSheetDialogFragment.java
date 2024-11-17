@@ -225,6 +225,7 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
                 Intent intent = new Intent(requireContext(), PaymentActivity.class);
                 intent.putExtra("booking", booking); // Pass the Booking object
                 startActivity(intent);
+                dismiss();
 
             } else {
                 Toast.makeText(requireContext(), R.string.please_select_a_slot_date_and_time, Toast.LENGTH_SHORT).show();
