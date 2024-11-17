@@ -7,6 +7,7 @@ package ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -53,9 +54,11 @@ import java.util.concurrent.Executors;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.booking.BookingBottomSheetDialog;
+import ca.tech.sense.it.smart.indoor.parking.system.booking.BookingBottomSheetDialogFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.booking.BookingManager;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
 
+import ca.tech.sense.it.smart.indoor.parking.system.stripe.PaymentActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.ParkingUtility;
 
 public class Park extends Fragment implements OnMapReadyCallback {
@@ -218,8 +221,8 @@ public class Park extends Fragment implements OnMapReadyCallback {
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         BookingManager bookingManager = new BookingManager(executorService, firebaseDatabase, firebaseAuth,getContext());
-        BookingBottomSheetDialog bookingDialog = new BookingBottomSheetDialog(requireContext(), parkingLocationId, bookingManager);
-        bookingDialog.show();
+        BookingBottomSheetDialogFragment paymentFragment = new BookingBottomSheetDialogFragment (parkingLocationId, bookingManager);
+        paymentFragment.show(getChildFragmentManager(), "BookingBottomSheetDialogFragment");
     }
 
     private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId) {

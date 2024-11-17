@@ -1,33 +1,32 @@
 package ca.tech.sense.it.smart.indoor.parking.system.payment;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentManager;
 
-import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
-import ca.tech.sense.it.smart.indoor.parking.system.booking.BookingBottomSheetDialog;
 import ca.tech.sense.it.smart.indoor.parking.system.booking.BookingManager;
 import ca.tech.sense.it.smart.indoor.parking.system.model.activity.Booking;
+import ca.tech.sense.it.smart.indoor.parking.system.stripe.PaymentActivity;
 
-public class PaymentBottomSheetDialog extends BottomSheetDialog {
+public class PaymentBottomSheetFragment extends BottomSheetDialogFragment {
 
-    private final Context context;
     private final Booking booking;
     private final BookingManager bookingManager;
-    private final BookingBottomSheetDialog bookingBottomSheetDialog;
 
     private TextView parkingNameTextView;
     private TextView addressTextView;
@@ -40,27 +39,24 @@ public class PaymentBottomSheetDialog extends BottomSheetDialog {
     private Button choosePaymentMethodButton;
     private Button confirmButton;
 
-    public PaymentBottomSheetDialog(@NonNull Context context, Booking booking, BookingManager bookingManager, BookingBottomSheetDialog bookingBottomSheetDialog) {
-        super(context);
-        this.context = context;
+    public PaymentBottomSheetFragment( Booking booking, BookingManager bookingManager) {
         this.booking = booking;
         this.bookingManager = bookingManager;
-        this.bookingBottomSheetDialog = bookingBottomSheetDialog;
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        @SuppressLint("InflateParams") View view = LayoutInflater.from(context).inflate(R.layout.dialog_payment, null);
-        setContentView(view);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        // Inflate the layout for the fragment
+        View view = inflater.inflate(R.layout.dialog_payment, container, false);
 
         initializeUIElements(view);
         setBookingDetails();
         calculateTotalBreakdown();
-
-        // Set up button listeners
         setButtonListeners();
+
+        return view;
     }
+
 
     private void initializeUIElements(View view) {
         parkingNameTextView = view.findViewById(R.id.parkingNameTextView);
@@ -71,7 +67,6 @@ public class PaymentBottomSheetDialog extends BottomSheetDialog {
         platformFeeTextView = view.findViewById(R.id.platformFeeTextView);
         totalTextView = view.findViewById(R.id.totalTextView);
         applyPromoCodeButton = view.findViewById(R.id.applyPromoCodeButton);
-        choosePaymentMethodButton = view.findViewById(R.id.choosePaymentMethodButton);
         confirmButton = view.findViewById(R.id.confirmButton);
     }
 
@@ -94,14 +89,11 @@ public class PaymentBottomSheetDialog extends BottomSheetDialog {
     }
 
     private void setButtonListeners() {
-        // Set up the confirm button
-        confirmButton.setOnClickListener(v -> confirmBooking());
-
-        // Set up the apply promo code button (functionality to be added later)
+        confirmButton.setOnClickListener(v -> {
+            Intent intent = new Intent(requireContext(), PaymentActivity.class);
+            startActivity(intent);
+        });
         applyPromoCodeButton.setOnClickListener(v -> showToast("Apply Promo Code functionality to be added"));
-
-        // Set up the choose payment method button (functionality to be added later)
-        choosePaymentMethodButton.setOnClickListener(v -> showToast("Choose Payment Method functionality to be added"));
     }
 
     private void confirmBooking() {
@@ -116,7 +108,7 @@ public class PaymentBottomSheetDialog extends BottomSheetDialog {
                         showToast(R.string.booking_confirmed_and_saved);
                         dismiss();
                     },
-                    error -> showToast(context.getString(R.string.failed_to_save_booking) + error.getMessage())
+                    error -> showToast(requireContext().getString(R.string.failed_to_save_booking) + error.getMessage())
             );
         } else {
             showToast(R.string.please_select_a_slot_date_and_time);
@@ -124,10 +116,15 @@ public class PaymentBottomSheetDialog extends BottomSheetDialog {
     }
 
     private void showToast(String message) {
-        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
     }
 
     private void showToast(int resId) {
-        Toast.makeText(context, resId, Toast.LENGTH_SHORT).show();
+        Toast.makeText(requireContext(), resId, Toast.LENGTH_SHORT).show();
+    }
+
+    // Method to show the BottomSheetDialogFragment from Activity or Fragment
+    public void showPaymentBottomSheet(FragmentManager fragmentManager) {
+        this.show(fragmentManager, "PaymentBottomSheetFragment");
     }
 }

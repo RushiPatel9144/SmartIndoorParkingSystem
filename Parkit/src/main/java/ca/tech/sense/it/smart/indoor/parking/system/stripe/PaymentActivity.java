@@ -32,23 +32,27 @@ public class PaymentActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_payment);
+        getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
         // Initialize the Stripe SDK with your publishable key
         PaymentConfiguration.init(getApplicationContext(), "pk_test_51QJqGPAwqnUq4xSjJQmV0FKH27StbQRdn5jfOtsyFy3tJadwpId67LbynKlh3aonDKstIxv59LWbhFGGlwTTOTJi00QX02RzJp");
 
         paymentSheet = new PaymentSheet(this, paymentSheetResult -> {
             if (paymentSheetResult instanceof PaymentSheetResult.Completed) {
+                finish();
                 Toast.makeText(this, R.string.payment_successful, Toast.LENGTH_SHORT).show();
             } else if (paymentSheetResult instanceof PaymentSheetResult.Failed) {
+                finish();
                 PaymentSheetResult.Failed result = (PaymentSheetResult.Failed) paymentSheetResult;
                 Toast.makeText(this, String.format("%s%s", getString(R.string.payment_failed), result.getError()), Toast.LENGTH_SHORT).show();
             } else if (paymentSheetResult instanceof PaymentSheetResult.Canceled) {
+                finish();
                 Toast.makeText(this, R.string.payment_canceled, Toast.LENGTH_SHORT).show();
+
             }
         });
 
-        Button payButton = findViewById(R.id.payButton);
-        payButton.setOnClickListener(v -> fetchClientSecret());
+        fetchClientSecret();
     }
 
     private void fetchClientSecret() {
