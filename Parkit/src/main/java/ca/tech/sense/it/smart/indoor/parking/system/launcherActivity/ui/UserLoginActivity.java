@@ -16,6 +16,8 @@ import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.checkbox.MaterialCheckBox;
 
+import java.util.Objects;
+
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.credentialManagerGoogle.GoogleAuthClient;
 import ca.tech.sense.it.smart.indoor.parking.system.viewModel.LoginViewModelFactory;
 import ca.tech.sense.it.smart.indoor.parking.system.MainActivity;
@@ -29,7 +31,7 @@ public class UserLoginActivity extends AppCompatActivity {
     // UI Elements
     private EditText editTextEmail, editTextPassword;
     private MaterialButton buttonLogin, googleButton;
-    private TextView textViewSignUp, forgotPasswordTextView;
+    private TextView textViewSignUp, forgotPasswordTextView,titleTV;
     private ProgressBar progressBar;
     private MaterialCheckBox rememberMeCheckBox;
 
@@ -58,6 +60,15 @@ public class UserLoginActivity extends AppCompatActivity {
             Toast.makeText(this, status, Toast.LENGTH_SHORT).show();
         });
 
+        initializeElements();
+
+        // Set up UI actions
+        setOnClickListeners();
+
+        // Observe ViewModel login status
+        observeLoginStatus();
+    }
+    private void initializeElements() {
 
         // Initialize UI elements
         editTextEmail = findViewById(R.id.login_email_editext);
@@ -68,22 +79,17 @@ public class UserLoginActivity extends AppCompatActivity {
         forgotPasswordTextView = findViewById(R.id.forgot_password);
         progressBar = findViewById(R.id.login_progressBar);
         rememberMeCheckBox = findViewById(R.id.remember_me_checkbox);
-
+        titleTV = findViewById(R.id.titleTV);
         googleAuthClient = new GoogleAuthClient(this);
-
         // SharedPreferences for Remember Me
         sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
-
         // Get the "login_as" user type passed from previous activity
         loginAsType = getIntent().getStringExtra("login_as");
-
-        // Set up UI actions
-        setOnClickListeners();
-
-        // Observe ViewModel login status
-        observeLoginStatus();
+        if (Objects.equals(loginAsType, "owner")) {
+            titleTV.setText("Owner");
+            googleButton.setVisibility(View.GONE);
+        }
     }
-
     private void setOnClickListeners() {
         // Login button
         buttonLogin.setOnClickListener(v -> {
@@ -124,8 +130,10 @@ public class UserLoginActivity extends AppCompatActivity {
         loginViewModel.getLoginStatus().observe(this, status -> {
             progressBar.setVisibility(View.GONE);
             if ("user".equals(status)) {
+
                 navigateToMainActivity();
             } else if ("owner".equals(status)) {
+
                 navigateToOwnerDashboard();
             } else if (status.startsWith("error:")) {
                 Toast.makeText(this, status.substring(6), Toast.LENGTH_SHORT).show();
