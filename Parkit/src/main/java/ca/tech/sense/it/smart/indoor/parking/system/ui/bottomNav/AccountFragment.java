@@ -23,10 +23,28 @@ import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui.FirstAct
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems.*;
 
 public class AccountFragment extends Fragment {
-    private final int containerViewId;
+    private static final String ARG_CONTAINER_VIEW_ID = "containerViewId";
+    private int containerViewId;
     private SharedPreferences sharedPreferences;
-    public AccountFragment(int containerViewId) {
-        this.containerViewId = containerViewId;
+
+    public AccountFragment() {
+        // Required empty public constructor
+    }
+
+    public static AccountFragment newInstance(int containerViewId) {
+        AccountFragment fragment = new AccountFragment();
+        Bundle args = new Bundle();
+        args.putInt(ARG_CONTAINER_VIEW_ID, containerViewId);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            containerViewId = getArguments().getInt(ARG_CONTAINER_VIEW_ID);
+        }
     }
 
     @Override
@@ -34,7 +52,6 @@ public class AccountFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_account, container, false);
         sharedPreferences = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
         setupClickListeners(view);
-
         return view;
     }
 
@@ -112,3 +129,4 @@ public class AccountFragment extends Fragment {
         LOGOUT
     }
 }
+

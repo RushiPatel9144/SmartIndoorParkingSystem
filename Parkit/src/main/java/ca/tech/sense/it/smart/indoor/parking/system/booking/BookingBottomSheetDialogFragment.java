@@ -1,13 +1,12 @@
 package ca.tech.sense.it.smart.indoor.parking.system.booking;
 
-import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
-import android.content.Context;
-
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -15,61 +14,57 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-import androidx.annotation.NonNull;
-import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseDatabaseSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.model.activity.Booking;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingSlot;
-import ca.tech.sense.it.smart.indoor.parking.system.payment.PaymentBottomSheetDialog;
 
-public class BookingBottomSheetDialog extends BottomSheetDialog {
+public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment {
 
-    private final Context context;
-    private Spinner slotSpinner, timeSlotSpinner;
-    private Button proceedToPaymentButton, cancelButton;
+    private Spinner slotSpinner;
+    private Spinner timeSlotSpinner;
+    private Button proceedToPaymentButton;
+    private Button cancelButton;
     private ProgressBar progressBar;
-    private TextView addressText, postalCodeText, errorTextView, selectedDateTextview, priceTextView;
-    private ImageButton selectDateButton, starButton;
-
+    private TextView addressText;
+    private TextView postalCodeText;
+    private TextView selectedDateTextview;
+    private TextView priceTextView;
+    private TextView errorTextView;
+    private ImageButton selectDateButton;
+    private ImageButton starButton;
     private final String locationId;
     private String selectedDate;
     private final BookingManager bookingManager;
-    private DatabaseReference firebaseDatabase;
 
 
     // Constructor with dependency injection
-    public BookingBottomSheetDialog(@NonNull Context context, String locationId, BookingManager bookingManager) {
-        super(context);
-        this.context = context;
+    public BookingBottomSheetDialogFragment(String locationId, BookingManager bookingManager) {
         this.locationId = locationId;
         this.bookingManager = bookingManager;
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        @SuppressLint("InflateParams") View view = LayoutInflater.from(context).inflate(R.layout.dialog_booking, null);
-        setContentView(view);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        // Inflate the layout for the fragment
+        View view = inflater.inflate(R.layout.fragment_booking_bottom_sheet_dialog, container, false);
 
         // Initialize Firebase database reference
-        firebaseDatabase = FirebaseDatabase.getInstance().getReference();
+        FirebaseDatabaseSingleton.getInstance().getReference();
 
         // Initialize UI elements
         initializeUIElements(view);
@@ -87,6 +82,8 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
         // Set up the time slots with the current date as default
         selectedDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
         setupTimeSlots(selectedDate);
+
+        return view;
     }
 
     // Method to initialize UI elements
@@ -117,14 +114,14 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
                     setupSlotSpinnerData(location.getSlots());
                     bookingManager.fetchPrice(locationId, price -> priceTextView.setText(String.format(Locale.getDefault(), "Price: $%.2f", price)));
                 } else {
-                    setErrorMessage(context.getString(R.string.location_data_is_not_available));
+                    setErrorMessage(requireContext().getString(R.string.location_data_is_not_available));
                 }
                 progressBar.setVisibility(View.GONE);
             }
 
             @Override
             public void onFetchFailure(Exception exception) {
-                setErrorMessage(String.format("%s%s", context.getString(R.string.failed_to_fetch_location_data), exception.getMessage()));
+                setErrorMessage(String.format("%s%s", requireContext().getString(R.string.failed_to_fetch_location_data), exception.getMessage()));
                 progressBar.setVisibility(View.GONE);
             }
         });
@@ -132,7 +129,7 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
 
     // Method to set up slot spinner data
     private void setupSlotSpinnerData(Map<String, ParkingSlot> slots) {
-        if (slots == null || slots.isEmpty() || slotSpinner == null || context == null) {
+        if (slots == null || slots.isEmpty() || slotSpinner == null ) {
             return; // Exit the method if any critical component is null
         }
 
@@ -149,7 +146,7 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
 
         // Only set the adapter if slotNames is not empty
         if (!slotNames.isEmpty()) {
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, slotNames);
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, slotNames);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             slotSpinner.setAdapter(adapter);
         }
@@ -159,12 +156,12 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
     private void setupTimeSlots(String selectedDate) {
         List<String> timeSlots = generateTimeSlots(selectedDate);
         if (timeSlots.isEmpty()) {
-            timeSlots.add(context.getString(R.string.choose_another_date));
+            timeSlots.add(requireContext().getString(R.string.choose_another_date));
             proceedToPaymentButton.setEnabled(false);
         } else {
             proceedToPaymentButton.setEnabled(true);
         }
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, timeSlots);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, timeSlots);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         timeSlotSpinner.setAdapter(adapter);
     }
@@ -224,87 +221,59 @@ public class BookingBottomSheetDialog extends BottomSheetDialog {
                         locationId // Add the locationId to the booking
                 );
 
-                // Open the PaymentBottomSheetDialog
-                PaymentBottomSheetDialog paymentDialog = new PaymentBottomSheetDialog(context, booking, bookingManager, BookingBottomSheetDialog.this);
-                paymentDialog.show();
+                // Create an Intent to start PaymentActivity and pass the booking data
+                Intent intent = new Intent(requireContext(), PaymentActivity.class);
+                intent.putExtra("booking", booking); // Pass the Booking object
+                startActivity(intent);
+                dismiss();
+
             } else {
-                Toast.makeText(context, R.string.please_select_a_slot_date_and_time, Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), R.string.please_select_a_slot_date_and_time, Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    // Method to set up the cancel button
+    // Method to handle cancel button
     private void setupCancelButton() {
         cancelButton.setOnClickListener(v -> dismiss());
     }
 
-    // Method to set up the select date button
+    // Method to handle date selection button
     private void setupSelectDateButton() {
         selectDateButton.setOnClickListener(v -> {
             Calendar calendar = Calendar.getInstance();
-            int year = calendar.get(Calendar.YEAR);
-            int month = calendar.get(Calendar.MONTH);
-            int day = calendar.get(Calendar.DAY_OF_MONTH);
-
-            @SuppressLint("SetTextI18n") DatePickerDialog datePickerDialog = new DatePickerDialog(context, (view, selectedYear, selectedMonth, selectedDay) -> {
-                selectedDate = String.format(Locale.getDefault(), "%04d-%02d-%02d", selectedYear, selectedMonth + 1, selectedDay);
-                selectedDateTextview.setText("Selected Date: " + selectedDate);
-                setupTimeSlots(selectedDate); // Update time slots based on the selected date
-            }, year, month, day);
-
-            // Set the minimum date to today
-            datePickerDialog.getDatePicker().setMinDate(calendar.getTimeInMillis());
+            DatePickerDialog datePickerDialog = new DatePickerDialog(requireContext(), (view, year, month, dayOfMonth) -> {
+                selectedDate = String.format(Locale.getDefault(), "%d-%02d-%02d", year, month + 1, dayOfMonth);
+                selectedDateTextview.setText(selectedDate);
+                setupTimeSlots(selectedDate);
+            }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
 
             datePickerDialog.show();
         });
     }
 
+    // Method to handle adding to favorites (optional feature)
     private void setupStarButton() {
         starButton.setOnClickListener(v -> {
-            String address = addressText.getText().toString();
-            String postalCode = postalCodeText.getText().toString(); // Assuming you have a TextView for postal code
-
-            // Fetch latitude and longitude from the "parkingLocation" database
-            DatabaseReference parkingLocationRef = firebaseDatabase.child("parkingLocations").child(locationId);
-            parkingLocationRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    Double latitude = snapshot.child("latitude").getValue(Double.class);
-                    Double longitude = snapshot.child("longitude").getValue(Double.class);
-
-                    if (latitude != null && longitude != null) {
-                        bookingManager.saveLocationToFavorites(locationId, address, postalCode, latitude, longitude, () -> Toast.makeText(context, R.string.location_saved_to_favorites, Toast.LENGTH_SHORT).show(), error -> Toast.makeText(context, context.getString(R.string.failed_to_save_location) + error.getMessage(), Toast.LENGTH_SHORT).show());
-                    } else {
-                        Toast.makeText(context, "Failed to fetch the coordinates", Toast.LENGTH_SHORT).show();
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Toast.makeText(context, "Failed to fetch the coordinates" + error.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
+            // Handle star button logic here (e.g., adding to favorites)
         });
     }
 
-
-    // Method to set error message
-    public void setErrorMessage(String message) {
-        if (errorTextView != null) {
-            errorTextView.setText(message);
-            errorTextView.setVisibility(View.VISIBLE);
-        }
-    }
-
-    // Helper method to convert date and time to milliseconds
-    private long convertToMillis(String dateTime) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
+    // Helper method to convert date string to millis
+    private long convertToMillis(String time) {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
         try {
-            Date date = sdf.parse(dateTime);
+            Date date = format.parse(time);
             return date != null ? date.getTime() : 0;
         } catch (ParseException e) {
             e.printStackTrace();
             return 0;
         }
+    }
+
+    // Method to set an error message
+    private void setErrorMessage(String message) {
+        errorTextView.setVisibility(View.VISIBLE);
+        errorTextView.setText(message);
     }
 }
