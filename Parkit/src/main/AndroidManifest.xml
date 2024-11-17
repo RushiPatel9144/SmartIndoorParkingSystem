@@ -59,10 +59,10 @@
             android:exported="false"
             android:theme="@style/Base.Theme.SmartIndoorParkingSystem" />
         <activity
-            android:name=".launcherActivity.ui.UserSignUpActivity"
+            android:name=".launcherActivity.ui.SignUpActivity"
             android:exported="false" />
         <activity
-            android:name=".launcherActivity.ui.UserLoginActivity"
+            android:name=".launcherActivity.ui.LoginActivity"
             android:exported="true" />
         <activity
             android:name=".launcherActivity.SplashScreen"

@@ -12,19 +12,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import ca.tech.sense.it.smart.indoor.parking.system.MainActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.utility.LauncherUtils;
 import ca.tech.sense.it.smart.indoor.parking.system.model.user.User;
 import ca.tech.sense.it.smart.indoor.parking.system.model.owner.Owner; // Import Owner class
-import ca.tech.sense.it.smart.indoor.parking.system.owner.OwnerActivity;
+import ca.tech.sense.it.smart.indoor.parking.system.network.BaseActivity;
 
-public class UserSignUpActivity extends AppCompatActivity {
+public class SignUpActivity extends BaseActivity {
 
     // Variables
     private EditText editTextEmail, editTextPassword, editTextConfirmPassword, firstName, lastName, phone;
@@ -42,6 +41,11 @@ public class UserSignUpActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_sign_up);
 
+        initializeUI();
+        setOnClickListeners(getIntent().getStringExtra("userType"));
+    }
+
+    private void initializeUI() {
         // Initialize UI components
         editTextEmail = findViewById(R.id.signup_editTextEmail);
         editTextPassword = findViewById(R.id.signup_editTextPassword);
@@ -56,17 +60,12 @@ public class UserSignUpActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
         fireStore = FirebaseFirestore.getInstance();
+    }
 
-        // Get the user type passed from the login screen
-        Intent intent = getIntent();
-        String userType = intent.getStringExtra("userType");
-
-
-
-
+    private void setOnClickListeners(String userType) {
         // Navigate to Login screen
         textView.setOnClickListener(v -> {
-            Intent loginIntent = new Intent(getApplicationContext(), UserLoginActivity.class);
+            Intent loginIntent = new Intent(getApplicationContext(), LoginActivity.class);
             startActivity(loginIntent);
             finish();
         });
@@ -95,7 +94,7 @@ public class UserSignUpActivity extends AppCompatActivity {
                         progressBar.setVisibility(View.GONE);
 
                         if (task.isSuccessful()) {
-                            Toast.makeText(UserSignUpActivity.this, getString(R.string.account_created), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(SignUpActivity.this, getString(R.string.account_created), Toast.LENGTH_SHORT).show();
                             userID = mAuth.getCurrentUser().getUid();
 
                             // Create either a User or Owner object based on the user type
@@ -105,23 +104,19 @@ public class UserSignUpActivity extends AppCompatActivity {
                                 fireStore.collection("owners").document(userID).set(localOwner)
                                         .addOnSuccessListener(aVoid -> Log.d("TAG", "Owner profile is created for " + userID))
                                         .addOnFailureListener(e -> Log.d("TAG", "Error saving owner data: " + e.getMessage()));
-                                Intent mainIntent = new Intent(getApplicationContext(), OwnerActivity.class);
-                                startActivity(mainIntent);
+                                LauncherUtils.navigateToOwnerDashboard(this);
                                 finish();
                             } else {
                                 User localUser = new User(userID, fName, lName, email, phoneNumber, null);
                                 fireStore.collection("users").document(userID).set(localUser)
                                         .addOnSuccessListener(aVoid -> Log.d("TAG", "User profile is created for " + userID))
                                         .addOnFailureListener(e -> Log.d("TAG", "Error saving user data: " + e.getMessage()));
-                                Intent mainIntent = new Intent(getApplicationContext(), MainActivity.class);
-                                startActivity(mainIntent);
+                                LauncherUtils.navigateToMainActivity(this);
                                 finish();
                             }
 
-                            // Navigate to MainActivity
-
                         } else {
-                            Toast.makeText(UserSignUpActivity.this, getString(R.string.authentication_failed), Toast.LENGTH_SHORT).show();
+                            LauncherUtils.showToast(this,getString(R.string.authentication_failed));
                         }
                     });
         });
@@ -154,7 +149,7 @@ public class UserSignUpActivity extends AppCompatActivity {
             return false;
         }
         if (!checkBox.isChecked()) {
-            Toast.makeText(UserSignUpActivity.this, "Please accept the terms and conditions", Toast.LENGTH_SHORT).show();
+            Toast.makeText(SignUpActivity.this, "Please accept the terms and conditions", Toast.LENGTH_SHORT).show();
             return false;
         }
         return true;

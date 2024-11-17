@@ -34,14 +34,14 @@ public class FirstActivity extends AppCompatActivity {
 
     // Navigate to Login Activity as User
     public void goToLoginAsUser(View view) {
-        Intent intent = new Intent(this, UserLoginActivity.class);
+        Intent intent = new Intent(this, LoginActivity.class);
         intent.putExtra("login_as", "user"); // Pass the type of login
         startActivity(intent);
     }
 
     // Navigate to Login Activity as Owner
     public void goToLoginAsOwner(View view) {
-        Intent intent = new Intent(this, UserLoginActivity.class);
+        Intent intent = new Intent(this, LoginActivity.class);
         intent.putExtra("login_as", "owner"); // Pass the type of login
         startActivity(intent);
     }

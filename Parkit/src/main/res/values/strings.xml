@@ -317,6 +317,7 @@
     <string name="onboard_text3">Enjoy a smooth, secure payment experience. No matter if you\'re parking or providing a spot, managing payments has never been easier.</string>
     <string name="don_t_have_an_account">Don\'t have an account ?</string>
     <string name="user">User</string>
+    <string name="enter_your_email_first">Enter your email first!</string>
 
 
 </resources>
