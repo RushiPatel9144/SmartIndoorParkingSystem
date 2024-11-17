@@ -19,7 +19,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSingleton;
-import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.FirstActivity;
+import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui.FirstActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems.*;
 
 public class AccountFragment extends Fragment {

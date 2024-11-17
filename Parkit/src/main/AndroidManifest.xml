@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="ca.tech.sense.it.smart.indoor.parking.system" >
+    package="ca.tech.sense.it.smart.indoor.parking.system">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
@@ -25,26 +25,31 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Base.Theme.SmartIndoorParkingSystem"
-        tools:targetApi="31" >
+        tools:targetApi="31">
         <activity
-            android:name=".booking.PaymentActivity"
-            android:exported="false"
-            android:theme="@style/Base.Theme.SmartIndoorParkingSystem" />
+            android:name=".launcherActivity.ui.OwnerSignUpActivity"
+            android:exported="false" />
         <activity
-            android:name=".launcherActivity.OnboardingActivity"
+            android:name=".launcherActivity.ui.OwnerLoginActivity"
+            android:exported="false" />
+        <activity
+            android:name=".launcherActivity.onBoarding.OnboardingActivity"
             android:exported="true"
             android:theme="@style/Base.Theme.SmartIndoorParkingSystem" />
         <activity
-            android:name=".launcherActivity.OwnerSignUpActivity"
+            android:name=".stripe.PaymentActivity"
             android:exported="false" />
         <activity
-            android:name=".launcherActivity.OwnerLoginActivity"
+            android:name=".launcherActivity.ui.OwnerSignUpActivity"
+            android:exported="false" />
+        <activity
+            android:name=".launcherActivity.ui.OwnerLoginActivity"
             android:exported="false" />
         <activity
             android:name=".owner.OwnerActivity"
             android:exported="false" />
         <activity
-            android:name=".launcherActivity.FirstActivity"
+            android:name=".launcherActivity.ui.FirstActivity"
             android:exported="false" />
         <activity
             android:name=".network.NoNetworkActivity"
@@ -54,14 +59,14 @@
             android:exported="false"
             android:theme="@style/Base.Theme.SmartIndoorParkingSystem" />
         <activity
-            android:name=".launcherActivity.SignUpActivity"
+            android:name=".launcherActivity.ui.SignUpActivity"
             android:exported="false" />
         <activity
-            android:name=".launcherActivity.LoginActivity"
+            android:name=".launcherActivity.ui.LoginActivity"
             android:exported="true" />
         <activity
             android:name=".launcherActivity.SplashScreen"
-            android:exported="true" >
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -76,7 +81,7 @@
             android:name=".network.NetworkChangeReceiver"
             android:enabled="true"
             android:exported="false"
-            tools:ignore="MissingClass" >
+            tools:ignore="MissingClass">
             <intent-filter>
                 <action
                     android:name="android.net.conn.CONNECTIVITY_CHANGE"
