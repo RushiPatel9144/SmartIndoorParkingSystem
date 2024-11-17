@@ -41,17 +41,20 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
 
     @Override
     public void onBindViewHolder(@NonNull FavoriteViewHolder holder, int position) {
-        Favorites favorite = favoriteLocationList.get(position);
-        holder.tvFavoriteTitle.setText(favorite.getName());
+        Favorites favorite = favoriteLocationList.get(position); // Use singular 'favorite'
+        holder.tvFavoriteTitle.setText(favorite.getName()); // Set the name as the title
         holder.tvFavoriteAddress.setText(favorite.getAddress() + "\n" + favorite.getPostalCode());
+
         holder.btnRemoveFavorite.setOnClickListener(v -> {
             // Remove the favorite location from the database
             databaseRef.child(favorite.getId()).removeValue().addOnSuccessListener(aVoid -> {
-                // Remove the favorite location from the list and notify the adapter
-                favoriteLocationList.remove(position);
-                notifyItemRemoved(position);
-                notifyItemRangeChanged(position, favoriteLocationList.size());
-                Toast.makeText(holder.itemView.getContext(), "Location removed from favorites", Toast.LENGTH_SHORT).show();
+                // Ensure the index is within bounds before removing the item
+                if (position >= 0 && position < favoriteLocationList.size()) {
+                    favoriteLocationList.remove(position);
+                    notifyItemRemoved(position);
+                    notifyItemRangeChanged(position, favoriteLocationList.size());
+                    Toast.makeText(holder.itemView.getContext(), "Location removed from favorites", Toast.LENGTH_SHORT).show();
+                }
             }).addOnFailureListener(error -> {
                 Toast.makeText(holder.itemView.getContext(), "Failed to remove the location" + error.getMessage(), Toast.LENGTH_SHORT).show();
             });
