@@ -16,7 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
-import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.FirstActivity;
+import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui.FirstActivity;
 
 public class OnboardingFragment extends Fragment {
 

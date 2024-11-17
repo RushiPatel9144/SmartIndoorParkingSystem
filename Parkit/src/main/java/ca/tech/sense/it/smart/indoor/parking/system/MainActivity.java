@@ -28,7 +28,7 @@ import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Objects;
 
-import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.userLogin.UserLoginActivity;
+import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui.UserLoginActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.model.user.UserManager;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.Activity;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.Home;

@@ -1,0 +1,163 @@
+package ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui;
+
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
+
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.checkbox.MaterialCheckBox;
+
+import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.credentialManagerGoogle.GoogleAuthClient;
+import ca.tech.sense.it.smart.indoor.parking.system.viewModel.LoginViewModelFactory;
+import ca.tech.sense.it.smart.indoor.parking.system.MainActivity;
+import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.viewModel.LoginViewModel;
+import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.data.AuthRepository;
+import ca.tech.sense.it.smart.indoor.parking.system.owner.OwnerActivity;
+
+public class UserLoginActivity extends AppCompatActivity {
+
+    // UI Elements
+    private EditText editTextEmail, editTextPassword;
+    private MaterialButton buttonLogin, googleButton;
+    private TextView textViewSignUp, forgotPasswordTextView;
+    private ProgressBar progressBar;
+    private MaterialCheckBox rememberMeCheckBox;
+
+    // Shared Preferences for Remember Me
+    private SharedPreferences sharedPreferences;
+
+    // ViewModel
+    private LoginViewModel loginViewModel;
+    GoogleAuthClient googleAuthClient;
+    private String loginAsType; // userType: "user" or "owner"
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_login);
+
+        // Initialize ViewModel
+
+        AuthRepository authRepository = new AuthRepository();
+        LoginViewModelFactory factory = new LoginViewModelFactory(authRepository);
+        loginViewModel = new ViewModelProvider(this, factory).get(LoginViewModel.class);
+
+        // Observing the resetPasswordStatus to show feedback to the user
+        loginViewModel.getResetPasswordStatus().observe(this, status -> {
+            // Show status in UI (e.g., Toast, Snackbar, etc.)
+            Toast.makeText(this, status, Toast.LENGTH_SHORT).show();
+        });
+
+
+        // Initialize UI elements
+        editTextEmail = findViewById(R.id.login_email_editext);
+        editTextPassword = findViewById(R.id.login_password_editext);
+        buttonLogin = findViewById(R.id.login_btn);
+        googleButton = findViewById(R.id.btnGoogleSignIn);
+        textViewSignUp = findViewById(R.id.jump_to_signup_page);
+        forgotPasswordTextView = findViewById(R.id.forgot_password);
+        progressBar = findViewById(R.id.login_progressBar);
+        rememberMeCheckBox = findViewById(R.id.remember_me_checkbox);
+
+        googleAuthClient = new GoogleAuthClient(this);
+
+        // SharedPreferences for Remember Me
+        sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+
+        // Get the "login_as" user type passed from previous activity
+        loginAsType = getIntent().getStringExtra("login_as");
+
+        // Set up UI actions
+        setOnClickListeners();
+
+        // Observe ViewModel login status
+        observeLoginStatus();
+    }
+
+    private void setOnClickListeners() {
+        // Login button
+        buttonLogin.setOnClickListener(v -> {
+            String email = editTextEmail.getText().toString().trim();
+            String password = editTextPassword.getText().toString().trim();
+
+            if (validateInput(email, password)) {
+                progressBar.setVisibility(View.VISIBLE);
+                loginViewModel.login(email, password, loginAsType);
+            }
+        });
+
+        // Sign-Up navigation
+        textViewSignUp.setOnClickListener(v -> {
+            Intent intent = new Intent(this, UserSignUpActivity.class);
+            intent.putExtra("userType", loginAsType);
+            startActivity(intent);
+            finish();
+        });
+
+        // Google sign-in button (Assuming functionality exists in ViewModel)
+        googleButton.setOnClickListener(v -> loginViewModel.signInWithGoogle(this));
+
+
+
+        // Forgot password
+        forgotPasswordTextView.setOnClickListener(v -> {
+            String email = editTextEmail.getText().toString().trim();
+            if (!TextUtils.isEmpty(email)) {
+                loginViewModel.sendPasswordResetEmail(email);
+            } else {
+                Toast.makeText(this, "Enter your email first!", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void observeLoginStatus() {
+        loginViewModel.getLoginStatus().observe(this, status -> {
+            progressBar.setVisibility(View.GONE);
+            if ("user".equals(status)) {
+                navigateToMainActivity();
+            } else if ("owner".equals(status)) {
+                navigateToOwnerDashboard();
+            } else if (status.startsWith("error:")) {
+                Toast.makeText(this, status.substring(6), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void navigateToMainActivity() {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    private void navigateToOwnerDashboard() {
+        Intent intent = new Intent(this, OwnerActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    private boolean validateInput(String email, String password) {
+        if (TextUtils.isEmpty(email)) {
+            editTextEmail.setError("Please enter an email address.");
+            return false;
+        }
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            editTextEmail.setError("Invalid email format.");
+            return false;
+        }
+        if (TextUtils.isEmpty(password)) {
+            editTextPassword.setError("Please enter a password.");
+            return false;
+        }
+        return true;
+    }
+}

@@ -1,4 +1,4 @@
-package ca.tech.sense.it.smart.indoor.parking.system.launcherActivity;
+package ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,7 +11,6 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
-import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.userLogin.UserLoginActivity;
 
 public class FirstActivity extends AppCompatActivity {
 
@@ -42,7 +41,7 @@ public class FirstActivity extends AppCompatActivity {
 
     // Navigate to Login Activity as Owner
     public void goToLoginAsOwner(View view) {
-        Intent intent = new Intent(this, UserLoginActivity.class);
+        Intent intent = new Intent(this, OwnerLoginActivity.class);
         intent.putExtra("login_as", "owner"); // Pass the type of login
         startActivity(intent);
     }

@@ -1,4 +1,4 @@
-package ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.userLogin;
+package ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
