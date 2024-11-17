@@ -86,7 +86,7 @@ public class FavoritesFragment extends Fragment {
         FavoritesAdapter adapter;
         if (favoriteLocations != null && !favoriteLocations.isEmpty()) {
             // Set the adapter and bind the favorite locations list
-            adapter = new FavoritesAdapter(favoriteLocations);
+            adapter = new FavoritesAdapter(favoriteLocations, databaseRef);
             recyclerView.setAdapter(adapter);
         } else {
             Toast.makeText(getContext(),getString(R.string.no_favorite_locations_found), Toast.LENGTH_SHORT).show();

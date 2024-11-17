@@ -8,10 +8,14 @@ package ca.tech.sense.it.smart.indoor.parking.system.ui.adapters;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.firebase.database.DatabaseReference;
 
 import java.util.List;
 
@@ -21,9 +25,11 @@ import ca.tech.sense.it.smart.indoor.parking.system.model.Favorites;
 public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.FavoriteViewHolder> {
 
     private List<Favorites> favoriteLocationList; // List of addresses
+    private DatabaseReference databaseRef;
 
-    public FavoritesAdapter(List<Favorites> favoriteLocationList) {
+    public FavoritesAdapter(List<Favorites> favoriteLocationList, DatabaseReference databaseRef) {
         this.favoriteLocationList = favoriteLocationList;
+        this.databaseRef = databaseRef;
     }
 
     @NonNull
@@ -38,6 +44,18 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
         Favorites favorite = favoriteLocationList.get(position);
         holder.tvFavoriteTitle.setText(favorite.getName());
         holder.tvFavoriteAddress.setText(favorite.getAddress() + "\n" + favorite.getPostalCode());
+        holder.btnRemoveFavorite.setOnClickListener(v -> {
+            // Remove the favorite location from the database
+            databaseRef.child(favorite.getId()).removeValue().addOnSuccessListener(aVoid -> {
+                // Remove the favorite location from the list and notify the adapter
+                favoriteLocationList.remove(position);
+                notifyItemRemoved(position);
+                notifyItemRangeChanged(position, favoriteLocationList.size());
+                Toast.makeText(holder.itemView.getContext(), "Location removed from favorites", Toast.LENGTH_SHORT).show();
+            }).addOnFailureListener(error -> {
+                Toast.makeText(holder.itemView.getContext(), "Failed to remove the location" + error.getMessage(), Toast.LENGTH_SHORT).show();
+            });
+        });
     }
 
     @Override
@@ -48,11 +66,13 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
     public static class FavoriteViewHolder extends RecyclerView.ViewHolder {
         TextView tvFavoriteTitle;
         TextView tvFavoriteAddress;
+        ImageButton btnRemoveFavorite;
 
         public FavoriteViewHolder(@NonNull View itemView) {
             super(itemView);
             tvFavoriteTitle = itemView.findViewById(R.id.tvFavoriteTitle);
             tvFavoriteAddress = itemView.findViewById(R.id.tvFavoriteAddress);
+            btnRemoveFavorite = itemView.findViewById(R.id.btnRemoveFavorite);
         }
     }
 }
