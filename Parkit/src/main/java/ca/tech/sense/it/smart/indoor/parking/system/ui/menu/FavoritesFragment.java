@@ -5,7 +5,10 @@
  */
 package ca.tech.sense.it.smart.indoor.parking.system.ui.menu;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +17,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -29,9 +33,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import ca.tech.sense.it.smart.indoor.parking.system.MainActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.model.Favorites;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.adapters.FavoritesAdapter;
+import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.Park;
 
 public class FavoritesFragment extends Fragment {
     private RecyclerView recyclerView;
@@ -52,7 +58,30 @@ public class FavoritesFragment extends Fragment {
 
         // Initialize the adapter
         favoriteLocations = new ArrayList<>();
-        adapter = new FavoritesAdapter(favoriteLocations, databaseRef);
+        adapter = new FavoritesAdapter(favoriteLocations, databaseRef, favorite -> {
+            // Handle item click and navigate to Park fragment
+            Park parkFragment = new Park();
+            Bundle args = new Bundle();
+            args.putString("locationId", favorite.getId());
+            parkFragment.setArguments(args);
+
+            FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+            transaction.replace(R.id.flFragment, parkFragment);
+            transaction.addToBackStack(null);
+            transaction.commit();
+
+//            // Update BottomNavigationView to highlight the Park icon
+//            if (getActivity() instanceof MainActivity) {
+//                ((MainActivity) getActivity()).updateBottomNavigationView(R.id.navigation_park);
+//            }
+
+            // Show BookingBottomSheetDialog after a short delay to ensure the fragment is fully attached
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                if (getParentFragmentManager().findFragmentById(R.id.flFragment) instanceof Park) {
+                    ((Park) getParentFragmentManager().findFragmentById(R.id.flFragment)).showBookingBottomSheet(favorite.getId());
+                }
+            }, 500);
+        });
         recyclerView.setAdapter(adapter);
 
         // Load favorite locations from Firebase

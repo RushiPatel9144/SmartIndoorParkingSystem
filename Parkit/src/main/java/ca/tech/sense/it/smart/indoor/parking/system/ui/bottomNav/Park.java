@@ -91,6 +91,14 @@ public class Park extends Fragment implements OnMapReadyCallback {
             initializeMap();
             initializeAutocomplete();
         }));
+
+        // Check if there is a locationId passed from the FavoritesFragment
+        if (getActivity() != null && getActivity().getIntent() != null) {
+            String locationId = getActivity().getIntent().getStringExtra("locationId");
+            if (locationId != null) {
+                showBookingBottomSheet(locationId);
+            }
+        }
     }
 
     private void initializeMap() {
@@ -219,6 +227,18 @@ public class Park extends Fragment implements OnMapReadyCallback {
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         BookingManager bookingManager = new BookingManager(executorService, firebaseDatabase, firebaseAuth,getContext());
         BookingBottomSheetDialog bookingDialog = new BookingBottomSheetDialog(requireContext(), parkingLocationId, bookingManager);
+        bookingDialog.show();
+    }
+
+    public void showBookingBottomSheet(String locationId) {
+        // Create an instance of ExecutorService
+        ExecutorService executorService = Executors.newFixedThreadPool(4);
+
+        // Get instances of FirebaseDatabase and FirebaseAuth
+        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        BookingManager bookingManager = new BookingManager(executorService, firebaseDatabase, firebaseAuth, getContext());
+        BookingBottomSheetDialog bookingDialog = new BookingBottomSheetDialog(requireContext(), locationId, bookingManager);
         bookingDialog.show();
     }
 

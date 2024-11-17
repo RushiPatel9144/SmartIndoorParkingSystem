@@ -26,10 +26,16 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
 
     private List<Favorites> favoriteLocationList; // List of addresses
     private DatabaseReference databaseRef;
+    private OnItemClickListener onItemClickListener;
 
-    public FavoritesAdapter(List<Favorites> favoriteLocationList, DatabaseReference databaseRef) {
+    public interface OnItemClickListener {
+        void onItemClick(Favorites favorite);
+    }
+
+    public FavoritesAdapter(List<Favorites> favoriteLocationList, DatabaseReference databaseRef, OnItemClickListener onItemClickListener) {
         this.favoriteLocationList = favoriteLocationList;
         this.databaseRef = databaseRef;
+        this.onItemClickListener = onItemClickListener;
     }
 
     @NonNull
@@ -44,6 +50,8 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
         Favorites favorite = favoriteLocationList.get(position); // Use singular 'favorite'
         holder.tvFavoriteTitle.setText(favorite.getName()); // Set the name as the title
         holder.tvFavoriteAddress.setText(favorite.getAddress() + "\n" + favorite.getPostalCode());
+
+        holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick(favorite));
 
         holder.btnRemoveFavorite.setOnClickListener(v -> {
             // Remove the favorite location from the database

@@ -240,4 +240,9 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         }
     }
+
+//    // Method to update BottomNavigationView
+//    public void updateBottomNavigationView(int itemId) {
+//        bottomNavigationView.setSelectedItemId(itemId);
+//    }
 }
