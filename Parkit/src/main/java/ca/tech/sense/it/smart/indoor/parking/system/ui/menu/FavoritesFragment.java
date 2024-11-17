@@ -12,11 +12,13 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -35,6 +37,7 @@ public class FavoritesFragment extends Fragment {
     private RecyclerView recyclerView;
     private List<Favorites> favoriteLocations; // Use List<String> to store addresses
     private DatabaseReference databaseRef;
+    private FavoritesAdapter adapter;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -47,6 +50,11 @@ public class FavoritesFragment extends Fragment {
         String userId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
         databaseRef = FirebaseDatabase.getInstance().getReference("users").child(userId).child("saved_locations");
 
+        // Initialize the adapter
+        favoriteLocations = new ArrayList<>();
+        adapter = new FavoritesAdapter(favoriteLocations, databaseRef);
+        recyclerView.setAdapter(adapter);
+
         // Load favorite locations from Firebase
         loadFavoriteLocations();
 
@@ -54,25 +62,25 @@ public class FavoritesFragment extends Fragment {
     }
 
     private void loadFavoriteLocations() {
-        databaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseRef.addChildEventListener(new ChildEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                favoriteLocations = new ArrayList<>();
-                for (DataSnapshot data : snapshot.getChildren()) {
-                    // Retrieve data from Firebase
+            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                addFavoriteLocation(snapshot);
+            }
 
-                    String id = data.child("locationId").getValue(String.class);
-                    String address = data.child("address").getValue(String.class);
-                    String postalCode = data.child("postalCode").getValue(String.class); // Fetch postal code
-                    String name = data.child("name").getValue(String.class);
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                updateFavoriteLocation(snapshot);
+            }
 
-                    // Add data to the list if the address and name are available
-                    if (id != null && address != null && postalCode != null && name != null) {
-                        favoriteLocations.add(new Favorites(id, address, name, postalCode));
-                    }
-                }
-                // Update RecyclerView with the fetched data
-                updateRecyclerView();
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+                removeFavoriteLocation(snapshot);
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                // Not needed for this use case
             }
 
             @Override
@@ -82,14 +90,47 @@ public class FavoritesFragment extends Fragment {
         });
     }
 
-    private void updateRecyclerView() {
-        FavoritesAdapter adapter;
-        if (favoriteLocations != null && !favoriteLocations.isEmpty()) {
-            // Set the adapter and bind the favorite locations list
-            adapter = new FavoritesAdapter(favoriteLocations, databaseRef);
-            recyclerView.setAdapter(adapter);
-        } else {
-            Toast.makeText(getContext(),getString(R.string.no_favorite_locations_found), Toast.LENGTH_SHORT).show();
+    private void addFavoriteLocation(DataSnapshot snapshot) {
+        String id = snapshot.child("locationId").getValue(String.class);
+        String address = snapshot.child("address").getValue(String.class);
+        String postalCode = snapshot.child("postalCode").getValue(String.class);
+        String name = snapshot.child("name").getValue(String.class);
+
+        if (id != null && address != null && postalCode != null && name != null) {
+            favoriteLocations.add(new Favorites(id, address, name, postalCode));
+            adapter.notifyItemInserted(favoriteLocations.size() - 1);
+        }
+    }
+
+    private void updateFavoriteLocation(DataSnapshot snapshot) {
+        String id = snapshot.child("locationId").getValue(String.class);
+        String address = snapshot.child("address").getValue(String.class);
+        String postalCode = snapshot.child("postalCode").getValue(String.class);
+        String name = snapshot.child("name").getValue(String.class);
+
+        if (id != null && address != null && postalCode != null && name != null) {
+            for (int i = 0; i < favoriteLocations.size(); i++) {
+                if (favoriteLocations.get(i).getId().equals(id)) {
+                    favoriteLocations.set(i, new Favorites(id, address, name, postalCode));
+                    adapter.notifyItemChanged(i);
+                    break;
+                }
+            }
+        }
+    }
+
+    private void removeFavoriteLocation(DataSnapshot snapshot) {
+        String id = snapshot.child("locationId").getValue(String.class);
+
+        if (id != null) {
+            for (int i = 0; i < favoriteLocations.size(); i++) {
+                if (favoriteLocations.get(i).getId().equals(id)) {
+                    favoriteLocations.remove(i);
+                    adapter.notifyItemRemoved(i);
+                    adapter.notifyItemRangeChanged(i, favoriteLocations.size());
+                    break;
+                }
+            }
         }
     }
 }
