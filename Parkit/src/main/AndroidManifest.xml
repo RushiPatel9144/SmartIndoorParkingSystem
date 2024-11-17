@@ -27,12 +27,13 @@
         android:theme="@style/Base.Theme.SmartIndoorParkingSystem"
         tools:targetApi="31" >
         <activity
+            android:name=".booking.PaymentActivity"
+            android:exported="false"
+            android:theme="@style/Base.Theme.SmartIndoorParkingSystem" />
+        <activity
             android:name=".launcherActivity.OnboardingActivity"
             android:exported="true"
             android:theme="@style/Base.Theme.SmartIndoorParkingSystem" />
-        <activity
-            android:name=".stripe.PaymentActivity"
-            android:exported="false" />
         <activity
             android:name=".launcherActivity.OwnerSignUpActivity"
             android:exported="false" />

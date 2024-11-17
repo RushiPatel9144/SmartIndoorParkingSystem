@@ -5,7 +5,9 @@
  */
 package ca.tech.sense.it.smart.indoor.parking.system.model.activity;
 
-public class Booking {
+import java.io.Serializable;
+
+public class Booking implements Serializable {
     private String id;
     private String title;
     private long startTime;
