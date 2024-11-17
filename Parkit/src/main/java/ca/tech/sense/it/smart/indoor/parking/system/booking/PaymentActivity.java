@@ -55,7 +55,7 @@ public class PaymentActivity extends AppCompatActivity {
     private Button cancelButton;
 
     private PaymentSheet paymentSheet;
-    private final String currency = "cad";
+    private final String currency = "usd";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
