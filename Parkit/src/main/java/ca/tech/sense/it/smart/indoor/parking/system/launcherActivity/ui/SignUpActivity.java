@@ -17,6 +17,8 @@ import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.Objects;
+
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.LauncherUtils;
 import ca.tech.sense.it.smart.indoor.parking.system.model.user.User;
@@ -95,7 +97,7 @@ public class SignUpActivity extends BaseActivity {
 
                         if (task.isSuccessful()) {
                             Toast.makeText(SignUpActivity.this, getString(R.string.account_created), Toast.LENGTH_SHORT).show();
-                            userID = mAuth.getCurrentUser().getUid();
+                            userID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
 
                             // Create either a User or Owner object based on the user type
 

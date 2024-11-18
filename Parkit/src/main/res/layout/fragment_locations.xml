@@ -1,14 +1,51 @@
-<?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".owner.bottomNav.LocationsFragment">
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@color/bg">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <!-- Title with button on the right -->
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="start|center_vertical">
 
-</FrameLayout>
+        <!-- Parking Locations Title -->
+        <TextView
+            android:id="@+id/locationsTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/your_parking_locations"
+            android:textSize="24sp"
+            android:textColor="#333333"
+            android:layout_weight="1"
+            android:fontFamily="sans-serif-medium"
+            android:ellipsize="end"
+            android:maxLines="1" />
+
+        <!-- Button to Add Location (on the right) -->
+        <ImageButton
+            android:id="@+id/addLocationButton"
+            android:layout_width="84dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="16dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/add_new_location"
+            android:scaleType="fitCenter"
+            android:src="@drawable/pin" />
+
+    </LinearLayout>
+
+    <!-- RecyclerView to List Locations -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/locationsRecyclerView"
+        android:layout_width="381dp"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:scrollbars="vertical" />
+
+</LinearLayout>

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -77,6 +78,7 @@ public class LoginActivity extends AppCompatActivity {
         rememberMeCheckBox = findViewById(R.id.remember_me_checkbox);
         titleTV = findViewById(R.id.titleTV);
         googleAuthClient = new GoogleAuthClient(this);
+        LinearLayout divider = findViewById(R.id.or);
         // SharedPreferences for Remember Me
         sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
         // Get the "login_as" user type passed from previous activity
@@ -84,6 +86,7 @@ public class LoginActivity extends AppCompatActivity {
         if (Objects.equals(loginAsType, "owner")) {
             titleTV.setText("Owner");
             googleButton.setVisibility(View.GONE);
+            divider.setVisibility(View.GONE);
         }
     }
     private void setOnClickListeners() {

@@ -304,6 +304,18 @@
     <string name="already_have_an_account_">Already have An Account</string>
     <string name="enter_your_email_first">Enter Your Email First</string>
     <string name="date">Date</string>
+    <string name="confirm_exit">Confirm Exit</string>
+    <string name="are_you_sure_you_want_to_exit_the_app">Are you sure you want to exit the app?</string>
+    <string name="yes_exit">Yes, Exit</string>
+    <string name="no_stay">No, Stay</string>
+    <string name="confirm_logout">Confirm Logout</string>
+    <string name="are_you_certain_you_wish_to_log_out_of_your_account">Are you certain you wish to log out of your account?</string>
+    <string name="add_new_location">Add New Location</string>
+    <string name="your_parking_locations">Your Parking Locations</string>
+    <string name="show_slots">Show Slots</string>
+    <string name="location_name">Location Name</string>
+    <string name="save_location">Save Location</string>
+    <string name="or">OR</string>
 
 
 </resources>

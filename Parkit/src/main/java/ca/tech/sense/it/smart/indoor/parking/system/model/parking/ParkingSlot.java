@@ -17,7 +17,6 @@ public class ParkingSlot {
 
     // Constructors
     public ParkingSlot() {
-        this.hourlyStatus = new HashMap<>();
     }
 
     public ParkingSlot(String id, ParkingSensor sensor) {

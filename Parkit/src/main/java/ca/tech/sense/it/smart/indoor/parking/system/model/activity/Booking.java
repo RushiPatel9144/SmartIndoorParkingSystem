@@ -7,9 +7,6 @@ package ca.tech.sense.it.smart.indoor.parking.system.model.activity;
 
 import java.io.Serializable;
 
-import ca.tech.sense.it.smart.indoor.parking.system.currency.Currency;
-import ca.tech.sense.it.smart.indoor.parking.system.currency.CurrencyManager;
-
 public class Booking implements Serializable {
     private String id;
     private String title;
@@ -25,8 +22,7 @@ public class Booking implements Serializable {
     private String locationId; // Add this field
 
     // Default constructor required for calls to DataSnapshot.getValue(Booking.class)
-    public Booking() {
-    }
+    public Booking() {}
 
     // Add a constructor that includes the locationId
     public Booking(String title, long startTime, long endTime, String location,String postalCode, double price, String currencyCode, String currencySymbol, String slotNumber, String passKey, String locationId) {
