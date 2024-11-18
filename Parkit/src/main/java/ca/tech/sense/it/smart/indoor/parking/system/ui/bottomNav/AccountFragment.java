@@ -17,15 +17,19 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+
+import ca.tech.sense.it.smart.indoor.parking.system.MainActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui.FirstActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems.*;
+import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
 
 public class AccountFragment extends Fragment {
     private static final String ARG_CONTAINER_VIEW_ID = "containerViewId";
     private int containerViewId;
     private SharedPreferences sharedPreferences;
+    private String tag = "AccountFragment";
 
     public AccountFragment() {
         // Required empty public constructor
@@ -103,20 +107,32 @@ public class AccountFragment extends Fragment {
     private void openFragment(Fragment fragment) {
         FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(containerViewId, fragment);
-        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.replace(containerViewId, fragment, tag);
+        fragmentTransaction.addToBackStack(tag);
         fragmentTransaction.commit();
     }
 
     private void handleLogout() {
-        FirebaseAuthSingleton.getInstance().signOut();
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.remove("authToken");
-        editor.apply();
-        Intent intent = new Intent(requireActivity(), FirstActivity.class);
-        startActivity(intent);
-        requireActivity().finish();
+        DialogUtil.showLeaveAppDialog(requireContext(), getString(R.string.confirm_logout), getString(R.string.are_you_certain_you_wish_to_log_out_of_your_account), R.drawable.crisis,
+                new DialogUtil.BackPressCallback() {
+                    @Override
+                    public void onConfirm() {
+                        FirebaseAuthSingleton.getInstance().signOut();
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.remove("authToken");
+                        editor.apply();
+                        Intent intent = new Intent(requireActivity(), FirstActivity.class);
+                        startActivity(intent);
+                        requireActivity().finish();
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        //dismiss
+                    }
+                });
     }
+
 
     private enum AccountSection {
         MANAGE_ACCOUNT,

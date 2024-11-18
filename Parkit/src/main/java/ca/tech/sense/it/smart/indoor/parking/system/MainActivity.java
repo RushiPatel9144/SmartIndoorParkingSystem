@@ -32,6 +32,7 @@ import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.Activity;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.Home;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.Park;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.menu.MenuHandler;
+import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.NotificationHelper;
 
 public class MainActivity extends MenuHandler implements NavigationBarView.OnItemSelectedListener {
@@ -107,18 +108,20 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
                 if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
                     getSupportFragmentManager().popBackStack();
                 } else {
-                    new AlertDialog.Builder(MainActivity.this)
-                            .setMessage(R.string.are_you_sure_you_want_to_exit)
-                            .setCancelable(false)
-                            .setTitle(R.string.leaving)
-                            .setIcon(R.drawable.alert)
-                            .setPositiveButton(R.string.yes, (dialog, which) -> finish())
-                            .setNegativeButton(R.string.no, (dialog, which) -> dialog.dismiss())
-                            .show();
-                }
+                    DialogUtil.showLeaveAppDialog(MainActivity.this, getString(R.string.confirm_exit), getString(R.string.are_you_sure_you_want_to_exit_the_app), R.drawable.crisis,
+                            new DialogUtil.BackPressCallback() {
+                                @Override
+                                public void onConfirm() {
+                                    finishAffinity();
+                                }
+
+                                @Override
+                                public void onCancel() {
+                                    //dismiss
+                                }
+                            });}
             }
-        };
-        getOnBackPressedDispatcher().addCallback(this, callback);
+        };getOnBackPressedDispatcher().addCallback(this, callback);
     }
 
     @Override
@@ -181,11 +184,5 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
         }
     }
 
-    private void saveCurrentFragment(String fragmentTag) {
-        SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("currentFragment", fragmentTag);
-        editor.apply();
-    }
 }
 
