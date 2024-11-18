@@ -53,9 +53,9 @@ public class PaymentActivity extends AppCompatActivity {
     private Button applyPromoCodeButton;
     private Button confirmButton;
     private Button cancelButton;
-
     private PaymentSheet paymentSheet;
-    private final String currency = "usd";
+    private String currency = "CAD";
+    private double total;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,15 +113,16 @@ public class PaymentActivity extends AppCompatActivity {
 
     private void calculateTotalBreakdown() {
         if (booking != null) {
+            String currencySymbol = booking.getCurrencySymbol();
             double subtotal = booking.getPrice();
             double gstHst = subtotal * 0.13;
-            double platformFee = (subtotal * 5) / 100;
-            double total = subtotal + gstHst + platformFee;
+            double platformFee = (subtotal * 15) / 100;
+            total = subtotal + gstHst + platformFee;
 
-            subtotalTextView.setText(String.format(Locale.getDefault(), "$%.2f", subtotal));
-            gstHstTextView.setText(String.format(Locale.getDefault(), "$%.2f", gstHst));
-            platformFeeTextView.setText(String.format(Locale.getDefault(), "$%.2f", platformFee));
-            totalTextView.setText(String.format(Locale.getDefault(), "$%.2f", total));
+            subtotalTextView.setText(String.format(Locale.getDefault(), "%s %.2f",currencySymbol, subtotal));
+            gstHstTextView.setText(String.format(Locale.getDefault(), "%s %.2f",currencySymbol, gstHst));
+            platformFeeTextView.setText(String.format(Locale.getDefault(), "%s %.2f",currencySymbol, platformFee));
+            totalTextView.setText(String.format(Locale.getDefault(), "%s %.2f",currencySymbol, total));
         }
     }
 
@@ -135,7 +136,8 @@ public class PaymentActivity extends AppCompatActivity {
         OkHttpClient client = new OkHttpClient();
         String url = "https://parkit-cd4c2ec26f90.herokuapp.com/create-payment-intent";
 
-        double totalAmount = Double.parseDouble(totalTextView.getText().toString().replace("$", "")) * 100;
+        double totalAmount = total * 100;
+        currency = booking.getCurrencyCode();
 
         JSONObject jsonRequest = new JSONObject();
         try {

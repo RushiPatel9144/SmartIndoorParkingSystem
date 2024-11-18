@@ -28,6 +28,9 @@ import java.util.Locale;
 import java.util.Map;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.currency.Currency;
+import ca.tech.sense.it.smart.indoor.parking.system.currency.CurrencyManager;
+import ca.tech.sense.it.smart.indoor.parking.system.currency.CurrencyPreferenceManager;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseDatabaseSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.model.activity.Booking;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
@@ -50,6 +53,8 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
     private final String locationId;
     private String selectedDate;
     private final BookingManager bookingManager;
+    private double convertedPrice;
+    private Currency selectedCurrency;
 
 
     // Constructor with dependency injection
@@ -112,7 +117,7 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
                     addressText.setText(location.getAddress());
                     postalCodeText.setText(location.getPostalCode());
                     setupSlotSpinnerData(location.getSlots());
-                    bookingManager.fetchPrice(locationId, price -> priceTextView.setText(String.format(Locale.getDefault(), "Price: $%.2f", price)));
+                    bookingManager.fetchPrice(locationId, price -> displayConvertedPrice(price));
                 } else {
                     setErrorMessage(requireContext().getString(R.string.location_data_is_not_available));
                 }
@@ -126,6 +131,21 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
             }
         });
     }
+
+    // Method to convert currency
+    private void displayConvertedPrice(double priceInCad) {
+        CurrencyPreferenceManager currencyPreferenceManager = new CurrencyPreferenceManager(requireContext());
+        String selectedCurrencyCode = currencyPreferenceManager.getSelectedCurrency();
+        selectedCurrency = CurrencyManager.getInstance().getCurrency(selectedCurrencyCode);
+
+        if (selectedCurrency != null) {
+            convertedPrice = CurrencyManager.getInstance().convertFromCAD(priceInCad,selectedCurrencyCode);
+            priceTextView.setText(String.format(Locale.getDefault(), "Price: %s %.2f", selectedCurrency.getSymbol(), convertedPrice));
+        } else {
+            priceTextView.setText(String.format(Locale.getDefault(), "Price: %s %.2f", "CAD$", priceInCad));
+        }
+    }
+
 
     // Method to set up slot spinner data
     private void setupSlotSpinnerData(Map<String, ParkingSlot> slots) {
@@ -215,7 +235,9 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
                         convertToMillis(selectedDate + " " + selectedTimeSlot.split(" - ")[0]),
                         convertToMillis(selectedDate + " " + selectedTimeSlot.split(" - ")[1]),
                         addressText.getText().toString(),
-                        Double.parseDouble(priceTextView.getText().toString().replace("Price: $", "")),
+                        convertedPrice,
+                        selectedCurrency.getCode(),
+                        selectedCurrency.getSymbol(),
                         selectedSlot,
                         bookingManager.generatePassKey(), // Generate the pass key
                         locationId // Add the locationId to the booking
