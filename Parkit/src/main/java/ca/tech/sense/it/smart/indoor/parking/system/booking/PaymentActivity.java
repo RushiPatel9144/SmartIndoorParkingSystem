@@ -27,6 +27,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -50,6 +51,9 @@ public class PaymentActivity extends AppCompatActivity {
     private TextView gstHstTextView;
     private TextView platformFeeTextView;
     private TextView totalTextView;
+    private TextView slotTextView;
+    private TextView timeTextView;
+    private TextView dateTextView;
     private Button applyPromoCodeButton;
     private Button confirmButton;
     private Button cancelButton;
@@ -101,13 +105,18 @@ public class PaymentActivity extends AppCompatActivity {
         applyPromoCodeButton = findViewById(R.id.applyPromoCodeButton);
         confirmButton = findViewById(R.id.confirmButton);
         cancelButton = findViewById(R.id.cancelButton);
+        slotTextView = findViewById(R.id.slotTextView);
+        timeTextView = findViewById(R.id.timeTextView);
+        dateTextView = findViewById(R.id.dateTextView);
     }
 
     private void setBookingDetails() {
         if (booking != null) {
-            parkingNameTextView.setText(booking.getSlotNumber());
+            parkingNameTextView.setText(booking.getTitle());
             addressTextView.setText(booking.getLocation());
-            postalCodeTextView.setText(booking.getLocationId());
+            postalCodeTextView.setText(booking.getPostalCode());
+            slotTextView.setText(String.format("Slot Number: %s", booking.getSlotNumber()));
+            updateDateAndTimeTextViews(booking.getStartTime(), booking.getEndTime());
         }
     }
 
@@ -116,7 +125,7 @@ public class PaymentActivity extends AppCompatActivity {
             String currencySymbol = booking.getCurrencySymbol();
             double subtotal = booking.getPrice();
             double gstHst = subtotal * 0.13;
-            double platformFee = (subtotal * 15) / 100;
+            double platformFee = subtotal * 0.10;
             total = subtotal + gstHst + platformFee;
 
             subtotalTextView.setText(String.format(Locale.getDefault(), "%s %.2f",currencySymbol, subtotal));
@@ -228,4 +237,21 @@ public class PaymentActivity extends AppCompatActivity {
     private void showToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
+
+
+    public void updateDateAndTimeTextViews(long startTimeMillis, long endTimeMillis) {
+        // Format date (without time)
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
+        String formattedDate = dateFormat.format(new Date(startTimeMillis));
+
+        // Format time (without date)
+        SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a", Locale.getDefault());
+        String formattedStartTime = timeFormat.format(new Date(startTimeMillis));
+        String formattedEndTime = timeFormat.format(new Date(endTimeMillis));
+
+        // Update the TextViews with the formatted date and time
+        dateTextView.setText(MessageFormat.format("Date: {0}", formattedDate));
+        timeTextView.setText(MessageFormat.format("Time: {0} - {1}", formattedStartTime, formattedEndTime));
+    }
+
 }

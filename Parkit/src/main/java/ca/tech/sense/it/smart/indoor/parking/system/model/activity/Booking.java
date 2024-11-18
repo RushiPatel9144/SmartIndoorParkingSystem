@@ -16,6 +16,7 @@ public class Booking implements Serializable {
     private long startTime;
     private long endTime;
     private String location;
+    private String postalCode;
     private double price;
     private String currencyCode;
     private String currencySymbol;
@@ -28,7 +29,7 @@ public class Booking implements Serializable {
     }
 
     // Add a constructor that includes the locationId
-    public Booking(String title, long startTime, long endTime, String location, double price, String currencyCode, String currencySymbol, String slotNumber, String passKey, String locationId) {
+    public Booking(String title, long startTime, long endTime, String location,String postalCode, double price, String currencyCode, String currencySymbol, String slotNumber, String passKey, String locationId) {
         this.title = title;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -39,6 +40,15 @@ public class Booking implements Serializable {
         this.locationId = locationId;
         this.currencySymbol = currencySymbol;
         this.currencyCode = currencyCode;
+        this.postalCode = postalCode;
+    }
+
+    public String getPostalCode() {
+        return postalCode;
+    }
+
+    public void setPostalCode(String postalCode) {
+        this.postalCode = postalCode;
     }
 
     // Getters and setters for all fields, including locationId

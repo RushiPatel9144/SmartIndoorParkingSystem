@@ -169,6 +169,7 @@ public class BookingManager {
                             startTime,
                             endTime,
                             address,
+                            null,
                             price,
                             null,
                             null,

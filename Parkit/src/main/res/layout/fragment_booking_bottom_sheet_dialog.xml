@@ -58,6 +58,13 @@
                 android:padding="12dp">
 
                 <TextView
+                    android:id="@+id/addressTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/address"
+                    android:textSize="18sp"/>
+
+                <TextView
                     android:id="@+id/addressText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

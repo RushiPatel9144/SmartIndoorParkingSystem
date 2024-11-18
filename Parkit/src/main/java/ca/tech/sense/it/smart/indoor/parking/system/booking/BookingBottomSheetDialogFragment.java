@@ -48,6 +48,7 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
     private TextView selectedDateTextview;
     private TextView priceTextView;
     private TextView errorTextView;
+    private TextView titleTextView;
     private ImageButton selectDateButton;
     private ImageButton starButton;
     private final String locationId;
@@ -104,6 +105,7 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
         postalCodeText = view.findViewById(R.id.postalCodeText);
         selectedDateTextview = view.findViewById(R.id.selectedDate);
         priceTextView = view.findViewById(R.id.priceTag);
+        titleTextView = view.findViewById(R.id.addressTitle);
     }
 
     // Method to fetch parking location data from Firebase
@@ -114,6 +116,7 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
             @Override
             public void onFetchSuccess(ParkingLocation location) {
                 if (location != null) {
+                    titleTextView.setText(location.getName());
                     addressText.setText(location.getAddress());
                     postalCodeText.setText(location.getPostalCode());
                     setupSlotSpinnerData(location.getSlots());
@@ -231,10 +234,11 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
             if (selectedSlot != null && selectedTimeSlot != null && selectedDate != null) {
                 // Create a Booking object with the selected details
                 Booking booking = new Booking(
-                        "Park It", // Use "Park It" as title
+                        titleTextView.getText().toString(),
                         convertToMillis(selectedDate + " " + selectedTimeSlot.split(" - ")[0]),
                         convertToMillis(selectedDate + " " + selectedTimeSlot.split(" - ")[1]),
                         addressText.getText().toString(),
+                        postalCodeText.getText().toString(),
                         convertedPrice,
                         selectedCurrency.getCode(),
                         selectedCurrency.getSymbol(),
