@@ -185,7 +185,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:fontFamily="@font/poppins_medium"
-            android:text="@string/already_have_an_account"
+            android:text="@string/already_have_an_account_"
             android:textColor="@color/semi_transparent_black" />
         <TextView
             android:id="@+id/jump_to_login"

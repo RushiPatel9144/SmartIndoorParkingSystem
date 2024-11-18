@@ -27,23 +27,11 @@
         android:theme="@style/Base.Theme.SmartIndoorParkingSystem"
         tools:targetApi="31">
         <activity
-            android:name=".launcherActivity.ui.OwnerSignUpActivity"
-            android:exported="false" />
-        <activity
-            android:name=".launcherActivity.ui.OwnerLoginActivity"
-            android:exported="false" />
-        <activity
             android:name=".launcherActivity.onBoarding.OnboardingActivity"
             android:exported="true"
             android:theme="@style/Base.Theme.SmartIndoorParkingSystem" />
         <activity
-            android:name=".stripe.PaymentActivity"
-            android:exported="false" />
-        <activity
-            android:name=".launcherActivity.ui.OwnerSignUpActivity"
-            android:exported="false" />
-        <activity
-            android:name=".launcherActivity.ui.OwnerLoginActivity"
+            android:name=".booking.PaymentActivity"
             android:exported="false" />
         <activity
             android:name=".owner.OwnerActivity"

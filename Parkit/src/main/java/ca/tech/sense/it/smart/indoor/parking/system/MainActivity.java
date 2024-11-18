@@ -33,7 +33,7 @@ import java.util.Objects;
 
 import ca.tech.sense.it.smart.indoor.parking.system.Manager.NotificationManagerHelper;
 import ca.tech.sense.it.smart.indoor.parking.system.Manager.ThemeManager;
-import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.LoginActivity;
+import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui.LoginActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.model.user.UserManager;
 import ca.tech.sense.it.smart.indoor.parking.system.network.BaseActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems.SettingsFragment;
