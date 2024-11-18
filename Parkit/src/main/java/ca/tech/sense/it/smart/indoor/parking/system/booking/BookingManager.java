@@ -170,6 +170,8 @@ public class BookingManager {
                             endTime,
                             address,
                             price,
+                            null,
+                            null,
                             slot,
                             passKey,
                             locationId // Add the locationId to the booking

@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.Switch;
@@ -19,9 +20,16 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import ca.tech.sense.it.smart.indoor.parking.system.Manager.NotificationManagerHelper;
 import ca.tech.sense.it.smart.indoor.parking.system.Manager.PreferenceManager;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.currency.Currency;
+import ca.tech.sense.it.smart.indoor.parking.system.currency.CurrencyManager;
+import ca.tech.sense.it.smart.indoor.parking.system.currency.CurrencyPreferenceManager;
 import ca.tech.sense.it.smart.indoor.parking.system.viewModel.ThemeViewModel;
 
 public class SettingsFragment extends Fragment {
@@ -105,11 +113,43 @@ public class SettingsFragment extends Fragment {
     }
 
     private void initializeSpinner() {
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(requireActivity(),
-                R.array.currency_options, android.R.layout.simple_spinner_item);
+        CurrencyManager currencyManager = CurrencyManager.getInstance();
+        Map<String, Currency> currencies = currencyManager.getCurrencies();
+
+        // Extract currency codes into a list for displaying in the spinner
+        List<String> currencyNames = new ArrayList<>(currencies.keySet());
+
+        // Create and set the ArrayAdapter for the spinner
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireActivity(),
+                android.R.layout.simple_spinner_item, currencyNames);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerCurrency.setAdapter(adapter);
+
+        // Get the stored currency from SharedPreferences
+        CurrencyPreferenceManager currencyPreferenceManager = new CurrencyPreferenceManager(requireActivity());
+        String storedCurrencyCode = currencyPreferenceManager.getSelectedCurrency();
+
+        // Set the spinner's selected item to the stored currency (if exists)
+        int storedCurrencyPosition = currencyNames.indexOf(storedCurrencyCode);
+        if (storedCurrencyPosition != -1) {
+            spinnerCurrency.setSelection(storedCurrencyPosition);
+        }
+        // Handle item selection from the spinner
+        spinnerCurrency.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                // Get selected currency code from the spinner and retrieve the corresponding currency object
+                String selectedCurrencyCode = currencyNames.get(position);
+                // Save the selected currency in SharedPreferences
+                currencyPreferenceManager.setSelectedCurrency(selectedCurrencyCode);
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                // Optionally handle the case where no item is selected
+            }
+        });
     }
+
 
     private void applyTheme(boolean isDarkMode) {
         AppCompatDelegate.setDefaultNightMode(isDarkMode ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);

@@ -7,6 +7,9 @@ package ca.tech.sense.it.smart.indoor.parking.system.model.activity;
 
 import java.io.Serializable;
 
+import ca.tech.sense.it.smart.indoor.parking.system.currency.Currency;
+import ca.tech.sense.it.smart.indoor.parking.system.currency.CurrencyManager;
+
 public class Booking implements Serializable {
     private String id;
     private String title;
@@ -14,6 +17,8 @@ public class Booking implements Serializable {
     private long endTime;
     private String location;
     private double price;
+    private String currencyCode;
+    private String currencySymbol;
     private String slotNumber;
     private String passKey;
     private String locationId; // Add this field
@@ -23,7 +28,7 @@ public class Booking implements Serializable {
     }
 
     // Add a constructor that includes the locationId
-    public Booking(String title, long startTime, long endTime, String location, double price, String slotNumber, String passKey, String locationId) {
+    public Booking(String title, long startTime, long endTime, String location, double price, String currencyCode, String currencySymbol, String slotNumber, String passKey, String locationId) {
         this.title = title;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -32,11 +37,29 @@ public class Booking implements Serializable {
         this.slotNumber = slotNumber;
         this.passKey = passKey;
         this.locationId = locationId;
+        this.currencySymbol = currencySymbol;
+        this.currencyCode = currencyCode;
     }
 
     // Getters and setters for all fields, including locationId
     public String getId() {
         return id;
+    }
+
+    public void setCurrencySymbol(String currencySymbol) {
+        this.currencySymbol = currencySymbol;
+    }
+
+    public String getCurrencySymbol() {
+        return currencySymbol;
+    }
+
+    public String getCurrencyCode() {
+        return currencyCode;
+    }
+
+    public void setCurrencyCode(String currencyCode) {
+        this.currencyCode = currencyCode;
     }
 
     public void setId(String id) {

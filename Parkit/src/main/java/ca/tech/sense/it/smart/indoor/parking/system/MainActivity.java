@@ -1,7 +1,5 @@
 package ca.tech.sense.it.smart.indoor.parking.system;
 
-import static ca.tech.sense.it.smart.indoor.parking.system.R.string.notification_permission_denied;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -16,27 +14,20 @@ import android.Manifest;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import java.util.Objects;
-
 import ca.tech.sense.it.smart.indoor.parking.system.Manager.NotificationManagerHelper;
 import ca.tech.sense.it.smart.indoor.parking.system.Manager.ThemeManager;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui.LoginActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.model.user.UserManager;
-import ca.tech.sense.it.smart.indoor.parking.system.network.BaseActivity;
-import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems.SettingsFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.Activity;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.Home;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.Park;
@@ -92,14 +83,6 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
         notificationManagerHelper.sendWelcomeBackNotification();
         notificationManagerHelper.sendNewUserWelcomeNotification();
 
-        SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        String currentFragment = sharedPreferences.getString("currentFragment", "homeFragment");
-
-        if (currentFragment.equals("settingsFragment")) {
-            openFragment(new SettingsFragment(), "settingsFragment");
-        } else {
-            openFragment(new Home(), "homeFragment");
-        }
     }
 
     private void initFirebaseAuth() {
@@ -196,16 +179,6 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
                 Toast.makeText(this, R.string.notification_permission_denied, Toast.LENGTH_SHORT).show();
             }
         }
-    }
-
-    private void openFragment(Fragment fragment, String fragmentTag) {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.flFragment, fragment, fragmentTag);
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
-
-        saveCurrentFragment(fragmentTag);
     }
 
     private void saveCurrentFragment(String fragmentTag) {

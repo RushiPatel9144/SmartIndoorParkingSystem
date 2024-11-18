@@ -54,6 +54,8 @@ import java.util.concurrent.Executors;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.booking.BookingBottomSheetDialogFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.booking.BookingManager;
+import ca.tech.sense.it.smart.indoor.parking.system.currency.CurrencyManager;
+import ca.tech.sense.it.smart.indoor.parking.system.currency.CurrencyService;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
 
 import ca.tech.sense.it.smart.indoor.parking.system.utility.ParkingUtility;
@@ -66,6 +68,7 @@ public class Park extends Fragment implements OnMapReadyCallback {
     private ExecutorService executorService;
     private ActivityResultLauncher<String> requestPermissionLauncher;
     private FusedLocationProviderClient fusedLocationClient;
+    private boolean ratesFetched = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -73,6 +76,9 @@ public class Park extends Fragment implements OnMapReadyCallback {
         parkingUtility = new ParkingUtility();
         executorService = Executors.newSingleThreadExecutor(); // Executor for background tasks
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext());
+        if (!ratesFetched) {
+            fetchExchangeRates();
+        }
         registerPermissionLauncher();
     }
 
@@ -270,5 +276,19 @@ public class Park extends Fragment implements OnMapReadyCallback {
                     }
                 }
         );
+    }
+    private void fetchExchangeRates() {
+        CurrencyManager.getInstance().fetchAndUpdateRates(new CurrencyService.Callback() {
+            @Override
+            public void onSuccess(Map<String, Double> exchangeRates) {
+                Log.d("Currency", "Exchange rates fetched successfully.");
+                ratesFetched = true;
+            }
+            @Override
+            public void onError(String error) {
+                Log.e("Currency", "Error fetching exchange rates: " + error);
+                ratesFetched = true;
+            }
+        });
     }
 }
