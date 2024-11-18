@@ -303,6 +303,7 @@
     <string name="don_t_have_an_account">Don\'t Have An Account</string>
     <string name="already_have_an_account_">Already have An Account</string>
     <string name="enter_your_email_first">Enter Your Email First</string>
+    <string name="date">Date</string>
 
 
 </resources>

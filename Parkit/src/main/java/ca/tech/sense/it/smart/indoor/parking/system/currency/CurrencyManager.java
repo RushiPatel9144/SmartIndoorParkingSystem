@@ -24,9 +24,11 @@ public class CurrencyManager {
 
     private void loadDefaultCurrencies() {
         currencies.put("CAD", new Currency("CAD", "CAD$", 1.0));  // Base currency with rate 1.0
-        currencies.put("USD", new Currency("USD", "USD$", 0.0));  // Placeholder rate
-        currencies.put("EUR", new Currency("EUR", "€", 0.0));  // Placeholder rate
-        currencies.put("INR", new Currency("INR", "₹", 0.0));  // Placeholder rate
+        currencies.put("USD", new Currency("USD", "USD$", 0.0));  // USD Dollar
+        currencies.put("EUR", new Currency("EUR", "€", 0.0));  // Euro
+        currencies.put("INR", new Currency("INR", "₹", 0.0));  // Indian Rupees
+        currencies.put("GBP", new Currency("GBP", "£", 0.0));  // British Pound
+        currencies.put("AUD", new Currency("AUD", "A$", 0.0));  // Australian Dollar
     }
 
     public Map<String, Currency> getCurrencies() {
