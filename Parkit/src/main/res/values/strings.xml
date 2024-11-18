@@ -310,6 +310,12 @@
     <string name="no_stay">No, Stay</string>
     <string name="confirm_logout">Confirm Logout</string>
     <string name="are_you_certain_you_wish_to_log_out_of_your_account">Are you certain you wish to log out of your account?</string>
+    <string name="add_new_location">Add New Location</string>
+    <string name="your_parking_locations">Your Parking Locations</string>
+    <string name="show_slots">Show Slots</string>
+    <string name="location_name">Location Name</string>
+    <string name="save_location">Save Location</string>
+    <string name="or">OR</string>
 
 
 </resources>

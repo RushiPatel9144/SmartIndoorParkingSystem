@@ -18,6 +18,8 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
@@ -28,6 +30,7 @@ import ca.tech.sense.it.smart.indoor.parking.system.Manager.NotificationManagerH
 import ca.tech.sense.it.smart.indoor.parking.system.Manager.ThemeManager;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui.LoginActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.model.user.UserManager;
+import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.Activity;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.Home;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.Park;
@@ -43,7 +46,7 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
     private final Home homeFragment = new Home();
     private final Park parkFragment = new Park();
     private final Activity activityFragment = new Activity();
-    private final ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountFragment accountFragment = ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountFragment.newInstance(R.id.flFragment);
+    private final AccountFragment accountFragment = AccountFragment.newInstance(R.id.flFragment);
     private static final String PREFS_NAME = "MyAppPreferences";
     private static final int NOTIFICATION_PERMISSION_CODE = 100;
     private ThemeManager themeManager;
@@ -129,16 +132,16 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
         int itemId = item.getItemId();
 
         if (itemId == R.id.navigation_home) {
-            loadFragments(homeFragment);
+            loadFragments(homeFragment, "HomeFragment");
             toolbar.setTitle(R.string.home);
         } else if (itemId == R.id.navigation_park) {
-            loadFragments(parkFragment);
+            loadFragments(parkFragment, "ParkFragment");
             toolbar.setTitle(R.string.park);
         } else if (itemId == R.id.navigation_activity) {
-            loadFragments(activityFragment);
+            loadFragments(activityFragment, "ActivityFragment");
             toolbar.setTitle(R.string.activity);
         } else if (itemId == R.id.navigation_account) {
-            loadFragments(accountFragment);
+            loadFragments(accountFragment, "AccountFragment");
             toolbar.setTitle(R.string.my_account);
         } else {
             return false;
@@ -146,12 +149,14 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
         return true;
     }
 
-    private void loadFragments(Fragment fragment) {
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.flFragment, fragment)
-                .commit();
+    private void loadFragments(Fragment fragment, String tag) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.replace(R.id.flFragment,fragment,tag);
+        transaction.commit();
     }
+
+
 
     private void navigateToLoginActivity() {
         Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
