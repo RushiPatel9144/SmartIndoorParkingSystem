@@ -39,7 +39,7 @@ public class ActiveFragment extends Fragment {
         noBookingsText = view.findViewById(R.id.no_bookings_text);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         cancelBookingViewModel = new ViewModelProvider(requireActivity()).get(CancelBookingViewModel.class);
-        bookingAdapter = new BookingAdapter(new ArrayList<>(), cancelBookingViewModel, R.layout.item_booking_active);
+        bookingAdapter = new BookingAdapter(new ArrayList<>(), cancelBookingViewModel, bookingViewModel, R.layout.item_booking_active);
         recyclerView.setAdapter(bookingAdapter);
 
         bookingViewModel = new ViewModelProvider(requireActivity()).get(BookingViewModel.class);

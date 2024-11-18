@@ -19,6 +19,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Executors;
@@ -63,10 +64,9 @@ public class BookingViewModel extends AndroidViewModel {
                 for (DataSnapshot bookingSnapshot : snapshot.getChildren()) {
                     Booking booking = bookingSnapshot.getValue(Booking.class);
                     if (booking != null) {
-                        booking.setId(bookingSnapshot.getKey()); // Set the booking ID
+                        booking.setId(bookingSnapshot.getKey());
                         if (booking.getEndTime() < currentTime) {
                             historyBookings.add(booking);
-                            // Expire the pass key for completed bookings
                             bookingManager.expirePassKey(userId, bookingSnapshot.getKey());
                         } else if (booking.getStartTime() > currentTime) {
                             upcomingBookings.add(booking);
@@ -76,11 +76,13 @@ public class BookingViewModel extends AndroidViewModel {
                     }
                 }
 
+                // Sort upcoming bookings by start time
+                upcomingBookings.sort(Comparator.comparingLong(Booking::getStartTime));
+
                 activeBookingsLiveData.setValue(activeBookings);
                 upcomingBookingsLiveData.setValue(upcomingBookings);
                 historyBookingsLiveData.setValue(historyBookings);
             }
-
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
@@ -88,4 +90,5 @@ public class BookingViewModel extends AndroidViewModel {
             }
         });
     }
+
 }
