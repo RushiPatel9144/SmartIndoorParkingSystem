@@ -58,6 +58,7 @@ import ca.tech.sense.it.smart.indoor.parking.system.currency.CurrencyManager;
 import ca.tech.sense.it.smart.indoor.parking.system.currency.CurrencyService;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
 
+import ca.tech.sense.it.smart.indoor.parking.system.utility.AutocompleteSearchHelper;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.ParkingUtility;
 
 public class Park extends Fragment implements OnMapReadyCallback {
@@ -91,9 +92,6 @@ public class Park extends Fragment implements OnMapReadyCallback {
     public void onResume() {
         super.onResume();
         executorService.execute(() -> requireActivity().runOnUiThread(() -> {
-            if (!Places.isInitialized()) {
-                Places.initialize(requireContext(), "AIzaSyCBb9Vk3FUhAz6Tf7ixMIk5xqu3IGlZRd0"); // Initialize Places API only once
-            }
             initializeMap();
             initializeAutocomplete();
         }));
@@ -107,24 +105,21 @@ public class Park extends Fragment implements OnMapReadyCallback {
     }
 
     private void initializeAutocomplete() {
-        AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
-                getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment);
-        if (autocompleteFragment != null) {
-            autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.DISPLAY_NAME, Place.Field.LOCATION));
-            autocompleteFragment.setHint(getString(R.string.search_for_a_location));
-            autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
-                @Override
-                public void onPlaceSelected(@NonNull Place place) {
-                    // Handle place selection in a background thread
-                    executorService.execute(() -> handlePlaceSelected(place));
-                }
+        AutocompleteSearchHelper.initializeAutocompleteSearch(
+                (AutocompleteSupportFragment) getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment),
+                requireContext(),
+                new AutocompleteSearchHelper.PlaceSelectionCallback() {
+                    @Override
+                    public void onPlaceSelected(Place place) {
+                        executorService.execute(() -> handlePlaceSelected(place));
+                    }
 
-                @Override
-                public void onError(@NonNull Status status) {
-                    Log.d(TAG, getString(R.string.error) + status.getStatusMessage());
+                    @Override
+                    public void onError(String errorMessage) {
+                        Log.d(TAG, getString(R.string.error) + errorMessage);
+                    }
                 }
-            });
-        }
+        );
     }
 
     @Override
