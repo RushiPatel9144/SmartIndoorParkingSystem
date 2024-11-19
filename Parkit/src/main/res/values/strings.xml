@@ -347,6 +347,18 @@
     <string name="location_added_successfully">Location added successfully!</string>
     <string name="parking_address">Parking Address</string>
     <string name="enter_parking_address">Enter Parking Address</string>
+    <string name="slot_added_successfully">Slot Added Successfully</string>
+    <string name="failed_to_generate_slot_id">Failed To Generate Slot Id.</string>
+    <string name="failed_to_save_sensor_data">Failed To Save Sensor Data</string>
+    <string name="failed_to_save_slot_data">Fsiled To Save Slot Data</string>
+    <string name="failed_to_save_owner_sensor_data">"Failed To Save Sensor Data "</string>
+    <string name="failed_to_save_owner_slot_data">Failed to save slot data</string>
+    <string name="add_location">Add Location</string>
+    <string name="location_address">Location Address</string>
+    <string name="price_0_00">Price: $0.00</string>
+    <string name="slot_id">Slot ID</string>
+    <string name="status">Status</string>
+    <string name="sensor_info">Sensor Info</string>
 
 
 </resources>

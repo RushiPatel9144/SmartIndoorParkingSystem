@@ -1,38 +1,52 @@
 package ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.location;
 
+import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSingleton;
+import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseDatabaseSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
 
-public class LocationsFragment extends Fragment implements LocationAdapter.OnAddLocationClickListener, LocationAdapter.OnItemClickListener {
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+public class LocationsFragment extends Fragment implements LocationAdapter.OnItemClickListener {
 
     private RecyclerView locationsRecyclerView;
     private LinearLayout emptyStateLayout;
     private ProgressBar progressBar;
     private LocationAdapter adapter;
     private List<ParkingLocation> parkingLocations;
+    private DatabaseReference databaseReference;
+    private FirebaseAuth oAuth;
     private Button button;
-    private FrameLayout fragment_container;
-
-    public LocationsFragment() {
-        // Empty constructor
-    }
+    private ImageButton addButton;
 
     @Nullable
     @Override
@@ -42,31 +56,61 @@ public class LocationsFragment extends Fragment implements LocationAdapter.OnAdd
         // Initialize views
         locationsRecyclerView = view.findViewById(R.id.locationsRecyclerView);
         progressBar = view.findViewById(R.id.progressBar);
-        button = view.findViewById(R.id.Button);
         emptyStateLayout = view.findViewById(R.id.emptyStateLayout);
-        fragment_container = view.findViewById(R.id.fragment_container);
-        // Set button click listener
-        button.setOnClickListener(v -> addLocation());
+        button = view.findViewById(R.id.addLocationEmptyStateButton);
+        addButton = view.findViewById(R.id.addLocationButton);
+        button.setOnClickListener(view1 -> {
+            Intent intent = new Intent(getContext(), AddLocationActivity.class);
+            startActivity(intent);
+        });
+        addButton.setOnClickListener(view1 -> {
+            Intent intent = new Intent(getContext(), AddLocationActivity.class);
+            startActivity(intent);
+        });
 
-        // Simulate data loading
+        oAuth = FirebaseAuthSingleton.getInstance();
+
+        // Set up RecyclerView
+        parkingLocations = new ArrayList<>();
+        adapter = new LocationAdapter(parkingLocations, this);
+        locationsRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        locationsRecyclerView.setAdapter(adapter);
+
+        // Load data from Firebase
+        fetchParkingLocations();
+
+        return view;
+    }
+
+    private void fetchParkingLocations() {
         progressBar.setVisibility(View.VISIBLE);
         locationsRecyclerView.setVisibility(View.GONE);
         emptyStateLayout.setVisibility(View.GONE);
 
-        parkingLocations = new ArrayList<>(); // Replace with actual data source
+        databaseReference = FirebaseDatabaseSingleton.getInstance().getReference("owners")
+                .child(Objects.requireNonNull(oAuth.getUid())).child("parkingLocationIds");
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @SuppressLint("NotifyDataSetChanged")
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                parkingLocations.clear();
+                for (DataSnapshot locationSnapshot : snapshot.getChildren()) {
+                    ParkingLocation location = locationSnapshot.getValue(ParkingLocation.class);
+                    if (location != null) {
+                        parkingLocations.add(location);
+                    }
+                }
+                adapter.notifyDataSetChanged();
+                progressBar.setVisibility(View.GONE);
+                updateUI();
+            }
 
-        // Set up RecyclerView
-        adapter = new LocationAdapter(parkingLocations, this, this);
-        locationsRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        locationsRecyclerView.setAdapter(adapter);
-
-        // Simulate loading delay
-        view.postDelayed(() -> {
-            progressBar.setVisibility(View.GONE);
-            updateUI();
-        }, 2000);
-
-        return view;
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                progressBar.setVisibility(View.GONE);
+                showError(error.getMessage());
+            }
+        });
     }
 
     private void updateUI() {
@@ -76,27 +120,18 @@ public class LocationsFragment extends Fragment implements LocationAdapter.OnAdd
         } else {
             locationsRecyclerView.setVisibility(View.VISIBLE);
             emptyStateLayout.setVisibility(View.GONE);
+            addButton.setVisibility(View.VISIBLE);
         }
-    }
-
-    public void addLocation() {
-        // Replace current fragment with AddLocationFragment
-        AddLocationFragment fragment = new AddLocationFragment();
-        FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-        transaction.replace(R.id.fragment_container, fragment); // Ensure fragment_container is defined in your layout
-        transaction.addToBackStack(null);
-        transaction.commit();
-        fragment_container.setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    public void onAddLocationClick() {
-        addLocation();
     }
 
     @Override
     public void onItemClick(ParkingLocation location) {
-        // Handle item click (navigate to location details or edit)
+        // Navigate to the SlotListFragment when a location is clicked
+        SlotListBottomSheetDialogFragment bottomSheetFragment = SlotListBottomSheetDialogFragment.newInstance(location.getId());
+        bottomSheetFragment.show(getChildFragmentManager(), bottomSheetFragment.getTag());
+    }
+
+    private void showError(String message) {
+        Toast.makeText(requireContext(), "Error: " + message, Toast.LENGTH_SHORT).show();
     }
 }
-

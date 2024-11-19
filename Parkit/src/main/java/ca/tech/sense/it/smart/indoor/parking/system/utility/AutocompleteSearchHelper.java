@@ -26,7 +26,7 @@ public class AutocompleteSearchHelper {
             Places.initialize(context, "AIzaSyCBb9Vk3FUhAz6Tf7ixMIk5xqu3IGlZRd0");
         }
 
-        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.DISPLAY_NAME, Place.Field.LOCATION, Place.Field.SHORT_FORMATTED_ADDRESS));
+        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.DISPLAY_NAME, Place.Field.LOCATION, Place.Field.FORMATTED_ADDRESS));
         autocompleteFragment.setHint("Search for a location");
 
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {

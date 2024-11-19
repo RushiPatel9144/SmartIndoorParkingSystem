@@ -1,0 +1,121 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="#F5F5F5">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="30dp"
+        android:padding="16dp">
+
+        <!-- Title -->
+        <TextView
+            android:id="@+id/addSlotTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/add_new_slot"
+            android:textSize="24sp"
+            android:textColor="#4A4A4A"
+            android:fontFamily="sans-serif-medium"
+            android:paddingBottom="16dp" />
+
+        <!-- Slot ID -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/parking_slot_id_name">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/slotId"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:textColorHint="#888888"
+                android:background="@drawable/edit_text_background"
+                android:padding="12dp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Sensor Type -->
+        <TextView
+            android:id="@+id/sensorTypeLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/sensor_type"
+            android:textSize="20sp"
+            android:textColor="#4A4A4A"
+            android:paddingTop="24dp"
+            android:paddingBottom="16dp" />
+
+        <Spinner
+            android:id="@+id/sensorTypeSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="12dp"
+            android:entries="@array/sensors"
+            android:background="@drawable/spinner_background"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Sensor Details -->
+        <TextView
+            android:id="@+id/sensorDetailsLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/sensor_details"
+            android:textSize="20sp"
+            android:textColor="#4A4A4A"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp" />
+
+        <!-- Battery Level -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/battery_level">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/batteryLevel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal"
+                android:textColorHint="#888888"
+                android:background="@drawable/edit_text_background"
+                android:padding="16dp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="30dp"
+            android:layout_marginBottom="16dp">
+
+            <Button
+                android:id="@+id/backButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/back"
+                android:layout_marginEnd="8dp"
+                android:paddingVertical="12dp"
+                android:backgroundTint="@color/gray"
+                android:textSize="16sp"/>
+
+            <Button
+                android:id="@+id/addSlotButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/add_slot"
+                android:layout_marginStart="8dp"
+                android:paddingVertical="12dp"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>

@@ -1,21 +1,14 @@
 package ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.location;
 
-import static androidx.media3.common.MediaLibraryInfo.TAG;
-
+import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
-
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
@@ -26,11 +19,10 @@ import java.util.Objects;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
-import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingSlot;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.AutocompleteSearchHelper;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.ParkingUtility;
 
-public class AddLocationFragment extends Fragment {
+public class AddLocationActivity extends AppCompatActivity {
 
     private EditText locationName;
     private EditText postalCode;
@@ -45,41 +37,32 @@ public class AddLocationFragment extends Fragment {
     private ParkingUtility parkingUtility = new ParkingUtility();
     private FirebaseAuth oAuth;
 
-    public AddLocationFragment() {
-        // Required empty public constructor
-    }
-
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_add_location); // You should create an activity layout file for this
+
+        oAuth = FirebaseAuthSingleton.getInstance();
+        initializeUI();
+        initializeAutocomplete();
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view =inflater.inflate(R.layout.fragment_add_location, container, false);
-        oAuth = FirebaseAuthSingleton.getInstance();
-        initializeUI(view);
-        initializeAutocomplete();
-        return view;
-    }
-    private void initializeUI(View rootView) {
-        // Initialize Views
-        locationName = rootView.findViewById(R.id.locationName);
-        postalCode = rootView.findViewById(R.id.postal_code);
-        price = rootView.findViewById(R.id.price);
-        confirmButton = rootView.findViewById(R.id.confirmButton);
-        cancelButton = rootView.findViewById(R.id.cancelButton);
-        locationAddressName = rootView.findViewById(R.id.locationAddressName);
+    private void initializeUI() {
+        locationName = findViewById(R.id.locationName);
+        postalCode = findViewById(R.id.postal_code);
+        price = findViewById(R.id.price);
+        confirmButton = findViewById(R.id.confirmButton);
+        cancelButton = findViewById(R.id.cancelButton);
+        locationAddressName = findViewById(R.id.locationAddressName);
+
         confirmButton.setOnClickListener(v -> onConfirmButtonClicked());
         cancelButton.setOnClickListener(v -> onCancelButtonClicked());
     }
 
     private void initializeAutocomplete() {
         AutocompleteSearchHelper.initializeAutocompleteSearch(
-                (AutocompleteSupportFragment) getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment),
-                requireContext(),
+                (AutocompleteSupportFragment) getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment),
+                this,
                 new AutocompleteSearchHelper.PlaceSelectionCallback() {
                     @Override
                     public void onPlaceSelected(Place place) {
@@ -95,12 +78,12 @@ public class AddLocationFragment extends Fragment {
     }
 
     public void handlePlace(Place place){
-         latitude = Objects.requireNonNull(place.getLocation()).latitude;
-         longitude = Objects.requireNonNull(place.getLocation()).longitude;
-         parkingLocationName = place.getDisplayName();
-         locationAddress = place.getShortFormattedAddress();
-         locationAddressName.setText(locationAddress);
-         locationName.setText(parkingLocationName);
+        latitude = Objects.requireNonNull(place.getLocation()).latitude;
+        longitude = Objects.requireNonNull(place.getLocation()).longitude;
+        parkingLocationName = place.getDisplayName();
+        locationAddress = place.getFormattedAddress();
+        locationAddressName.setText(locationAddress);
+        locationName.setText(parkingLocationName);
     }
 
     private void onConfirmButtonClicked() {
@@ -111,6 +94,7 @@ public class AddLocationFragment extends Fragment {
 
         addParkingLocationToDatabase();
         clearForm();
+        finish();
     }
 
     private boolean isLocationNameValid() {
@@ -182,8 +166,7 @@ public class AddLocationFragment extends Fragment {
                 locationAddress,
                 priceValue
         );
-
-        parkingUtility.addParkingLocation(requireContext(), oAuth.getUid(), newLocation);
+        parkingUtility.addParkingLocation(this, oAuth.getUid(), newLocation);
     }
 
     private void clearForm() {
@@ -196,12 +179,11 @@ public class AddLocationFragment extends Fragment {
         locationAddressName = null;
     }
 
-
     private void onCancelButtonClicked() {
-
+        finish();
     }
 
     private void showToast(String message) {
-        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 }
