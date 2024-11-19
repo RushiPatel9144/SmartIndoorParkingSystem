@@ -1,6 +1,8 @@
 package ca.tech.sense.it.smart.indoor.parking.system.booking;
 
+import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -56,12 +58,14 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
     private final BookingManager bookingManager;
     private double convertedPrice;
     private Currency selectedCurrency;
+    private final Context context;
 
 
     // Constructor with dependency injection
-    public BookingBottomSheetDialogFragment(String locationId, BookingManager bookingManager) {
+    public BookingBottomSheetDialogFragment(String locationId, BookingManager bookingManager, Context context) {
         this.locationId = locationId;
         this.bookingManager = bookingManager;
+        this.context = context;
     }
 
     @Override
@@ -232,27 +236,36 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
             String selectedTimeSlot = timeSlotSpinner.getSelectedItem() != null ? timeSlotSpinner.getSelectedItem().toString() : null;
 
             if (selectedSlot != null && selectedTimeSlot != null && selectedDate != null) {
-                // Create a Booking object with the selected details
-                Booking booking = new Booking(
-                        titleTextView.getText().toString(),
-                        convertToMillis(selectedDate + " " + selectedTimeSlot.split(" - ")[0]),
-                        convertToMillis(selectedDate + " " + selectedTimeSlot.split(" - ")[1]),
-                        addressText.getText().toString(),
-                        postalCodeText.getText().toString(),
-                        convertedPrice,
-                        selectedCurrency.getCode(),
-                        selectedCurrency.getSymbol(),
-                        selectedSlot,
-                        bookingManager.generatePassKey(), // Generate the pass key
-                        locationId // Add the locationId to the booking
-                );
+                String selectedHour = selectedTimeSlot.split(" - ")[0];
 
-                // Create an Intent to start PaymentActivity and pass the booking data
-                Intent intent = new Intent(requireContext(), PaymentActivity.class);
-                intent.putExtra("booking", booking); // Pass the Booking object
-                startActivity(intent);
-                dismiss();
+                bookingManager.checkSlotAvailability(locationId, selectedSlot, selectedDate, selectedHour, status -> {
+                    if ("occupied".equals(status)) {
+                        Toast.makeText(requireContext(), R.string.slot_already_occupied, Toast.LENGTH_SHORT).show();
+                    } else {
+                        // Create a Booking object with the selected details
+                        Booking booking = new Booking(
+                                titleTextView.getText().toString(),
+                                convertToMillis(selectedDate + " " + selectedTimeSlot.split(" - ")[0]),
+                                convertToMillis(selectedDate + " " + selectedTimeSlot.split(" - ")[1]),
+                                addressText.getText().toString(),
+                                postalCodeText.getText().toString(),
+                                convertedPrice,
+                                selectedCurrency.getCode(),
+                                selectedCurrency.getSymbol(),
+                                selectedSlot,
+                                bookingManager.generatePassKey(), // Generate the pass key
+                                locationId // Add the locationId to the booking
+                        );
 
+                        // Create an Intent to start PaymentActivity and pass the booking data
+                        Intent intent = new Intent(requireContext(), PaymentActivity.class);
+                        intent.putExtra("booking", booking); // Pass the Booking object
+                        startActivity(intent);
+                        dismiss();
+                    }
+                }, error -> {
+                    Toast.makeText(requireContext(), R.string.error_checking_slot_availability, Toast.LENGTH_SHORT).show();
+                });
             } else {
                 Toast.makeText(requireContext(), R.string.please_select_a_slot_date_and_time, Toast.LENGTH_SHORT).show();
             }
@@ -264,15 +277,22 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
         cancelButton.setOnClickListener(v -> dismiss());
     }
 
-    // Method to handle date selection button
+    // Method to set up the select date button
     private void setupSelectDateButton() {
         selectDateButton.setOnClickListener(v -> {
             Calendar calendar = Calendar.getInstance();
-            DatePickerDialog datePickerDialog = new DatePickerDialog(requireContext(), (view, year, month, dayOfMonth) -> {
-                selectedDate = String.format(Locale.getDefault(), "%d-%02d-%02d", year, month + 1, dayOfMonth);
-                selectedDateTextview.setText(selectedDate);
-                setupTimeSlots(selectedDate);
-            }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+            int year = calendar.get(Calendar.YEAR);
+            int month = calendar.get(Calendar.MONTH);
+            int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+            @SuppressLint("SetTextI18n") DatePickerDialog datePickerDialog = new DatePickerDialog(context, (view, selectedYear, selectedMonth, selectedDay) -> {
+                selectedDate = String.format(Locale.getDefault(), "%04d-%02d-%02d", selectedYear, selectedMonth + 1, selectedDay);
+                selectedDateTextview.setText("Selected Date: " + selectedDate);
+                setupTimeSlots(selectedDate); // Update time slots based on the selected date
+            }, year, month, day);
+
+            // Set the minimum date to today
+            datePickerDialog.getDatePicker().setMinDate(calendar.getTimeInMillis());
 
             datePickerDialog.show();
         });
