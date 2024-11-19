@@ -45,16 +45,14 @@
         app:boxBackgroundColor="@color/colorAccentLight"
         app:startIconTint="@color/colorAccent"
         app:startIconContentDescription="email_icon_desc"
-        app:startIconDrawable="@drawable/baseline_email_24"
+        app:startIconDrawable="@drawable/baseline_email_24">
 
-        >
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/login_email_editext"
             android:fontFamily="@font/poppins_medium"
             android:inputType="textEmailAddress"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            />
+            android:layout_height="wrap_content" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -69,8 +67,7 @@
         app:startIconTint="@color/colorAccent"
         app:boxBackgroundColor="@color/colorAccentLight"
         app:endIconDrawable="@drawable/baseline_remove_red_eye_24"
-        app:endIconMode="password_toggle"
-        >
+        app:endIconMode="password_toggle">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/login_password_editext"
@@ -122,16 +119,6 @@
         android:visibility="gone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
-
-    <!--    <com.google.android.material.button.MaterialButton-->
-<!--        app:cornerRadius="16dp"-->
-<!--        android:layout_marginTop="0dp"-->
-<!--        android:id="@+id/google_sign_in_button"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:text="@string/sign_in_with_google"-->
-<!--        style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>-->
-
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/login_btn"
@@ -225,9 +212,4 @@
         app:icon="@drawable/googleg_standard_color_18"
         app:iconGravity="textStart"
         app:iconTintMode="multiply" />
-
-
-
-
-
 </LinearLayout>
