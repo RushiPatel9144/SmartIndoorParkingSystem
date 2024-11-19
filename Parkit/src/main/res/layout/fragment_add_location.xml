@@ -1,0 +1,151 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="@color/bg">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <TextView
+            android:id="@+id/Label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/add_new_parking_location"
+            android:textSize="24sp"
+            android:layout_marginTop="30dp"
+            android:textColor="#4A4A4A"
+            android:paddingBottom="8dp"
+            android:textStyle="bold"
+            android:fontFamily="sans-serif-medium"/>
+
+        <!-- Parking Location Name -->
+        <TextView
+            android:id="@+id/locationNameLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/parking_location_name"
+            android:textSize="20sp"
+            android:layout_marginTop="30dp"
+            android:textColor="#4A4A4A"
+            android:paddingBottom="8dp"
+            android:fontFamily="sans-serif-medium"/>
+
+        <EditText
+            android:id="@+id/locationName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/enter_location_name"
+            android:textColorHint="#888888"
+            android:background="@drawable/edit_text_background"
+            android:padding="12dp"
+            android:inputType="text"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Address Search -->
+        <TextView
+            android:id="@+id/addressLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/search_address"
+            android:textSize="20sp"
+            android:textColor="#4A4A4A"
+            android:paddingTop="16dp"
+            android:paddingBottom="8dp"
+            android:fontFamily="sans-serif-medium"/>
+
+        <AutoCompleteTextView
+            android:id="@+id/addressSearchBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/search_for_an_address"
+            android:textColorHint="#888888"
+            android:background="@drawable/edit_text_background"
+            android:padding="12dp"
+            android:inputType="text"
+            android:layout_marginBottom="16dp"/>
+
+        <TextView
+            android:id="@+id/postalLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/postal_code"
+            android:textSize="20sp"
+            android:textColor="#4A4A4A"
+            android:paddingTop="16dp"
+            android:paddingBottom="8dp"
+            android:fontFamily="sans-serif-medium"/>
+
+        <EditText
+            android:id="@+id/postal_code"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/enter_postal_code"
+            android:textColorHint="#888888"
+            android:background="@drawable/edit_text_background"
+            android:padding="12dp"
+            android:inputType="numberDecimal"
+            android:layout_marginBottom="24dp"/>
+
+        <!-- Price -->
+        <TextView
+            android:id="@+id/priceLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/price_per_hour"
+            android:textSize="20sp"
+            android:textColor="#4A4A4A"
+            android:paddingTop="16dp"
+            android:paddingBottom="8dp"
+            android:fontFamily="sans-serif-medium"/>
+
+
+        <EditText
+            android:id="@+id/price"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/enter_price_in_cad"
+            android:textColorHint="#888888"
+            android:background="@drawable/edit_text_background"
+            android:padding="12dp"
+            android:inputType="numberDecimal"
+            android:layout_marginBottom="24dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_margin="16dp">
+
+            <Button
+                android:id="@+id/confirmButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/back"
+                android:backgroundTint="@color/gray"
+                android:layout_marginEnd="8dp"
+                android:paddingVertical="12dp"
+                android:textSize="16sp"
+                tools:ignore="ButtonStyle" />
+
+            <Button
+                android:id="@+id/cancelButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/theme"
+                android:paddingVertical="12dp"
+                android:text="@string/stripe_continue_button_label"
+                android:textSize="16sp"
+                tools:ignore="ButtonStyle" />
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

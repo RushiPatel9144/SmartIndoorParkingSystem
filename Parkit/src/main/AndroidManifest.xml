@@ -27,6 +27,9 @@
         android:theme="@style/Base.Theme.SmartIndoorParkingSystem"
         tools:targetApi="31">
         <activity
+            android:name=".owner.bottomNav.location.AddLocationActivity"
+            android:exported="false" />
+        <activity
             android:name=".launcherActivity.onBoarding.OnboardingActivity"
             android:exported="true"
             android:theme="@style/Base.Theme.SmartIndoorParkingSystem" />
@@ -61,7 +64,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".MainActivity"
             android:exported="true" />

@@ -14,7 +14,7 @@ import ca.tech.sense.it.smart.indoor.parking.system.Manager.FragmentManagerHelpe
 import ca.tech.sense.it.smart.indoor.parking.system.Manager.PreferenceManager;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.DashboardFragment;
-import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.LocationsFragment;
+import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.location.LocationsFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.TransactionsFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountFragment;
 

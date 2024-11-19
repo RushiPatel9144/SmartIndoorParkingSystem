@@ -316,6 +316,24 @@
     <string name="location_name">Location Name</string>
     <string name="save_location">Save Location</string>
     <string name="or">OR</string>
+    <string name="no_parking_locations_available">No Parking Locations Available</string>
+    <string name="add_your_parking">Add Your Parking</string>
+    <string name="back">Back</string>
+    <string name="parking_location_name">Parking Location Name</string>
+    <string name="enter_location_name">Enter Location Name</string>
+    <string name="search_address">Search Address</string>
+    <string name="search_for_an_address">Search for an address</string>
+    <string name="enter_postal_code">Enter Postal Code</string>
+    <string name="price_per_hour">Price per Hour</string>
+    <string name="enter_price_in_cad">Enter Price in CAD$</string>
+    <string name="continue_">Continue</string>
+    <string name="add_new_parking_location">Add New Parking Location</string>
+    <string name="add_new_slot">Add New Slot</string>
+    <string name="parking_slot_id_name">Parking Slot ID/Name</string>
+    <string name="sensor_type">Sensor Type</string>
+    <string name="sensor_details">Sensor Details</string>
+    <string name="battery_level">Battery Level</string>
+    <string name="add_slot">Add Slot</string>
 
 
 </resources>
