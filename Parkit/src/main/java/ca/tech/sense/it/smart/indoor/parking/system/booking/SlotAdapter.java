@@ -50,8 +50,10 @@ public class SlotAdapter extends ArrayAdapter<String> {
         Log.d("SlotAdapter", "getView - Slot: " + slot + ", Status: " + status); // Add logging
         if ("occupied".equals(status)) {
             textView.setTextColor(Color.GRAY);
+            textView.setTypeface(null, android.graphics.Typeface.BOLD);
         } else {
-            textView.setTextColor(Color.BLACK);
+            textView.setTextColor(Color.GREEN);
+            textView.setTypeface(null, android.graphics.Typeface.BOLD);
         }
         return view;
     }
@@ -65,11 +67,11 @@ public class SlotAdapter extends ArrayAdapter<String> {
         Log.d("SlotAdapter", "getDropDownView - Slot: " + slot + ", Status: " + status); // Add logging
         if ("occupied".equals(status)) {
             textView.setTextColor(Color.GRAY);
+            textView.setTypeface(null, android.graphics.Typeface.BOLD);
         } else {
-            textView.setTextColor(Color.BLACK);
+            textView.setTextColor(Color.GREEN);
+            textView.setTypeface(null, android.graphics.Typeface.BOLD);
         }
         return view;
     }
 }
-
-
