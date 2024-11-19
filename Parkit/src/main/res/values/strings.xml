@@ -316,6 +316,8 @@
     <string name="location_name">Location Name</string>
     <string name="save_location">Save Location</string>
     <string name="or">OR</string>
+    <string name="slot_already_occupied">Slot is Already Occupied</string>
+    <string name="error_checking_slot_availability">Error Checking slot availability</string>
 
 
 </resources>
