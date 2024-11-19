@@ -30,8 +30,8 @@
         <!-- Button to Add Location (on the right) -->
         <ImageButton
             android:id="@+id/addLocationButton"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="45dp"
+            android:layout_height="match_parent"
             android:layout_gravity="center_vertical"
             android:background="@android:color/transparent"
             android:contentDescription="@string/add_new_location"
