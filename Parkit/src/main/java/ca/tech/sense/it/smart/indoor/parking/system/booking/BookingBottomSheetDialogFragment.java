@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -55,12 +56,12 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
     private ImageButton starButton;
     private final String locationId;
     private String selectedDate;
+    private String selectedHour;
     private final BookingManager bookingManager;
     private double convertedPrice;
     private Currency selectedCurrency;
     private final Context context;
-
-
+    private ParkingLocation location; // Define the ParkingLocation variable
     // Constructor with dependency injection
     public BookingBottomSheetDialogFragment(String locationId, BookingManager bookingManager, Context context) {
         this.locationId = locationId;
@@ -80,7 +81,6 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
         initializeUIElements(view);
 
         // Set up the slot spinner
-        setupSlotSpinnerData(new HashMap<>());
         setupProceedToPaymentButton();
         setupCancelButton();
         setupSelectDateButton();
@@ -112,18 +112,20 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
         titleTextView = view.findViewById(R.id.addressTitle);
     }
 
+
     // Method to fetch parking location data from Firebase
     private void fetchParkingLocationData() {
         progressBar.setVisibility(View.VISIBLE);
 
         bookingManager.fetchParkingLocation(locationId, new BookingManager.FetchLocationCallback() {
             @Override
-            public void onFetchSuccess(ParkingLocation location) {
-                if (location != null) {
+            public void onFetchSuccess(ParkingLocation fetchedLocation) {
+                if (fetchedLocation != null) {
+                    location = fetchedLocation; // Assign the fetched location to the variable
                     titleTextView.setText(location.getName());
                     addressText.setText(location.getAddress());
                     postalCodeText.setText(location.getPostalCode());
-                    setupSlotSpinnerData(location.getSlots());
+                    setupSlotSpinnerData(location.getSlots(), locationId, selectedDate, selectedHour, bookingManager);
                     bookingManager.fetchPrice(locationId, price -> displayConvertedPrice(price));
                 } else {
                     setErrorMessage(requireContext().getString(R.string.location_data_is_not_available));
@@ -146,17 +148,16 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
         selectedCurrency = CurrencyManager.getInstance().getCurrency(selectedCurrencyCode);
 
         if (selectedCurrency != null) {
-            convertedPrice = CurrencyManager.getInstance().convertFromCAD(priceInCad,selectedCurrencyCode);
+            convertedPrice = CurrencyManager.getInstance().convertFromCAD(priceInCad, selectedCurrencyCode);
             priceTextView.setText(String.format(Locale.getDefault(), "Price: %s %.2f", selectedCurrency.getSymbol(), convertedPrice));
         } else {
             priceTextView.setText(String.format(Locale.getDefault(), "Price: %s %.2f", "CAD$", priceInCad));
         }
     }
 
-
     // Method to set up slot spinner data
-    private void setupSlotSpinnerData(Map<String, ParkingSlot> slots) {
-        if (slots == null || slots.isEmpty() || slotSpinner == null ) {
+    private void setupSlotSpinnerData(Map<String, ParkingSlot> slots, String locationId, String selectedDate, String selectedHour, BookingManager bookingManager) {
+        if (slots == null || slots.isEmpty() || slotSpinner == null) {
             return; // Exit the method if any critical component is null
         }
 
@@ -173,7 +174,7 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
 
         // Only set the adapter if slotNames is not empty
         if (!slotNames.isEmpty()) {
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, slotNames);
+            SlotAdapter adapter = new SlotAdapter(requireContext(), android.R.layout.simple_spinner_item, slotNames, locationId, selectedDate, selectedHour, bookingManager);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             slotSpinner.setAdapter(adapter);
         }
@@ -191,6 +192,30 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, timeSlots);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         timeSlotSpinner.setAdapter(adapter);
+
+        // Set the selectedHour based on the first available time slot
+        if (!timeSlots.isEmpty()) {
+            selectedHour = timeSlots.get(0).split(" - ")[0];
+            Log.d("BookingBottomSheet", "Selected Hour: " + selectedHour); // Add logging
+        }
+
+        // Add a listener to update the selectedHour when the user selects a different time slot
+        timeSlotSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                selectedHour = timeSlots.get(position).split(" - ")[0];
+                Log.d("BookingBottomSheet", "Selected Hour Changed: " + selectedHour); // Add logging
+                // Update the slot spinner data based on the new selected hour
+                if (location != null) {
+                    setupSlotSpinnerData(location.getSlots(), locationId, selectedDate, selectedHour, bookingManager);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // Do nothing
+            }
+        });
     }
 
     // Method to generate time slots for the selected date
