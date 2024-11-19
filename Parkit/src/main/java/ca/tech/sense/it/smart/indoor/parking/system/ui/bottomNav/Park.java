@@ -97,7 +97,16 @@ public class Park extends Fragment implements OnMapReadyCallback {
             initializeMap();
             initializeAutocomplete();
         }));
+
+        // Check if there is a locationId passed from the FavoritesFragment
+        if (getActivity() != null && getActivity().getIntent() != null) {
+            String locationId = getActivity().getIntent().getStringExtra("locationId");
+            if (locationId != null) {
+                showBookingBottomSheet(locationId);
+            }
+        }
     }
+
 
     private void initializeMap() {
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
@@ -214,7 +223,7 @@ public class Park extends Fragment implements OnMapReadyCallback {
         });
     }
 
-    private void showBookingBottomSheet(Marker marker) {
+    public void showBookingBottomSheet(Marker marker) {
         String parkingLocationId = (String) marker.getTag();
         // Create an instance of ExecutorService
         ExecutorService executorService = Executors.newFixedThreadPool(4);
@@ -223,8 +232,19 @@ public class Park extends Fragment implements OnMapReadyCallback {
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         BookingManager bookingManager = new BookingManager(executorService, firebaseDatabase, firebaseAuth,getContext());
-        BookingBottomSheetDialogFragment paymentFragment = new BookingBottomSheetDialogFragment (parkingLocationId, bookingManager);
+        BookingBottomSheetDialogFragment paymentFragment = new BookingBottomSheetDialogFragment (getContext(),parkingLocationId, bookingManager);
         paymentFragment.show(getChildFragmentManager(), "BookingBottomSheetDialogFragment");
+    }
+
+    public void showBookingBottomSheet(String locationId) {
+        // Create an instance of ExecutorService
+        ExecutorService executorService = Executors.newFixedThreadPool(4);
+        // Get instances of FirebaseDatabase and FirebaseAuth
+        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        BookingManager bookingManager = new BookingManager(executorService, firebaseDatabase, firebaseAuth, getContext());
+        BookingBottomSheetDialogFragment bookingDialog = new BookingBottomSheetDialogFragment(getContext(), locationId, bookingManager);
+        bookingDialog.show(getChildFragmentManager(), "BookingBottomSheetDialogFragment");
     }
 
     private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId) {
