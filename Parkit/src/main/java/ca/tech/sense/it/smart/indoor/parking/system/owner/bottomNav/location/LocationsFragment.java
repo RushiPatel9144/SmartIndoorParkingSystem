@@ -5,11 +5,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
@@ -26,9 +28,10 @@ public class LocationsFragment extends Fragment implements LocationAdapter.OnAdd
     private LocationAdapter adapter;
     private List<ParkingLocation> parkingLocations;
     private Button button;
+    private FrameLayout fragment_container;
 
-    public LocationsFragment(){
-        //
+    public LocationsFragment() {
+        // Empty constructor
     }
 
     @Nullable
@@ -41,13 +44,14 @@ public class LocationsFragment extends Fragment implements LocationAdapter.OnAdd
         progressBar = view.findViewById(R.id.progressBar);
         button = view.findViewById(R.id.Button);
         emptyStateLayout = view.findViewById(R.id.emptyStateLayout);
+        fragment_container = view.findViewById(R.id.fragment_container);
+        // Set button click listener
+        button.setOnClickListener(v -> addLocation());
 
         // Simulate data loading
         progressBar.setVisibility(View.VISIBLE);
         locationsRecyclerView.setVisibility(View.GONE);
         emptyStateLayout.setVisibility(View.GONE);
-
-        button.setOnClickListener(v -> addLocation());
 
         parkingLocations = new ArrayList<>(); // Replace with actual data source
 
@@ -75,9 +79,16 @@ public class LocationsFragment extends Fragment implements LocationAdapter.OnAdd
         }
     }
 
-    public void addLocation(){
-        //
+    public void addLocation() {
+        // Replace current fragment with AddLocationFragment
+        AddLocationFragment fragment = new AddLocationFragment();
+        FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragment_container, fragment); // Ensure fragment_container is defined in your layout
+        transaction.addToBackStack(null);
+        transaction.commit();
+        fragment_container.setVisibility(View.VISIBLE);
     }
+
     @Override
     public void onAddLocationClick() {
         addLocation();
@@ -88,3 +99,4 @@ public class LocationsFragment extends Fragment implements LocationAdapter.OnAdd
         // Handle item click (navigate to location details or edit)
     }
 }
+

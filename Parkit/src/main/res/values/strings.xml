@@ -111,7 +111,10 @@
         <item>USD</item>
         <item>INR</item>
         <item>CAD</item>
-
+    </string-array>
+    <string-array name="sensors">
+        <item>Infra</item>
+        <item>Ultrasonic</item>
     </string-array>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
@@ -334,6 +337,16 @@
     <string name="sensor_details">Sensor Details</string>
     <string name="battery_level">Battery Level</string>
     <string name="add_slot">Add Slot</string>
+    <string name="parking_location_added_successfully">Parking Location Added Successfully</string>
+    <string name="please_select_a_location_using_the_search_bar">Please select a location using the search bar.</string>
+    <string name="invalid_price_format">Invalid price format.</string>
+    <string name="price_must_be_a_positive_value">Price must be a positive value.</string>
+    <string name="please_enter_the_price">Please enter the price.</string>
+    <string name="please_enter_the_postal_code">Please enter the postal code.</string>
+    <string name="please_enter_the_location_name">Please enter the location name.</string>
+    <string name="location_added_successfully">Location added successfully!</string>
+    <string name="parking_address">Parking Address</string>
+    <string name="enter_parking_address">Enter Parking Address</string>
 
 
 </resources>

@@ -91,4 +91,12 @@
         android:layout_weight="1"
         android:scrollbars="vertical"
         android:visibility="gone" />
+
+    <!-- Fragment Container (Where other fragments will be loaded) -->
+    <FrameLayout
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="16dp"
+        android:visibility="gone"/> <!-- Set to gone, will be visible when a fragment is loaded -->
 </LinearLayout>

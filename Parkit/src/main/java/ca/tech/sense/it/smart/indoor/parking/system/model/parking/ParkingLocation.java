@@ -21,6 +21,7 @@ public class ParkingLocation {
     public ParkingLocation() {
     }
 
+
     public ParkingLocation(String id, Map<String, ParkingSlot> slots, String postalCode, String name, double longitude,  double latitude, String address, double price) {
         this.id = id;
         this.slots = slots;

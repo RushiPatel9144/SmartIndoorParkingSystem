@@ -8,8 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="24dp"
-        android:layout_marginTop="20dp">
+        android:padding="16dp">
 
         <!-- Title -->
         <TextView
@@ -20,7 +19,7 @@
             android:textSize="24sp"
             android:textColor="#4A4A4A"
             android:fontFamily="sans-serif-medium"
-            android:paddingBottom="30dp" />
+            android:paddingBottom="16dp" />
 
         <!-- Slot ID -->
         <com.google.android.material.textfield.TextInputLayout
@@ -54,6 +53,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="12dp"
+            android:entries="@array/sensors"
             android:background="@drawable/spinner_background"
             android:layout_marginBottom="16dp" />
 

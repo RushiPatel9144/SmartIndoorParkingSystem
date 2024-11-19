@@ -9,19 +9,42 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="24dp">
+        android:padding="16dp">
 
+        <!-- Header -->
         <TextView
             android:id="@+id/Label"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/add_new_parking_location"
-            android:textSize="24sp"
-            android:layout_marginTop="30dp"
+            android:textSize="22sp"
             android:textColor="#4A4A4A"
-            android:paddingBottom="8dp"
+            android:paddingBottom="12dp"
             android:textStyle="bold"
-            android:fontFamily="sans-serif-medium"/>
+            android:fontFamily="sans-serif-medium" />
+
+        <!-- Address Search Label -->
+        <TextView
+            android:id="@+id/addressLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/search_address"
+            android:textSize="20sp"
+            android:textColor="#4A4A4A"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:fontFamily="sans-serif-medium" />
+
+        <!-- AutocompleteSupportFragment -->
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/autocomplete_fragment"
+            android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/edit_text_background"
+            android:elevation="4dp"
+            android:padding="6dp"
+            android:layout_marginBottom="16dp" />
 
         <!-- Parking Location Name -->
         <TextView
@@ -30,10 +53,10 @@
             android:layout_height="wrap_content"
             android:text="@string/parking_location_name"
             android:textSize="20sp"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="16dp"
             android:textColor="#4A4A4A"
             android:paddingBottom="8dp"
-            android:fontFamily="sans-serif-medium"/>
+            android:fontFamily="sans-serif-medium" />
 
         <EditText
             android:id="@+id/locationName"
@@ -43,42 +66,41 @@
             android:textColorHint="#888888"
             android:background="@drawable/edit_text_background"
             android:padding="12dp"
-            android:inputType="text"
-            android:layout_marginBottom="16dp"/>
+            android:layout_marginBottom="16dp" />
 
-        <!-- Address Search -->
+        <!-- Parking Address -->
         <TextView
-            android:id="@+id/addressLabel"
+            android:id="@+id/locationAddressLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/search_address"
+            android:text="@string/parking_address"
             android:textSize="20sp"
+            android:layout_marginTop="16dp"
             android:textColor="#4A4A4A"
-            android:paddingTop="16dp"
             android:paddingBottom="8dp"
-            android:fontFamily="sans-serif-medium"/>
+            android:fontFamily="sans-serif-medium" />
 
-        <AutoCompleteTextView
-            android:id="@+id/addressSearchBar"
+        <EditText
+            android:id="@+id/locationAddressName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/search_for_an_address"
+            android:hint="@string/enter_parking_address"
             android:textColorHint="#888888"
             android:background="@drawable/edit_text_background"
             android:padding="12dp"
-            android:inputType="text"
-            android:layout_marginBottom="16dp"/>
+            android:layout_marginBottom="16dp" />
 
+        <!-- Postal Code -->
         <TextView
             android:id="@+id/postalLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/postal_code"
             android:textSize="20sp"
+            android:layout_marginTop="16dp"
             android:textColor="#4A4A4A"
-            android:paddingTop="16dp"
             android:paddingBottom="8dp"
-            android:fontFamily="sans-serif-medium"/>
+            android:fontFamily="sans-serif-medium" />
 
         <EditText
             android:id="@+id/postal_code"
@@ -88,8 +110,7 @@
             android:textColorHint="#888888"
             android:background="@drawable/edit_text_background"
             android:padding="12dp"
-            android:inputType="numberDecimal"
-            android:layout_marginBottom="24dp"/>
+            android:layout_marginBottom="16dp" />
 
         <!-- Price -->
         <TextView
@@ -98,11 +119,10 @@
             android:layout_height="wrap_content"
             android:text="@string/price_per_hour"
             android:textSize="20sp"
+            android:layout_marginTop="16dp"
             android:textColor="#4A4A4A"
-            android:paddingTop="16dp"
             android:paddingBottom="8dp"
-            android:fontFamily="sans-serif-medium"/>
-
+            android:fontFamily="sans-serif-medium" />
 
         <EditText
             android:id="@+id/price"
@@ -112,39 +132,37 @@
             android:textColorHint="#888888"
             android:background="@drawable/edit_text_background"
             android:padding="12dp"
-            android:inputType="numberDecimal"
-            android:layout_marginBottom="24dp"/>
+            android:layout_marginBottom="24dp" />
 
+        <!-- Buttons -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center"
-            android:layout_margin="16dp">
+            android:layout_marginTop="16dp">
+
+            <Button
+                android:id="@+id/cancelButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/back"
+                android:backgroundTint="@color/gray"
+                android:paddingVertical="12dp"
+                android:layout_marginEnd="8dp"
+                android:textSize="16sp" />
 
             <Button
                 android:id="@+id/confirmButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/back"
-                android:backgroundTint="@color/gray"
-                android:layout_marginEnd="8dp"
-                android:paddingVertical="12dp"
-                android:textSize="16sp"
-                tools:ignore="ButtonStyle" />
-
-            <Button
-                android:id="@+id/cancelButton"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_weight="1"
                 android:backgroundTint="@color/theme"
                 android:paddingVertical="12dp"
+                android:layout_marginStart="8dp"
                 android:text="@string/stripe_continue_button_label"
-                android:textSize="16sp"
-                tools:ignore="ButtonStyle" />
+                android:textSize="16sp" />
         </LinearLayout>
 
     </LinearLayout>
