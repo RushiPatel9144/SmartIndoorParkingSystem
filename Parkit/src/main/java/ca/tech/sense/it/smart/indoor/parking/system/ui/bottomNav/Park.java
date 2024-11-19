@@ -232,7 +232,7 @@ public class Park extends Fragment implements OnMapReadyCallback {
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         BookingManager bookingManager = new BookingManager(executorService, firebaseDatabase, firebaseAuth,getContext());
-        BookingBottomSheetDialogFragment paymentFragment = new BookingBottomSheetDialogFragment (getContext(),parkingLocationId, bookingManager);
+        BookingBottomSheetDialogFragment paymentFragment = new BookingBottomSheetDialogFragment (parkingLocationId, bookingManager, getContext());
         paymentFragment.show(getChildFragmentManager(), "BookingBottomSheetDialogFragment");
     }
 

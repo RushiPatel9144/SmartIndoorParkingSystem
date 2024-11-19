@@ -124,7 +124,7 @@ public class BookingManager {
         }, 2000); // 2 seconds delay
     }
 
-    private void checkSlotAvailability(String locationId, String slot, String selectedDate, String time, Consumer<String> onStatusChecked, Consumer<Exception> onFailure) {
+    public void checkSlotAvailability(String locationId, String slot, String selectedDate, String time, Consumer<String> onStatusChecked, Consumer<Exception> onFailure) {
         DatabaseReference slotRef = firebaseDatabase.getReference("parkingLocations")
                 .child(locationId)
                 .child("slots")
