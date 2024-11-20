@@ -1,6 +1,7 @@
 package ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui;
 
 import android.content.Intent;
+import android.icu.text.CaseMap;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -22,7 +23,7 @@ import java.util.Objects;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.LauncherUtils;
 import ca.tech.sense.it.smart.indoor.parking.system.model.user.User;
-import ca.tech.sense.it.smart.indoor.parking.system.model.owner.Owner; // Import Owner class
+import ca.tech.sense.it.smart.indoor.parking.system.model.owner.Owner;
 import ca.tech.sense.it.smart.indoor.parking.system.network.BaseActivity;
 
 public class SignUpActivity extends BaseActivity {
@@ -30,21 +31,24 @@ public class SignUpActivity extends BaseActivity {
     // Variables
     private EditText editTextEmail, editTextPassword, editTextConfirmPassword, firstName, lastName, phone;
     private MaterialButton button;
-    private TextView textView;
+    private TextView jump_to_login,titleTV;
     private ProgressBar progressBar;
     private FirebaseAuth mAuth;
     private FirebaseFirestore fireStore;
     private CheckBox checkBox;
-    private String userID;
+    private String userID,userType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
+
         setContentView(R.layout.activity_sign_up);
 
+        userType =  getIntent().getStringExtra("userType");
+
         initializeUI();
-        setOnClickListeners(getIntent().getStringExtra("userType"));
+        setOnClickListeners(userType);
     }
 
     private void initializeUI() {
@@ -52,22 +56,28 @@ public class SignUpActivity extends BaseActivity {
         editTextEmail = findViewById(R.id.signup_editTextEmail);
         editTextPassword = findViewById(R.id.signup_editTextPassword);
         editTextConfirmPassword = findViewById(R.id.editTextConfirmPassword);
-        textView = findViewById(R.id.jump_to_login);
+        jump_to_login = findViewById(R.id.jump_to_login);
         button = findViewById(R.id.buttonSignUp);
         progressBar = findViewById(R.id.signup_progressBar);
         checkBox = findViewById(R.id.checkBoxTerms);
         firstName = findViewById(R.id.editTextFirstName);
         lastName = findViewById(R.id.editTextLastName);
         phone = findViewById(R.id.signup_phoneNumber);
+        titleTV = findViewById(R.id.signup_title_tv);
 
         mAuth = FirebaseAuth.getInstance();
         fireStore = FirebaseFirestore.getInstance();
+
+        if (Objects.equals(userType, getString(R.string.small_owner))){
+            titleTV.setText(getString(R.string.owner));
+        }
     }
 
     private void setOnClickListeners(String userType) {
         // Navigate to Login screen
-        textView.setOnClickListener(v -> {
+        jump_to_login.setOnClickListener(v -> {
             Intent loginIntent = new Intent(getApplicationContext(), LoginActivity.class);
+            loginIntent.putExtra("userType", userType);
             startActivity(loginIntent);
             finish();
         });
@@ -84,7 +94,7 @@ public class SignUpActivity extends BaseActivity {
             String confirmPassword = editTextConfirmPassword.getText().toString().trim();
             String phoneNumber = phone.getText().toString().trim();
 
-            // Input validation (add checks as needed)
+            // Input validation
             if (!validateInput(fName, lName, email, password, confirmPassword, phoneNumber)) {
                 progressBar.setVisibility(View.GONE);
                 return;
@@ -96,42 +106,31 @@ public class SignUpActivity extends BaseActivity {
                         progressBar.setVisibility(View.GONE);
 
                         if (task.isSuccessful()) {
-                            Toast.makeText(SignUpActivity.this, getString(R.string.account_created), Toast.LENGTH_SHORT).show();
                             userID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
+                            Log.d("SignUpActivity", "Firebase Auth success, UID: " + userID);
 
-                            // Create either a User or Owner object based on the user type
-
+                            // Handle User or Owner data storage
                             if ("owner".equals(userType)) {
-                                Owner localOwner = new Owner(userID, fName, lName, email, phoneNumber, null);
-                                fireStore.collection("owners").document(userID).set(localOwner)
-                                        .addOnSuccessListener(aVoid -> Log.d("TAG", "Owner profile is created for " + userID))
-                                        .addOnFailureListener(e -> Log.d("TAG", "Error saving owner data: " + e.getMessage()));
-                                LauncherUtils.navigateToOwnerDashboard(this);
-                                finish();
+                                LauncherUtils.saveOwnerToFirestore(this, userID, fName, lName, email, phoneNumber);
                             } else {
-                                User localUser = new User(userID, fName, lName, email, phoneNumber, null);
-                                fireStore.collection("users").document(userID).set(localUser)
-                                        .addOnSuccessListener(aVoid -> Log.d("TAG", "User profile is created for " + userID))
-                                        .addOnFailureListener(e -> Log.d("TAG", "Error saving user data: " + e.getMessage()));
-                                LauncherUtils.navigateToMainActivity(this);
-                                finish();
+                                LauncherUtils.saveUserToFirestore(this, userID, fName, lName, email, phoneNumber);
                             }
 
                         } else {
-                            LauncherUtils.showToast(this,getString(R.string.authentication_failed));
+                            Log.e("SignUpActivity", "Firebase Auth failed: " + Objects.requireNonNull(task.getException()).getMessage());
+                            LauncherUtils.showToast(this, getString(R.string.authentication_failed));
                         }
                     });
         });
     }
 
-
     private boolean validateInput(String fName, String lName, String email, String password, String confirmPassword, String phoneNumber) {
         if (TextUtils.isEmpty(fName)) {
-            firstName.setError("Please enter your first name");
+            firstName.setError(getString(R.string.please_enter_your_first_name));
             return false;
         }
         if (TextUtils.isEmpty(lName)) {
-            lastName.setError("Please enter your last name");
+            lastName.setError(getString(R.string.please_enter_your_last_name));
             return false;
         }
         if (TextUtils.isEmpty(email)) {
@@ -139,7 +138,7 @@ public class SignUpActivity extends BaseActivity {
             return false;
         }
         if (TextUtils.isEmpty(phoneNumber)) {
-            phone.setError("Enter phone number");
+            phone.setError(getString(R.string.enter_phone_number));
             return false;
         }
         if (TextUtils.isEmpty(password)) {
@@ -147,11 +146,11 @@ public class SignUpActivity extends BaseActivity {
             return false;
         }
         if (!password.equals(confirmPassword)) {
-            editTextConfirmPassword.setError("Passwords do not match");
+            editTextConfirmPassword.setError(getString(R.string.passwords_do_not_match));
             return false;
         }
         if (!checkBox.isChecked()) {
-            Toast.makeText(SignUpActivity.this, "Please accept the terms and conditions", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.sign_please_accept_the_terms_and_conditions), Toast.LENGTH_SHORT).show();
             return false;
         }
         return true;

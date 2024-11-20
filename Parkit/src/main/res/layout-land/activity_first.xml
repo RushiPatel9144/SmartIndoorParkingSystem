@@ -66,7 +66,7 @@
 
             <!-- Sign Up as Owner Button -->
             <Button
-                android:id="@+id/firstSignUpAsOwnerBut"
+                android:id="@+id/firstSignInAsOwnerBut"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal|top"

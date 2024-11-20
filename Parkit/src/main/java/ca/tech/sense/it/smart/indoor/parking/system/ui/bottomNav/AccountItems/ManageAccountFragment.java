@@ -47,6 +47,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import ca.tech.sense.it.smart.indoor.parking.system.Manager.SessionManager;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirestoreSingleton;
@@ -205,6 +206,7 @@ public class ManageAccountFragment extends Fragment {
             if (task.isSuccessful()) {
                 DocumentSnapshot document = task.getResult();
                 if (document.exists()) {
+                    // Fetch and set user details here (name, email, etc.)
                     String firstName = document.getString("firstName");
                     String lastName = document.getString("lastName");
                     String phoneNumber = document.getString("phone");
@@ -230,6 +232,7 @@ public class ManageAccountFragment extends Fragment {
         });
     }
 
+
     private void openGallery() {
         Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType(getString(R.string.image1));
@@ -247,28 +250,24 @@ public class ManageAccountFragment extends Fragment {
             if (task.isSuccessful()) {
                 DocumentSnapshot document = task.getResult();
                 if (document.exists()) {
-                    String profilePictureUrl = document.getString(FIELD);
+                    String profilePictureUrl = document.getString("profilePhotoUrl");
 
                     if (profilePictureUrl != null) {
-                        // Load the image into ImageView using Glide
                         Glide.with(requireContext())
                                 .load(profilePictureUrl)
-                                .placeholder(R.drawable.ic_profile_placeholder)  // Placeholder while loading
-                                .circleCrop()  // Apply circular crop transformation
+                                .placeholder(R.drawable.ic_profile_placeholder)
+                                .circleCrop()
                                 .into(profilePicture);
-
                     } else {
-                        // If there is no profile picture URL, use the default image
-                        profilePicture.setImageResource(R.mipmap.ic_launcher);  // Default image
+                        profilePicture.setImageResource(R.mipmap.ic_launcher);
                     }
                 } else {
                     showSnackbar(R.string.user_data_not_found);
-                    profilePicture.setImageResource(R.mipmap.ic_launcher);  // Default image
+                    profilePicture.setImageResource(R.mipmap.ic_launcher);
                 }
             } else {
                 showSnackbar(R.string.fetch_data_failed);
-                Log.e("ManageAccountFragment", getString(R.string.failed_to_fetch_user_data) + task.getException());
-                profilePicture.setImageResource(R.mipmap.ic_launcher);  // Default image
+                profilePicture.setImageResource(R.mipmap.ic_launcher);
             }
         });
     }
@@ -343,16 +342,23 @@ public class ManageAccountFragment extends Fragment {
 
     private void saveProfilePhotoToFirestore(String photoUrl) {
         if (currentUser != null) {
+            // Get the user type from SessionManager
+            String userType = sessionManager.getUserType(); // "user" or "owner"
+
+            // Decide the collection based on user type
+            String collection = userType.equals("owner") ? OWNER_COLLECTION : USER_COLLECTION;
+
+            // Update the profile photo URL in the correct collection
             DocumentReference userRef = FirebaseFirestore.getInstance()
                     .collection(collection)
                     .document(currentUser.getUid());
 
-            userRef.update(FIELD, photoUrl)
+            userRef.update("profilePhotoUrl", photoUrl)  // Ensure that "profilePhotoUrl" is the correct field
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
-                            Log.d("Firestore", getString(R.string.profile_picture_updated_successfully));
+                            Log.d("Firestore", "Profile picture updated successfully.");
                         } else {
-                            Log.e("Firestore", getString(R.string.failed_to_update_profile_picture));
+                            Log.e("Firestore", "Failed to update profile picture.");
                         }
                     });
         }
