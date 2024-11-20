@@ -6,17 +6,22 @@
 package ca.tech.sense.it.smart.indoor.parking.system.ui.menu;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -28,12 +33,15 @@ import java.util.List;
 import java.util.Objects;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.model.Favorites;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.adapters.FavoritesAdapter;
+import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.Park;
 
 public class FavoritesFragment extends Fragment {
     private RecyclerView recyclerView;
-    private List<String> favoriteLocations; // Use List<String> to store addresses
+    private List<Favorites> favoriteLocations; // Use List<String> to store addresses
     private DatabaseReference databaseRef;
+    private FavoritesAdapter adapter;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -46,6 +54,28 @@ public class FavoritesFragment extends Fragment {
         String userId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
         databaseRef = FirebaseDatabase.getInstance().getReference("users").child(userId).child("saved_locations");
 
+        // Initialize the adapter
+        favoriteLocations = new ArrayList<>();
+        adapter = new FavoritesAdapter(favoriteLocations, databaseRef, favorite -> {
+            // Handle item click and navigate to Park fragment
+            Park parkFragment = new Park();
+            Bundle args = new Bundle();
+            args.putString("locationId", favorite.getId());
+            parkFragment.setArguments(args);
+            FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+            transaction.replace(R.id.flFragment, parkFragment);
+            transaction.addToBackStack(null);
+            transaction.commit();
+
+            // Show BookingBottomSheetDialog after a short delay to ensure the fragment is fully attached
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                if (getParentFragmentManager().findFragmentById(R.id.flFragment) instanceof Park) {
+                    ((Park) getParentFragmentManager().findFragmentById(R.id.flFragment)).showBookingBottomSheet(favorite.getId());
+                }
+            }, 500);
+        });
+        recyclerView.setAdapter(adapter);
+
         // Load favorite locations from Firebase
         loadFavoriteLocations();
 
@@ -53,25 +83,25 @@ public class FavoritesFragment extends Fragment {
     }
 
     private void loadFavoriteLocations() {
-        databaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseRef.addChildEventListener(new ChildEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                favoriteLocations = new ArrayList<>();
-                for (DataSnapshot data : snapshot.getChildren()) {
-                    // Retrieve data from Firebase
-                    String address = data.child("address").getValue(String.class);
-                    String postalCode = data.child("postalCode").getValue(String.class); // Fetch postal code
-                    Double latitude = data.child("latitude").getValue(Double.class); // Fetch latitude
-                    Double longitude = data.child("longitude").getValue(Double.class); // Fetch longitude
+            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                addFavoriteLocation(snapshot);
+            }
 
-                    // Add data to the list if the address is available
-                    if (address != null && postalCode != null && latitude != null && longitude != null) {
-                        favoriteLocations.add(address + "\n" + postalCode + "\nLat: " + latitude + ", Long: " + longitude); // Combine address, postal code, latitude, and longitude
-                    }
-                }
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                updateFavoriteLocation(snapshot);
+            }
 
-                // Update RecyclerView with the fetched data
-                updateRecyclerView();
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+                removeFavoriteLocation(snapshot);
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                // Not needed for this use case
             }
 
             @Override
@@ -81,14 +111,47 @@ public class FavoritesFragment extends Fragment {
         });
     }
 
-    private void updateRecyclerView() {
-        FavoritesAdapter adapter;
-        if (favoriteLocations != null && !favoriteLocations.isEmpty()) {
-            // Set the adapter and bind the favorite locations list
-            adapter = new FavoritesAdapter(favoriteLocations);
-            recyclerView.setAdapter(adapter);
-        } else {
-            Toast.makeText(getContext(),getString(R.string.no_favorite_locations_found), Toast.LENGTH_SHORT).show();
+    private void addFavoriteLocation(DataSnapshot snapshot) {
+        String id = snapshot.child("locationId").getValue(String.class);
+        String address = snapshot.child("address").getValue(String.class);
+        String postalCode = snapshot.child("postalCode").getValue(String.class);
+        String name = snapshot.child("name").getValue(String.class);
+
+        if (id != null && address != null && postalCode != null && name != null) {
+            favoriteLocations.add(new Favorites(id, address, name, postalCode));
+            adapter.notifyItemInserted(favoriteLocations.size() - 1);
+        }
+    }
+
+    private void updateFavoriteLocation(DataSnapshot snapshot) {
+        String id = snapshot.child("locationId").getValue(String.class);
+        String address = snapshot.child("address").getValue(String.class);
+        String postalCode = snapshot.child("postalCode").getValue(String.class);
+        String name = snapshot.child("name").getValue(String.class);
+
+        if (id != null && address != null && postalCode != null && name != null) {
+            for (int i = 0; i < favoriteLocations.size(); i++) {
+                if (favoriteLocations.get(i).getId().equals(id)) {
+                    favoriteLocations.set(i, new Favorites(id, address, name, postalCode));
+                    adapter.notifyItemChanged(i);
+                    break;
+                }
+            }
+        }
+    }
+
+    private void removeFavoriteLocation(DataSnapshot snapshot) {
+        String id = snapshot.child("locationId").getValue(String.class);
+
+        if (id != null) {
+            for (int i = 0; i < favoriteLocations.size(); i++) {
+                if (favoriteLocations.get(i).getId().equals(id)) {
+                    favoriteLocations.remove(i);
+                    adapter.notifyItemRemoved(i);
+                    adapter.notifyItemRangeChanged(i, favoriteLocations.size());
+                    break;
+                }
+            }
         }
     }
 }

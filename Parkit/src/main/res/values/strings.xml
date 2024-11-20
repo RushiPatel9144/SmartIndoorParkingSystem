@@ -361,6 +361,8 @@
     <string name="sensor_info">Sensor Info</string>
     <string name="no_user_is_logged_in">No user is logged in</string>
     <string name="an_error_occurred">An error occurred</string>
+    <string name="slot_already_occupied">Slot is Already Occupied</string>
+    <string name="error_checking_slot_availability">Error Checking slot availability</string>
 
 
 </resources>
