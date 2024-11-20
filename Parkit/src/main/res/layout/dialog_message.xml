@@ -38,7 +38,7 @@
 
 
 
-            <Button
+        <Button
             android:id="@+id/dialog_confirm_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

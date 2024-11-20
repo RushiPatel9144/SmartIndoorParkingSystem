@@ -5,25 +5,71 @@
  */
 package ca.tech.sense.it.smart.indoor.parking.system.model.activity;
 
-public class Booking {
+import java.io.Serializable;
+
+public class Booking implements Serializable {
+    private String id;
     private String title;
     private long startTime;
     private long endTime;
     private String location;
-    private String slotNumber;
+    private String postalCode;
     private double price;
+    private String currencyCode;
+    private String currencySymbol;
+    private String slotNumber;
+    private String passKey;
+    private String locationId; // Add this field
 
-    public Booking() {
-        // Default constructor required for calls to DataSnapshot.getValue(Booking.class)
-    }
+    // Default constructor required for calls to DataSnapshot.getValue(Booking.class)
+    public Booking() {}
 
-    public Booking(String title, long startTime, long endTime, String location, String slotNumber, double price) {
+    // Add a constructor that includes the locationId
+    public Booking(String title, long startTime, long endTime, String location,String postalCode, double price, String currencyCode, String currencySymbol, String slotNumber, String passKey, String locationId) {
         this.title = title;
         this.startTime = startTime;
         this.endTime = endTime;
         this.location = location;
-        this.slotNumber = slotNumber;
         this.price = price;
+        this.slotNumber = slotNumber;
+        this.passKey = passKey;
+        this.locationId = locationId;
+        this.currencySymbol = currencySymbol;
+        this.currencyCode = currencyCode;
+        this.postalCode = postalCode;
+    }
+
+    public String getPostalCode() {
+        return postalCode;
+    }
+
+    public void setPostalCode(String postalCode) {
+        this.postalCode = postalCode;
+    }
+
+    // Getters and setters for all fields, including locationId
+    public String getId() {
+        return id;
+    }
+
+    public void setCurrencySymbol(String currencySymbol) {
+        this.currencySymbol = currencySymbol;
+    }
+
+    public String getCurrencySymbol() {
+        return currencySymbol;
+    }
+
+    public String getCurrencyCode() {
+        return currencyCode;
+    }
+
+    public void setCurrencyCode(String currencyCode) {
+        this.currencyCode = currencyCode;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getTitle() {
@@ -58,6 +104,14 @@ public class Booking {
         this.location = location;
     }
 
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
     public String getSlotNumber() {
         return slotNumber;
     }
@@ -66,11 +120,19 @@ public class Booking {
         this.slotNumber = slotNumber;
     }
 
-    public double getPrice() {
-        return price;
+    public String getPassKey() {
+        return passKey;
     }
 
-    public void setPrice(double price) {
-        this.price = price;
+    public void setPassKey(String passKey) {
+        this.passKey = passKey;
+    }
+
+    public String getLocationId() {
+        return locationId;
+    }
+
+    public void setLocationId(String locationId) {
+        this.locationId = locationId;
     }
 }

@@ -111,7 +111,10 @@
         <item>USD</item>
         <item>INR</item>
         <item>CAD</item>
-
+    </string-array>
+    <string-array name="sensors">
+        <item>Infra</item>
+        <item>Ultrasonic</item>
     </string-array>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
@@ -252,6 +255,114 @@
     <string name="sign_in_as_user">Sign in as user</string>
     <string name="sign_up_as_owner">Sign Up as Owner</string>
     <string name="sign_up_as_user">Sign Up as User</string>
+    <string name="failed_to_upload_image">Failed to upload Image</string>
+    <string name="profile_picture_updated_successfully">Profile Picture Updated Successfully</string>
+    <string name="failed_to_update_profile_picture">Failed to update profile picture</string>
+    <string name="set_phone_number">Set Phone Number</string>
+    <string name="invalid_phone_number">Invalid Phone Number</string>
+    <string name="phone_number_updated">Phone Number Updated</string>
+    <string name="phone_number_update_failed">Phone Number Updated Failed</string>
+    <string name="firestore_fetch_failed">Firestore fetched failed</string>
+    <string name="failed_to_fetch_user_data">Failed to fetch user data</string>
+    <string name="upload_successful_url">upload successful</string>
+    <string name="upload_failed">upload failed</string>
+    <string name="occupied">Occupied</string>
+    <string name="selected_slot_is_already_occupied_please_choose_a_different_time_slot">Selected slot is already occupied, please choose a different time slot.</string>
+    <string name="selected_slot_is_already_occupied">Selected slot is already occupied</string>
+    <string name="no_slots_available">No Slots Available</string>
+    <string name="choose_another_date">Choose Another Date</string>
+    <string name="payment_successful">Payment successful!</string>
+    <string name="payment_failed">"Payment failed: "</string>
+    <string name="payment_canceled">Payment canceled</string>
+    <string name="get_started">Get Started</string>
+    <string name="onboard_title1">Welcome to Parkit!</string>
+    <string name="onboard_title2">Discover Nearby Parking</string>
+    <string name="onboard_title3">Pay and Park with Ease</string>
+    <string name="onboard_text1">Whether you\'re looking for a parking spot or offering one, Parkit makes parking easier for everyone. Let\'s get started!</string>
+    <string name="onboard_text2">Finding a spot is a breeze. Browse nearby parking locations and get to your destination faster, whether you’re a user or an owner.</string>
+    <string name="onboard_text3">Enjoy a smooth, secure payment experience. No matter if you\'re parking or providing a spot, managing payments has never been easier.</string>
+    <string name="book_now">Book Now</string>
+    <string name="platform_fee">Platform Fee</string>
+    <string name="_0_00">$0.00</string>
+    <string name="subtotal">Subtotal</string>
+    <string name="total_breakdown">Total Breakdown</string>
+    <string name="apply">Apply</string>
+    <string name="enter_promo_code">Enter Promo Code</string>
+    <string name="parking_name">Parking Name</string>
+    <string name="booking_summary">Booking Summary</string>
+    <string name="checkout">Checkout</string>
+    <string name="gst_hst">GST/HST</string>
+    <string name="total">Total</string>
+    <string name="pay_now">Pay Now</string>
+    <string name="booking_data_is_missing_or_invalid">Booking data is missing or invalid.</string>
+    <string name="failed_to_connect_to_server">Failed to connect to server</string>
+    <string name="failed_to_parse_server_response">Failed to parse server response</string>
+    <string name="booking_confirmed">Booking Confirmed</string>
+    <string name="booking_data_is_missing">Booking data is missing.</string>
+    <string name="no_internet_access">No Internet Access</string>
+    <string name="channel_name">Channel Name</string>
+    <string name="channel_description">Descriotion\n</string>
+    <string name="user">User</string>
+    <string name="don_t_have_an_account">Don\'t Have An Account</string>
+    <string name="already_have_an_account_">Already have An Account</string>
+    <string name="enter_your_email_first">Enter Your Email First</string>
+    <string name="date">Date</string>
+    <string name="confirm_exit">Confirm Exit</string>
+    <string name="are_you_sure_you_want_to_exit_the_app">Are you sure you want to exit the app?</string>
+    <string name="yes_exit">Yes, Exit</string>
+    <string name="no_stay">No, Stay</string>
+    <string name="confirm_logout">Confirm Logout</string>
+    <string name="are_you_certain_you_wish_to_log_out_of_your_account">Are you certain you wish to log out of your account?</string>
+    <string name="add_new_location">Add New Location</string>
+    <string name="your_parking_locations">Your Parking Locations</string>
+    <string name="show_slots">Show Slots</string>
+    <string name="location_name">Location Name</string>
+    <string name="save_location">Save Location</string>
+    <string name="or">OR</string>
+    <string name="no_parking_locations_available">No Parking Locations Available</string>
+    <string name="add_your_parking">Add Your Parking</string>
+    <string name="back">Back</string>
+    <string name="parking_location_name">Parking Location Name</string>
+    <string name="enter_location_name">Enter Location Name</string>
+    <string name="search_address">Search Address</string>
+    <string name="search_for_an_address">Search for an address</string>
+    <string name="enter_postal_code">Enter Postal Code</string>
+    <string name="price_per_hour">Price per Hour</string>
+    <string name="enter_price_in_cad">Enter Price in CAD$</string>
+    <string name="continue_">Continue</string>
+    <string name="add_new_parking_location">Add New Parking Location</string>
+    <string name="add_new_slot">Add New Slot</string>
+    <string name="parking_slot_id_name">Parking Slot ID/Name</string>
+    <string name="sensor_type">Sensor Type</string>
+    <string name="sensor_details">Sensor Details</string>
+    <string name="battery_level">Battery Level</string>
+    <string name="add_slot">Add Slot</string>
+    <string name="parking_location_added_successfully">Parking Location Added Successfully</string>
+    <string name="please_select_a_location_using_the_search_bar">Please select a location using the search bar.</string>
+    <string name="invalid_price_format">Invalid price format.</string>
+    <string name="price_must_be_a_positive_value">Price must be a positive value.</string>
+    <string name="please_enter_the_price">Please enter the price.</string>
+    <string name="please_enter_the_postal_code">Please enter the postal code.</string>
+    <string name="please_enter_the_location_name">Please enter the location name.</string>
+    <string name="location_added_successfully">Location added successfully!</string>
+    <string name="parking_address">Parking Address</string>
+    <string name="enter_parking_address">Enter Parking Address</string>
+    <string name="slot_added_successfully">Slot Added Successfully</string>
+    <string name="failed_to_generate_slot_id">Failed To Generate Slot Id.</string>
+    <string name="failed_to_save_sensor_data">Failed To Save Sensor Data</string>
+    <string name="failed_to_save_slot_data">Fsiled To Save Slot Data</string>
+    <string name="failed_to_save_owner_sensor_data">"Failed To Save Sensor Data "</string>
+    <string name="failed_to_save_owner_slot_data">Failed to save slot data</string>
+    <string name="add_location">Add Location</string>
+    <string name="location_address">Location Address</string>
+    <string name="price_0_00">Price: $0.00</string>
+    <string name="slot_id">Slot ID</string>
+    <string name="status">Status</string>
+    <string name="sensor_info">Sensor Info</string>
+    <string name="no_user_is_logged_in">No user is logged in</string>
+    <string name="an_error_occurred">An error occurred</string>
+    <string name="slot_already_occupied">Slot is Already Occupied</string>
+    <string name="error_checking_slot_availability">Error Checking slot availability</string>
 
 
 </resources>

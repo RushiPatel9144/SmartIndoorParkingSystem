@@ -30,34 +30,21 @@ public class NetworkManager {
             networkCallback = new ConnectivityManager.NetworkCallback() {
                 @Override
                 public void onAvailable(@NonNull Network network) {
-                    // If network was previously unavailable, show a message
-                    if (wasNetworkLost) {
-                        showToast(context,
-                                context.getString(R.string.network_is_available));
-                        wasNetworkLost = false; // Reset the flag
-                    }
+                    handleNetworkAvailability(context, network);
                 }
 
                 @Override
                 public void onLost(@NonNull Network network) {
-                    // Network lost
-                    wasNetworkLost = true;
-                    Intent intent = new Intent(context, NoNetworkActivity.class);
-                    context.startActivity(intent);
-
+                    handleNetworkLoss(context);
                 }
 
                 @Override
                 public void onCapabilitiesChanged(@NonNull Network network, @NonNull NetworkCapabilities networkCapabilities) {
-
-                    networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);// Network has internet access
+                    handleNetworkCapabilitiesChange(context, networkCapabilities);
                 }
             };
 
-            cm.registerNetworkCallback(
-                    new android.net.NetworkRequest.Builder().build(),
-                    networkCallback
-            );
+            cm.registerNetworkCallback(new android.net.NetworkRequest.Builder().build(), networkCallback);
         }
     }
 
@@ -68,8 +55,47 @@ public class NetworkManager {
         }
     }
 
+    public void handleNetworkAvailability(Context context, Network network) {
+        if (hasInternetAccess(context, network)) {
+            if (wasNetworkLost) {
+                showToast(context, context.getString(R.string.network_is_available));
+                wasNetworkLost = false;
+            }
+        } else {
+            showToastAndOpenNoNetworkActivity(context);
+        }
+    }
 
-    private static void showToast(Context context, String message) {
+    public void handleNetworkLoss(Context context) {
+        wasNetworkLost = true;
+        showToastAndOpenNoNetworkActivity(context);
+    }
+
+    public void handleNetworkCapabilitiesChange(Context context, NetworkCapabilities networkCapabilities) {
+        if (networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)) {
+            if (wasNetworkLost) {
+                showToast(context, context.getString(R.string.network_is_available));
+                wasNetworkLost = false;
+            }
+        } else {
+            showToastAndOpenNoNetworkActivity(context);
+        }
+    }
+
+    private void showToastAndOpenNoNetworkActivity(Context context) {
+        showToast(context, context.getString(R.string.no_internet_access));
+        Intent intent = new Intent(context, NoNetworkActivity.class);
+        context.startActivity(intent);
+    }
+
+    private boolean hasInternetAccess(Context context, Network network) {
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkCapabilities capabilities = cm.getNetworkCapabilities(network);
+
+        return capabilities != null && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
+    }
+
+    public static void showToast(Context context, String message) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
     }
 }

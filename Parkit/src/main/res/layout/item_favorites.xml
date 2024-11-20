@@ -21,7 +21,6 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical">
-
             <TextView
                 android:id="@+id/tvFavoriteTitle"
                 android:layout_width="0dp"
@@ -30,7 +29,14 @@
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:textColor="#333333"/>
-
+            <ImageButton
+                android:id="@+id/btnRemoveFavorite"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_star_filled"
+                android:contentDescription="Remove Favorite"
+                app:tint="@color/colorAccent"/>
         </LinearLayout>
 
         <TextView

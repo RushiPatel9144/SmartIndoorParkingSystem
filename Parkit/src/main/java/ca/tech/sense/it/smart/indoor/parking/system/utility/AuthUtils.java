@@ -48,30 +48,6 @@ public class AuthUtils {
         }
     }
 
-    public static void resetPassword(Context context, FirebaseAuth auth) {
-        String currentEmail = getCurrentUserEmail(auth);
-        if (currentEmail != null) {
-            // Show a confirmation dialog to send reset email
-            DialogUtil.showMessageDialog(context, context.getString(R.string.reset_password),
-                    String.format("%s%s", context.getString(R.string.a_password_reset_link_will_be_sent_to), currentEmail),
-                    context.getString(R.string.confirm),
-                    new DialogUtil.DialogCallback() {
-                        @Override
-                        public void onConfirm() {
-                            sendPasswordResetEmail(currentEmail, auth, context); // Send reset email
-                        }
-
-                        @Override
-                        public void onCancel() {
-                            // Handle cancel if needed
-                        }
-                    });
-        } else {
-            // If the current email is not found
-            Toast.makeText(context, R.string.no_email_found_for_the_current_user, Toast.LENGTH_SHORT).show();
-        }
-    }
-
     // Updated method signature to match the usage with FirebaseAuth
     public static void sendPasswordResetEmail(String email, FirebaseAuth auth, Context context) {
         if (email.isEmpty()) {
@@ -119,65 +95,6 @@ public class AuthUtils {
         return !TextUtils.isEmpty(password) && password.length() >= 6;
     }
 
-    // Handle Firebase Authentication errors in a common place
-    public static void handleAuthError(Context context, Exception exception, EditText emailEditText, EditText passwordEditText) {
-        if (exception instanceof FirebaseAuthInvalidUserException) {
-            emailEditText.setError(context.getString(R.string.user_not_found));
-            emailEditText.requestFocus();
-        } else if (exception instanceof FirebaseAuthUserCollisionException) {
-            emailEditText.setError(context.getString(R.string.email_is_already_registered));
-            emailEditText.requestFocus();
-        } else if (exception instanceof FirebaseAuthException) {
-            FirebaseAuthException authException = (FirebaseAuthException) exception;
-            String errorCode = authException.getErrorCode();
-            if (errorCode.equals("ERROR_INVALID_CREDENTIAL")) {
-                passwordEditText.setError(context.getString(R.string.invaild_credentials));
-                passwordEditText.requestFocus();
-            } else {
-                Toast.makeText(context, context.getString(R.string.authentication_failed), Toast.LENGTH_SHORT).show();
-            }
-        } else {
-            Toast.makeText(context, context.getString(R.string.authentication_failed), Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    // Utility to show/hide ProgressBar
-    public static void toggleProgressBar(ProgressBar progressBar, boolean show) {
-        if (show) {
-            progressBar.setVisibility(View.VISIBLE);
-        } else {
-            progressBar.setVisibility(View.GONE);
-        }
-    }
-
-    // Utility method for showing Toast messages
-    public static void showToast(Context context, String message) {
-        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-    }
-
-    // Firebase Sign In method - Reusable for Google Sign-In or Email/Password sign-in
-    public static void signInWithFirebaseAuth(Context context, String email, String password, FirebaseAuth mAuth, ProgressBar progressBar, Runnable onSuccess) {
-        toggleProgressBar(progressBar, true);
-
-        mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
-            toggleProgressBar(progressBar, false);
-            if (task.isSuccessful()) {
-                onSuccess.run();
-            } else {
-                handleAuthError(context, task.getException(), null, null);
-            }
-        });
-    }
 
 
-    public static void signInWithGoogle(Context context, FirebaseAuth mAuth, GoogleSignInAccount account, Runnable onSuccess) {
-        AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
-        mAuth.signInWithCredential(credential).addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                onSuccess.run();
-            } else {
-                Toast.makeText(context, context.getString(R.string.authentication_failed), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
 }

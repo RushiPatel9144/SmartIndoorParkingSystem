@@ -7,11 +7,17 @@ package ca.tech.sense.it.smart.indoor.parking.system.utility;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.activity.OnBackPressedCallback;
 
 import java.util.Objects;
 
@@ -27,6 +33,16 @@ public class DialogUtil {
 
     // Callback interface for message dialog
     public interface DialogCallback {
+        void onConfirm();
+        void onCancel();
+    }
+
+    // New callback interface for confirmation dialog
+    public interface ConfirmDialogCallback {
+        void onConfirm();
+    }
+
+    public interface BackPressCallback{
         void onConfirm();
         void onCancel();
     }
@@ -107,23 +123,118 @@ public class DialogUtil {
         dialog.show();
     }
 
-    public static void showGoogleSignInDialog(Context context, DialogCallback callback) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("Google Sign-In")
-                .setMessage("Would you like to sign in with your Google account?")
-                .setPositiveButton("Sign In", (dialog, which) -> {
-                    // Handle Google Sign-In logic here
-                    callback.onConfirm();  // Call onConfirm() when user presses Sign In
-                })
-                .setNegativeButton("Cancel", (dialog, which) -> {
-                    callback.onCancel();  // Call onCancel() when user cancels the dialog
-                })
-                .setCancelable(false);  // Optionally make the dialog non-cancelable
-        builder.show();
+    // New method to show a confirmation dialog with only an OK button
+    public static void showConfirmationDialog(Context context, String title, String message, String confirm, ConfirmDialogCallback callback) {
+        LayoutInflater inflater = LayoutInflater.from(context);
+        View dialogView = inflater.inflate(R.layout.dialog_confirm, null);
+
+        TextView dialogTitle = dialogView.findViewById(R.id.dialog_title);
+        TextView dialogMessage = dialogView.findViewById(R.id.dialog_message);
+        Button confirmButton = dialogView.findViewById(R.id.dialog_confirm_button);
+
+        dialogTitle.setText(title);
+        dialogMessage.setText(message);
+        confirmButton.setText(confirm);
+
+        AlertDialog dialog = new AlertDialog.Builder(context)
+                .setView(dialogView)
+                .create();
+
+        Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawableResource(R.drawable.dialog_background);
+        dialog.show();
+
+        confirmButton.setOnClickListener(v -> {
+            dialog.dismiss();
+            if (callback != null) {
+                callback.onConfirm();
+            }
+        });
+
+        dialog.show();
     }
 
-//    public interface DialogCallback {
-//        void onConfirm();
-//        void onCancel();
-//    }
+    // New method to show a confirmation dialog with the email in bold
+    public static void showConfirmationDialogWithEmail(Context context, String title, String message, String email, String confirm, ConfirmDialogCallback callback) {
+        LayoutInflater inflater = LayoutInflater.from(context);
+        View dialogView = inflater.inflate(R.layout.dialog_confirm, null);
+
+        TextView dialogTitle = dialogView.findViewById(R.id.dialog_title);
+        TextView dialogMessage = dialogView.findViewById(R.id.dialog_message);
+        Button confirmButton = dialogView.findViewById(R.id.dialog_confirm_button);
+
+        dialogTitle.setText(title);
+
+        // Create a SpannableString to bold the email
+        String fullMessage = message + "\n\nWe will reach you out soon on " + email;
+        SpannableString spannableString = new SpannableString(fullMessage);
+        int start = fullMessage.indexOf(email);
+        int end = start + email.length();
+        spannableString.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        dialogMessage.setText(spannableString);
+        confirmButton.setText(confirm);
+
+        AlertDialog dialog = new AlertDialog.Builder(context)
+                .setView(dialogView)
+                .create();
+
+        Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawableResource(R.drawable.dialog_background);
+        dialog.show();
+
+        confirmButton.setOnClickListener(v -> {
+            dialog.dismiss();
+            if (callback != null) {
+                callback.onConfirm();
+            }
+        });
+
+        dialog.show();
+    }
+
+// Method to show a confirmation dialog asking if the user is sure they want to leave the app
+    public static void showLeaveAppDialog(Context context, String title, String message, int imageResource, BackPressCallback callback) {
+        LayoutInflater inflater = LayoutInflater.from(context);
+        View dialogView = inflater.inflate(R.layout.dialog_leave_app, null);
+
+        TextView dialogTitle = dialogView.findViewById(R.id.dialog_title);
+        TextView dialogMessage = dialogView.findViewById(R.id.dialog_message);
+        ImageView dialogImage = dialogView.findViewById(R.id.dialog_image);
+        Button confirmButton = dialogView.findViewById(R.id.dialog_confirm_button);
+        Button cancelButton = dialogView.findViewById(R.id.dialog_cancel_button);
+        // Set the title and message
+        dialogTitle.setText(title);
+        dialogMessage.setText(message);
+
+        // Set the image resource (icon or any image you want to display)
+        dialogImage.setImageResource(imageResource);
+
+        // Create the dialog
+        AlertDialog dialog = new AlertDialog.Builder(context)
+                .setView(dialogView)
+                .create();
+
+        // Set custom background for the dialog window
+        Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawableResource(R.drawable.dialog_background);
+
+        // Show the dialog once, after it's fully configured
+        dialog.show();
+
+        // Handle Confirm button click
+        confirmButton.setOnClickListener(v -> {
+            dialog.dismiss();
+            if (callback != null) {
+                callback.onConfirm();
+            }
+        });
+
+        cancelButton.setOnClickListener(v -> {
+            dialog.dismiss();
+            if (callback != null) {
+                callback.onCancel();
+            }
+        });
+        dialog.show();
+    }
+
+
 }

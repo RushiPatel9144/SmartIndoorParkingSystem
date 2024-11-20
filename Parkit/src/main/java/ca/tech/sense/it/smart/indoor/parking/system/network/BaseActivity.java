@@ -24,10 +24,10 @@ public class BaseActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (!NetworkUtils.isNetworkAvailable(this)) {
-            Intent intent = new Intent(this, NoNetworkActivity.class);  // Fixed: added .class
+            Intent intent = new Intent(this, NoNetworkActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // Ensures the activity starts from outside of an activity context if needed
             startActivity(intent);
-            finish(); // Optionally, finish the current activity to prevent the user from navigating back to it without internet
+            finish(); // finish the current activity to prevent the user from navigating back to it without internet
         } else {
             NetworkManager.getInstance().startMonitoring(this);
         }

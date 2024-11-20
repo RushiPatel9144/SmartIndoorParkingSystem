@@ -8,7 +8,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="15dp"
-    tools:context=".launcherActivity.LoginActivity">
+    tools:context=".launcherActivity.ui.LoginActivity">
 
     <ImageView
         android:layout_marginTop="70dp"
@@ -23,9 +23,10 @@
         tools:ignore="UseAppTint" />
 
     <TextView
+        android:id="@+id/titleTV"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/sign_in"
+        android:text="@string/user"
         android:fontFamily="@font/poppins_medium"
 
         android:layout_marginTop="15dp"
@@ -44,16 +45,14 @@
         app:boxBackgroundColor="@color/colorAccentLight"
         app:startIconTint="@color/colorAccent"
         app:startIconContentDescription="email_icon_desc"
-        app:startIconDrawable="@drawable/baseline_email_24"
+        app:startIconDrawable="@drawable/baseline_email_24">
 
-        >
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/login_email_editext"
             android:fontFamily="@font/poppins_medium"
             android:inputType="textEmailAddress"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            />
+            android:layout_height="wrap_content" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -68,8 +67,7 @@
         app:startIconTint="@color/colorAccent"
         app:boxBackgroundColor="@color/colorAccentLight"
         app:endIconDrawable="@drawable/baseline_remove_red_eye_24"
-        app:endIconMode="password_toggle"
-        >
+        app:endIconMode="password_toggle">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/login_password_editext"
@@ -98,7 +96,8 @@
             android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="@+id/forgot_password"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/forgot_password" />
+            app:layout_constraintTop_toTopOf="@+id/forgot_password"
+            tools:ignore="TouchTargetSizeCheck" />
 
         <TextView
             android:id="@+id/forgot_password"
@@ -121,16 +120,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
-    <!--    <com.google.android.material.button.MaterialButton-->
-<!--        app:cornerRadius="16dp"-->
-<!--        android:layout_marginTop="0dp"-->
-<!--        android:id="@+id/google_sign_in_button"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:text="@string/sign_in_with_google"-->
-<!--        style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>-->
-
-
     <com.google.android.material.button.MaterialButton
         android:id="@+id/login_btn"
         android:layout_width="match_parent"
@@ -146,19 +135,65 @@
         android:paddingEnd="30dp"
         android:paddingBottom="10dp"
         android:text="@string/sign_in"
+        android:textAllCaps="false"
         android:textColor="@android:color/white"
         app:cornerRadius="16dp" />
-
-    <TextView
-        android:id="@+id/jump_to_signup_page"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:fontFamily="@font/poppins_medium"
-        android:text="@string/don_t_have_an_account_sign_up"
-        android:textColor="@color/semi_transparent_black" />
+        android:orientation="horizontal"
+        >
 
+        <TextView
 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:fontFamily="@font/poppins_medium"
+            android:text="@string/don_t_have_an_account"
+            android:textColor="@color/semi_transparent_black" />
+        <TextView
+            android:id="@+id/jump_to_signup_page"
+            android:paddingStart="3dp"
+            android:textColor="@color/colorAccent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/sign_up"
+            android:layout_gravity="center"
+            android:fontFamily="@font/poppins_medium"/>
+    </LinearLayout>
+    <!-- Divider with "OR" -->
+    <LinearLayout
+        android:id="@+id/or"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginVertical="12dp"
+        android:visibility="visible">
+
+        <!-- Left Line -->
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1"
+            android:background="@android:color/darker_gray"/>
+
+        <!-- OR Text -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/or"
+            android:textColor="@android:color/darker_gray"
+            android:layout_marginHorizontal="8dp"/>
+
+        <!-- Right Line -->
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1"
+            android:background="@android:color/darker_gray"/>
+    </LinearLayout>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnGoogleSignIn"
@@ -177,9 +212,4 @@
         app:icon="@drawable/googleg_standard_color_18"
         app:iconGravity="textStart"
         app:iconTintMode="multiply" />
-
-
-
-
-
 </LinearLayout>

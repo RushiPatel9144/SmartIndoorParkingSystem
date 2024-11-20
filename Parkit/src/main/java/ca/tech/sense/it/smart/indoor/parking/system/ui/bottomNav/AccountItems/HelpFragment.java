@@ -6,32 +6,26 @@
 package ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems;
 
 import android.os.Bundle;
-import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
+import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.DocumentReference;
-
-
 import ca.tech.sense.it.smart.indoor.parking.system.R;
-import ca.tech.sense.it.smart.indoor.parking.system.model.Help;
+import ca.tech.sense.it.smart.indoor.parking.system.logic.HelpFragmentLogic;
 
 public class HelpFragment extends Fragment {
 
     private EditText etName, etPhone, etEmail, etComment;
     private Button btnSubmitHelp;
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private ProgressBar progressBar;
+    private HelpFragmentLogic helpFragmentLogic;
 
     @Nullable
     @Override
@@ -45,49 +39,23 @@ public class HelpFragment extends Fragment {
         etEmail = view.findViewById(R.id.feedback_email);
         etComment = view.findViewById(R.id.feedback_comment);
         btnSubmitHelp = view.findViewById(R.id.submit_feedback_button);
+        progressBar = view.findViewById(R.id.progress_bar);
+
+        // Initialize logic class
+        helpFragmentLogic = new HelpFragmentLogic(getActivity(), etName, etPhone, etEmail, etComment, btnSubmitHelp, progressBar);
+
+        // Fetch user data from Firestore and autofill fields
+        helpFragmentLogic.fetchUserData();
 
         // Set up button click listener
         btnSubmitHelp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String name = etName.getText().toString().trim();
-                String phone = etPhone.getText().toString().trim();
-                String email = etEmail.getText().toString().trim();
-                String comment = etComment.getText().toString().trim();
-
-                if (name.isEmpty() || phone.isEmpty() || email.isEmpty() || comment.isEmpty()) {
-                    Toast.makeText(getActivity(), getString(R.string.please_fill_in_all_fields), Toast.LENGTH_SHORT).show();
-                }else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                    Toast.makeText(getActivity(), getString(R.string.please_enter_a_valid_email_address), Toast.LENGTH_SHORT).show();}
-                else {
-                    // Create a new Help object
-                    Help help = new Help(name, phone, email, comment);
-
-                    // Add the Help object to the 'help' collection
-                    db.collection("help").add(help)
-                            .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                                @Override
-                                public void onSuccess(DocumentReference documentReference) {
-                                    // Clear the fields
-                                    etName.setText("");
-                                    etPhone.setText("");
-                                    etEmail.setText("");
-                                    etComment.setText("");
-                                    // Show success message
-                                    Toast.makeText(getActivity(), getString(R.string.help_request_submitted), Toast.LENGTH_SHORT).show();
-                                }
-                            })
-                            .addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    // Show error message
-                                    Toast.makeText(getActivity(), getString(R.string.error_adding_document), Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                }
+                helpFragmentLogic.submitHelpRequest();
             }
         });
 
         return view;
     }
 }
+

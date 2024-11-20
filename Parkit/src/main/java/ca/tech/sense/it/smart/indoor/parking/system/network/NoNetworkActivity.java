@@ -2,18 +2,15 @@ package ca.tech.sense.it.smart.indoor.parking.system.network;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 import android.util.Log;
 import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
-
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 
 public class NoNetworkActivity extends AppCompatActivity {
@@ -45,12 +42,9 @@ public class NoNetworkActivity extends AppCompatActivity {
 
 
         Button openNetworkSettingsButton = findViewById(R.id.openNetworkSettingsButton);
-        openNetworkSettingsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS);
-                startActivity(intent);
-            }
+        openNetworkSettingsButton.setOnClickListener(v -> {
+            Intent intent = new Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS);
+            startActivity(intent);
         });
     }
 
@@ -73,6 +67,6 @@ public class NoNetworkActivity extends AppCompatActivity {
                 Log.e(TAG, String.valueOf(R.string.error_checking_network_availability), e);
                 scheduler.shutdown();  // Shutdown the scheduler in case of an error
             }
-        }, 0, 1, TimeUnit.SECONDS);  // Start immediately, check every 1 second
+        }, 5, 1, TimeUnit.SECONDS);  // Start immediately, check every 1 second
     }
 }

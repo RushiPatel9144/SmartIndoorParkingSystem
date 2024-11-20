@@ -27,16 +27,23 @@
         android:theme="@style/Base.Theme.SmartIndoorParkingSystem"
         tools:targetApi="31">
         <activity
-            android:name=".launcherActivity.OwnerSignUpActivity"
+            android:name=".owner.bottomNav.location.AddSlotActivity"
             android:exported="false" />
         <activity
-            android:name=".launcherActivity.OwnerLoginActivity"
+            android:name=".owner.bottomNav.location.AddLocationActivity"
+            android:exported="false" />
+        <activity
+            android:name=".launcherActivity.onBoarding.OnboardingActivity"
+            android:exported="true"
+            android:theme="@style/Base.Theme.SmartIndoorParkingSystem" />
+        <activity
+            android:name=".booking.PaymentActivity"
             android:exported="false" />
         <activity
             android:name=".owner.OwnerActivity"
             android:exported="false" />
         <activity
-            android:name=".launcherActivity.FirstActivity"
+            android:name=".launcherActivity.ui.FirstActivity"
             android:exported="false" />
         <activity
             android:name=".network.NoNetworkActivity"
@@ -46,10 +53,10 @@
             android:exported="false"
             android:theme="@style/Base.Theme.SmartIndoorParkingSystem" />
         <activity
-            android:name=".launcherActivity.SignUpActivity"
+            android:name=".launcherActivity.ui.SignUpActivity"
             android:exported="false" />
         <activity
-            android:name=".launcherActivity.LoginActivity"
+            android:name=".launcherActivity.ui.LoginActivity"
             android:exported="true" />
         <activity
             android:name=".launcherActivity.SplashScreen"
@@ -83,6 +90,9 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyCBb9Vk3FUhAz6Tf7ixMIk5xqu3IGlZRd0" />
+        <meta-data
+            android:name="com.google.android.gms.wallet.api.enabled"
+            android:value="true" />
     </application>
 
 </manifest>

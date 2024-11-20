@@ -5,11 +5,13 @@
  */
 package ca.tech.sense.it.smart.indoor.parking.system.model.activity;
 
+import android.app.Application;
 import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -17,64 +19,76 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.Executors;
 
-public class BookingViewModel extends ViewModel {
-    private final MutableLiveData<List<Booking>> activeBookings = new MutableLiveData<>();
-    private final MutableLiveData<List<Booking>> historyBookings = new MutableLiveData<>();
-    private final MutableLiveData<List<Booking>> upcomingBookings = new MutableLiveData<>();
+import ca.tech.sense.it.smart.indoor.parking.system.booking.BookingManager;
 
-    public BookingViewModel() {
-        fetchBookings();
+public class BookingViewModel extends AndroidViewModel {
+    private final MutableLiveData<List<Booking>> activeBookingsLiveData = new MutableLiveData<>();
+    private final MutableLiveData<List<Booking>> upcomingBookingsLiveData = new MutableLiveData<>();
+    private final MutableLiveData<List<Booking>> historyBookingsLiveData = new MutableLiveData<>();
+    private final BookingManager bookingManager;
+
+    public BookingViewModel(@NonNull Application application) {
+        super(application);
+        bookingManager = new BookingManager(Executors.newSingleThreadExecutor(), FirebaseDatabase.getInstance(), FirebaseAuth.getInstance(), application.getApplicationContext());
     }
 
     public LiveData<List<Booking>> getActiveBookings() {
-        return activeBookings;
-    }
-
-    public LiveData<List<Booking>> getHistoryBookings() {
-        return historyBookings;
+        return activeBookingsLiveData;
     }
 
     public LiveData<List<Booking>> getUpcomingBookings() {
-        return upcomingBookings;
+        return upcomingBookingsLiveData;
     }
 
-    private void fetchBookings() {
-        DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference("bookings");
-        databaseRef.addValueEventListener(new ValueEventListener() {
+    public LiveData<List<Booking>> getHistoryBookings() {
+        return historyBookingsLiveData;
+    }
+
+    public void fetchUserBookings() {
+        String userId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
+        DatabaseReference bookingsRef = FirebaseDatabase.getInstance().getReference("users").child(userId).child("bookings");
+
+        bookingsRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                List<Booking> activeList = new ArrayList<>();
-                List<Booking> historyList = new ArrayList<>();
-                List<Booking> upcomingList = new ArrayList<>();
-
+                List<Booking> activeBookings = new ArrayList<>();
+                List<Booking> upcomingBookings = new ArrayList<>();
+                List<Booking> historyBookings = new ArrayList<>();
                 long currentTime = System.currentTimeMillis();
 
-                for (DataSnapshot userSnapshot : snapshot.getChildren()) {
-                    for (DataSnapshot bookingSnapshot : userSnapshot.getChildren()) {
-                        Booking booking = bookingSnapshot.getValue(Booking.class);
-                        if (booking != null) {
-                            if (booking.getEndTime() < currentTime) {
-                                historyList.add(booking);
-                            } else if (booking.getStartTime() <= currentTime && booking.getEndTime() >= currentTime) {
-                                activeList.add(booking);
-                            } else {
-                                upcomingList.add(booking);
-                            }
+                for (DataSnapshot bookingSnapshot : snapshot.getChildren()) {
+                    Booking booking = bookingSnapshot.getValue(Booking.class);
+                    if (booking != null) {
+                        booking.setId(bookingSnapshot.getKey());
+                        if (booking.getEndTime() < currentTime) {
+                            historyBookings.add(booking);
+                            bookingManager.expirePassKey(userId, bookingSnapshot.getKey());
+                        } else if (booking.getStartTime() > currentTime) {
+                            upcomingBookings.add(booking);
+                        } else {
+                            activeBookings.add(booking);
                         }
                     }
                 }
 
-                activeBookings.setValue(activeList);
-                historyBookings.setValue(historyList);
-                upcomingBookings.setValue(upcomingList);
+                // Sort upcoming bookings by start time
+                upcomingBookings.sort(Comparator.comparingLong(Booking::getStartTime));
+
+                activeBookingsLiveData.setValue(activeBookings);
+                upcomingBookingsLiveData.setValue(upcomingBookings);
+                historyBookingsLiveData.setValue(historyBookings);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                // Handle database error
+                // Handle error
             }
         });
     }
+
 }

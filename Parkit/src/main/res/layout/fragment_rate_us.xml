@@ -5,7 +5,8 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.bottomNav.AccountItems.RateUsFragment"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="@color/bg">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -192,5 +193,15 @@
                 android:text="@string/submit_feedback"
                 android:backgroundTint="@color/logo"
                 android:layout_marginTop="16dp"/>
+
+        <!-- Progress Bar -->
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone"/>
+
+
     </LinearLayout>
 </ScrollView>

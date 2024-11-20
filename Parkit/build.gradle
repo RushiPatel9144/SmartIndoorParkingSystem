@@ -19,21 +19,31 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        release {
+            storeFile file(KEYSTORE_FILE)  // Use variable from gradle.properties
+            storePassword KEYSTORE_PASSWORD
+            keyAlias KEY_ALIAS
+            keyPassword KEY_PASSWORD
+        }
+    }
+
     buildTypes {
         release {
+            signingConfig signingConfigs.release
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
     buildFeatures {
         viewBinding true
     }
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = '11'
     }
 }
 
@@ -51,30 +61,54 @@ dependencies {
     implementation libs.recyclerview
     implementation libs.firebase.database
     implementation libs.firebase.firestore
-    implementation libs.google.firebase.analytics
     implementation libs.navigation.fragment
     implementation libs.navigation.ui
     implementation libs.media3.exoplayer
     implementation libs.firebase.storage
     implementation libs.security.identity.credential
     implementation libs.core.ktx
-    implementation libs.androidx.material3.android
+    implementation libs.testng
+    implementation libs.androidx.core
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
     //noinspection UseTomlInstead
     implementation 'com.github.bumptech.glide:glide:4.15.1'  // Or whatever version you are using
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.15.1'  // Add this line
-    implementation 'com.google.android.material:material:1.12.0'
-    implementation 'com.google.android.gms:play-services-maps:19.0.0'
-    implementation 'com.vanniktech:android-image-cropper:4.6.0'
-    implementation 'com.google.android.libraries.places:places:4.0.0'
-    implementation 'de.hdodenhof:circleimageview:3.1.0'
+    annotationProcessor libs.compiler  // Add this line
+    implementation libs.play.services.maps
+    implementation libs.vanniktech.android.image.cropper
+    implementation libs.places
+    implementation libs.circleimageview
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services.auth)
     implementation(libs.googleid)
-    implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth.ktx)
     implementation libs.play.services.auth
-    implementation libs.firebase.auth.v2105
+    implementation ('com.stripe:stripe-android:21.0.1') {
+        exclude group: 'org.bouncycastle', module: 'bcprov-jdk15to18'
+    }
+    implementation 'com.google.android.gms:play-services-wallet:18.1.3'
+
+    implementation libs.androidx.lifecycle.viewmodel.ktx
+    implementation libs.androidx.lifecycle.livedata.ktx
+
+    // Mockito
+    testImplementation libs.mockito.core
+
+    // Espresso
+    androidTestImplementation libs.androidx.espresso.core.v350
+    androidTestImplementation libs.ext.junit
+
+    // MockWebServer (for testing network calls)
+    testImplementation libs.mockwebserver
+    testImplementation libs.robolectric
+    implementation libs.ext.junit
+    testImplementation libs.firebase.database.v2010
+    testImplementation libs.robolectric.v4102
+    testImplementation libs.junit.jupiter.api
+    testImplementation libs.junit.jupiter.engine
+    testImplementation libs.mockito.inline
+    testImplementation 'org.powermock:powermock-module-junit4:2.0.9'
+    testImplementation 'org.powermock:powermock-api-mockito2:2.0.9'
+
 }

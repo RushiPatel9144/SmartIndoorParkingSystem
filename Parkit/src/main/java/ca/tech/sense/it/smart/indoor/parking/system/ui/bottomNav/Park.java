@@ -5,8 +5,6 @@
  */
 package ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav;
 
-import static ca.tech.sense.it.smart.indoor.parking.system.R.string.location_permission_denied;
-
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -22,11 +20,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.Toast;
+
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -43,15 +43,22 @@ import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import ca.tech.sense.it.smart.indoor.parking.system.R;
 
+import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.booking.BookingBottomSheetDialogFragment;
+import ca.tech.sense.it.smart.indoor.parking.system.booking.BookingManager;
+import ca.tech.sense.it.smart.indoor.parking.system.currency.CurrencyManager;
+import ca.tech.sense.it.smart.indoor.parking.system.currency.CurrencyService;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
-import ca.tech.sense.it.smart.indoor.parking.system.utility.BookingBottomSheetDialog;
+
+import ca.tech.sense.it.smart.indoor.parking.system.utility.AutocompleteSearchHelper;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.ParkingUtility;
 
 public class Park extends Fragment implements OnMapReadyCallback {
@@ -62,13 +69,17 @@ public class Park extends Fragment implements OnMapReadyCallback {
     private ExecutorService executorService;
     private ActivityResultLauncher<String> requestPermissionLauncher;
     private FusedLocationProviderClient fusedLocationClient;
+    private boolean ratesFetched = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         parkingUtility = new ParkingUtility();
-        executorService = Executors.newSingleThreadExecutor(); // Executor for background tasks\
+        executorService = Executors.newSingleThreadExecutor(); // Executor for background tasks
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext());
+        if (!ratesFetched) {
+            fetchExchangeRates();
+        }
         registerPermissionLauncher();
     }
 
@@ -81,13 +92,19 @@ public class Park extends Fragment implements OnMapReadyCallback {
     public void onResume() {
         super.onResume();
         executorService.execute(() -> requireActivity().runOnUiThread(() -> {
-            if (!Places.isInitialized()) {
-                Places.initialize(requireContext(), "AIzaSyCBb9Vk3FUhAz6Tf7ixMIk5xqu3IGlZRd0"); // Initialize Places API only once
-            }
             initializeMap();
             initializeAutocomplete();
         }));
+
+        // Check if there is a locationId passed from the FavoritesFragment
+        if (getActivity() != null && getActivity().getIntent() != null) {
+            String locationId = getActivity().getIntent().getStringExtra("locationId");
+            if (locationId != null) {
+                showBookingBottomSheet(locationId);
+            }
+        }
     }
+
 
     private void initializeMap() {
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
@@ -97,24 +114,21 @@ public class Park extends Fragment implements OnMapReadyCallback {
     }
 
     private void initializeAutocomplete() {
-        AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
-                getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment);
-        if (autocompleteFragment != null) {
-            autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.DISPLAY_NAME, Place.Field.LOCATION));
-            autocompleteFragment.setHint(getString(R.string.search_for_a_location));
-            autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
-                @Override
-                public void onPlaceSelected(@NonNull Place place) {
-                    // Handle place selection in a background thread
-                    executorService.execute(() -> handlePlaceSelected(place));
-                }
+        AutocompleteSearchHelper.initializeAutocompleteSearch(
+                (AutocompleteSupportFragment) getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment),
+                requireContext(),
+                new AutocompleteSearchHelper.PlaceSelectionCallback() {
+                    @Override
+                    public void onPlaceSelected(Place place) {
+                        executorService.execute(() -> handlePlaceSelected(place));
+                    }
 
-                @Override
-                public void onError(@NonNull Status status) {
-                    Log.d(TAG, getString(R.string.error)+ status.getStatusMessage());
+                    @Override
+                    public void onError(String errorMessage) {
+                        Log.d(TAG, getString(R.string.error) + errorMessage);
+                    }
                 }
-            });
-        }
+        );
     }
 
     @Override
@@ -144,7 +158,6 @@ public class Park extends Fragment implements OnMapReadyCallback {
         mMap.getUiSettings().setRotateGesturesEnabled(true);
 
         mMap.setTrafficEnabled(true);
-        mMap.setBuildingsEnabled(true);
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
     }
 
@@ -159,8 +172,6 @@ public class Park extends Fragment implements OnMapReadyCallback {
             });
         }
     }
-
-
 
     private void addParkingSpotsToMap() {
         // Fetch parking locations in the background
@@ -190,7 +201,6 @@ public class Park extends Fragment implements OnMapReadyCallback {
             public void onFetchFailure(Exception e) {
                 Log.e(TAG, getString(R.string.error_fetching_parking_locations), e);
                 Toast.makeText(requireContext(), Toast.LENGTH_SHORT, R.string.failed_to_load_parking_locations).show();
-
             }
         });
     }
@@ -208,10 +218,28 @@ public class Park extends Fragment implements OnMapReadyCallback {
         });
     }
 
-    private void showBookingBottomSheet(Marker marker) {
+    public void showBookingBottomSheet(Marker marker) {
         String parkingLocationId = (String) marker.getTag();
-        BookingBottomSheetDialog bookingDialog = new BookingBottomSheetDialog(requireContext(), parkingLocationId);
-        bookingDialog.show();
+        // Create an instance of ExecutorService
+        ExecutorService executorService = Executors.newFixedThreadPool(4);
+
+        // Get instances of FirebaseDatabase and FirebaseAuth
+        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        BookingManager bookingManager = new BookingManager(executorService, firebaseDatabase, firebaseAuth,getContext());
+        BookingBottomSheetDialogFragment paymentFragment = new BookingBottomSheetDialogFragment (parkingLocationId, bookingManager, getContext());
+        paymentFragment.show(getChildFragmentManager(), "BookingBottomSheetDialogFragment");
+    }
+
+    public void showBookingBottomSheet(String locationId) {
+        // Create an instance of ExecutorService
+        ExecutorService executorService = Executors.newFixedThreadPool(4);
+        // Get instances of FirebaseDatabase and FirebaseAuth
+        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        BookingManager bookingManager = new BookingManager(executorService, firebaseDatabase, firebaseAuth, getContext());
+        BookingBottomSheetDialogFragment bookingDialog = new BookingBottomSheetDialogFragment( locationId, bookingManager, getContext());
+        bookingDialog.show(getChildFragmentManager(), "BookingBottomSheetDialogFragment");
     }
 
     private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId) {
@@ -229,11 +257,10 @@ public class Park extends Fragment implements OnMapReadyCallback {
     private void checkLocationPermissionAndEnableMyLocation() {
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             enableMyLocation();
-        } else{
+        } else {
             requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
-
-    }}
-
+        }
+    }
 
     private void enableMyLocation() {
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -253,7 +280,6 @@ public class Park extends Fragment implements OnMapReadyCallback {
         }
     }
 
-
     private void registerPermissionLauncher() {
         requestPermissionLauncher = registerForActivityResult(
                 new ActivityResultContracts.RequestPermission(),
@@ -261,10 +287,23 @@ public class Park extends Fragment implements OnMapReadyCallback {
                     if (Boolean.TRUE.equals(isGranted)) {
                         enableMyLocation();
                     } else {
-                        Toast.makeText(getContext(), location_permission_denied, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), R.string.location_permission_denied, Toast.LENGTH_SHORT).show();
                     }
                 }
         );
     }
-
+    private void fetchExchangeRates() {
+        CurrencyManager.getInstance().fetchAndUpdateRates(new CurrencyService.Callback() {
+            @Override
+            public void onSuccess(Map<String, Double> exchangeRates) {
+                Log.d("Currency", "Exchange rates fetched successfully.");
+                ratesFetched = true;
+            }
+            @Override
+            public void onError(String error) {
+                Log.e("Currency", "Error fetching exchange rates: " + error);
+                ratesFetched = true;
+            }
+        });
+    }
 }

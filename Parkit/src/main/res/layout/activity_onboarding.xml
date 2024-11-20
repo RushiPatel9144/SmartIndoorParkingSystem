@@ -1,0 +1,26 @@
+<!-- res/layout/activity_onboarding.xml -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:theme="@style/Base.Theme.SmartIndoorParkingSystem"
+        android:id="@+id/viewPager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+    <!-- Beautiful Progress Bar -->
+    <ProgressBar
+        android:id="@+id/onBoard_progressBar"
+        style="@android:style/Widget.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="8dp"
+        android:indeterminateDrawable="@android:drawable/progress_horizontal"
+        android:max="100"
+        android:progress="0"
+        android:progressTint="@color/colorAccent" />
+
+
+</LinearLayout>
