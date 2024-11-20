@@ -243,7 +243,7 @@ public class Park extends Fragment implements OnMapReadyCallback {
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         BookingManager bookingManager = new BookingManager(executorService, firebaseDatabase, firebaseAuth, getContext());
-        BookingBottomSheetDialogFragment bookingDialog = new BookingBottomSheetDialogFragment(getContext(), locationId, bookingManager);
+        BookingBottomSheetDialogFragment bookingDialog = new BookingBottomSheetDialogFragment (locationId, bookingManager, getContext());
         bookingDialog.show(getChildFragmentManager(), "BookingBottomSheetDialogFragment");
     }
 
