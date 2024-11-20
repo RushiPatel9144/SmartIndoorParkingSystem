@@ -1,9 +1,8 @@
-package ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav;
+package ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.location;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -17,15 +16,11 @@ import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocatio
 public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.LocationViewHolder> {
 
     private final List<ParkingLocation> locations;
-    private final OnAddLocationClickListener addLocationClickListener;
     private final OnItemClickListener itemClickListener;
 
-    // Constructor for initializing the list and listeners for "Add Location" and "Item Click"
-    public LocationAdapter(List<ParkingLocation> locations,
-                           OnAddLocationClickListener addLocationClickListener,
-                           OnItemClickListener itemClickListener) {
+    // Constructor for initializing the list and listener for item clicks
+    public LocationAdapter(List<ParkingLocation> locations, OnItemClickListener itemClickListener) {
         this.locations = locations;
-        this.addLocationClickListener = addLocationClickListener;
         this.itemClickListener = itemClickListener;
     }
 
@@ -42,11 +37,12 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
         ParkingLocation location = locations.get(position);
         holder.locationNameTextView.setText(location.getName());
         holder.locationAddressTextView.setText(location.getAddress());
+        holder.locationPriceTextView.setText(String.format("Price: $%s", location.getPrice())); // Dynamically set price
 
-        // Handle item click for location
+        // Handle item click for opening slot list
         holder.itemView.setOnClickListener(v -> {
             if (itemClickListener != null) {
-                itemClickListener.onItemClick(location); // Pass the clicked location
+                itemClickListener.onItemClick(location); // Pass clicked location
             }
         });
     }
@@ -57,10 +53,10 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
     }
 
     // ViewHolder class to hold each item
-    public class LocationViewHolder extends RecyclerView.ViewHolder {
+    public static class LocationViewHolder extends RecyclerView.ViewHolder {
         TextView locationNameTextView;
         TextView locationAddressTextView;
-        ImageButton addLocationButton;
+        TextView locationPriceTextView;
 
         public LocationViewHolder(View itemView) {
             super(itemView);
@@ -68,23 +64,11 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
             // Find views
             locationNameTextView = itemView.findViewById(R.id.locationName);
             locationAddressTextView = itemView.findViewById(R.id.locationAddress);
-            addLocationButton = itemView.findViewById(R.id.addLocationButton);
-
-            // Set click listener for the Add Location button
-            addLocationButton.setOnClickListener(v -> {
-                if (addLocationClickListener != null) {
-                    addLocationClickListener.onAddLocationClick();
-                }
-            });
+            locationPriceTextView = itemView.findViewById(R.id.locationPrice);
         }
     }
 
-    // Interface for handling the "Add Location" click
-    public interface OnAddLocationClickListener {
-        void onAddLocationClick();
-    }
-
-    // Interface for handling item click (location)
+    // Interface for handling item clicks (location)
     public interface OnItemClickListener {
         void onItemClick(ParkingLocation location);
     }

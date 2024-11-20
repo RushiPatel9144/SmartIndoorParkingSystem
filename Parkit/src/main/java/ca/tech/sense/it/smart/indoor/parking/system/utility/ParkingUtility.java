@@ -7,9 +7,13 @@ package ca.tech.sense.it.smart.indoor.parking.system.utility;
 
 import static android.content.ContentValues.TAG;
 
+import static androidx.test.InstrumentationRegistry.getContext;
+
+import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -22,6 +26,8 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseDatabaseSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingSensor;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingSlot;
@@ -32,37 +38,76 @@ import java.util.Map;
 public class ParkingUtility {
 
     private final DatabaseReference databaseReference;
+    private final DatabaseReference ownerReference;
 
     public ParkingUtility() {
-        databaseReference = FirebaseDatabase.getInstance().getReference("parkingLocations");
+        databaseReference = FirebaseDatabaseSingleton.getInstance().getReference("parkingLocations");
+        ownerReference = FirebaseDatabaseSingleton.getInstance().getReference("owners");
     }
 
-    public void addParkingLocation(ParkingLocation location) {
+    public void addParkingLocation(Context context,String ownerId, ParkingLocation location) {
         String locationId = databaseReference.push().getKey(); // Generate a unique ID
         location.setId(locationId); // Set the ID to the ParkingLocation object
 
+        assert locationId != null;
         databaseReference.child(locationId).setValue(location)
                 .addOnSuccessListener(aVoid -> {
-                    // Data saved successfully
+                    DatabaseReference ownersRef = ownerReference.child(ownerId).child("parkingLocationIds");
+                    ownersRef.child(locationId).setValue(location)
+                            .addOnSuccessListener(aVoid1 ->
+                                    showToast(context, context.getString(R.string.parking_location_added_successfully)))
+                            .addOnFailureListener(e ->
+                                    Log.e("DatabaseError", "Failed to add location ID to owner's collection: " + e.getMessage()));
                 })
-                .addOnFailureListener(e -> {
-                    // Failed to save data
-                });
+                .addOnFailureListener(e ->
+                        Log.e("DatabaseError", "Failed to add parking location: " + e.getMessage()));
     }
 
-    public void addSlotToLocation(String locationId, ParkingSlot slot) {
+    public void addSlotToLocation(String locationId, String ownerId, Context context, ParkingSlot slot, ParkingSensor sensor) {
         DatabaseReference slotsRef = databaseReference.child(locationId).child("slots");
+        DatabaseReference ownersSlotRef = ownerReference.child(ownerId).child("parkingLocationIds").child(locationId).child("slots");
         String slotId = slotsRef.push().getKey(); // Generate a unique ID for the slot
-        slot.setId(slotId); // Set the ID to the ParkingSlot object
 
+        if (slotId == null) {
+            showToast(context, context.getString(R.string.failed_to_generate_slot_id));
+            return; // Abort if the slot ID couldn't be generated
+        }
+
+        // Prepare slot references
+        DatabaseReference sensorRef = slotsRef.child(slotId).child("sensor");
+        DatabaseReference ownerSensorRef = ownersSlotRef.child(slotId).child("sensor");
+
+        // Save slot to main database
         slotsRef.child(slotId).setValue(slot)
                 .addOnSuccessListener(aVoid -> {
-                    // Slot added successfully
+                    // Save slot to owner's specific reference
+                    ownersSlotRef.child(slotId).setValue(slot)
+                            .addOnSuccessListener(aVoid1 -> {
+                                // Save sensor data after successful slot saving
+                                sensorRef.setValue(sensor)
+                                        .addOnSuccessListener(aVoid2 -> {
+                                            ownerSensorRef.setValue(sensor)
+                                                    .addOnSuccessListener(aVoid3 -> {
+                                                        showToast(context, context.getString(R.string.slot_added_successfully));
+                                                    })
+                                                    .addOnFailureListener(e -> {
+                                                        showToast(context, context.getString(R.string.failed_to_save_owner_sensor_data));
+                                                    });
+                                        })
+                                        .addOnFailureListener(e -> {
+                                            showToast(context, context.getString(R.string.failed_to_save_sensor_data));
+                                        });
+                            })
+                            .addOnFailureListener(e -> {
+                                showToast(context, context.getString(R.string.failed_to_save_owner_slot_data));
+                            });
                 })
                 .addOnFailureListener(e -> {
-                    // Failed to save data
+                    showToast(context, context.getString(R.string.failed_to_save_slot_data));
                 });
     }
+
+
 
     public void addOrUpdateSensorInSlot(String locationId, String slotId, ParkingSensor sensor) {
         DatabaseReference sensorRef = databaseReference.child(locationId).child("slots").child(slotId).child("sensor");
@@ -190,5 +235,8 @@ public class ParkingUtility {
     public String getSensorData() {
         // Placeholder for sensor data logic
         return "Sensor data not available";
+    }
+    private  void showToast(Context context, String message) {
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
     }
 }

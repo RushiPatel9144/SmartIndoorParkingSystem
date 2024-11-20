@@ -35,7 +35,7 @@ import ca.tech.sense.it.smart.indoor.parking.system.R;
 public class ImageCropActivity extends AppCompatActivity {
     private CropImageView cropImageView;
     private ProgressBar progressBar;
-    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
+    public final ExecutorService executorService = Executors.newSingleThreadExecutor();
     private final Handler mainThreadHandler = new Handler(Looper.getMainLooper());
 
     @SuppressLint("MissingInflatedId")
@@ -83,7 +83,7 @@ public class ImageCropActivity extends AppCompatActivity {
         });
     }
 
-    private Uri saveCroppedImage(Bitmap croppedImage) {
+    public Uri saveCroppedImage(Bitmap croppedImage) {
         try {
             File imageFile = new File(getExternalCacheDir(), "cropped_image.png");
             FileOutputStream outputStream = new FileOutputStream(imageFile);
@@ -98,7 +98,7 @@ public class ImageCropActivity extends AppCompatActivity {
         }
     }
 
-    private Bitmap getCircularBitmap(Bitmap bitmap) {
+    public Bitmap getCircularBitmap(Bitmap bitmap) {
         int width = bitmap.getWidth();
         int height = bitmap.getHeight();
         int radius = Math.min(width, height) / 2;

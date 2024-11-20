@@ -14,7 +14,7 @@ import ca.tech.sense.it.smart.indoor.parking.system.Manager.FragmentManagerHelpe
 import ca.tech.sense.it.smart.indoor.parking.system.Manager.PreferenceManager;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.DashboardFragment;
-import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.LocationsFragment;
+import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.location.LocationsFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.TransactionsFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountFragment;
 
@@ -44,14 +44,7 @@ public class OwnerActivity extends AppCompatActivity implements NavigationBarVie
 
         // Set BottomNavigationView listener
         bottomNavigationView.setOnItemSelectedListener(this);
-
-        // Load the saved fragment or default fragment
-        String currentFragment = preferenceManager.getCurrentFragment();
-        if (currentFragment.equals("accountFragment")) {
-            openFragment(accountFragment, "accountFragment");
-        } else {
-            openFragment(dashboardFragment, "dashboardFragment");
-        }
+        bottomNavigationView.setSelectedItemId(R.id.navigation_dashboard);
     }
 
     @Override
