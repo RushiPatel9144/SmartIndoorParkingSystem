@@ -353,6 +353,13 @@
     <string name="no_internet_connection">NO internet connection</string>
     <string name="slot_already_occupied">Slot is Already Occupied</string>
     <string name="error_checking_slot_availability">Error Checking slot availability</string>
+    <string name="small_owner">owner</string>
+    <string name="please_enter_your_first_name">Please enter your first name</string>
+    <string name="please_enter_your_last_name">Please enter your last name</string>
+    <string name="enter_phone_number">Enter phone number</string>
+    <string name="passwords_do_not_match">Passwords do not match</string>
+    <string name="sign_please_accept_the_terms_and_conditions">Please accept the terms and conditions</string>
+    <string name="unrecognized_user_type_please_log_in_again">Unrecognized user type. Please log in again.</string>
 
 
 </resources>

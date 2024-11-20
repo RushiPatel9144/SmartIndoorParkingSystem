@@ -88,19 +88,6 @@ public class    LoginViewModel extends ViewModel {
 
         });
     }
-
-    public void autoLoginWithToken(String token, String userType) {
-        authRepository.loginWithToken(token)
-                .addOnSuccessListener(authResult -> {
-                    FirebaseUser user = authResult.getUser();
-                    if (user != null && "owner".equals(userType)) {
-                        checkIfOwner(user.getUid(), token);
-                    } else {
-                        loginStatus.setValue("user");
-                    }
-                })
-                .addOnFailureListener(e -> loginStatus.setValue("error:" + e.getMessage()));
-    }
 }
 
 

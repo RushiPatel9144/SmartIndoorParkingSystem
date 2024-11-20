@@ -68,7 +68,7 @@ public class SignUpActivity extends BaseActivity {
         mAuth = FirebaseAuth.getInstance();
         fireStore = FirebaseFirestore.getInstance();
 
-        if (Objects.equals(userType, "owner")){
+        if (Objects.equals(userType, getString(R.string.small_owner))){
             titleTV.setText(getString(R.string.owner));
         }
     }
@@ -111,9 +111,9 @@ public class SignUpActivity extends BaseActivity {
 
                             // Handle User or Owner data storage
                             if ("owner".equals(userType)) {
-                                saveOwnerToFirestore(fName, lName, email, phoneNumber);
+                                LauncherUtils.saveOwnerToFirestore(this, userID, fName, lName, email, phoneNumber);
                             } else {
-                                saveUserToFirestore(fName, lName, email, phoneNumber);
+                                LauncherUtils.saveUserToFirestore(this, userID, fName, lName, email, phoneNumber);
                             }
 
                         } else {
@@ -126,11 +126,11 @@ public class SignUpActivity extends BaseActivity {
 
     private boolean validateInput(String fName, String lName, String email, String password, String confirmPassword, String phoneNumber) {
         if (TextUtils.isEmpty(fName)) {
-            firstName.setError("Please enter your first name");
+            firstName.setError(getString(R.string.please_enter_your_first_name));
             return false;
         }
         if (TextUtils.isEmpty(lName)) {
-            lastName.setError("Please enter your last name");
+            lastName.setError(getString(R.string.please_enter_your_last_name));
             return false;
         }
         if (TextUtils.isEmpty(email)) {
@@ -138,7 +138,7 @@ public class SignUpActivity extends BaseActivity {
             return false;
         }
         if (TextUtils.isEmpty(phoneNumber)) {
-            phone.setError("Enter phone number");
+            phone.setError(getString(R.string.enter_phone_number));
             return false;
         }
         if (TextUtils.isEmpty(password)) {
@@ -146,35 +146,13 @@ public class SignUpActivity extends BaseActivity {
             return false;
         }
         if (!password.equals(confirmPassword)) {
-            editTextConfirmPassword.setError("Passwords do not match");
+            editTextConfirmPassword.setError(getString(R.string.passwords_do_not_match));
             return false;
         }
         if (!checkBox.isChecked()) {
-            Toast.makeText(this, "Please accept the terms and conditions", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.sign_please_accept_the_terms_and_conditions), Toast.LENGTH_SHORT).show();
             return false;
         }
         return true;
-    }
-
-    private void saveOwnerToFirestore(String fName, String lName, String email, String phoneNumber) {
-        Owner localOwner = new Owner(userID, fName, lName, email, phoneNumber, null);
-        fireStore.collection("owners").document(userID).set(localOwner)
-                .addOnSuccessListener(aVoid -> {
-                    Log.d("SignUpActivity", "Owner profile created successfully: " + userID);
-                    LauncherUtils.navigateToOwnerDashboard(this);
-                    finish();
-                })
-                .addOnFailureListener(e -> Log.e("SignUpActivity", "Error saving owner data: " + e.getMessage()));
-    }
-
-    private void saveUserToFirestore(String fName, String lName, String email, String phoneNumber) {
-        User localUser = new User(userID, fName, lName, email, phoneNumber, null);
-        fireStore.collection("users").document(userID).set(localUser)
-                .addOnSuccessListener(aVoid -> {
-                    Log.d("SignUpActivity", "User profile created successfully: " + userID);
-                    LauncherUtils.navigateToMainActivity(this);
-                    finish();
-                })
-                .addOnFailureListener(e -> Log.e("SignUpActivity", "Error saving user data: " + e.getMessage()));
     }
 }

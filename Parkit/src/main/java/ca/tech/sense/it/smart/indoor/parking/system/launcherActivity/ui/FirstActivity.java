@@ -54,7 +54,7 @@ public class FirstActivity extends AppCompatActivity {
             } else if ("user".equals(userType)) {
                 LauncherUtils.navigateToMainActivity(this);
             } else {
-                LauncherUtils.showToast(this, "Unrecognized user type. Please log in again.");
+                LauncherUtils.showToast(this, getString(R.string.unrecognized_user_type_please_log_in_again));
             }
         }
         // Handle edge-to-edge layout insets
