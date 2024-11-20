@@ -26,7 +26,7 @@ import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.credentialM
 import ca.tech.sense.it.smart.indoor.parking.system.viewModel.LoginViewModelFactory;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.viewModel.LoginViewModel;
-import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.data.AuthRepository;
+import ca.tech.sense.it.smart.indoor.parking.system.repository.AuthRepository;
 
 public class LoginActivity extends AppCompatActivity {
 

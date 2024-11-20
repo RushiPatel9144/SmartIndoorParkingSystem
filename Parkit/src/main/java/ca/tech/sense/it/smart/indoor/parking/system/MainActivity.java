@@ -1,9 +1,7 @@
 package ca.tech.sense.it.smart.indoor.parking.system;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,7 +11,6 @@ import android.widget.Toast;
 import android.Manifest;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -29,8 +26,7 @@ import com.google.firebase.auth.FirebaseUser;
 import ca.tech.sense.it.smart.indoor.parking.system.Manager.NotificationManagerHelper;
 import ca.tech.sense.it.smart.indoor.parking.system.Manager.SessionDataManager;
 import ca.tech.sense.it.smart.indoor.parking.system.Manager.ThemeManager;
-import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui.LoginActivity;
-import ca.tech.sense.it.smart.indoor.parking.system.model.user.UserManager;
+import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui.FirstActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.Activity;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.Home;
@@ -103,7 +99,7 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
         FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
 
         if (firebaseUser == null) {
-            navigateToLoginActivity();
+            navigateToFirstActivity();
         }
     }
 
@@ -167,8 +163,8 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
 
 
 
-    private void navigateToLoginActivity() {
-        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+    private void navigateToFirstActivity() {
+        Intent intent = new Intent(getApplicationContext(), FirstActivity.class);
         startActivity(intent);
         finish();
     }

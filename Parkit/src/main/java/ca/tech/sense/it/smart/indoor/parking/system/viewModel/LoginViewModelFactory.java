@@ -3,7 +3,7 @@ package ca.tech.sense.it.smart.indoor.parking.system.viewModel;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModelProvider;
 
-import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.data.AuthRepository;
+import ca.tech.sense.it.smart.indoor.parking.system.repository.AuthRepository;
 
 public class LoginViewModelFactory implements ViewModelProvider.Factory  {
     private final AuthRepository authRepository;

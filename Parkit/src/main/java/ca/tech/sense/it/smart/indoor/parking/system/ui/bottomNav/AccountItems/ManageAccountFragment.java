@@ -239,7 +239,7 @@ public class ManageAccountFragment extends Fragment {
         imagePickerLauncher.launch(intent);
     }
 
-    private void loadProfilePicture() {
+    public void loadProfilePicture() {
         if (currentUser == null) {
             showSnackbar(R.string.user_not_authenticated);
             return;

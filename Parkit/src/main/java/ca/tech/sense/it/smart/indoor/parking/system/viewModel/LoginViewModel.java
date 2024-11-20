@@ -1,7 +1,6 @@
 package ca.tech.sense.it.smart.indoor.parking.system.viewModel;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
@@ -17,7 +16,7 @@ import java.util.Objects;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirestoreSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.credentialManagerGoogle.CoroutineHelper;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.credentialManagerGoogle.GoogleAuthClient;
-import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.data.AuthRepository;
+import ca.tech.sense.it.smart.indoor.parking.system.repository.AuthRepository;
 
 public class    LoginViewModel extends ViewModel {
     private final AuthRepository authRepository;
