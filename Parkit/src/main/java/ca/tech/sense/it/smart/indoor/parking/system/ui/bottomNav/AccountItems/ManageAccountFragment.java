@@ -40,6 +40,7 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.IOException;
 
+import ca.tech.sense.it.smart.indoor.parking.system.Manager.SessionManager;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirestoreSingleton;
@@ -52,7 +53,10 @@ public class ManageAccountFragment extends Fragment {
     private static final String PREFS_NAME = "AccountPrefs";
     private static final String KEY_PROFILE_PICTURE_URI = "profile_picture_uri";
     private static final String FIELD = "profilePhotoUrl";
-    private static final String USER_COLLECTION ="users";
+
+    private static final String USER_COLLECTION = "users";
+    private static final String OWNER_COLLECTION = "owners";
+
 
     private ImageView profilePicture;
     private TextView nameTextView;
@@ -66,6 +70,7 @@ public class ManageAccountFragment extends Fragment {
     private FirebaseFirestore db;
 
     private FirebaseUser currentUser;
+    private SessionManager sessionManager;
 
     private final ActivityResultLauncher<Intent> imagePickerLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -122,11 +127,19 @@ public class ManageAccountFragment extends Fragment {
         rootView = inflater.inflate(R.layout.fragment_manage_account, container, false);
         bindViews(rootView);
 
+        sessionManager = new SessionManager(requireContext());
+
         mAuth = FirebaseAuthSingleton.getInstance();
         currentUser = mAuth.getCurrentUser();
         db = FirestoreSingleton.getInstance();
-        fetchUserInfo();
-        loadProfilePicture();
+        currentUser = mAuth.getCurrentUser();
+        // Fetch user info based on user type
+        if (currentUser != null) {
+            fetchUserInfo();
+            loadProfilePicture();
+        } else {
+            showSnackbar(R.string.user_not_authenticated);
+        }
 
         return rootView;
     }
@@ -177,35 +190,31 @@ public class ManageAccountFragment extends Fragment {
 
 
     private void fetchUserInfo() {
+
+        String userType = sessionManager.getUserType();
+
+        if (userType == null) {
+            showSnackbar(R.string.invalid_user_type);
+            return;
+        }
+
+        // Use userType to decide the Firestore collection (users or owners)
+        String collection = userType.equals("owner") ? OWNER_COLLECTION : USER_COLLECTION;
+
         if (currentUser != null) {
-            String email = currentUser.getEmail();
-            String name = currentUser.getDisplayName();
-            String phoneNumber = currentUser.getPhoneNumber();
-            if (email != null) {
-                contactDetailsTextView.setText(email);
-            }
-            if (name != null){
-                nameTextView.setText(name);
-            }
-            if (phoneNumber != null){
-                phoneNumberTextView.setText(phoneNumber);
-            }
-            if(name == null && phoneNumber == null){
-                String uid = currentUser.getUid();
-                fetchUserDetailsFromFirestore(uid);
-            }
-        } else {
-            showSnackbar(R.string.user_not_authenticated);
+            String uid = currentUser.getUid();
+            fetchUserDetailsFromFirestore(uid, collection);
         }
     }
 
-    private void fetchUserDetailsFromFirestore(String uid) {
-        DocumentReference docRef = db.collection(USER_COLLECTION).document(uid);
+    private void fetchUserDetailsFromFirestore(String uid, String collection) {
+        DocumentReference docRef = db.collection(collection).document(uid);
 
         docRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 DocumentSnapshot document = task.getResult();
                 if (document.exists()) {
+                    // Fetch and set user details here (name, email, etc.)
                     String firstName = document.getString("firstName");
                     String lastName = document.getString("lastName");
                     String phoneNumber = document.getString("phone");
@@ -231,6 +240,7 @@ public class ManageAccountFragment extends Fragment {
         });
     }
 
+
     private void openGallery() {
         Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType(getString(R.string.image1));
@@ -242,34 +252,35 @@ public class ManageAccountFragment extends Fragment {
             showSnackbar(R.string.user_not_authenticated);
             return;
         }
-        DocumentReference userRef = db.collection(USER_COLLECTION).document(currentUser.getUid());
+
+        // Use sessionManager to check user type
+        String userType = sessionManager.getUserType();
+        String collection = userType.equals("owner") ? OWNER_COLLECTION : USER_COLLECTION;
+
+        DocumentReference userRef = db.collection(collection).document(currentUser.getUid());
 
         userRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 DocumentSnapshot document = task.getResult();
                 if (document.exists()) {
-                    String profilePictureUrl = document.getString(FIELD);
+                    String profilePictureUrl = document.getString("profilePhotoUrl");
 
                     if (profilePictureUrl != null) {
-                        // Load the image into ImageView using Glide
                         Glide.with(requireContext())
                                 .load(profilePictureUrl)
-                                .placeholder(R.drawable.ic_profile_placeholder)  // Placeholder while loading
-                                .circleCrop()  // Apply circular crop transformation
+                                .placeholder(R.drawable.ic_profile_placeholder)
+                                .circleCrop()
                                 .into(profilePicture);
-
                     } else {
-                        // If there is no profile picture URL, use the default image
-                        profilePicture.setImageResource(R.mipmap.ic_launcher);  // Default image
+                        profilePicture.setImageResource(R.mipmap.ic_launcher);
                     }
                 } else {
                     showSnackbar(R.string.user_data_not_found);
-                    profilePicture.setImageResource(R.mipmap.ic_launcher);  // Default image
+                    profilePicture.setImageResource(R.mipmap.ic_launcher);
                 }
             } else {
                 showSnackbar(R.string.fetch_data_failed);
-                Log.e("ManageAccountFragment", getString(R.string.failed_to_fetch_user_data) + task.getException());
-                profilePicture.setImageResource(R.mipmap.ic_launcher);  // Default image
+                profilePicture.setImageResource(R.mipmap.ic_launcher);
             }
         });
     }
@@ -344,16 +355,23 @@ public class ManageAccountFragment extends Fragment {
 
     private void saveProfilePhotoToFirestore(String photoUrl) {
         if (currentUser != null) {
+            // Get the user type from SessionManager
+            String userType = sessionManager.getUserType(); // "user" or "owner"
+
+            // Decide the collection based on user type
+            String collection = userType.equals("owner") ? OWNER_COLLECTION : USER_COLLECTION;
+
+            // Update the profile photo URL in the correct collection
             DocumentReference userRef = FirebaseFirestore.getInstance()
-                    .collection(USER_COLLECTION)
+                    .collection(collection)  // Use the correct collection based on user type
                     .document(currentUser.getUid());
 
-            userRef.update(FIELD, photoUrl)
+            userRef.update("profilePhotoUrl", photoUrl)  // Ensure that "profilePhotoUrl" is the correct field
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
-                            Log.d("Firestore", getString(R.string.profile_picture_updated_successfully));
+                            Log.d("Firestore", "Profile picture updated successfully.");
                         } else {
-                            Log.e("Firestore", getString(R.string.failed_to_update_profile_picture));
+                            Log.e("Firestore", "Failed to update profile picture.");
                         }
                     });
         }

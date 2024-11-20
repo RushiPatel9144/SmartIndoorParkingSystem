@@ -11,6 +11,7 @@ public class SessionManager {
     private static final String KEY_USER_TOKEN = "user_authToken";
     private static final String KEY_OWNER_TOKEN = "owner_authToken";
     private static final String KEY_USER_TYPE = "user_type"; // store user type
+    private static final String KEY_REMEMBER_ME = "remember_me"; // store remember me status
 
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
@@ -28,9 +29,6 @@ public class SessionManager {
             Log.e("SessionManager", "Auth token or user type is null.");
             return;
         }
-
-        SharedPreferences sharedPreferences = context.getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
 
         if ("owner".equals(userType)) {
             editor.putString(KEY_OWNER_TOKEN, authToken);
@@ -67,9 +65,14 @@ public class SessionManager {
         return sharedPreferences.getString(KEY_USER_TYPE, null);
     }
     public void saveUserType(String userType) {
-        sharedPreferences.edit().putString("userType", userType).apply();
+        editor.putString(KEY_USER_TYPE, userType);
+        editor.apply();
     }
 
+    // Retrieve the "Remember Me" status
+    public boolean isRememberMe() {
+        return sharedPreferences.getBoolean(KEY_REMEMBER_ME, false);
+    }
 
 
     // Clear session (logout)
