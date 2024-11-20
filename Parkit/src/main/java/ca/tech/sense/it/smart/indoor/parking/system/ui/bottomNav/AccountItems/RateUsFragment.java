@@ -26,8 +26,7 @@ import ca.tech.sense.it.smart.indoor.parking.system.viewModel.RateUsViewModel;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.RateUsViewModelFactory;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
 
-
-public class RateUsFragment extends Fragment {
+public class RateUsFragment extends Fragment implements RateUsViewModel.FeedbackSubmissionCallback {
 
     RatingBar ratingBar;
     EditText feedbackComment;
@@ -91,7 +90,6 @@ public class RateUsFragment extends Fragment {
         setOptionClickListener(optionRealTime, getString(R.string.real_time_features));
     }
 
-    // Sets up the submit button click listener with feedback to the user.
     private void setupSubmitButtonClickListener() {
         submitFeedbackButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -100,18 +98,20 @@ public class RateUsFragment extends Fragment {
                 float rating = ratingBar.getRating();
                 // Get feedback comment
                 String comment = feedbackComment.getText().toString();
+
+                // Check if required fields are filled
+                if (rating == 0) {
+                    Toast.makeText(getContext(), "Please provide a rating.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 // Get device model
                 String deviceModel = Build.MODEL;
                 String manufacturer = Build.MANUFACTURER;
                 String fullDeviceInfo = manufacturer + " " + deviceModel;
 
-                // Show progress bar and hide submit button
-                progressBar.setVisibility(View.VISIBLE);
-                submitFeedbackButton.setVisibility(View.GONE);
-
-                rateUsViewModel.submitFeedback(rating, comment, selectedOptions, fullDeviceInfo, getContext(), () -> {
-                    progressBar.setVisibility(View.GONE);
-                    submitFeedbackButton.setVisibility(View.VISIBLE);
+                // Submit feedback
+                rateUsViewModel.submitFeedback(rating, comment, selectedOptions, fullDeviceInfo, getContext(), RateUsFragment.this, () -> {
                     // Clear the inputs after submission
                     ratingBar.setRating(0);
                     feedbackComment.setText("");
@@ -128,12 +128,37 @@ public class RateUsFragment extends Fragment {
                     submitFeedbackButton.setBackgroundColor(ContextCompat.getColor(getContext(), android.R.color.darker_gray));
                     startTimer(rateUsViewModel.getTwentyFourHours());
                 }, () -> {
-                    progressBar.setVisibility(View.GONE);
-                    submitFeedbackButton.setVisibility(View.VISIBLE);
                     Toast.makeText(getContext(), getString(R.string.error_submitting_feedback), Toast.LENGTH_SHORT).show();
                 });
             }
         });
+    }
+
+
+    @Override
+    public void showProgressBar() {
+        progressBar.setVisibility(View.VISIBLE);
+        submitFeedbackButton.setVisibility(View.GONE);
+
+        // Hide progress bar after 5 seconds
+        new CountDownTimer(5000, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                // No action needed on tick
+            }
+
+            @Override
+            public void onFinish() {
+                progressBar.setVisibility(View.GONE);
+                submitFeedbackButton.setVisibility(View.VISIBLE);
+            }
+        }.start();
+    }
+
+    @Override
+    public void hideProgressBar() {
+        progressBar.setVisibility(View.GONE);
+        submitFeedbackButton.setVisibility(View.VISIBLE);
     }
 
     private void setOptionClickListener(TextView optionView, String optionText) {

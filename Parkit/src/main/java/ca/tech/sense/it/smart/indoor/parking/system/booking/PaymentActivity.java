@@ -253,5 +253,4 @@ public class PaymentActivity extends AppCompatActivity {
         dateTextView.setText(MessageFormat.format("Date: {0}", formattedDate));
         timeTextView.setText(MessageFormat.format("Time: {0} - {1}", formattedStartTime, formattedEndTime));
     }
-
 }

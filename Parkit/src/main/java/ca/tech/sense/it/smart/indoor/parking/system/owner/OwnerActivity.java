@@ -17,7 +17,7 @@ import ca.tech.sense.it.smart.indoor.parking.system.Manager.PreferenceManager;
 import ca.tech.sense.it.smart.indoor.parking.system.Manager.SessionDataManager;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.DashboardFragment;
-import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.LocationsFragment;
+import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.location.LocationsFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.TransactionsFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountFragment;
 
@@ -37,17 +37,6 @@ public class OwnerActivity extends AppCompatActivity implements BottomNavigation
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_owner);
 
-
-        // Fetch session data for owner
-        SessionDataManager.getInstance().fetchSessionData((user, owner) -> {
-            if (owner != null) {
-                Log.d(TAG, "Owner data loaded: " + owner.getEmail());
-                // Handle owner-specific logic
-            } else {
-                Log.d(TAG, "Owner data not found.");
-                // Handle no owner data case
-            }
-        });
         // Initialize UI components
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation_owner);
         setSupportActionBar(findViewById(R.id.toolbar_owner));
@@ -58,31 +47,7 @@ public class OwnerActivity extends AppCompatActivity implements BottomNavigation
 
         // Set BottomNavigationView listener
         bottomNavigationView.setOnItemSelectedListener(this);
-
-        // Load the saved fragment or default fragment
-        String currentFragment = preferenceManager.getCurrentFragment();
-        if (currentFragment.equals("accountFragment")) {
-            openFragment(accountFragment, "accountFragment");
-        } else {
-            openFragment(dashboardFragment, "dashboardFragment");
-        }
-
-        // Register OnBackPressedCallback to handle back press behavior
-        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                // If there are fragments in the back stack, pop the current fragment
-                if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
-                    getSupportFragmentManager().popBackStack();
-                } else {
-                    // Otherwise, call default behavior (finish the activity)
-                    finish();
-                }
-            }
-        };
-
-        // Add the callback to the OnBackPressedDispatcher
-        getOnBackPressedDispatcher().addCallback(this, callback);
+        bottomNavigationView.setSelectedItemId(R.id.navigation_dashboard);
     }
 
     @Override

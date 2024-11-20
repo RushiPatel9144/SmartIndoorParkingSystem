@@ -15,9 +15,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -39,6 +42,10 @@ import com.google.firebase.storage.UploadTask;
 
 
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import ca.tech.sense.it.smart.indoor.parking.system.Manager.SessionManager;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
@@ -47,16 +54,16 @@ import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirestoreSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.AuthUtils;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.ImageCropActivity;
+import ca.tech.sense.it.smart.indoor.parking.system.utility.UserCheckHelper;
 
 public class ManageAccountFragment extends Fragment {
 
     private static final String PREFS_NAME = "AccountPrefs";
     private static final String KEY_PROFILE_PICTURE_URI = "profile_picture_uri";
     private static final String FIELD = "profilePhotoUrl";
-
-    private static final String USER_COLLECTION = "users";
-    private static final String OWNER_COLLECTION = "owners";
-
+    private static final String COLLECTION_USER = "users";
+    private static final String COLLECTION_OWNER = "owners";
+    private String collection = "users";
 
     private ImageView profilePicture;
     private TextView nameTextView;
@@ -68,9 +75,11 @@ public class ManageAccountFragment extends Fragment {
     private LinearLayout managePhoneNumber;
     private View rootView;
     private FirebaseFirestore db;
-
     private FirebaseUser currentUser;
-    private SessionManager sessionManager;
+    private LinearLayout linearLayout;
+    private FrameLayout progressFrame;
+    // Executor service to schedule tasks
+    private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
 
     private final ActivityResultLauncher<Intent> imagePickerLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -123,25 +132,22 @@ public class ManageAccountFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        FirebaseAuth mAuth;
         rootView = inflater.inflate(R.layout.fragment_manage_account, container, false);
         bindViews(rootView);
-
-        sessionManager = new SessionManager(requireContext());
-
+        FirebaseAuth mAuth;
         mAuth = FirebaseAuthSingleton.getInstance();
         currentUser = mAuth.getCurrentUser();
         db = FirestoreSingleton.getInstance();
-        currentUser = mAuth.getCurrentUser();
-        // Fetch user info based on user type
-        if (currentUser != null) {
-            fetchUserInfo();
-            loadProfilePicture();
-        } else {
-            showSnackbar(R.string.user_not_authenticated);
-        }
-
+        checkUserType();
+        scheduleCheckUserType();
         return rootView;
+    }
+    private void scheduleCheckUserType() {
+        scheduledExecutorService.schedule(() -> {
+            String uid = currentUser.getUid();
+            fetchUserDetailsFromFirestore(uid);
+            loadProfilePicture();
+        }, 1, TimeUnit.SECONDS);
     }
 
     @Override
@@ -162,6 +168,8 @@ public class ManageAccountFragment extends Fragment {
         managePassword = view.findViewById(R.id.managePassword);
         manageEmail = view.findViewById(R.id.manageEmail);
         managePhoneNumber = view.findViewById(R.id.managePhoneNumber);
+        linearLayout = view.findViewById(R.id.manage_account);
+        progressFrame = view.findViewById(R.id.progressFrame);
     }
 
     private void setupProfilePictureButton() {
@@ -188,28 +196,12 @@ public class ManageAccountFragment extends Fragment {
         imageCropLauncher.launch(intent);
     }
 
-
-    private void fetchUserInfo() {
-
-        String userType = sessionManager.getUserType();
-
-        if (userType == null) {
-            showSnackbar(R.string.invalid_user_type);
-            return;
-        }
-
-        // Use userType to decide the Firestore collection (users or owners)
-        String collection = userType.equals("owner") ? OWNER_COLLECTION : USER_COLLECTION;
-
-        if (currentUser != null) {
-            String uid = currentUser.getUid();
-            fetchUserDetailsFromFirestore(uid, collection);
-        }
-    }
-
-    private void fetchUserDetailsFromFirestore(String uid, String collection) {
+    private void fetchUserDetailsFromFirestore(String uid) {
         DocumentReference docRef = db.collection(collection).document(uid);
-
+        String email = currentUser.getEmail();
+        if (email != null) {
+            contactDetailsTextView.setText(email);
+        }
         docRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 DocumentSnapshot document = task.getResult();
@@ -252,11 +244,6 @@ public class ManageAccountFragment extends Fragment {
             showSnackbar(R.string.user_not_authenticated);
             return;
         }
-
-        // Use sessionManager to check user type
-        String userType = sessionManager.getUserType();
-        String collection = userType.equals("owner") ? OWNER_COLLECTION : USER_COLLECTION;
-
         DocumentReference userRef = db.collection(collection).document(currentUser.getUid());
 
         userRef.get().addOnCompleteListener(task -> {
@@ -305,7 +292,7 @@ public class ManageAccountFragment extends Fragment {
             showSnackbar(R.string.user_not_authenticated);
             return;
         }
-        DocumentReference userRef = db.collection(USER_COLLECTION).document(currentUser.getUid());
+        DocumentReference userRef = db.collection(collection).document(currentUser.getUid());
         // UpdLate the user's profile with the new profile picture UR
         userRef.update(FIELD, downloadUrl)
                 .addOnSuccessListener(aVoid -> {
@@ -363,7 +350,7 @@ public class ManageAccountFragment extends Fragment {
 
             // Update the profile photo URL in the correct collection
             DocumentReference userRef = FirebaseFirestore.getInstance()
-                    .collection(collection)  // Use the correct collection based on user type
+                    .collection(collection)
                     .document(currentUser.getUid());
 
             userRef.update("profilePhotoUrl", photoUrl)  // Ensure that "profilePhotoUrl" is the correct field
@@ -421,7 +408,7 @@ public class ManageAccountFragment extends Fragment {
                 new DialogUtil.InputDialogCallback() {
                     @Override
                     public void onConfirm(String inputText) {
-                        if (inputText != null ) {
+                        if (inputText != null && inputText.trim().length() >= 12){
                             updatePhoneNumberInFirestore(inputText);
                         } else {
                             showSnackbar(R.string.invalid_phone_number);
@@ -437,7 +424,7 @@ public class ManageAccountFragment extends Fragment {
 
     private void updatePhoneNumberInFirestore(String phoneNumber) {
         if (currentUser != null) {
-            DocumentReference userRef = db.collection(USER_COLLECTION).document(currentUser.getUid());
+            DocumentReference userRef = db.collection(collection).document(currentUser.getUid());
             userRef.update("phone", phoneNumber)
                     .addOnSuccessListener(aVoid -> {
                         phoneNumberTextView.setText(phoneNumber);
@@ -452,4 +439,27 @@ public class ManageAccountFragment extends Fragment {
         }
     }
 
+    private void checkUserType() {
+        if (currentUser != null) {
+            UserCheckHelper userCheckHelper = new UserCheckHelper();
+            userCheckHelper.checkUserType(currentUser.getUid(), getContext(), new UserCheckHelper.UserTypeCallback() {
+                @Override
+                public void onUserTypeDetermined(UserCheckHelper.UserType userType) {
+                    if (userType == UserCheckHelper.UserType.OWNER) {
+                        collection = COLLECTION_OWNER;
+                    } else if (userType == UserCheckHelper.UserType.USER) {
+                        collection = COLLECTION_USER;
+                    }
+                }
+                @Override
+                public void onError() {
+                    Toast.makeText(getContext(), R.string.an_error_occurred, Toast.LENGTH_SHORT).show();
+                }
+            });
+        } else {
+            Toast.makeText(getContext(), R.string.no_user_is_logged_in, Toast.LENGTH_SHORT).show();
+        }
+    }
 }
+
+

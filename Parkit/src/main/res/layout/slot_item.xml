@@ -14,31 +14,30 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- Location Name -->
+        <!-- Slot ID -->
         <TextView
-            android:id="@+id/locationName"
+            android:id="@+id/slotIdTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/location_name"
+            android:text="@string/slot_id"
             android:textSize="18sp"
             android:textStyle="bold" />
 
-        <!-- Location Address -->
+        <!-- Slot Status -->
         <TextView
-            android:id="@+id/locationAddress"
+            android:id="@+id/slotStatusTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/location_address"
+            android:text="@string/status"
             android:textSize="16sp" />
 
-        <!-- Location Price -->
+        <!-- Sensor Info -->
         <TextView
-            android:id="@+id/locationPrice"
+            android:id="@+id/sensorInfoTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/price_0_00"
-            android:textSize="16sp"
-            android:textColor="@android:color/holo_blue_dark" />
+            android:text="@string/sensor_info"
+            android:textSize="14sp" />
 
     </LinearLayout>
 

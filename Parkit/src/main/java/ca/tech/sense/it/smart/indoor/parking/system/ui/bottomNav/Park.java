@@ -58,6 +58,7 @@ import ca.tech.sense.it.smart.indoor.parking.system.currency.CurrencyManager;
 import ca.tech.sense.it.smart.indoor.parking.system.currency.CurrencyService;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
 
+import ca.tech.sense.it.smart.indoor.parking.system.utility.AutocompleteSearchHelper;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.ParkingUtility;
 
 public class Park extends Fragment implements OnMapReadyCallback {
@@ -91,13 +92,19 @@ public class Park extends Fragment implements OnMapReadyCallback {
     public void onResume() {
         super.onResume();
         executorService.execute(() -> requireActivity().runOnUiThread(() -> {
-            if (!Places.isInitialized()) {
-                Places.initialize(requireContext(), "AIzaSyCBb9Vk3FUhAz6Tf7ixMIk5xqu3IGlZRd0"); // Initialize Places API only once
-            }
             initializeMap();
             initializeAutocomplete();
         }));
+
+        // Check if there is a locationId passed from the FavoritesFragment
+        if (getActivity() != null && getActivity().getIntent() != null) {
+            String locationId = getActivity().getIntent().getStringExtra("locationId");
+            if (locationId != null) {
+                showBookingBottomSheet(locationId);
+            }
+        }
     }
+
 
     private void initializeMap() {
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
@@ -107,24 +114,21 @@ public class Park extends Fragment implements OnMapReadyCallback {
     }
 
     private void initializeAutocomplete() {
-        AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
-                getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment);
-        if (autocompleteFragment != null) {
-            autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.DISPLAY_NAME, Place.Field.LOCATION));
-            autocompleteFragment.setHint(getString(R.string.search_for_a_location));
-            autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
-                @Override
-                public void onPlaceSelected(@NonNull Place place) {
-                    // Handle place selection in a background thread
-                    executorService.execute(() -> handlePlaceSelected(place));
-                }
+        AutocompleteSearchHelper.initializeAutocompleteSearch(
+                (AutocompleteSupportFragment) getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment),
+                requireContext(),
+                new AutocompleteSearchHelper.PlaceSelectionCallback() {
+                    @Override
+                    public void onPlaceSelected(Place place) {
+                        executorService.execute(() -> handlePlaceSelected(place));
+                    }
 
-                @Override
-                public void onError(@NonNull Status status) {
-                    Log.d(TAG, getString(R.string.error) + status.getStatusMessage());
+                    @Override
+                    public void onError(String errorMessage) {
+                        Log.d(TAG, getString(R.string.error) + errorMessage);
+                    }
                 }
-            });
-        }
+        );
     }
 
     @Override
@@ -214,7 +218,7 @@ public class Park extends Fragment implements OnMapReadyCallback {
         });
     }
 
-    private void showBookingBottomSheet(Marker marker) {
+    public void showBookingBottomSheet(Marker marker) {
         String parkingLocationId = (String) marker.getTag();
         // Create an instance of ExecutorService
         ExecutorService executorService = Executors.newFixedThreadPool(4);
@@ -225,6 +229,17 @@ public class Park extends Fragment implements OnMapReadyCallback {
         BookingManager bookingManager = new BookingManager(executorService, firebaseDatabase, firebaseAuth,getContext());
         BookingBottomSheetDialogFragment paymentFragment = new BookingBottomSheetDialogFragment (parkingLocationId, bookingManager, getContext());
         paymentFragment.show(getChildFragmentManager(), "BookingBottomSheetDialogFragment");
+    }
+
+    public void showBookingBottomSheet(String locationId) {
+        // Create an instance of ExecutorService
+        ExecutorService executorService = Executors.newFixedThreadPool(4);
+        // Get instances of FirebaseDatabase and FirebaseAuth
+        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        BookingManager bookingManager = new BookingManager(executorService, firebaseDatabase, firebaseAuth, getContext());
+        BookingBottomSheetDialogFragment bookingDialog = new BookingBottomSheetDialogFragment( locationId, bookingManager, getContext());
+        bookingDialog.show(getChildFragmentManager(), "BookingBottomSheetDialogFragment");
     }
 
     private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId) {
