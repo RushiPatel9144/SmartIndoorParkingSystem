@@ -128,7 +128,7 @@ public class LoginActivity extends AppCompatActivity {
                         Toast.makeText(LoginActivity.this, "Email cannot be empty", Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    loginViewModel.sendPasswordResetEmail(inputText);
+                    loginViewModel.sendPasswordResetEmail(inputText,userType);
                 }
 
                 @Override
