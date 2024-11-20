@@ -1,6 +1,5 @@
 package ca.tech.sense.it.smart.indoor.parking.system.viewModel;
 
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Handler;
@@ -11,6 +10,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.List;
 import ca.tech.sense.it.smart.indoor.parking.system.model.RateUs;
 import ca.tech.sense.it.smart.indoor.parking.system.model.user.User;
+import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
 
 public class RateUsViewModel extends ViewModel {
 
@@ -27,7 +27,7 @@ public class RateUsViewModel extends ViewModel {
         sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
     }
 
-    public void submitFeedback(float rating, String comment, List<String> selectedOptions, String fullDeviceInfo, Context context, Runnable onSuccess, Runnable onFailure) {
+    public void submitFeedback(float rating, String comment, List<String> selectedOptions, String fullDeviceInfo, Context context, FeedbackSubmissionCallback callback, Runnable onSuccess, Runnable onFailure) {
         if (rating == 0) {
             Toast.makeText(context, "Please provide Ratings", Toast.LENGTH_SHORT).show();
             return;
@@ -36,6 +36,9 @@ public class RateUsViewModel extends ViewModel {
             Toast.makeText(context, "Please select an option", Toast.LENGTH_SHORT).show();
             return;
         }
+
+        // Show progress bar and hide submit button
+        callback.showProgressBar();
 
         // Introduce a delay of 5 seconds
         new Handler().postDelayed(() -> {
@@ -60,13 +63,21 @@ public class RateUsViewModel extends ViewModel {
                                         editor.putLong(LAST_SUBMISSION_TIME, System.currentTimeMillis());
                                         editor.apply();
                                         onSuccess.run();
+                                        callback.hideProgressBar();
                                     })
-                                    .addOnFailureListener(e -> onFailure.run());
+                                    .addOnFailureListener(e -> {
+                                        onFailure.run();
+                                        callback.hideProgressBar();
+                                    });
                         }
                     })
-                    .addOnFailureListener(e -> onFailure.run());
+                    .addOnFailureListener(e -> {
+                        onFailure.run();
+                        callback.hideProgressBar();
+                    });
         }, 5000); // 5 seconds delay
     }
+
 
     public long getLastSubmissionTime() {
         return sharedPreferences.getLong(LAST_SUBMISSION_TIME, 0);
@@ -75,5 +86,10 @@ public class RateUsViewModel extends ViewModel {
     public long getTwentyFourHours() {
         return TWENTY_FOUR_HOURS;
     }
-}
 
+    // Callback interface for feedback submission
+    public interface FeedbackSubmissionCallback {
+        void showProgressBar();
+        void hideProgressBar();
+    }
+}
