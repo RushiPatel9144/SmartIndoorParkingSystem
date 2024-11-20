@@ -19,6 +19,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import ca.tech.sense.it.smart.indoor.parking.system.MainActivity;
+import ca.tech.sense.it.smart.indoor.parking.system.Manager.SessionManager;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui.FirstActivity;
@@ -28,7 +29,7 @@ import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
 public class AccountFragment extends Fragment {
     private static final String ARG_CONTAINER_VIEW_ID = "containerViewId";
     private int containerViewId;
-    private SharedPreferences sharedPreferences;
+    SessionManager sessionManager;
     private String tag = "AccountFragment";
 
     public AccountFragment() {
@@ -54,7 +55,8 @@ public class AccountFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_account, container, false);
-        sharedPreferences = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+
+        sessionManager = new SessionManager(requireContext());
         setupClickListeners(view);
         return view;
     }
@@ -113,14 +115,14 @@ public class AccountFragment extends Fragment {
     }
 
     private void handleLogout() {
-        DialogUtil.showLeaveAppDialog(requireContext(), getString(R.string.confirm_logout), getString(R.string.are_you_certain_you_wish_to_log_out_of_your_account), R.drawable.crisis,
+        DialogUtil.showLeaveAppDialog(requireContext(), getString(R.string.confirm_logout),getString(R.string.are_you_sure_you_want_to_log_out), R.drawable.crisis,
                 new DialogUtil.BackPressCallback() {
                     @Override
                     public void onConfirm() {
                         FirebaseAuthSingleton.getInstance().signOut();
-                        SharedPreferences.Editor editor = sharedPreferences.edit();
-                        editor.remove("authToken");
-                        editor.apply();
+
+                        sessionManager.logout();
+
                         Intent intent = new Intent(requireActivity(), FirstActivity.class);
                         startActivity(intent);
                         requireActivity().finish();

@@ -74,5 +74,7 @@
     <string name="create_an_account">Create an account</string>
     <string name="remember_me">Remember Me</string>
     <string name="sign_in_as_user">Sign in as user</string>
+    <string name="owner">Owner</string>
+    <string name="already_have_an_account_login_here">w</string>
 
 </resources>

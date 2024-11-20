@@ -2,6 +2,7 @@ package ca.tech.sense.it.smart.indoor.parking.system.utility;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.text.TextUtils;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -9,6 +10,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import ca.tech.sense.it.smart.indoor.parking.system.MainActivity;
+import ca.tech.sense.it.smart.indoor.parking.system.Manager.SessionManager;
 import ca.tech.sense.it.smart.indoor.parking.system.owner.OwnerActivity;
 
 public class LauncherUtils {
@@ -51,4 +53,29 @@ public class LauncherUtils {
     public static void showToast(Context context, String message) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
     }
+
+    public static void navigateBasedOnUserType(String userType, Context context) {
+        SessionManager sessionManager = new SessionManager(context);
+
+        // Check if user is logged in based on the user type
+        String authToken = sessionManager.getAuthToken();
+
+        if ("owner".equals(userType)) {
+            if (authToken != null) {
+                navigateToOwnerDashboard((AppCompatActivity) context);
+            } else {
+                showToast(context, "Owner session not found. Please log in again.");
+            }
+        } else if ("user".equals(userType)) {
+            if (authToken != null) {
+                navigateToMainActivity((AppCompatActivity) context);
+            } else {
+                showToast(context, "User session not found. Please log in again.");
+            }
+        } else {
+            showToast(context, "Invalid session. Please log in again.");
+        }
+    }
+
+
 }

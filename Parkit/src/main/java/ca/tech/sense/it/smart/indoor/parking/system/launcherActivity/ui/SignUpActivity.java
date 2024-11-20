@@ -22,7 +22,7 @@ import java.util.Objects;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.LauncherUtils;
 import ca.tech.sense.it.smart.indoor.parking.system.model.user.User;
-import ca.tech.sense.it.smart.indoor.parking.system.model.owner.Owner; // Import Owner class
+import ca.tech.sense.it.smart.indoor.parking.system.model.owner.Owner;
 import ca.tech.sense.it.smart.indoor.parking.system.network.BaseActivity;
 
 public class SignUpActivity extends BaseActivity {
@@ -84,7 +84,7 @@ public class SignUpActivity extends BaseActivity {
             String confirmPassword = editTextConfirmPassword.getText().toString().trim();
             String phoneNumber = phone.getText().toString().trim();
 
-            // Input validation (add checks as needed)
+            // Input validation
             if (!validateInput(fName, lName, email, password, confirmPassword, phoneNumber)) {
                 progressBar.setVisibility(View.GONE);
                 return;
@@ -96,34 +96,23 @@ public class SignUpActivity extends BaseActivity {
                         progressBar.setVisibility(View.GONE);
 
                         if (task.isSuccessful()) {
-                            Toast.makeText(SignUpActivity.this, getString(R.string.account_created), Toast.LENGTH_SHORT).show();
                             userID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
+                            Log.d("SignUpActivity", "Firebase Auth success, UID: " + userID);
 
-                            // Create either a User or Owner object based on the user type
-
+                            // Handle User or Owner data storage
                             if ("owner".equals(userType)) {
-                                Owner localOwner = new Owner(userID, fName, lName, email, phoneNumber, null);
-                                fireStore.collection("owners").document(userID).set(localOwner)
-                                        .addOnSuccessListener(aVoid -> Log.d("TAG", "Owner profile is created for " + userID))
-                                        .addOnFailureListener(e -> Log.d("TAG", "Error saving owner data: " + e.getMessage()));
-                                LauncherUtils.navigateToOwnerDashboard(this);
-                                finish();
+                                saveOwnerToFirestore(fName, lName, email, phoneNumber);
                             } else {
-                                User localUser = new User(userID, fName, lName, email, phoneNumber, null);
-                                fireStore.collection("users").document(userID).set(localUser)
-                                        .addOnSuccessListener(aVoid -> Log.d("TAG", "User profile is created for " + userID))
-                                        .addOnFailureListener(e -> Log.d("TAG", "Error saving user data: " + e.getMessage()));
-                                LauncherUtils.navigateToMainActivity(this);
-                                finish();
+                                saveUserToFirestore(fName, lName, email, phoneNumber);
                             }
 
                         } else {
-                            LauncherUtils.showToast(this,getString(R.string.authentication_failed));
+                            Log.e("SignUpActivity", "Firebase Auth failed: " + Objects.requireNonNull(task.getException()).getMessage());
+                            LauncherUtils.showToast(this, getString(R.string.authentication_failed));
                         }
                     });
         });
     }
-
 
     private boolean validateInput(String fName, String lName, String email, String password, String confirmPassword, String phoneNumber) {
         if (TextUtils.isEmpty(fName)) {
@@ -151,9 +140,31 @@ public class SignUpActivity extends BaseActivity {
             return false;
         }
         if (!checkBox.isChecked()) {
-            Toast.makeText(SignUpActivity.this, "Please accept the terms and conditions", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Please accept the terms and conditions", Toast.LENGTH_SHORT).show();
             return false;
         }
         return true;
+    }
+
+    private void saveOwnerToFirestore(String fName, String lName, String email, String phoneNumber) {
+        Owner localOwner = new Owner(userID, fName, lName, email, phoneNumber, null);
+        fireStore.collection("owners").document(userID).set(localOwner)
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("SignUpActivity", "Owner profile created successfully: " + userID);
+                    LauncherUtils.navigateToOwnerDashboard(this);
+                    finish();
+                })
+                .addOnFailureListener(e -> Log.e("SignUpActivity", "Error saving owner data: " + e.getMessage()));
+    }
+
+    private void saveUserToFirestore(String fName, String lName, String email, String phoneNumber) {
+        User localUser = new User(userID, fName, lName, email, phoneNumber, null);
+        fireStore.collection("users").document(userID).set(localUser)
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("SignUpActivity", "User profile created successfully: " + userID);
+                    LauncherUtils.navigateToMainActivity(this);
+                    finish();
+                })
+                .addOnFailureListener(e -> Log.e("SignUpActivity", "Error saving user data: " + e.getMessage()));
     }
 }

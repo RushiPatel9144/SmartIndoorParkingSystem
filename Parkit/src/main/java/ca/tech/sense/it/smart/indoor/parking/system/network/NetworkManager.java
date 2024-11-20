@@ -83,7 +83,7 @@ public class NetworkManager {
     }
 
     private void showToastAndOpenNoNetworkActivity(Context context) {
-        showToast(context, context.getString(R.string.no_internet_access));
+        showToast(context, context.getString(R.string.no_internet_connection));
         Intent intent = new Intent(context, NoNetworkActivity.class);
         context.startActivity(intent);
     }
