@@ -1,6 +1,7 @@
 package ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui;
 
 import android.content.Intent;
+import android.icu.text.CaseMap;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -30,21 +31,24 @@ public class SignUpActivity extends BaseActivity {
     // Variables
     private EditText editTextEmail, editTextPassword, editTextConfirmPassword, firstName, lastName, phone;
     private MaterialButton button;
-    private TextView textView;
+    private TextView jump_to_login,titleTV;
     private ProgressBar progressBar;
     private FirebaseAuth mAuth;
     private FirebaseFirestore fireStore;
     private CheckBox checkBox;
-    private String userID;
+    private String userID,userType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
+
         setContentView(R.layout.activity_sign_up);
 
+        userType =  getIntent().getStringExtra("userType");
+
         initializeUI();
-        setOnClickListeners(getIntent().getStringExtra("userType"));
+        setOnClickListeners(userType);
     }
 
     private void initializeUI() {
@@ -52,22 +56,28 @@ public class SignUpActivity extends BaseActivity {
         editTextEmail = findViewById(R.id.signup_editTextEmail);
         editTextPassword = findViewById(R.id.signup_editTextPassword);
         editTextConfirmPassword = findViewById(R.id.editTextConfirmPassword);
-        textView = findViewById(R.id.jump_to_login);
+        jump_to_login = findViewById(R.id.jump_to_login);
         button = findViewById(R.id.buttonSignUp);
         progressBar = findViewById(R.id.signup_progressBar);
         checkBox = findViewById(R.id.checkBoxTerms);
         firstName = findViewById(R.id.editTextFirstName);
         lastName = findViewById(R.id.editTextLastName);
         phone = findViewById(R.id.signup_phoneNumber);
+        titleTV = findViewById(R.id.signup_title_tv);
 
         mAuth = FirebaseAuth.getInstance();
         fireStore = FirebaseFirestore.getInstance();
+
+        if (Objects.equals(userType, "owner")){
+            titleTV.setText(getString(R.string.owner));
+        }
     }
 
     private void setOnClickListeners(String userType) {
         // Navigate to Login screen
-        textView.setOnClickListener(v -> {
+        jump_to_login.setOnClickListener(v -> {
             Intent loginIntent = new Intent(getApplicationContext(), LoginActivity.class);
+            loginIntent.putExtra("userType", userType);
             startActivity(loginIntent);
             finish();
         });
