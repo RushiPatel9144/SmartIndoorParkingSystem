@@ -44,14 +44,7 @@ public class OwnerActivity extends AppCompatActivity implements NavigationBarVie
 
         // Set BottomNavigationView listener
         bottomNavigationView.setOnItemSelectedListener(this);
-
-        // Load the saved fragment or default fragment
-        String currentFragment = preferenceManager.getCurrentFragment();
-        if (currentFragment.equals("accountFragment")) {
-            openFragment(accountFragment, "accountFragment");
-        } else {
-            openFragment(dashboardFragment, "dashboardFragment");
-        }
+        bottomNavigationView.setSelectedItemId(R.id.navigation_dashboard);
     }
 
     @Override

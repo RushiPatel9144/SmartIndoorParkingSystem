@@ -359,6 +359,8 @@
     <string name="slot_id">Slot ID</string>
     <string name="status">Status</string>
     <string name="sensor_info">Sensor Info</string>
+    <string name="no_user_is_logged_in">No user is logged in</string>
+    <string name="an_error_occurred">An error occurred</string>
 
 
 </resources>
