@@ -4,7 +4,7 @@
     <selectionStates>
       <SelectionState runConfigName="Parkit">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2024-11-19T08:41:27.821792Z">
+        <DropdownSelection timestamp="2024-11-20T01:39:01.836095800Z">
           <Target type="DEFAULT_BOOT">
             <handle>
               <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\ragha\.android\avd\Pixel_4_API_29.avd" />

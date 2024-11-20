@@ -70,7 +70,7 @@ public class FavoritesFragment extends Fragment {
             // Show BookingBottomSheetDialog after a short delay to ensure the fragment is fully attached
             new Handler(Looper.getMainLooper()).postDelayed(() -> {
                 if (getParentFragmentManager().findFragmentById(R.id.flFragment) instanceof Park) {
-                    ((Park) getParentFragmentManager().findFragmentById(R.id.flFragment)).showBookingBottomSheet(favorite.getId());
+                    ((Park) Objects.requireNonNull(getParentFragmentManager().findFragmentById(R.id.flFragment))).showBookingBottomSheet(favorite.getId());
                 }
             }, 500);
         });

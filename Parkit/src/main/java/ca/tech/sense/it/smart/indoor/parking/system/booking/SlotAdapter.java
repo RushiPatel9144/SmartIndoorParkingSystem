@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import ca.tech.sense.it.smart.indoor.parking.system.R;
+
 public class SlotAdapter extends ArrayAdapter<String> {
     private Map<String, String> slotStatusMap = new HashMap<>();
     private String locationId;
@@ -52,7 +54,7 @@ public class SlotAdapter extends ArrayAdapter<String> {
             textView.setTextColor(Color.GRAY);
             textView.setTypeface(null, android.graphics.Typeface.BOLD);
         } else {
-            textView.setTextColor(Color.GREEN);
+            textView.setTextColor(Color.rgb(102, 153, 0));
             textView.setTypeface(null, android.graphics.Typeface.BOLD);
         }
         return view;
@@ -69,7 +71,7 @@ public class SlotAdapter extends ArrayAdapter<String> {
             textView.setTextColor(Color.GRAY);
             textView.setTypeface(null, android.graphics.Typeface.BOLD);
         } else {
-            textView.setTextColor(Color.GREEN);
+            textView.setTextColor(Color.rgb(102, 153, 0));
             textView.setTypeface(null, android.graphics.Typeface.BOLD);
         }
         return view;

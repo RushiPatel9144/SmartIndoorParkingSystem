@@ -77,7 +77,6 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
     private FirebaseAuth firebaseAuth;
     private DatabaseReference databaseReference;
 
-    private final Context context;
     private ParkingLocation location; // Define the ParkingLocation variable
     // Constructor with dependency injection
     public BookingBottomSheetDialogFragment(String locationId, BookingManager bookingManager, Context context) {
