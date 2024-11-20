@@ -342,12 +342,6 @@ public class ManageAccountFragment extends Fragment {
 
     private void saveProfilePhotoToFirestore(String photoUrl) {
         if (currentUser != null) {
-            // Get the user type from SessionManager
-            String userType = sessionManager.getUserType(); // "user" or "owner"
-
-            // Decide the collection based on user type
-            String collection = userType.equals("owner") ? OWNER_COLLECTION : USER_COLLECTION;
-
             // Update the profile photo URL in the correct collection
             DocumentReference userRef = FirebaseFirestore.getInstance()
                     .collection(collection)

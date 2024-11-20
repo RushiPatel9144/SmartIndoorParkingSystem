@@ -276,17 +276,12 @@
     <string name="owner">Owner</string>
     <string name="user">User</string>
     <string name="don_t_have_an_account">Don\'t have an account?</string>
-    <string name="or">Or</string>
     <string name="date">Date</string>
     <string name="already_have_an_account_">Already have an account?</string>
-    <string name="save_location">Save Location</string>
     <string name="confirm_exit">Confirm Exit</string>
     <string name="are_you_sure_you_want_to_exit_the_app">Are you sure you want to exit the app?</string>
     <string name="yes_exit">Yes, Exit</string>
     <string name="no_stay">No, Stay</string>
-    <string name="your_parking_locations">Your Parking Locations</string>
-    <string name="add_new_location">Add New Location</string>
-    <string name="location_name">Location Name</string>
     <string name="get_started">Get Started</string>
     <string name="onboard_title1">Welcome to Parkit!</string>
     <string name="onboard_title2">Discover Nearby Parking</string>
