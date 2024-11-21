@@ -42,10 +42,9 @@ public class SignUpActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-
         setContentView(R.layout.activity_sign_up);
 
-        userType =  getIntent().getStringExtra("userType");
+
 
         initializeUI();
         setOnClickListeners(userType);
@@ -71,6 +70,8 @@ public class SignUpActivity extends BaseActivity {
         if (Objects.equals(userType, getString(R.string.small_owner))){
             titleTV.setText(getString(R.string.owner));
         }
+
+        userType =  getIntent().getStringExtra("userType");
     }
 
     private void setOnClickListeners(String userType) {
@@ -95,7 +96,7 @@ public class SignUpActivity extends BaseActivity {
             String phoneNumber = phone.getText().toString().trim();
 
             // Input validation
-            if (!validateInput(fName, lName, email, password, confirmPassword, phoneNumber)) {
+            if (!LauncherUtils.validateInput(SignUpActivity.this, firstName, lastName, editTextEmail, phone, editTextPassword, editTextConfirmPassword, checkBox, fName, lName, email, password, confirmPassword, phoneNumber)) {
                 progressBar.setVisibility(View.GONE);
                 return;
             }
@@ -122,37 +123,5 @@ public class SignUpActivity extends BaseActivity {
                         }
                     });
         });
-    }
-
-    private boolean validateInput(String fName, String lName, String email, String password, String confirmPassword, String phoneNumber) {
-        if (TextUtils.isEmpty(fName)) {
-            firstName.setError(getString(R.string.please_enter_your_first_name));
-            return false;
-        }
-        if (TextUtils.isEmpty(lName)) {
-            lastName.setError(getString(R.string.please_enter_your_last_name));
-            return false;
-        }
-        if (TextUtils.isEmpty(email)) {
-            editTextEmail.setError(getString(R.string.enter_e_mail));
-            return false;
-        }
-        if (TextUtils.isEmpty(phoneNumber)) {
-            phone.setError(getString(R.string.enter_phone_number));
-            return false;
-        }
-        if (TextUtils.isEmpty(password)) {
-            editTextPassword.setError(getString(R.string.enter_passwords));
-            return false;
-        }
-        if (!password.equals(confirmPassword)) {
-            editTextConfirmPassword.setError(getString(R.string.passwords_do_not_match));
-            return false;
-        }
-        if (!checkBox.isChecked()) {
-            Toast.makeText(this, getString(R.string.sign_please_accept_the_terms_and_conditions), Toast.LENGTH_SHORT).show();
-            return false;
-        }
-        return true;
     }
 }
