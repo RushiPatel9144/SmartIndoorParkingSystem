@@ -3,7 +3,6 @@ package ca.tech.sense.it.smart.indoor.parking.system.viewModel;
 import android.content.Context;
 import android.util.Log;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -18,7 +17,6 @@ import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirestoreSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.credentialManagerGoogle.CoroutineHelper;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.credentialManagerGoogle.GoogleAuthClient;
 import ca.tech.sense.it.smart.indoor.parking.system.repository.AuthRepository;
-import ca.tech.sense.it.smart.indoor.parking.system.utility.LauncherUtils;
 
 public class    LoginViewModel extends ViewModel {
     private final AuthRepository authRepository;
@@ -102,8 +100,8 @@ public class    LoginViewModel extends ViewModel {
                         }
                     } else {
                         // Error occurred while querying Firestore
-                        resetPasswordStatus.setValue("Error checking email: " + task.getException().getMessage());
-                        Log.e("LoginViewModel",task.getException().getMessage());
+                        resetPasswordStatus.setValue("Error checking email: " + Objects.requireNonNull(task.getException()).getMessage());
+                        Log.e("LoginViewModel", Objects.requireNonNull(task.getException().getMessage()));
                     }
                 });
     }

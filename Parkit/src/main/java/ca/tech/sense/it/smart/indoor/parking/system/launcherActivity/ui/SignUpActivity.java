@@ -1,29 +1,26 @@
 package ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui;
 
+import android.content.Context;
 import android.content.Intent;
-import android.icu.text.CaseMap;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Objects;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.LauncherUtils;
-import ca.tech.sense.it.smart.indoor.parking.system.model.user.User;
-import ca.tech.sense.it.smart.indoor.parking.system.model.owner.Owner;
 import ca.tech.sense.it.smart.indoor.parking.system.network.BaseActivity;
 
 public class SignUpActivity extends BaseActivity {
@@ -31,10 +28,9 @@ public class SignUpActivity extends BaseActivity {
     // Variables
     private EditText editTextEmail, editTextPassword, editTextConfirmPassword, firstName, lastName, phone;
     private MaterialButton button;
-    private TextView jump_to_login,titleTV;
+    private TextView jump_to_login;
     private ProgressBar progressBar;
     private FirebaseAuth mAuth;
-    private FirebaseFirestore fireStore;
     private CheckBox checkBox;
     private String userID,userType;
 
@@ -48,6 +44,7 @@ public class SignUpActivity extends BaseActivity {
 
         initializeUI();
         setOnClickListeners(userType);
+
     }
 
     private void initializeUI() {
@@ -62,10 +59,9 @@ public class SignUpActivity extends BaseActivity {
         firstName = findViewById(R.id.editTextFirstName);
         lastName = findViewById(R.id.editTextLastName);
         phone = findViewById(R.id.signup_phoneNumber);
-        titleTV = findViewById(R.id.signup_title_tv);
+        TextView titleTV = findViewById(R.id.signup_title_tv);
 
         mAuth = FirebaseAuth.getInstance();
-        fireStore = FirebaseFirestore.getInstance();
         userType =  getIntent().getStringExtra("userType");
         if (Objects.equals(userType, getString(R.string.small_owner))){
             titleTV.setText(getString(R.string.owner));
@@ -81,6 +77,13 @@ public class SignUpActivity extends BaseActivity {
             loginIntent.putExtra("userType", userType);
             startActivity(loginIntent);
             finish();
+        });
+
+        editTextPassword.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus) {
+                View scrollView = findViewById(R.id.signup);
+                scrollView.scrollTo(0, editTextPassword.getBottom());
+            }
         });
 
         // Handle Sign Up button click
@@ -124,4 +127,5 @@ public class SignUpActivity extends BaseActivity {
                     });
         });
     }
+
 }
