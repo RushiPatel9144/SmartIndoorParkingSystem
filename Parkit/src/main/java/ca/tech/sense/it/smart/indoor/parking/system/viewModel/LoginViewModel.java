@@ -3,6 +3,7 @@ package ca.tech.sense.it.smart.indoor.parking.system.viewModel;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -15,6 +16,7 @@ import java.util.Objects;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.credentialManagerGoogle.CoroutineHelper;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.credentialManagerGoogle.GoogleAuthClient;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.data.AuthRepository;
+import ca.tech.sense.it.smart.indoor.parking.system.utility.LauncherUtils;
 
 public class    LoginViewModel extends ViewModel {
     private final AuthRepository authRepository;
@@ -84,8 +86,7 @@ public class    LoginViewModel extends ViewModel {
         CoroutineHelper.Companion.signInWithGoogle(context, googleAuthClient, () -> {
             // On success, update login status to "user" (since this is for the user)
             loginStatus.setValue("user");
-
-
+            LauncherUtils.navigateToMainActivity((AppCompatActivity) context);
         });
     }
 }
