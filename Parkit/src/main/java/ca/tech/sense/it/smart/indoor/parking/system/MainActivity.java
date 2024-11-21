@@ -27,6 +27,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import ca.tech.sense.it.smart.indoor.parking.system.Manager.NotificationManagerHelper;
+import ca.tech.sense.it.smart.indoor.parking.system.Manager.SessionDataManager;
 import ca.tech.sense.it.smart.indoor.parking.system.Manager.ThemeManager;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui.LoginActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.model.user.UserManager;
@@ -39,6 +40,8 @@ import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.NotificationHelper;
 
 public class MainActivity extends MenuHandler implements NavigationBarView.OnItemSelectedListener {
+
+    private static final String TAG = "MainActivity";
 
     private BottomNavigationView bottomNavigationView;
     private Toolbar toolbar;
@@ -66,11 +69,17 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
         initFirebaseAuth();
         initUIComponents();
 
-        UserManager.getInstance().fetchUserData(user -> {
+        // Fetch session data (user or owner)
+        SessionDataManager.getInstance().fetchSessionData((user, owner) -> {
             if (user != null) {
-                Log.d("MainActivity", "User data loaded: " + user.getEmail());
+                Log.d(TAG, "User data loaded: " + user.getEmail());
+                // Handle user-specific logic
+            } else if (owner != null) {
+                Log.d(TAG, "Owner data loaded: " + owner.getEmail());
+                // Handle owner-specific logic
             } else {
-                Log.d("MainActivity", "Failed to load user data.");
+                Log.d(TAG, "No session data found.");
+                // Handle no data case (perhaps navigate to login screen)
             }
         });
 
