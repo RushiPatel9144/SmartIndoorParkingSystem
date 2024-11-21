@@ -53,6 +53,23 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        userType = getIntent().getStringExtra("userType");
+
+        // Initialize the ViewModel for handling login logic
+        AuthRepository authRepository = new AuthRepository();
+        LoginViewModelFactory factory = new LoginViewModelFactory(authRepository);
+        loginViewModel = new ViewModelProvider(this, factory).get(LoginViewModel.class);
+
+        // Initialize GoogleAuthClient
+        googleAuthClient = new GoogleAuthClient(this);
+
+
+        // Observing the resetPasswordStatus to show feedback to the user
+        loginViewModel.getResetPasswordStatus().observe(this, status -> {
+            // Display a toast message based on the reset password status
+            LauncherUtils.showToast(this, status);
+        });
+
         // Initialize UI elements and components
         initializeElements();
 
@@ -80,14 +97,12 @@ public class LoginActivity extends AppCompatActivity {
         rememberMeCheckBox = findViewById(R.id.remember_me_checkbox);
         TextView titleTV = findViewById(R.id.titleTV);
 
-        // Initialize GoogleAuthClient
-        googleAuthClient = new GoogleAuthClient(this);
 
         // Hide or show Google sign-in for owners (assuming owner doesn't use Google sign-in)
         LinearLayout divider = findViewById(R.id.or);
 
         // Retrieve the userType ("user" or "owner") passed from the previous activity
-        userType = getIntent().getStringExtra("userType");
+
         if (Objects.equals(userType, "owner")) {
             // Adjust the UI for owner (hide Google sign-in and title update)
             titleTV.setText(R.string.owner);
@@ -95,16 +110,7 @@ public class LoginActivity extends AppCompatActivity {
             divider.setVisibility(View.GONE);
         }
 
-        // Initialize the ViewModel for handling login logic
-        AuthRepository authRepository = new AuthRepository();
-        LoginViewModelFactory factory = new LoginViewModelFactory(authRepository);
-        loginViewModel = new ViewModelProvider(this, factory).get(LoginViewModel.class);
 
-        // Observing the resetPasswordStatus to show feedback to the user
-        loginViewModel.getResetPasswordStatus().observe(this, status -> {
-            // Display a toast message based on the reset password status
-            LauncherUtils.showToast(this, status);
-        });
     }
 
     /**
@@ -141,7 +147,7 @@ public class LoginActivity extends AppCompatActivity {
                 LauncherUtils.navigateToMainActivity(this);
             } else {
                 // If Google sign-in fails, show a failure message
-                Toast.makeText(this, getString(R.string.google_sign_in_failed), Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, status, Toast.LENGTH_SHORT).show();
             }
         });
 
