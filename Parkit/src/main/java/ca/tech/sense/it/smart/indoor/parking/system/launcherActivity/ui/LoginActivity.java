@@ -50,18 +50,6 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        // Initialize ViewModel
-        AuthRepository authRepository = new AuthRepository();
-        LoginViewModelFactory factory = new LoginViewModelFactory(authRepository);
-        loginViewModel = new ViewModelProvider(this, factory).get(LoginViewModel.class);
-
-
-        // Observing the resetPasswordStatus to show feedback to the user
-        loginViewModel.getResetPasswordStatus().observe(this, status -> {
-            LauncherUtils.showToast(this, status);
-        });
-
-
         initializeElements();
         setOnClickListeners();  // Set up UI actions
         observeLoginStatus();// Observe ViewModel login status
@@ -94,6 +82,17 @@ public class LoginActivity extends AppCompatActivity {
             googleButton.setVisibility(View.GONE);
             divider.setVisibility(View.GONE);
         }
+
+        // Initialize ViewModel
+        AuthRepository authRepository = new AuthRepository();
+        LoginViewModelFactory factory = new LoginViewModelFactory(authRepository);
+        loginViewModel = new ViewModelProvider(this, factory).get(LoginViewModel.class);
+
+
+        // Observing the resetPasswordStatus to show feedback to the user
+        loginViewModel.getResetPasswordStatus().observe(this, status -> {
+            LauncherUtils.showToast(this, status);
+        });
     }
 
     private void setOnClickListeners() {

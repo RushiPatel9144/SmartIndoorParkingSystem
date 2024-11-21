@@ -24,24 +24,39 @@ public class LauncherUtils {
 
     private static FirebaseFirestore fireStore = FirebaseFirestore.getInstance();
 
-    // Input validation for email and password
     public static boolean validateInputLogin(EditText emailField, EditText passwordField) {
         String email = emailField.getText().toString().trim();
         String password = passwordField.getText().toString().trim();
 
+        boolean isValid = true;
+
+        // Email validation
         if (TextUtils.isEmpty(email)) {
             emailField.setError("Please enter an email address.");
-            return false;
-        }
-        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            isValid = false;
+        } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             emailField.setError("Invalid email format.");
-            return false;
+            isValid = false;
+        } else {
+            emailField.setError(null); // Clear error if valid
         }
+
+        // Password validation
         if (TextUtils.isEmpty(password)) {
             passwordField.setError("Please enter a password.");
-            return false;
+            isValid = false;
+        } else {
+            passwordField.setError(null); // Clear error if valid
         }
-        return true;
+
+        return isValid;
+    }
+
+    // Helper function to validate password with regex
+    private static boolean isValidPassword(String password) {
+        // At least 8 characters, one uppercase, one lowercase, one digit, and one special character
+        String passwordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@#$%^&+=]).{8,}$";
+        return password.matches(passwordRegex);
     }
 
     // Navigate to the main activity (User)
