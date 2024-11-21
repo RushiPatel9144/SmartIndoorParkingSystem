@@ -118,6 +118,17 @@ public class LoginActivity extends AppCompatActivity {
         // Google sign-in button (Assuming functionality exists in ViewModel)
         googleButton.setOnClickListener(v -> loginViewModel.signInWithGoogle(this));
 
+        // Observe the loginStatus to navigate to MainActivity on success
+        loginViewModel.getLoginStatus().observe(this, status -> {
+            if ("user".equals(status)) {
+                // On success, navigate to MainActivity
+                LauncherUtils.navigateToMainActivity(this);
+            } else {
+                // Handle error (if any)
+                Toast.makeText(this, "Google Sign-In failed", Toast.LENGTH_SHORT).show();
+            }
+        });
+
 
         forgotPasswordTextView.setOnClickListener(v -> {
             DialogUtil.showInputDialog(this, "Enter Your Registered Email", "someone@mail.com", new DialogUtil.InputDialogCallback() {

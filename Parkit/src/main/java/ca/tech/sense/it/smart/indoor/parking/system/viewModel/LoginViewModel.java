@@ -37,6 +37,7 @@ public class    LoginViewModel extends ViewModel {
         return resetPasswordStatus;
     }
 
+
     public void login(String email, String password, String userType) {
         authRepository.login(email, password)
                 .addOnSuccessListener(authResult -> {
@@ -116,8 +117,6 @@ public class    LoginViewModel extends ViewModel {
             // On success, update login status to "user" (since this is for the user)
             loginStatus.setValue("user");
         });
-
-        LauncherUtils.navigateToMainActivity((AppCompatActivity) context);
     }
 }
 
