@@ -3,6 +3,7 @@ package ca.tech.sense.it.smart.indoor.parking.system.viewModel;
 import android.content.Context;
 import android.util.Log;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -13,12 +14,18 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Objects;
 
-import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirestoreSingleton;
-import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.credentialManagerGoogle.CoroutineHelper;
+
+import ca.tech.sense.it.smart.indoor.parking.system.Manager.SessionManager;
+import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
+import ca.tech.sense.it.smart.indoor.parking.system.utility.LauncherUtils;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.credentialManagerGoogle.GoogleAuthClient;
+import ca.tech.sense.it.smart.indoor.parking.system.viewModel.LoginViewModelFactory;
+import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.viewModel.LoginViewModel;
 import ca.tech.sense.it.smart.indoor.parking.system.repository.AuthRepository;
 
-public class    LoginViewModel extends ViewModel {
+
+public class LoginViewModel extends ViewModel {
     private final AuthRepository authRepository;
     private final MutableLiveData<String> loginStatus = new MutableLiveData<>();
     private final MutableLiveData<String> resetPasswordStatus = new MutableLiveData<>();
@@ -114,6 +121,9 @@ public class    LoginViewModel extends ViewModel {
         CoroutineHelper.Companion.signInWithGoogle(context, googleAuthClient, () -> {
             // On success, update login status to "user" (since this is for the user)
             loginStatus.setValue("user");
+
+            LauncherUtils.navigateToMainActivity((AppCompatActivity) context);
+
         });
     }
 }

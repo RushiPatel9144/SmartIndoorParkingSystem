@@ -107,8 +107,9 @@ dependencies {
     testImplementation libs.robolectric.v4102
     testImplementation libs.junit.jupiter.api
     testImplementation libs.junit.jupiter.engine
-    testImplementation libs.mockito.inline
-    testImplementation 'org.powermock:powermock-module-junit4:2.0.9'
-    testImplementation 'org.powermock:powermock-api-mockito2:2.0.9'
+    testImplementation libs.powermock.module.junit4
+    testImplementation libs.powermock.api.mockito2
+    testImplementation libs.mockito.inline.v480
+
 
 }
