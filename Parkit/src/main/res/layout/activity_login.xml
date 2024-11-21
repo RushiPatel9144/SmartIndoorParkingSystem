@@ -40,8 +40,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/email"
-        android:layout_marginStart="37dp"
-        android:layout_marginEnd="37dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginEnd="25dp"
         app:boxBackgroundColor="@color/colorAccentLight"
         app:startIconTint="@color/colorAccent"
         app:startIconContentDescription="email_icon_desc"
@@ -60,8 +60,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="9dp"
-        android:layout_marginStart="37dp"
-        android:layout_marginEnd="37dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginEnd="25dp"
         android:hint="@string/password"
         app:startIconDrawable="@drawable/baseline_enhanced_encryption_24"
         app:startIconTint="@color/colorAccent"
@@ -80,8 +80,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="37dp"
-        android:layout_marginEnd="37dp">
+        android:layout_marginStart="25dp"
+        android:layout_marginEnd="25dp">
 
         <!-- Checkbox on the left -->
 

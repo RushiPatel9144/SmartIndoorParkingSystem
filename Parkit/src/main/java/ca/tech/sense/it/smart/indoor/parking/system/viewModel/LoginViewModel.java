@@ -1,7 +1,7 @@
 package ca.tech.sense.it.smart.indoor.parking.system.viewModel;
 
 import android.content.Context;
-import android.content.SharedPreferences;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.LiveData;
@@ -10,15 +10,22 @@ import androidx.lifecycle.ViewModel;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Objects;
 
-import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.credentialManagerGoogle.CoroutineHelper;
-import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.credentialManagerGoogle.GoogleAuthClient;
-import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.data.AuthRepository;
-import ca.tech.sense.it.smart.indoor.parking.system.utility.LauncherUtils;
 
-public class    LoginViewModel extends ViewModel {
+import ca.tech.sense.it.smart.indoor.parking.system.Manager.SessionManager;
+import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
+import ca.tech.sense.it.smart.indoor.parking.system.utility.LauncherUtils;
+import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.credentialManagerGoogle.GoogleAuthClient;
+import ca.tech.sense.it.smart.indoor.parking.system.viewModel.LoginViewModelFactory;
+import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.viewModel.LoginViewModel;
+import ca.tech.sense.it.smart.indoor.parking.system.repository.AuthRepository;
+
+
+public class LoginViewModel extends ViewModel {
     private final AuthRepository authRepository;
     private final MutableLiveData<String> loginStatus = new MutableLiveData<>();
     private final MutableLiveData<String> resetPasswordStatus = new MutableLiveData<>();
@@ -34,6 +41,7 @@ public class    LoginViewModel extends ViewModel {
     public LiveData<String> getResetPasswordStatus() {
         return resetPasswordStatus;
     }
+
 
     public void login(String email, String password, String userType) {
         authRepository.login(email, password)
@@ -68,13 +76,40 @@ public class    LoginViewModel extends ViewModel {
                 });
     }
     // Method to send a password reset email
-    public void sendPasswordResetEmail(String email) {
-        FirebaseAuth.getInstance().sendPasswordResetEmail(email)
-                .addOnSuccessListener(aVoid -> {
-                    resetPasswordStatus.setValue("Password reset email sent successfully.");
-                })
-                .addOnFailureListener(e -> {
-                    resetPasswordStatus.setValue("Error sending password reset email: " + e.getMessage());
+    public void sendPasswordResetEmail(String email,String userType) {
+        // Use Firestore singleton to get the instance
+        FirebaseFirestore db = FirestoreSingleton.getInstance();
+
+        // Determine the collection to query based on the user type
+        String collection = "user".equals(userType) ? "users" : "owners";
+
+        // Query Firestore to check if the email exists in the appropriate collection
+        db.collection(collection)
+                .whereEqualTo("email", email)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        // Check if the email exists in Firestore
+                        if (!task.getResult().isEmpty()) {
+                            // Email exists, proceed to send password reset email
+                            FirebaseAuth.getInstance().sendPasswordResetEmail(email)
+                                    .addOnSuccessListener(aVoid -> {
+                                        // Email sent successfully
+                                        resetPasswordStatus.setValue("Password reset email sent successfully.");
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        // Error in sending password reset email
+                                        resetPasswordStatus.setValue("Error sending password reset email: " + e.getMessage());
+                                    });
+                        } else {
+                            // Email does not exist in the Firestore collection
+                            resetPasswordStatus.setValue("Error: This email is not registered as a " + userType + ".");
+                        }
+                    } else {
+                        // Error occurred while querying Firestore
+                        resetPasswordStatus.setValue("Error checking email: " + Objects.requireNonNull(task.getException()).getMessage());
+                        Log.e("LoginViewModel", Objects.requireNonNull(task.getException().getMessage()));
+                    }
                 });
     }
 
@@ -86,7 +121,9 @@ public class    LoginViewModel extends ViewModel {
         CoroutineHelper.Companion.signInWithGoogle(context, googleAuthClient, () -> {
             // On success, update login status to "user" (since this is for the user)
             loginStatus.setValue("user");
+
             LauncherUtils.navigateToMainActivity((AppCompatActivity) context);
+
         });
     }
 }

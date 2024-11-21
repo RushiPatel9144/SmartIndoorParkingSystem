@@ -1,29 +1,26 @@
 package ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui;
 
+import android.content.Context;
 import android.content.Intent;
-import android.icu.text.CaseMap;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Objects;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.LauncherUtils;
-import ca.tech.sense.it.smart.indoor.parking.system.model.user.User;
-import ca.tech.sense.it.smart.indoor.parking.system.model.owner.Owner;
 import ca.tech.sense.it.smart.indoor.parking.system.network.BaseActivity;
 
 public class SignUpActivity extends BaseActivity {
@@ -31,10 +28,9 @@ public class SignUpActivity extends BaseActivity {
     // Variables
     private EditText editTextEmail, editTextPassword, editTextConfirmPassword, firstName, lastName, phone;
     private MaterialButton button;
-    private TextView jump_to_login,titleTV;
+    private TextView jump_to_login;
     private ProgressBar progressBar;
     private FirebaseAuth mAuth;
-    private FirebaseFirestore fireStore;
     private CheckBox checkBox;
     private String userID,userType;
 
@@ -42,13 +38,13 @@ public class SignUpActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-
         setContentView(R.layout.activity_sign_up);
 
-        userType =  getIntent().getStringExtra("userType");
+
 
         initializeUI();
         setOnClickListeners(userType);
+
     }
 
     private void initializeUI() {
@@ -63,14 +59,15 @@ public class SignUpActivity extends BaseActivity {
         firstName = findViewById(R.id.editTextFirstName);
         lastName = findViewById(R.id.editTextLastName);
         phone = findViewById(R.id.signup_phoneNumber);
-        titleTV = findViewById(R.id.signup_title_tv);
+        TextView titleTV = findViewById(R.id.signup_title_tv);
 
         mAuth = FirebaseAuth.getInstance();
-        fireStore = FirebaseFirestore.getInstance();
-
+        userType =  getIntent().getStringExtra("userType");
         if (Objects.equals(userType, getString(R.string.small_owner))){
             titleTV.setText(getString(R.string.owner));
         }
+
+
     }
 
     private void setOnClickListeners(String userType) {
@@ -80,6 +77,13 @@ public class SignUpActivity extends BaseActivity {
             loginIntent.putExtra("userType", userType);
             startActivity(loginIntent);
             finish();
+        });
+
+        editTextPassword.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus) {
+                View scrollView = findViewById(R.id.signup);
+                scrollView.scrollTo(0, editTextPassword.getBottom());
+            }
         });
 
         // Handle Sign Up button click
@@ -95,7 +99,7 @@ public class SignUpActivity extends BaseActivity {
             String phoneNumber = phone.getText().toString().trim();
 
             // Input validation
-            if (!validateInput(fName, lName, email, password, confirmPassword, phoneNumber)) {
+            if (!LauncherUtils.validateInput(SignUpActivity.this, firstName, lastName, editTextEmail, phone, editTextPassword, editTextConfirmPassword, checkBox, fName, lName, email, password, confirmPassword, phoneNumber)) {
                 progressBar.setVisibility(View.GONE);
                 return;
             }
@@ -124,35 +128,4 @@ public class SignUpActivity extends BaseActivity {
         });
     }
 
-    private boolean validateInput(String fName, String lName, String email, String password, String confirmPassword, String phoneNumber) {
-        if (TextUtils.isEmpty(fName)) {
-            firstName.setError(getString(R.string.please_enter_your_first_name));
-            return false;
-        }
-        if (TextUtils.isEmpty(lName)) {
-            lastName.setError(getString(R.string.please_enter_your_last_name));
-            return false;
-        }
-        if (TextUtils.isEmpty(email)) {
-            editTextEmail.setError(getString(R.string.enter_e_mail));
-            return false;
-        }
-        if (TextUtils.isEmpty(phoneNumber)) {
-            phone.setError(getString(R.string.enter_phone_number));
-            return false;
-        }
-        if (TextUtils.isEmpty(password)) {
-            editTextPassword.setError(getString(R.string.enter_passwords));
-            return false;
-        }
-        if (!password.equals(confirmPassword)) {
-            editTextConfirmPassword.setError(getString(R.string.passwords_do_not_match));
-            return false;
-        }
-        if (!checkBox.isChecked()) {
-            Toast.makeText(this, getString(R.string.sign_please_accept_the_terms_and_conditions), Toast.LENGTH_SHORT).show();
-            return false;
-        }
-        return true;
-    }
 }

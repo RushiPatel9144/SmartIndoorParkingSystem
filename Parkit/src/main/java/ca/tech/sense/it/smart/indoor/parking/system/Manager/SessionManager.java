@@ -61,7 +61,7 @@ public class SessionManager {
     }
 
     // Get the user type (owner or user)
-    public String getUserType() {
+    public  String getUserType() {
         return sharedPreferences.getString(KEY_USER_TYPE, null);
     }
     public void saveUserType(String userType) {

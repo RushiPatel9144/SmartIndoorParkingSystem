@@ -1,4 +1,4 @@
-package ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.data;
+package ca.tech.sense.it.smart.indoor.parking.system.repository;
 
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;

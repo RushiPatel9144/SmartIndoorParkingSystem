@@ -371,6 +371,16 @@
     <string name="sign_please_accept_the_terms_and_conditions">Please accept the terms and conditions</string>
     <string name="unrecognized_user_type_please_log_in_again">Unrecognized user type. Please log in again.</string>
     <string name="invalid_user_type">Invalid user type</string>
+    <string name="invalid_password_format">Invalid password format</string>
+    <string name="confirm_password_is_required">Confirm password is required</string>
+    <string name="regex_string"><![CDATA[^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$]]></string>
+    <string name="invalid_email_format">Invalid email format</string>
+    <string name="regex_password_format_guide">Password must contain at least 8 characters, 1 uppercase, 1 lowercase, 1 number, and 1 special character.</string>
+    <string name="please_log_in_again">Please log in again.</string>
+    <string name="google_sign_in_failed">Google Sign-In failed</string>
+    <string name="enter_your_registered_email">Enter Your Registered Email</string>
+    <string name="someone_mail_com">someone@mail.com</string>
+    <string name="email_cannot_be_empty">Email cannot be empty</string>
 
 
 </resources>
