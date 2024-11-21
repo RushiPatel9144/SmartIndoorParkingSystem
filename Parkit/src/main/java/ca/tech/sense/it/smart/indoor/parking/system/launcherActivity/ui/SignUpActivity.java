@@ -66,12 +66,12 @@ public class SignUpActivity extends BaseActivity {
 
         mAuth = FirebaseAuth.getInstance();
         fireStore = FirebaseFirestore.getInstance();
-
+        userType =  getIntent().getStringExtra("userType");
         if (Objects.equals(userType, getString(R.string.small_owner))){
             titleTV.setText(getString(R.string.owner));
         }
 
-        userType =  getIntent().getStringExtra("userType");
+
     }
 
     private void setOnClickListeners(String userType) {
