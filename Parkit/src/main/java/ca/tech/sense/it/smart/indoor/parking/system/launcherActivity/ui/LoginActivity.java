@@ -20,11 +20,11 @@ import java.util.Objects;
 
 import ca.tech.sense.it.smart.indoor.parking.system.Manager.SessionManager;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
-import ca.tech.sense.it.smart.indoor.parking.system.utility.LauncherUtils;
+import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.LauncherUtils;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.credentialManagerGoogle.GoogleAuthClient;
 import ca.tech.sense.it.smart.indoor.parking.system.viewModel.LoginViewModelFactory;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
-import ca.tech.sense.it.smart.indoor.parking.system.viewModel.LoginViewModel;
+import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.LoginViewModel;
 import ca.tech.sense.it.smart.indoor.parking.system.repository.AuthRepository;
 
 public class LoginActivity extends AppCompatActivity {

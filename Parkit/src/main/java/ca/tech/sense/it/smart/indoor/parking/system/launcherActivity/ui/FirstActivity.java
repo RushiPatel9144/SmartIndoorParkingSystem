@@ -15,7 +15,7 @@ import com.google.android.material.button.MaterialButton;
 
 import ca.tech.sense.it.smart.indoor.parking.system.Manager.SessionManager;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
-import ca.tech.sense.it.smart.indoor.parking.system.utility.LauncherUtils;
+import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.LauncherUtils;
 
 public class FirstActivity extends AppCompatActivity {
     private MaterialButton signInAsUserButton, signInAsOwnerButton;

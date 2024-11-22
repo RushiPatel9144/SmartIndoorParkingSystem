@@ -1,15 +1,12 @@
 package ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ProgressBar;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -20,7 +17,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import java.util.Objects;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
-import ca.tech.sense.it.smart.indoor.parking.system.utility.LauncherUtils;
+import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.LauncherUtils;
 import ca.tech.sense.it.smart.indoor.parking.system.network.BaseActivity;
 
 public class SignUpActivity extends BaseActivity {

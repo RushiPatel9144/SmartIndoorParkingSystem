@@ -1,11 +1,9 @@
-package ca.tech.sense.it.smart.indoor.parking.system.utility;
+package ca.tech.sense.it.smart.indoor.parking.system.launcherActivity;
 
-import static android.provider.Settings.System.getString;
 import static ca.tech.sense.it.smart.indoor.parking.system.R.string.regex_password_format_guide;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.CheckBox;
@@ -14,7 +12,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 

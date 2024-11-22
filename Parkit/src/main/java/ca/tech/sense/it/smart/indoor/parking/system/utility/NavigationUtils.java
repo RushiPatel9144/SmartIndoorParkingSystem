@@ -2,6 +2,8 @@ package ca.tech.sense.it.smart.indoor.parking.system.utility;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.LauncherUtils;
+
 public class NavigationUtils {
 
     public static void navigateToDashboard(AppCompatActivity activity, String userType) {

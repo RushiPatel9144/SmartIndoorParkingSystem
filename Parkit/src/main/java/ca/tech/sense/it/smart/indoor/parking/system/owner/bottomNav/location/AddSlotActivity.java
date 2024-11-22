@@ -1,13 +1,10 @@
 package ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.location;
 
-import static ca.tech.sense.it.smart.indoor.parking.system.utility.LauncherUtils.showToast;
+import static ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.LauncherUtils.showToast;
 
-import android.content.Context;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;

@@ -1,4 +1,4 @@
-package ca.tech.sense.it.smart.indoor.parking.system.viewModel;
+package ca.tech.sense.it.smart.indoor.parking.system.launcherActivity;
 
 import android.content.Context;
 import android.util.Log;
@@ -15,15 +15,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.Objects;
 
 
-import ca.tech.sense.it.smart.indoor.parking.system.Manager.SessionManager;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirestoreSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.credentialManagerGoogle.CoroutineHelper;
-import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
-import ca.tech.sense.it.smart.indoor.parking.system.utility.LauncherUtils;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.credentialManagerGoogle.GoogleAuthClient;
-import ca.tech.sense.it.smart.indoor.parking.system.viewModel.LoginViewModelFactory;
-import ca.tech.sense.it.smart.indoor.parking.system.R;
-import ca.tech.sense.it.smart.indoor.parking.system.viewModel.LoginViewModel;
 import ca.tech.sense.it.smart.indoor.parking.system.repository.AuthRepository;
 
 
@@ -56,7 +50,7 @@ public class LoginViewModel extends ViewModel {
                                 if ("owner".equals(userType)) {
                                     checkIfOwner(user.getUid(), authToken); // Pass the token
                                 } else {
-                                    loginStatus.setValue(userType); // User login
+                                    loginStatus.setValue("token:" + authToken); // User login
                                 }
                             } else {
                                 loginStatus.setValue("error:" + Objects.requireNonNull(task.getException()).getMessage());
