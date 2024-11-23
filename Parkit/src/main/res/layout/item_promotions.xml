@@ -11,37 +11,27 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- Title and Description in a Vertical Layout on the Left -->
-        <LinearLayout
-            android:layout_width="0dp"
+        <!-- Title and Description in a Vertical Layout -->
+        <TextView
+            android:id="@+id/PromotionTitle"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            android:text="@string/promotion_title"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:paddingBottom="4dp"/>
 
-            <!-- Title TextView -->
-            <TextView
-                android:id="@+id/PromotionTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/promotion_title"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:paddingBottom="4dp"/>
+        <TextView
+            android:id="@+id/PromotionDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/promotion_description_goes_here"
+            android:textSize="16sp"/>
 
-            <!-- Description TextView -->
-            <TextView
-                android:id="@+id/PromotionDescription"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/promotion_description_goes_here"
-                android:textSize="16sp"/>
-
-        </LinearLayout>
-
-        <!-- Discount TextView (Large and on the right) -->
+        <!-- Discount TextView -->
         <TextView
             android:id="@+id/PromotionDiscount"
             android:layout_width="wrap_content"
@@ -50,8 +40,24 @@
             android:textSize="24sp"
             android:textStyle="bold"
             android:textColor="@android:color/holo_green_dark"
-            android:paddingStart="16dp"/>
+            android:paddingTop="8dp"/>
 
+        <!-- Promo Code TextView -->
+        <TextView
+            android:id="@+id/PromotionCode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Promo Code"
+            android:textSize="16sp"
+            android:paddingTop="8dp"/>
+
+        <!-- Claim Promo Button -->
+        <Button
+            android:id="@+id/ClaimPromoButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Claim Promo"
+            android:paddingTop="8dp"/>
     </LinearLayout>
 
 </androidx.cardview.widget.CardView>
