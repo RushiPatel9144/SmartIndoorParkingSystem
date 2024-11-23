@@ -132,17 +132,27 @@ public class BookingManager {
                     Double priceValue = snapshot.getValue(Double.class);
                     double price = (priceValue != null) ? priceValue : 0.0;
 
+                    // Calculate total price including GST/HST and platform fee
+                    double gstHst = price * 0.13;
+                    double platformFee = price * 0.10;
+                    double totalPrice = price + gstHst + platformFee;
+
                     String passKey = generatePassKey(); // Generate the pass key
 
-                    Booking booking = new Booking(
+                    Booking booking=new Booking();
+                    // Get the currency code and symbol from the booking object
+                    String currencyCode = booking.getCurrencyCode();
+                    String currencySymbol = booking.getCurrencySymbol();
+
+                     booking = new Booking(
                             "Park It", // Use "Park It" as title
                             startTime,
                             endTime,
                             address,
                             null,
-                            price,
-                            null,
-                            null,
+                            totalPrice, // Use total price instead of just price
+                            currencyCode, // Include currency code
+                            currencySymbol, // Include currency symbol
                             slot,
                             passKey,
                             locationId // Add the locationId to the booking
@@ -160,6 +170,8 @@ public class BookingManager {
             }
         });
     }
+
+
 
 
     private void saveBooking(String userId, Booking booking, String locationId, String slot, String selectedDate, String[] times, Runnable onSuccess, Consumer<Exception> onFailure) {
