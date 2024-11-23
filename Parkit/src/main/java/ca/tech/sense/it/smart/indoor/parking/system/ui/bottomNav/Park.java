@@ -27,7 +27,6 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
-import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -39,14 +38,11 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
-import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -56,16 +52,17 @@ import ca.tech.sense.it.smart.indoor.parking.system.booking.BookingBottomSheetDi
 import ca.tech.sense.it.smart.indoor.parking.system.booking.BookingManager;
 import ca.tech.sense.it.smart.indoor.parking.system.currency.CurrencyManager;
 import ca.tech.sense.it.smart.indoor.parking.system.currency.CurrencyService;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.ParkingLocationManager;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
 
 import ca.tech.sense.it.smart.indoor.parking.system.utility.AutocompleteSearchHelper;
-import ca.tech.sense.it.smart.indoor.parking.system.utility.ParkingUtility;
+import ca.tech.sense.it.smart.indoor.parking.system.utility.ParkingInterface;
 
 public class Park extends Fragment implements OnMapReadyCallback {
 
     private static final String TAG = "ParkFragment";
     private GoogleMap mMap;
-    private ParkingUtility parkingUtility;
+    private ParkingLocationManager parkingLocationManager = new ParkingLocationManager();
     private ExecutorService executorService;
     private ActivityResultLauncher<String> requestPermissionLauncher;
     private FusedLocationProviderClient fusedLocationClient;
@@ -74,7 +71,6 @@ public class Park extends Fragment implements OnMapReadyCallback {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        parkingUtility = new ParkingUtility();
         executorService = Executors.newSingleThreadExecutor(); // Executor for background tasks
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext());
         if (!ratesFetched) {
@@ -175,7 +171,7 @@ public class Park extends Fragment implements OnMapReadyCallback {
 
     private void addParkingSpotsToMap() {
         // Fetch parking locations in the background
-        parkingUtility.fetchAllParkingLocations(new ParkingUtility.FetchLocationsCallback() {
+        parkingLocationManager.fetchAllParkingLocations(new ParkingInterface.FetchLocationsCallback() {
             @Override
             public void onFetchSuccess(Map<String, ParkingLocation> locations) {
                 requireActivity().runOnUiThread(() -> {
@@ -227,7 +223,7 @@ public class Park extends Fragment implements OnMapReadyCallback {
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         BookingManager bookingManager = new BookingManager(executorService, firebaseDatabase, firebaseAuth,getContext());
-        BookingBottomSheetDialogFragment paymentFragment = new BookingBottomSheetDialogFragment (parkingLocationId, bookingManager, getContext());
+        BookingBottomSheetDialogFragment paymentFragment = new BookingBottomSheetDialogFragment (executorService,parkingLocationId, bookingManager, getContext());
         paymentFragment.show(getChildFragmentManager(), "BookingBottomSheetDialogFragment");
     }
 
@@ -238,7 +234,7 @@ public class Park extends Fragment implements OnMapReadyCallback {
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         BookingManager bookingManager = new BookingManager(executorService, firebaseDatabase, firebaseAuth, getContext());
-        BookingBottomSheetDialogFragment bookingDialog = new BookingBottomSheetDialogFragment( locationId, bookingManager, getContext());
+        BookingBottomSheetDialogFragment bookingDialog = new BookingBottomSheetDialogFragment(executorService, locationId, bookingManager, getContext());
         bookingDialog.show(getChildFragmentManager(), "BookingBottomSheetDialogFragment");
     }
 

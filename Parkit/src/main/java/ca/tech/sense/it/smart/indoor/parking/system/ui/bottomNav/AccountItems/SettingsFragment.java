@@ -24,8 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import ca.tech.sense.it.smart.indoor.parking.system.Manager.NotificationManagerHelper;
-import ca.tech.sense.it.smart.indoor.parking.system.Manager.PreferenceManager;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.NotificationManagerHelper;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.PreferenceManager;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.currency.Currency;
 import ca.tech.sense.it.smart.indoor.parking.system.currency.CurrencyManager;

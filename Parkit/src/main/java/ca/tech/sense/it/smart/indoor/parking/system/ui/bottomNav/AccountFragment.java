@@ -5,9 +5,7 @@
  */
 package ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,8 +16,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import ca.tech.sense.it.smart.indoor.parking.system.MainActivity;
-import ca.tech.sense.it.smart.indoor.parking.system.Manager.SessionManager;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.SessionManager;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui.FirstActivity;
