@@ -41,6 +41,7 @@ public class AuthUtils {
                         }
                         @Override
                         public void onCancel() {
+                            // nothing to do
                         }
                     });
         } else {
@@ -74,27 +75,4 @@ public class AuthUtils {
         }
         return null;
     }
-
-    public static void hideKeyboard(Context context, View view) {
-        InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
-        if (imm != null) {
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-        }
-    }
-
-    // Email validation utility
-    public static boolean isValidEmail(String email) {
-        if (TextUtils.isEmpty(email)) {
-            return false;
-        }
-        return Patterns.EMAIL_ADDRESS.matcher(email).matches();
-    }
-
-    // Password validation utility
-    public static boolean isValidPassword(String password) {
-        return !TextUtils.isEmpty(password) && password.length() >= 6;
-    }
-
-
-
 }

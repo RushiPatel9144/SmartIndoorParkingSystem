@@ -43,7 +43,6 @@ public class PaymentActivity extends AppCompatActivity {
 
     private Booking booking;
     private BookingManager bookingManager;
-
     private TextView parkingNameTextView;
     private TextView addressTextView;
     private TextView postalCodeTextView;

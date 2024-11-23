@@ -16,11 +16,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import androidx.activity.OnBackPressedCallback;
-
 import java.util.Objects;
-
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 
 public class DialogUtil {
@@ -235,6 +231,5 @@ public class DialogUtil {
         });
         dialog.show();
     }
-
 
 }
