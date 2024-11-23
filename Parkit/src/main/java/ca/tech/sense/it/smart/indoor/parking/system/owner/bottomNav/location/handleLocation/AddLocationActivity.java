@@ -97,8 +97,6 @@ public class AddLocationActivity extends AppCompatActivity {
         }
 
         addParkingLocationToDatabase();
-        clearForm();
-        finish();
     }
 
     private void addParkingLocationToDatabase() {
@@ -110,6 +108,9 @@ public class AddLocationActivity extends AppCompatActivity {
                 null, oAuth.getUid() ,null, postalCodeStr, locationNameStr, longitude, latitude, locationAddress, priceValue);
 
         parkingLocationManager.addParkingLocation(this, FirebaseAuthSingleton.getInstance().getUid(), newLocation);
+        clearForm();
+        finish();
+
     }
 
     private void clearForm() {

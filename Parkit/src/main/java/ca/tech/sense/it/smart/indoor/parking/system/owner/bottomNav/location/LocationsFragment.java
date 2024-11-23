@@ -17,6 +17,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -35,13 +37,14 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class LocationsFragment extends Fragment {
 
+
     private RecyclerView locationsRecyclerView;
     private LinearLayout emptyStateLayout;
-    private ProgressBar progressBar;
     private static LocationAdapter adapter;
     private List<ParkingLocation> parkingLocations;
     private FirebaseAuth oAuth;
     private FloatingActionButton addButton;
+    private SwipeRefreshLayout swipeRefreshLayout;
     private final ParkingLocationManager parkingLocationManager = new ParkingLocationManager();
 
     @Nullable
@@ -52,10 +55,10 @@ public class LocationsFragment extends Fragment {
 
         // Initialize views
         locationsRecyclerView = view.findViewById(R.id.locationsRecyclerView);
-        progressBar = view.findViewById(R.id.progressBar);
         emptyStateLayout = view.findViewById(R.id.emptyStateLayout);
         button = view.findViewById(R.id.addLocationEmptyStateButton);
         addButton = view.findViewById(R.id.addLocationButton);
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
 
         button.setOnClickListener(v -> startAddLocationActivity());
         addButton.setOnClickListener(v -> startAddLocationActivity());
@@ -85,6 +88,7 @@ public class LocationsFragment extends Fragment {
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteCallback(adapter, oAuth.getUid(), parkingLocationManager));
         itemTouchHelper.attachToRecyclerView(locationsRecyclerView);
 
+        swipeRefreshLayout.setOnRefreshListener(this::loadParkingLocations);
         // Load data from Firebase
         loadParkingLocations();
 
@@ -92,9 +96,9 @@ public class LocationsFragment extends Fragment {
     }
 
     private void loadParkingLocations() {
-        progressBar.setVisibility(View.VISIBLE);
         locationsRecyclerView.setVisibility(View.GONE);
         emptyStateLayout.setVisibility(View.GONE);
+        swipeRefreshLayout.setRefreshing(true);
 
         parkingLocationManager.fetchParkingLocationsByOwnerId(oAuth.getUid(), new ParkingInterface.ParkingLocationFetchCallback() {
             @SuppressLint("NotifyDataSetChanged")
@@ -103,13 +107,13 @@ public class LocationsFragment extends Fragment {
                 parkingLocations.clear();
                 parkingLocations.addAll(locations);
                 adapter.notifyDataSetChanged();
-                progressBar.setVisibility(View.GONE);
+                swipeRefreshLayout.setRefreshing(false);
                 updateUI();
             }
 
             @Override
             public void onFetchFailure(String errorMessage) {
-                progressBar.setVisibility(View.GONE);
+                swipeRefreshLayout.setRefreshing(false);
                 showError(errorMessage);
             }
         });
@@ -166,4 +170,6 @@ public class LocationsFragment extends Fragment {
             parkingLocationManager.changePrice(requireContext(), Objects.requireNonNull(oAuth.getUid()), locationId, price);
             Toast.makeText(requireContext(), R.string.price_updated_successfully, Toast.LENGTH_SHORT).show();
         }
+
+
 }

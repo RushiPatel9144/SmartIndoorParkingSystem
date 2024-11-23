@@ -41,8 +41,8 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
         holder.locationAddressTextView.setText(location.getAddress());
         holder.locationPriceTextView.setText(String.format("Price: $%s", location.getPrice()));
 
-        // Store the locationId in the ViewHolder
-        holder.setLocationId(location.getId());
+        // Set the ParkingLocation object to ViewHolder
+        holder.setParkingLocation(location);
     }
 
     @Override
@@ -56,7 +56,19 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
         notifyItemRemoved(position);
     }
 
-    // ViewHolder class
+    // Method to add an item
+    public void addItem(ParkingLocation location) {
+        locations.add(location);
+        notifyItemInserted(locations.size() - 1);
+    }
+
+    // Method to update the data list in the adapter
+    public void updateData(List<ParkingLocation> updatedLocations) {
+        this.locations.clear();
+        this.locations.addAll(updatedLocations);
+        notifyDataSetChanged();
+    }
+
     public static class LocationViewHolder extends RecyclerView.ViewHolder {
 
         TextView locationNameTextView;
@@ -64,7 +76,7 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
         TextView locationPriceTextView;
         Button changePriceButton;
         Button addSlotsButton;
-        private String locationId;
+        private ParkingLocation parkingLocation;
 
         public LocationViewHolder(View itemView, OnItemClickListener listener) {
             super(itemView);
@@ -78,26 +90,33 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
 
             // Button click listeners
             changePriceButton.setOnClickListener(v -> {
-                if (listener != null) {
-                    listener.onChangePriceClick(locationId, getBindingAdapterPosition());
+                if (listener != null && parkingLocation != null) {
+                    listener.onChangePriceClick(parkingLocation.getId(), getBindingAdapterPosition());
                 }
             });
 
             addSlotsButton.setOnClickListener(v -> {
-                if (listener != null) {
-                    listener.onAddSlotsClick(locationId, getBindingAdapterPosition());
+                if (listener != null && parkingLocation != null) {
+                    listener.onAddSlotsClick(parkingLocation.getId(), getBindingAdapterPosition());
                 }
             });
         }
 
-        public void setLocationId(String locationId) {
-            this.locationId = locationId;
+        public void setParkingLocation(ParkingLocation location) {
+            this.parkingLocation = location;
         }
 
+        // Method to get ParkingLocation from ViewHolder
+        public ParkingLocation getParkingLocation() {
+            return parkingLocation;
+        }
+
+        // Method to get locationId from ParkingLocation
         public String getLocationId() {
-            return locationId;
+            return parkingLocation != null ? parkingLocation.getId() : null;
         }
     }
+
 
     // Callback interface
     public interface OnItemClickListener {
@@ -105,4 +124,3 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
         void onAddSlotsClick(String locationId, int position);
     }
 }
-

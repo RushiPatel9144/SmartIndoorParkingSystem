@@ -36,20 +36,20 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <!-- RecyclerView to List Locations -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/locationsRecyclerView"
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipeRefreshLayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scrollbars="none"
-            android:visibility="gone" />
+            android:layout_height="match_parent">
 
-        <!-- Progress Bar centered -->
-        <ProgressBar
-            android:id="@+id/progressBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center" />
+            <!-- RecyclerView to List Locations -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/locationsRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scrollbars="vertical" />
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
 
         <!-- Empty State Layout -->
         <LinearLayout
