@@ -46,17 +46,20 @@ public class FirstActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        // Check if a user is already logged in
-        if (sessionManager.isUserLoggedIn()) {
-            String userType = sessionManager.getUserType();
-            if ("owner".equals(userType)) {
-                LauncherUtils.navigateToOwnerDashboard(this);
-            } else if ("user".equals(userType)) {
-                LauncherUtils.navigateToMainActivity(this);
-            } else {
-                LauncherUtils.showToast(this, getString(R.string.unrecognized_user_type_please_log_in_again));
+        if(sessionManager.isRememberMe()){
+            // Check if a user is already logged in
+            if (sessionManager.isUserLoggedIn()) {
+                String userType = sessionManager.getUserType();
+                if ("owner".equals(userType)) {
+                    LauncherUtils.navigateToOwnerDashboard(this);
+                } else if ("user".equals(userType)) {
+                    LauncherUtils.navigateToMainActivity(this);
+                } else {
+                    LauncherUtils.showToast(this, getString(R.string.unrecognized_user_type_please_log_in_again));
+                }
             }
         }
+
         // Handle edge-to-edge layout insets
         View rootView = findViewById(R.id.firstmain);
         if (rootView != null) {
