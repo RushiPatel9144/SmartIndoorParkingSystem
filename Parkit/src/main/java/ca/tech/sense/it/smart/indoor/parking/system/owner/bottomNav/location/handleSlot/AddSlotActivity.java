@@ -1,4 +1,4 @@
-package ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.location;
+package ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.location.handleSlot;
 
 import android.os.Bundle;
 import android.widget.Button;
