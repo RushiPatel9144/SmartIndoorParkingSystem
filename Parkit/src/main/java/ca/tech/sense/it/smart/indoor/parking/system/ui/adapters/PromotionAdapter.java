@@ -57,19 +57,15 @@ public class PromotionAdapter extends RecyclerView.Adapter<PromotionAdapter.Prom
 
         holder.promoCode.setText(promotion.getPromoCode());
 
-        // Set up claim button
+        // Set up claim button to copy promo code without marking it as used
         holder.claimButton.setOnClickListener(view -> {
             ClipboardManager clipboard = (ClipboardManager) view.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
             ClipData clip = ClipData.newPlainText("promo_code", promotion.getPromoCode());
             clipboard.setPrimaryClip(clip);
-            Toast.makeText(view.getContext(), "Promo code copied!", Toast.LENGTH_SHORT).show();
-
-            // Set the promo code as used
-            promotion.setUsed(true);
-            DatabaseReference promotionsRef = FirebaseDatabase.getInstance().getReference("Promotions");
-            promotionsRef.child(promotion.getId()).setValue(promotion);
+            Toast.makeText(view.getContext(), "Promo code copied! It will be applied upon booking confirmation.", Toast.LENGTH_SHORT).show();
         });
     }
+
 
     @Override
     public int getItemCount() {
