@@ -1,0 +1,82 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/white"
+    android:padding="16dp">
+
+    <!-- Confirmation Icon -->
+    <ImageView
+        android:id="@+id/confirmationIcon"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_gravity="center" />
+
+    <!-- Booking Confirmation Message -->
+    <TextView
+        android:id="@+id/confirmationMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Your parking is booked"
+        android:textSize="18sp"
+        android:textColor="@color/black"
+        android:layout_marginTop="8dp" />
+
+    <!-- QR Code -->
+    <ImageView
+        android:id="@+id/qrCodeImage"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="16dp" />
+
+    <!-- Parking Ticket Number -->
+    <TextView
+        android:id="@+id/parkingTicketNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="#4563455"
+        android:textSize="20sp"
+        android:textColor="@color/black"
+        android:layout_marginTop="8dp" />
+
+    <!-- Parking Details Card -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:layout_marginTop="16dp">
+
+        <TextView
+            android:id="@+id/parkingDetails"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="JBC Parking\nStandard Covered Parking\n23rd March, 2019 from 11:00 to 4:00 PM"
+            android:textSize="14sp"
+            android:textColor="@color/black" />
+
+        <TextView
+            android:id="@+id/parkingAddress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="JBC Parking, Building No 6, Al Barsha 2,\nStreet 43 A1, Dubai, UAE"
+            android:textSize="12sp"
+            android:textColor="@color/gray"
+            android:layout_marginTop="8dp" />
+    </LinearLayout>
+
+    <!-- Get Direction Button -->
+    <Button
+        android:id="@+id/getDirectionButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/yellow"
+        android:text="Get Direction"
+        android:textColor="@color/white"
+        android:layout_marginTop="16dp" />
+
+</LinearLayout>
