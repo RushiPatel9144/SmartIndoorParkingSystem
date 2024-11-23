@@ -1,4 +1,4 @@
-package ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.location;
+package ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.location.handleLocation;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,12 +16,12 @@ import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocatio
 public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.LocationViewHolder> {
 
     private final List<ParkingLocation> locations;
-    private final OnItemClickListener itemClickListener;
+    private final OnItemClickListener listener;
 
-    // Constructor for initializing the list and listener for item clicks
-    public LocationAdapter(List<ParkingLocation> locations, OnItemClickListener itemClickListener) {
+    // Constructor for initializing the list and listener
+    public LocationAdapter(List<ParkingLocation> locations, OnItemClickListener listener) {
         this.locations = locations;
-        this.itemClickListener = itemClickListener;
+        this.listener = listener;
     }
 
     @NonNull
@@ -35,14 +35,16 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
     @Override
     public void onBindViewHolder(@NonNull LocationViewHolder holder, int position) {
         ParkingLocation location = locations.get(position);
+
+        // Bind the data to views
         holder.locationNameTextView.setText(location.getName());
         holder.locationAddressTextView.setText(location.getAddress());
-        holder.locationPriceTextView.setText(String.format("Price: $%s", location.getPrice())); // Dynamically set price
+        holder.locationPriceTextView.setText(String.format("Price: $%s", location.getPrice()));
 
-        // Handle item click for opening slot list
+        // Set click listener for each item
         holder.itemView.setOnClickListener(v -> {
-            if (itemClickListener != null) {
-                itemClickListener.onItemClick(location); // Pass clicked location
+            if (listener != null) {
+                listener.onItemClick(location, position);
             }
         });
     }
@@ -50,6 +52,12 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
     @Override
     public int getItemCount() {
         return locations.size();
+    }
+
+    // Method to remove an item
+    public void removeItem(int position) {
+        locations.remove(position);
+        notifyItemRemoved(position);
     }
 
     // ViewHolder class to hold each item
@@ -60,7 +68,6 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
 
         public LocationViewHolder(View itemView) {
             super(itemView);
-
             // Find views
             locationNameTextView = itemView.findViewById(R.id.locationName);
             locationAddressTextView = itemView.findViewById(R.id.locationAddress);
@@ -68,8 +75,8 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
         }
     }
 
-    // Interface for handling item clicks (location)
+    // Callback interface for item clicks
     public interface OnItemClickListener {
-        void onItemClick(ParkingLocation location);
+        void onItemClick(ParkingLocation location, int position);
     }
 }

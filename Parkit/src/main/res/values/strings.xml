@@ -392,6 +392,9 @@
     <string name="invalid_battery_level">Invalid battery level</string>
     <string name="battery_level_range_error">Battery level must be between 0 and 100</string>
     <string name="sensor">sensor_</string>
+    <string name="manage_slots">Manage Slots</string>
+    <string name="change_price">Change Price</string>
+    <string name="delete">Delete</string>
 
 
 </resources>
