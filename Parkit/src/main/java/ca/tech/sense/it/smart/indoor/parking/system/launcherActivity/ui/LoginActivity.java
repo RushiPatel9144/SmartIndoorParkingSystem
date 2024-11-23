@@ -18,14 +18,14 @@ import com.google.android.material.checkbox.MaterialCheckBox;
 
 import java.util.Objects;
 
-import ca.tech.sense.it.smart.indoor.parking.system.manager.SessionManager;
-import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.LauncherUtils;
+import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.credentialManagerGoogle.GoogleAuthClient;
 import ca.tech.sense.it.smart.indoor.parking.system.viewModel.LoginViewModelFactory;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.LoginViewModel;
 import ca.tech.sense.it.smart.indoor.parking.system.repository.AuthRepository;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.SessionManager;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -52,23 +52,6 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
-        userType = getIntent().getStringExtra("userType");
-
-        // Initialize the ViewModel for handling login logic
-        AuthRepository authRepository = new AuthRepository();
-        LoginViewModelFactory factory = new LoginViewModelFactory(authRepository);
-        loginViewModel = new ViewModelProvider(this, factory).get(LoginViewModel.class);
-
-        // Initialize GoogleAuthClient
-        googleAuthClient = new GoogleAuthClient(this);
-
-
-        // Observing the resetPasswordStatus to show feedback to the user
-        loginViewModel.getResetPasswordStatus().observe(this, status -> {
-            // Display a toast message based on the reset password status
-            LauncherUtils.showToast(this, status);
-        });
 
         // Initialize UI elements and components
         initializeElements();
@@ -97,12 +80,14 @@ public class LoginActivity extends AppCompatActivity {
         rememberMeCheckBox = findViewById(R.id.remember_me_checkbox);
         TextView titleTV = findViewById(R.id.titleTV);
 
+        // Initialize GoogleAuthClient
+        googleAuthClient = new GoogleAuthClient(this);
 
         // Hide or show Google sign-in for owners (assuming owner doesn't use Google sign-in)
         LinearLayout divider = findViewById(R.id.or);
 
         // Retrieve the userType ("user" or "owner") passed from the previous activity
-
+        userType = getIntent().getStringExtra("userType");
         if (Objects.equals(userType, "owner")) {
             // Adjust the UI for owner (hide Google sign-in and title update)
             titleTV.setText(R.string.owner);
@@ -110,7 +95,16 @@ public class LoginActivity extends AppCompatActivity {
             divider.setVisibility(View.GONE);
         }
 
+        // Initialize the ViewModel for handling login logic
+        AuthRepository authRepository = new AuthRepository();
+        LoginViewModelFactory factory = new LoginViewModelFactory(authRepository);
+        loginViewModel = new ViewModelProvider(this, factory).get(LoginViewModel.class);
 
+        // Observing the resetPasswordStatus to show feedback to the user
+        loginViewModel.getResetPasswordStatus().observe(this, status -> {
+            // Display a toast message based on the reset password status
+            LauncherUtils.showToast(this, status);
+        });
     }
 
     /**
@@ -140,16 +134,16 @@ public class LoginActivity extends AppCompatActivity {
         // Handle Google sign-in button click (trigger Google sign-in in ViewModel)
         googleButton.setOnClickListener(v -> loginViewModel.signInWithGoogle(this));
 
-        // Observe the loginStatus to navigate to the main activity on successful login
-        loginViewModel.getLoginStatus().observe(this, status -> {
-            if ("user".equals(status)) {
-                // On successful user login, navigate to MainActivity
-                LauncherUtils.navigateToMainActivity(this);
-            } else {
-                // If Google sign-in fails, show a failure message
-                Toast.makeText(this, status, Toast.LENGTH_SHORT).show();
-            }
-        });
+//        // Observe the loginStatus to navigate to the main activity on successful login
+//        loginViewModel.getLoginStatus().observe(this, status -> {
+//            if ("user".equals(status)) {
+//                // On successful user login, navigate to MainActivity
+//                LauncherUtils.navigateToMainActivity(this);
+//            } else {
+//                // If Google sign-in fails, show a failure message
+//                Toast.makeText(this, getString(R.string.google_sign_in_failed), Toast.LENGTH_SHORT).show();
+//            }
+//        });
 
         // Handle forgot password click (show input dialog to enter email for password reset)
         forgotPasswordTextView.setOnClickListener(v -> DialogUtil.showInputDialog(this, getString(R.string.enter_your_registered_email), getString(R.string.someone_mail_com), new DialogUtil.InputDialogCallback() {
@@ -193,9 +187,9 @@ public class LoginActivity extends AppCompatActivity {
                 sessionManager.saveAuthToken(authToken, userType, rememberMeCheckBox.isChecked());
 
                 // Navigate to the appropriate activity based on the user type
-                if (getString(R.string.user).equals(userType)) {
+                if ("user".equals(userType)) {
                     LauncherUtils.navigateToMainActivity(this);
-                } else if (getString(R.string.owner).equals(userType)) {
+                } else if ("owner".equals(userType)) {
                     LauncherUtils.navigateToOwnerDashboard(this);
                 }
             } else if (status.startsWith("error:")) {
@@ -203,13 +197,13 @@ public class LoginActivity extends AppCompatActivity {
                 LauncherUtils.showToast(this, status.substring(6));
             } else {
                 // Handle unrecognized user type or first-time login
-                if (getString(R.string.user).equals(userType)) {
+                if ("user".equals(userType)) {
                     if (sessionManager.isUserLoggedIn()) {
                         LauncherUtils.navigateToMainActivity(this);
                     } else {
                         LauncherUtils.showToast(this, getString(R.string.please_log_in_again));
                     }
-                } else if (getString(R.string.owner).equals(userType)) {
+                } else if ("owner".equals(userType)) {
                     if (sessionManager.isOwnerLoggedIn()) {
                         LauncherUtils.navigateToOwnerDashboard(this);
                     } else {

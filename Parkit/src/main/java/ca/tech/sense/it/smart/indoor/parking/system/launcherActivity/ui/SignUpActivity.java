@@ -96,7 +96,7 @@ public class SignUpActivity extends BaseActivity {
             String phoneNumber = phone.getText().toString().trim();
 
             // Input validation
-            if (!LauncherUtils.validateInput(SignUpActivity.this, firstName, lastName, editTextEmail, phone, editTextPassword, editTextConfirmPassword, checkBox, fName, lName, email, password, confirmPassword, phoneNumber)) {
+            if (!LauncherUtils.validateInputSignUp(SignUpActivity.this, firstName, lastName, editTextEmail, phone, editTextPassword, editTextConfirmPassword, checkBox, fName, lName, email, password, confirmPassword, phoneNumber)) {
                 progressBar.setVisibility(View.GONE);
                 return;
             }
@@ -119,7 +119,7 @@ public class SignUpActivity extends BaseActivity {
 
                         } else {
                             Log.e("SignUpActivity", "Firebase Auth failed: " + Objects.requireNonNull(task.getException()).getMessage());
-                            LauncherUtils.showToast(this, getString(R.string.authentication_failed));
+                            LauncherUtils.showToast(this, Objects.requireNonNull(task.getException()).getMessage());
                         }
                     });
         });
