@@ -41,6 +41,9 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
         holder.locationAddressTextView.setText(location.getAddress());
         holder.locationPriceTextView.setText(String.format("Price: $%s", location.getPrice()));
 
+        // Store the locationId in the ViewHolder
+        holder.setLocationId(location.getId()); // Set the locationId
+
         // Set click listener for each item
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {
@@ -65,6 +68,7 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
         TextView locationNameTextView;
         TextView locationAddressTextView;
         TextView locationPriceTextView;
+        private String locationId; // Store the locationId
 
         public LocationViewHolder(View itemView) {
             super(itemView);
@@ -72,6 +76,14 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
             locationNameTextView = itemView.findViewById(R.id.locationName);
             locationAddressTextView = itemView.findViewById(R.id.locationAddress);
             locationPriceTextView = itemView.findViewById(R.id.locationPrice);
+        }
+
+        public void setLocationId(String locationId) {
+            this.locationId = locationId; // Set the locationId
+        }
+
+        public String getLocationId() {
+            return locationId; // Getter for locationId
         }
     }
 

@@ -10,27 +10,24 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseDatabaseSingleton;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.ParkingLocationManager;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
 import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.location.handleLocation.AddLocationActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.location.handleLocation.LocationAdapter;
 import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.location.handleLocation.SwipeToDeleteCallback;
 import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.location.handleSlot.SlotListBottomSheetDialogFragment;
-
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -47,6 +44,7 @@ public class LocationsFragment extends Fragment implements LocationAdapter.OnIte
     private List<ParkingLocation> parkingLocations;
     private FirebaseAuth oAuth;
     private FloatingActionButton addButton;
+    private ParkingLocationManager parkingLocationManager = new ParkingLocationManager();
 
     @Nullable
     @Override
@@ -73,7 +71,7 @@ public class LocationsFragment extends Fragment implements LocationAdapter.OnIte
         locationsRecyclerView.setAdapter(adapter);
 
         // Add swipe-to-delete functionality
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteCallback(adapter));
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteCallback(adapter,oAuth.getUid(),parkingLocationManager));
         itemTouchHelper.attachToRecyclerView(locationsRecyclerView);
 
         // Load data from Firebase
@@ -142,6 +140,7 @@ public class LocationsFragment extends Fragment implements LocationAdapter.OnIte
                 SlotListBottomSheetDialogFragment.newInstance(location.getId());
         bottomSheetFragment.show(getChildFragmentManager(), bottomSheetFragment.getTag());
     }
+
 
     @Override
     public void onResume() {

@@ -1,23 +1,30 @@
 package ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.location.handleLocation;
 
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.view.View;
+
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
-
-import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.ParkingLocationManager;
+import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
 
 public class SwipeToDeleteCallback extends ItemTouchHelper.SimpleCallback {
 
     private final LocationAdapter adapter;
+    private final String ownerId;
+    private final ParkingLocationManager parkingManager;
 
-    public SwipeToDeleteCallback(LocationAdapter adapter) {
+    // Constructor
+    public SwipeToDeleteCallback(LocationAdapter adapter, String ownerId, ParkingLocationManager parkingManager) {
         super(0, ItemTouchHelper.LEFT); // Enable left swipe
         this.adapter = adapter;
+        this.ownerId = ownerId;
+        this.parkingManager = parkingManager;
     }
 
     @Override
@@ -30,9 +37,27 @@ public class SwipeToDeleteCallback extends ItemTouchHelper.SimpleCallback {
 
     @Override
     public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+        String locationId;
         int position = viewHolder.getBindingAdapterPosition();
         if (position != RecyclerView.NO_POSITION) {
-            adapter.removeItem(position);
+            LocationAdapter.LocationViewHolder locationViewHolder = (LocationAdapter.LocationViewHolder) viewHolder;
+            locationId = locationViewHolder.getLocationId();
+            DialogUtil.showTimedConfirmationDialog(
+                    viewHolder.itemView.getContext(),
+                    "Confirm Deletion",
+                    "Are you sure you want to delete this location?",
+                    15000,
+                    1000,
+                    () -> {
+                        parkingManager.deleteParkingLocation(
+                                viewHolder.itemView.getContext(),
+                                ownerId,
+                                locationId
+                        );
+                        adapter.removeItem(position);
+                    },
+                    adapter::notifyDataSetChanged
+            );
         }
     }
 
@@ -45,36 +70,44 @@ public class SwipeToDeleteCallback extends ItemTouchHelper.SimpleCallback {
 
         View itemView = viewHolder.itemView;
 
-        // Define button-like dimensions and appearance
-        Paint paint = new Paint();
-        paint.setColor(ContextCompat.getColor(itemView.getContext(), android.R.color.holo_red_dark)); // Background color
+        float maxSwipeDistance = (float) (itemView.getWidth() / 3.5);
+        if (dX < -maxSwipeDistance) {
+            dX = -maxSwipeDistance;
+        }
 
-        // Define text properties
+        Paint backgroundPaint = new Paint();
+        backgroundPaint.setColor(Color.parseColor("#9E2424"));
+
+
+        RectF background = new RectF(
+                itemView.getRight()+ dX,
+                itemView.getTop() + 32,
+                itemView.getRight() ,
+                itemView.getBottom() -32
+        );
+        c.drawRect(background, backgroundPaint);
+
         Paint textPaint = new Paint();
         textPaint.setColor(ContextCompat.getColor(itemView.getContext(), android.R.color.white));
         textPaint.setTextSize(50);
         textPaint.setAntiAlias(true);
 
-        // Draw red background on swipe
-        RectF background = new RectF(
-                itemView.getRight() + dX, // Left position
-                itemView.getTop(),               // Top position
-                itemView.getRight(),             // Right position
-                itemView.getBottom()             // Bottom position
-        );
-        c.drawRect(background, paint);
-
-        // Draw the button-like text
-        String buttonText = String.valueOf(R.string.delete);
+        String buttonText = "Delete";
         float textWidth = textPaint.measureText(buttonText);
         float textHeight = textPaint.descent() - textPaint.ascent();
-        float textX = itemView.getRight() - textWidth - 50; // Adjust padding as needed
-        float textY = itemView.getTop() + (itemView.getHeight() + textHeight) / 2 - textPaint.descent();
+
+        float textX = background.left + (background.width() - textWidth) / 2;
+        float textY = background.top + (background.height() + textHeight) / 2 - textPaint.descent();
 
         c.drawText(buttonText, textX, textY, textPaint);
-
-        // Call super to handle item movement
         super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
     }
 
+    @Override
+    public void onChildDrawOver(@NonNull Canvas c, @NonNull RecyclerView recyclerView,
+                                @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY,
+                                int actionState, boolean isCurrentlyActive) {
+        // Reset the background when swipe is canceled
+        super.onChildDrawOver(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+    }
 }
