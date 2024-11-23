@@ -8,6 +8,8 @@ package ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav;
 
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +19,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.ui.menu.PromotionFragment;
 
 public class Home extends Fragment {
 
@@ -55,11 +58,28 @@ public class Home extends Fragment {
         tvPromoCode = view.findViewById(R.id.tv_promo_code);
         btnViewPromotions = view.findViewById(R.id.btn_view_promotions);
 
-        // Add any additional logic or listeners here if needed
-        // For example:
-        // btnViewMap.setOnClickListener(v -> navigateToParkFragment());
-        // btnViewPromotions.setOnClickListener(v -> navigateToPromotionFragment());
+        // Set click listeners for buttons
+        btnViewMap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Replace current fragment with ParkFragment
+                FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+                transaction.replace(R.id.flFragment, new Park());
+                transaction.addToBackStack(null);
+                transaction.commit();
+            }
+        });
 
+        btnViewPromotions.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Replace current fragment with PromotionFragment
+                FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+                transaction.replace(R.id.flFragment, new PromotionFragment());
+                transaction.addToBackStack(null);
+                transaction.commit();
+            }
+        });
         return view;
     }
 }

@@ -87,8 +87,7 @@
                         android:layout_height="wrap_content"
                         android:text="View Map"
                         android:textColor="@android:color/white"
-                        android:layout_marginTop="4dp"
-                        android:onClick="navigateToParkFragment" />
+                        android:layout_marginTop="4dp" />
                 </LinearLayout>
             </FrameLayout>
 
@@ -138,8 +137,7 @@
                         android:layout_height="wrap_content"
                         android:text="View Promotions"
                         android:textColor="@android:color/white"
-                        android:layout_marginTop="4dp"
-                        android:onClick="navigateToPromotionFragment" />
+                        android:layout_marginTop="4dp" />
                 </LinearLayout>
             </FrameLayout>
         </LinearLayout>
