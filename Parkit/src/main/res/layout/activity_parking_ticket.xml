@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#C0C0C0"
     android:padding="16dp">
-
 
     <!-- Main CardView for Confirmation -->
     <ImageView
@@ -156,7 +154,6 @@
             android:layout_weight="1"
             android:text="GET DIRECTION"
             app:cornerRadius="16dp"
-            app:icon="@drawable/ic_navigation"
             app:iconGravity="textStart"
             app:iconPadding="12dp"
             app:strokeColor="#369765"
@@ -176,7 +173,6 @@
             android:layout_weight="1"
             android:text="Close"
             app:cornerRadius="16dp"
-            app:icon="@drawable/ic_cancel"
             app:iconGravity="textStart"
             app:iconPadding="12dp"
             app:strokeWidth="2dp"
