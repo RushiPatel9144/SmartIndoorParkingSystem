@@ -7,17 +7,33 @@
 package ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav;
 
 import android.os.Bundle;
-
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.ScrollView;
+import android.widget.TextView;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.ui.menu.PromotionFragment;
 
 public class Home extends Fragment {
 
+    private TextView tvHeader;
+    private ImageView imgTop;
+    private ScrollView scrollView;
+    private TextView tvBrowseNearby;
+    private ImageView imgBrowseNearby;
+    private TextView tvFindBestParking;
+    private Button btnViewMap;
+    private TextView tvPromoHeader;
+    private ImageView imgPromotions;
+    private TextView tvPromoCode;
+    private Button btnViewPromotions;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -28,6 +44,42 @@ public class Home extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home, container, false);
+        View view = inflater.inflate(R.layout.fragment_home, container, false);
+
+        // Initialize your views here
+        tvHeader = view.findViewById(R.id.tv_header);
+        imgTop = view.findViewById(R.id.img_top);
+        tvBrowseNearby = view.findViewById(R.id.tv_browse_nearby);
+        imgBrowseNearby = view.findViewById(R.id.img_browse_nearby);
+        tvFindBestParking = view.findViewById(R.id.tv_find_best_parking);
+        btnViewMap = view.findViewById(R.id.btn_view_map);
+        tvPromoHeader = view.findViewById(R.id.tv_promo_header);
+        imgPromotions = view.findViewById(R.id.img_promotions);
+        tvPromoCode = view.findViewById(R.id.tv_promo_code);
+        btnViewPromotions = view.findViewById(R.id.btn_view_promotions);
+
+        // Set click listeners for buttons
+        btnViewMap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Replace current fragment with ParkFragment
+                FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+                transaction.replace(R.id.flFragment, new Park());
+                transaction.addToBackStack(null);
+                transaction.commit();
+            }
+        });
+
+        btnViewPromotions.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Replace current fragment with PromotionFragment
+                FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+                transaction.replace(R.id.flFragment, new PromotionFragment());
+                transaction.addToBackStack(null);
+                transaction.commit();
+            }
+        });
+        return view;
     }
 }

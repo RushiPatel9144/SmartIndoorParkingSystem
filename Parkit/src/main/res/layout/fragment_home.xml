@@ -1,24 +1,145 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/frameLayout4"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bg"
-    tools:context=".ui.bottomNav.Home">
+    android:orientation="vertical"
+    android:weightSum="4"
+    android:padding="16dp"
+    tools:context=".HomeFragment">
 
-    <!-- Background ImageView with alpha set to 0.7 -->
-
-    <ImageView
-        android:id="@+id/imageView"
+    <!-- TextView with big font size -->
+    <TextView
+        android:id="@+id/tv_header"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:alpha="0.7"
-        android:scaleType="centerCrop"
-        android:src="@drawable/home_background"
-        tools:layout_editor_absoluteX="-44dp"
-        tools:layout_editor_absoluteY="-306dp" />
+        android:layout_height="wrap_content"
+        android:text="Smart Indoor Parking System"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/black"
+        android:gravity="center"
+        android:layout_marginBottom="16dp" />
 
+    <!-- ImageView occupying the upper 25% of the screen -->
+    <ImageView
+        android:id="@+id/img_top"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:src="@drawable/home_fragment"
+        android:contentDescription="Top Image"
+        android:scaleType="fitXY" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <!-- ScrollView occupying the bottom 75% of the screen -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="3">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Browse Nearby Spaces Section -->
+            <FrameLayout
+                android:id="@+id/browse_nearby_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp">
+
+                <ImageView
+                    android:id="@+id/img_browse_nearby"
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp"
+                    android:src="@drawable/browse_nearby_image"
+                    android:contentDescription="Browse Nearby Spaces"
+                    android:scaleType="fitXY"
+                    android:alpha="0.3" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="8dp">
+
+                    <TextView
+                        android:id="@+id/tv_browse_nearby"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="BROWSE NEARBY SPACES"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="@android:color/black" />
+
+                    <TextView
+                        android:id="@+id/tv_find_best_parking"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Find the best parking option for you."
+                        android:textSize="16sp"
+                        android:textColor="@android:color/black"
+                        android:layout_marginTop="4dp" />
+
+                    <Button
+                        android:id="@+id/btn_view_map"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="View Map"
+                        android:textColor="@android:color/white"
+                        android:layout_marginTop="4dp" />
+                </LinearLayout>
+            </FrameLayout>
+
+            <!-- Promotions Section -->
+            <FrameLayout
+                android:id="@+id/promo_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp">
+
+                <ImageView
+                    android:id="@+id/img_promotions"
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp"
+                    android:src="@drawable/promotions_image"
+                    android:contentDescription="Promotions"
+                    android:scaleType="fitXY"
+                    android:alpha="0.3" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="8dp">
+
+                    <TextView
+                        android:id="@+id/tv_promo_header"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="You have multiple promos"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="@android:color/black" />
+
+                    <TextView
+                        android:id="@+id/tv_promo_code"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Terms apply"
+                        android:textSize="14sp"
+                        android:textColor="@android:color/holo_green_dark"
+                        android:layout_marginTop="4dp" />
+
+                    <Button
+                        android:id="@+id/btn_view_promotions"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="View Promotions"
+                        android:textColor="@android:color/white"
+                        android:layout_marginTop="4dp" />
+                </LinearLayout>
+            </FrameLayout>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>
