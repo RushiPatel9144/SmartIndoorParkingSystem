@@ -5,11 +5,8 @@
  */
 package ca.tech.sense.it.smart.indoor.parking.system.utility;
 
-import static androidx.core.content.ContentProviderCompat.requireContext;
-
 import android.app.AlertDialog;
 import android.content.Context;
-import android.os.Handler;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.StyleSpan;
@@ -19,10 +16,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import java.text.MessageFormat;
 import java.util.Objects;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 
 public class DialogUtil {
@@ -259,6 +256,7 @@ public class DialogUtil {
         dialogTitle.setText(title);
         dialogMessage.setText(message);
         confirmButton.setEnabled(false);
+        cancelButton.setText(R.string.cancel);
 
         AlertDialog dialog = new AlertDialog.Builder(context)
                 .setView(dialogView)
@@ -268,27 +266,30 @@ public class DialogUtil {
         Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawableResource(R.drawable.dialog_background);
         dialog.show();
 
-        final Handler handler = new Handler();
-        final Runnable[] enableConfirmRunnable = new Runnable[1];
-        enableConfirmRunnable[0] = new Runnable() {
-            int remainingTime = timerDuration / 1000;
 
-            @Override
-            public void run() {
-                if (remainingTime > 0) {
-                    confirmButton.setText(MessageFormat.format("Confirm ({0} s)", remainingTime--));
-                    handler.postDelayed(this, interval);
-                } else {
+        // Use ScheduledExecutorService for fixed-delay scheduling
+        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+        final int[] remainingTime = {timerDuration / 1000}; // seconds
+
+        // Schedule task to update the button text at regular intervals
+        scheduler.scheduleWithFixedDelay(() -> {
+            if (remainingTime[0] > 0) {
+                // Update button text with remaining time
+                ((android.app.Activity) context).runOnUiThread(() ->
+                    confirmButton.setText(String.format("Confirm (%d s)", remainingTime[0]--)));
+            } else {
+                // Enable the confirm button and update text when timer finishes
+                ((android.app.Activity) context).runOnUiThread(() -> {
                     confirmButton.setText(R.string.confirm);
                     confirmButton.setEnabled(true);
-                }
+                });
+                scheduler.shutdown(); // Stop scheduler after the timer ends
             }
-        };
-        handler.post(enableConfirmRunnable[0]);
+        }, 0, interval, TimeUnit.MILLISECONDS); // Start immediately, repeat every 'interval' milliseconds
 
         // Cancel button action
         cancelButton.setOnClickListener(v -> {
-            handler.removeCallbacks(enableConfirmRunnable[0]);
+            scheduler.shutdownNow(); // Stop scheduler immediately
             dialog.dismiss();
             if (cancelAction != null) {
                 cancelAction.run();
@@ -297,13 +298,11 @@ public class DialogUtil {
 
         // Confirm button action
         confirmButton.setOnClickListener(v -> {
-            handler.removeCallbacks(enableConfirmRunnable[0]);
+            scheduler.shutdownNow(); // Stop scheduler immediately
             dialog.dismiss();
             if (confirmAction != null) {
                 confirmAction.run();
             }
         });
     }
-
-
 }

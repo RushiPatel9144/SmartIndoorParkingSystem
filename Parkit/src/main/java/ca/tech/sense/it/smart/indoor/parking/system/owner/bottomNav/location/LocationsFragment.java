@@ -38,7 +38,7 @@ public class LocationsFragment extends Fragment {
     private RecyclerView locationsRecyclerView;
     private LinearLayout emptyStateLayout;
     private ProgressBar progressBar;
-    private LocationAdapter adapter;
+    private static LocationAdapter adapter;
     private List<ParkingLocation> parkingLocations;
     private FirebaseAuth oAuth;
     private FloatingActionButton addButton;

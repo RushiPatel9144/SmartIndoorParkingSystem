@@ -18,6 +18,7 @@ import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.manager.ParkingLocationManager;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
+import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.location.LocationsFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.AutocompleteSearchHelper;
 
 public class AddLocationActivity extends AppCompatActivity {
@@ -26,13 +27,13 @@ public class AddLocationActivity extends AppCompatActivity {
     private EditText postalCode;
     private EditText price;
     private EditText locationAddressName;
-    private Button confirmButton;
-    private Button cancelButton;
+
+
     private double latitude;
     private double longitude;
     private String locationAddress;
     private FirebaseAuth oAuth;
-    private ParkingLocationManager parkingLocationManager = new ParkingLocationManager();
+    private final ParkingLocationManager parkingLocationManager = new ParkingLocationManager();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +45,8 @@ public class AddLocationActivity extends AppCompatActivity {
     }
 
     private void initializeUI() {
+        Button confirmButton;
+        Button cancelButton;
         locationName = findViewById(R.id.locationName);
         postalCode = findViewById(R.id.postal_code);
         price = findViewById(R.id.price);
