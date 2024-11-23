@@ -13,6 +13,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.UUID;
+
 import ca.tech.sense.it.smart.indoor.parking.system.model.Promotion;
 
 public class PromotionHelper {
@@ -62,8 +64,12 @@ public class PromotionHelper {
     }
 
     private static void savePromotionToFirebase(DatabaseReference promotionsRef, Promotion promotion) {
+        promotion.setPromoCode(UUID.randomUUID().toString().substring(0, 8)); // Generate promo code
+        promotion.setUsed(false); // Set the promo code as unused initially
         promotionsRef.child(promotion.getId()).setValue(promotion)
                 .addOnSuccessListener(aVoid -> Log.d(TAG, promotion.getTitle() + " promotion saved successfully"))
                 .addOnFailureListener(e -> Log.e(TAG, "Failed to save " + promotion.getTitle() + " promotion", e));
     }
+
+
 }
