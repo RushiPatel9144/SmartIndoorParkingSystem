@@ -10,6 +10,8 @@ public class Promotion {
     private String title;
     private String description;
     private int discount;
+    private String promoCode;
+    private boolean isUsed;
 
     // Empty constructor needed for Firebase
     public Promotion() {}
@@ -39,5 +41,21 @@ public class Promotion {
         return discount;
     }
 
+    // Add getter and setter for promoCode and isUsed
+    public String getPromoCode() {
+        return promoCode;
+    }
+
+    public void setPromoCode(String promoCode) {
+        this.promoCode = promoCode;
+    }
+
+    public boolean isUsed() {
+        return isUsed;
+    }
+
+    public void setUsed(boolean used) {
+        isUsed = used;
+    }
 
 }

@@ -2,6 +2,7 @@ package ca.tech.sense.it.smart.indoor.parking.system.manager;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.util.Log;
 
 public class SessionManager {
@@ -13,14 +14,15 @@ public class SessionManager {
     private static final String KEY_USER_TYPE = "user_type"; // store user type
     private static final String KEY_REMEMBER_ME = "remember_me"; // store remember me status
 
-    private SharedPreferences sharedPreferences;
-    private SharedPreferences.Editor editor;
+    private final SharedPreferences sharedPreferences;
+    private final SharedPreferences.Editor editor;
 
     public SessionManager(Context context) {
         sharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
         editor = sharedPreferences.edit();
         this.context = context.getApplicationContext();
     }
+
 
     // Save authentication token and user type
     public void saveAuthToken(String authToken, String userType, boolean rememberMe) {
@@ -47,7 +49,11 @@ public class SessionManager {
 
     // Check if the user is logged in by checking if token exists
     public boolean isUserLoggedIn() {
-        return sharedPreferences.contains(KEY_USER_TOKEN) || sharedPreferences.contains(KEY_OWNER_TOKEN);
+        return sharedPreferences.contains(KEY_USER_TOKEN);
+    }
+
+    public boolean isOwnerLoggedIn() {
+        return sharedPreferences.contains(KEY_OWNER_TOKEN);
     }
 
     // Retrieve the token based on the user type
@@ -81,9 +87,16 @@ public class SessionManager {
         editor.apply();
     }
 
-    public boolean isOwnerLoggedIn() {
-        SharedPreferences sharedPreferences = context.getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
-        return sharedPreferences.contains("owner_authToken");
+
+
+    public void saveUserDetails(String name, String email, Uri photoUrl) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("user_name", name);
+        editor.putString("user_email", email);
+        editor.putString("user_photo_url", photoUrl != null ? photoUrl.toString() : null);
+        editor.apply();
     }
+
+
 
 }

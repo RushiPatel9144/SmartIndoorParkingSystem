@@ -1,4 +1,4 @@
-package ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.location;
+package ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.location.handleSlot;
 import android.widget.EditText;
 
 public class AddSlotValidator {
