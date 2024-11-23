@@ -9,6 +9,7 @@ import java.util.Map;
 
 public class ParkingLocation {
     private String id;
+    private String ownerId;
     private String address;
     private double latitude;
     private double longitude;
@@ -21,7 +22,8 @@ public class ParkingLocation {
     public ParkingLocation() {
     }
 
-    public ParkingLocation(String id, Map<String, ParkingSlot> slots, String postalCode, String name, double longitude,  double latitude, String address, double price) {
+
+    public ParkingLocation(String id, String ownerId, Map<String, ParkingSlot> slots, String postalCode, String name, double longitude,  double latitude, String address, double price) {
         this.id = id;
         this.slots = slots;
         this.postalCode = postalCode;
@@ -30,9 +32,19 @@ public class ParkingLocation {
         this.address = address;
         this.latitude = latitude;
         this.price = price;
+        this.ownerId = ownerId;
     }
 
     // Getters and setters
+
+    public String getOwnerId() {
+        return ownerId;
+    }
+
+    public void setOwnerId(String ownerId) {
+        this.ownerId = ownerId;
+    }
+
     public String getId() {
         return id;
     }

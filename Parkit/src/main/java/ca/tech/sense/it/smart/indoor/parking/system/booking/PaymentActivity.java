@@ -43,7 +43,6 @@ public class PaymentActivity extends AppCompatActivity {
 
     private Booking booking;
     private BookingManager bookingManager;
-
     private TextView parkingNameTextView;
     private TextView addressTextView;
     private TextView postalCodeTextView;
@@ -253,5 +252,4 @@ public class PaymentActivity extends AppCompatActivity {
         dateTextView.setText(MessageFormat.format("Date: {0}", formattedDate));
         timeTextView.setText(MessageFormat.format("Time: {0} - {1}", formattedStartTime, formattedEndTime));
     }
-
 }

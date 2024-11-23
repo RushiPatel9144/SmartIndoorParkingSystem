@@ -15,9 +15,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -39,6 +41,9 @@ import com.google.firebase.storage.UploadTask;
 
 
 import java.io.IOException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSingleton;
@@ -46,13 +51,16 @@ import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirestoreSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.AuthUtils;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.ImageCropActivity;
+import ca.tech.sense.it.smart.indoor.parking.system.utility.UserCheckHelper;
 
 public class ManageAccountFragment extends Fragment {
 
     private static final String PREFS_NAME = "AccountPrefs";
     private static final String KEY_PROFILE_PICTURE_URI = "profile_picture_uri";
     private static final String FIELD = "profilePhotoUrl";
-    private static final String USER_COLLECTION ="users";
+    private static final String COLLECTION_USER = "users";
+    private static final String COLLECTION_OWNER = "owners";
+    private String collection = "users";
 
     private ImageView profilePicture;
     private TextView nameTextView;
@@ -64,8 +72,11 @@ public class ManageAccountFragment extends Fragment {
     private LinearLayout managePhoneNumber;
     private View rootView;
     private FirebaseFirestore db;
-
     private FirebaseUser currentUser;
+    private LinearLayout linearLayout;
+    private FrameLayout progressFrame;
+    // Executor service to schedule tasks
+    private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
 
     private final ActivityResultLauncher<Intent> imagePickerLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -118,17 +129,22 @@ public class ManageAccountFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        FirebaseAuth mAuth;
         rootView = inflater.inflate(R.layout.fragment_manage_account, container, false);
         bindViews(rootView);
-
+        FirebaseAuth mAuth;
         mAuth = FirebaseAuthSingleton.getInstance();
         currentUser = mAuth.getCurrentUser();
         db = FirestoreSingleton.getInstance();
-        fetchUserInfo();
-        loadProfilePicture();
-
+        checkUserType();
+        scheduleCheckUserType();
         return rootView;
+    }
+    private void scheduleCheckUserType() {
+        scheduledExecutorService.schedule(() -> {
+            String uid = currentUser.getUid();
+            fetchUserDetailsFromFirestore(uid);
+            loadProfilePicture();
+        }, 1, TimeUnit.SECONDS);
     }
 
     @Override
@@ -149,6 +165,8 @@ public class ManageAccountFragment extends Fragment {
         managePassword = view.findViewById(R.id.managePassword);
         manageEmail = view.findViewById(R.id.manageEmail);
         managePhoneNumber = view.findViewById(R.id.managePhoneNumber);
+        linearLayout = view.findViewById(R.id.manage_account);
+        progressFrame = view.findViewById(R.id.progressFrame);
     }
 
     private void setupProfilePictureButton() {
@@ -175,37 +193,17 @@ public class ManageAccountFragment extends Fragment {
         imageCropLauncher.launch(intent);
     }
 
-
-    private void fetchUserInfo() {
-        if (currentUser != null) {
-            String email = currentUser.getEmail();
-            String name = currentUser.getDisplayName();
-            String phoneNumber = currentUser.getPhoneNumber();
-            if (email != null) {
-                contactDetailsTextView.setText(email);
-            }
-            if (name != null){
-                nameTextView.setText(name);
-            }
-            if (phoneNumber != null){
-                phoneNumberTextView.setText(phoneNumber);
-            }
-            if(name == null && phoneNumber == null){
-                String uid = currentUser.getUid();
-                fetchUserDetailsFromFirestore(uid);
-            }
-        } else {
-            showSnackbar(R.string.user_not_authenticated);
-        }
-    }
-
     private void fetchUserDetailsFromFirestore(String uid) {
-        DocumentReference docRef = db.collection(USER_COLLECTION).document(uid);
-
+        DocumentReference docRef = db.collection(collection).document(uid);
+        String email = currentUser.getEmail();
+        if (email != null) {
+            contactDetailsTextView.setText(email);
+        }
         docRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 DocumentSnapshot document = task.getResult();
                 if (document.exists()) {
+                    // Fetch and set user details here (name, email, etc.)
                     String firstName = document.getString("firstName");
                     String lastName = document.getString("lastName");
                     String phoneNumber = document.getString("phone");
@@ -231,45 +229,42 @@ public class ManageAccountFragment extends Fragment {
         });
     }
 
+
     private void openGallery() {
         Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType(getString(R.string.image1));
         imagePickerLauncher.launch(intent);
     }
 
-    private void loadProfilePicture() {
+    public void loadProfilePicture() {
         if (currentUser == null) {
             showSnackbar(R.string.user_not_authenticated);
             return;
         }
-        DocumentReference userRef = db.collection(USER_COLLECTION).document(currentUser.getUid());
+        DocumentReference userRef = db.collection(collection).document(currentUser.getUid());
 
         userRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 DocumentSnapshot document = task.getResult();
                 if (document.exists()) {
-                    String profilePictureUrl = document.getString(FIELD);
+                    String profilePictureUrl = document.getString("profilePhotoUrl");
 
                     if (profilePictureUrl != null) {
-                        // Load the image into ImageView using Glide
                         Glide.with(requireContext())
                                 .load(profilePictureUrl)
-                                .placeholder(R.drawable.ic_profile_placeholder)  // Placeholder while loading
-                                .circleCrop()  // Apply circular crop transformation
+                                .placeholder(R.drawable.ic_profile_placeholder)
+                                .circleCrop()
                                 .into(profilePicture);
-
                     } else {
-                        // If there is no profile picture URL, use the default image
-                        profilePicture.setImageResource(R.mipmap.ic_launcher);  // Default image
+                        profilePicture.setImageResource(R.mipmap.ic_launcher);
                     }
                 } else {
                     showSnackbar(R.string.user_data_not_found);
-                    profilePicture.setImageResource(R.mipmap.ic_launcher);  // Default image
+                    profilePicture.setImageResource(R.mipmap.ic_launcher);
                 }
             } else {
                 showSnackbar(R.string.fetch_data_failed);
-                Log.e("ManageAccountFragment", getString(R.string.failed_to_fetch_user_data) + task.getException());
-                profilePicture.setImageResource(R.mipmap.ic_launcher);  // Default image
+                profilePicture.setImageResource(R.mipmap.ic_launcher);
             }
         });
     }
@@ -294,7 +289,7 @@ public class ManageAccountFragment extends Fragment {
             showSnackbar(R.string.user_not_authenticated);
             return;
         }
-        DocumentReference userRef = db.collection(USER_COLLECTION).document(currentUser.getUid());
+        DocumentReference userRef = db.collection(collection).document(currentUser.getUid());
         // UpdLate the user's profile with the new profile picture UR
         userRef.update(FIELD, downloadUrl)
                 .addOnSuccessListener(aVoid -> {
@@ -344,16 +339,17 @@ public class ManageAccountFragment extends Fragment {
 
     private void saveProfilePhotoToFirestore(String photoUrl) {
         if (currentUser != null) {
+            // Update the profile photo URL in the correct collection
             DocumentReference userRef = FirebaseFirestore.getInstance()
-                    .collection(USER_COLLECTION)
+                    .collection(collection)
                     .document(currentUser.getUid());
 
-            userRef.update(FIELD, photoUrl)
+            userRef.update("profilePhotoUrl", photoUrl)  // Ensure that "profilePhotoUrl" is the correct field
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
-                            Log.d("Firestore", getString(R.string.profile_picture_updated_successfully));
+                            Log.d("Firestore", "Profile picture updated successfully.");
                         } else {
-                            Log.e("Firestore", getString(R.string.failed_to_update_profile_picture));
+                            Log.e("Firestore", "Failed to update profile picture.");
                         }
                     });
         }
@@ -403,7 +399,7 @@ public class ManageAccountFragment extends Fragment {
                 new DialogUtil.InputDialogCallback() {
                     @Override
                     public void onConfirm(String inputText) {
-                        if (inputText != null ) {
+                        if (inputText != null && inputText.trim().length() >= 12){
                             updatePhoneNumberInFirestore(inputText);
                         } else {
                             showSnackbar(R.string.invalid_phone_number);
@@ -419,7 +415,7 @@ public class ManageAccountFragment extends Fragment {
 
     private void updatePhoneNumberInFirestore(String phoneNumber) {
         if (currentUser != null) {
-            DocumentReference userRef = db.collection(USER_COLLECTION).document(currentUser.getUid());
+            DocumentReference userRef = db.collection(collection).document(currentUser.getUid());
             userRef.update("phone", phoneNumber)
                     .addOnSuccessListener(aVoid -> {
                         phoneNumberTextView.setText(phoneNumber);
@@ -434,4 +430,27 @@ public class ManageAccountFragment extends Fragment {
         }
     }
 
+    private void checkUserType() {
+        if (currentUser != null) {
+            UserCheckHelper userCheckHelper = new UserCheckHelper();
+            userCheckHelper.checkUserType(currentUser.getUid(), getContext(), new UserCheckHelper.UserTypeCallback() {
+                @Override
+                public void onUserTypeDetermined(UserCheckHelper.UserType userType) {
+                    if (userType == UserCheckHelper.UserType.OWNER) {
+                        collection = COLLECTION_OWNER;
+                    } else if (userType == UserCheckHelper.UserType.USER) {
+                        collection = COLLECTION_USER;
+                    }
+                }
+                @Override
+                public void onError() {
+                    Toast.makeText(getContext(), R.string.an_error_occurred, Toast.LENGTH_SHORT).show();
+                }
+            });
+        } else {
+            Toast.makeText(getContext(), R.string.no_user_is_logged_in, Toast.LENGTH_SHORT).show();
+        }
+    }
 }
+
+

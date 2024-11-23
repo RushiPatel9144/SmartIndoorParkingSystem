@@ -12,7 +12,6 @@
     <string name="leaving">Leaving</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="app_logo">App Logo</string>
     <string name="manage_accounts">Manage Accounts</string>
@@ -111,7 +110,10 @@
         <item>USD</item>
         <item>INR</item>
         <item>CAD</item>
-
+    </string-array>
+    <string-array name="sensors">
+        <item>Infra</item>
+        <item>Ultrasonic</item>
     </string-array>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
@@ -271,6 +273,15 @@
     <string name="payment_successful">Payment successful!</string>
     <string name="payment_failed">"Payment failed: "</string>
     <string name="payment_canceled">Payment canceled</string>
+    <string name="owner">Owner</string>
+    <string name="user">User</string>
+    <string name="don_t_have_an_account">Don\'t have an account?</string>
+    <string name="date">Date</string>
+    <string name="already_have_an_account_">Already have an account?</string>
+    <string name="confirm_exit">Confirm Exit</string>
+    <string name="are_you_sure_you_want_to_exit_the_app">Are you sure you want to exit the app?</string>
+    <string name="yes_exit">Yes, Exit</string>
+    <string name="no_stay">No, Stay</string>
     <string name="get_started">Get Started</string>
     <string name="onboard_title1">Welcome to Parkit!</string>
     <string name="onboard_title2">Discover Nearby Parking</string>
@@ -296,19 +307,11 @@
     <string name="failed_to_parse_server_response">Failed to parse server response</string>
     <string name="booking_confirmed">Booking Confirmed</string>
     <string name="booking_data_is_missing">Booking data is missing.</string>
-    <string name="no_internet_access">No Internet Access</string>
     <string name="channel_name">Channel Name</string>
-    <string name="channel_description">Descriotion\n</string>
-    <string name="user">User</string>
-    <string name="don_t_have_an_account">Don\'t Have An Account</string>
-    <string name="already_have_an_account_">Already have An Account</string>
-    <string name="enter_your_email_first">Enter Your Email First</string>
-    <string name="date">Date</string>
-    <string name="confirm_exit">Confirm Exit</string>
-    <string name="are_you_sure_you_want_to_exit_the_app">Are you sure you want to exit the app?</string>
-    <string name="yes_exit">Yes, Exit</string>
-    <string name="no_stay">No, Stay</string>
+    <string name="channel_description">Description\n</string>
     <string name="confirm_logout">Confirm Logout</string>
+    <string name="are_you_sure_you_want_to_log_out">Are you sure you want to Log out?</string>
+    <string name="no_internet_connection">NO internet connection</string>
     <string name="are_you_certain_you_wish_to_log_out_of_your_account">Are you certain you wish to log out of your account?</string>
     <string name="add_new_location">Add New Location</string>
     <string name="your_parking_locations">Your Parking Locations</string>
@@ -316,8 +319,79 @@
     <string name="location_name">Location Name</string>
     <string name="save_location">Save Location</string>
     <string name="or">OR</string>
+    <string name="no_parking_locations_available">No Parking Locations Available</string>
+    <string name="add_your_parking">Add Your Parking</string>
+    <string name="back">Back</string>
+    <string name="parking_location_name">Parking Location Name</string>
+    <string name="enter_location_name">Enter Location Name</string>
+    <string name="search_address">Search Address</string>
+    <string name="search_for_an_address">Search for an address</string>
+    <string name="enter_postal_code">Enter Postal Code</string>
+    <string name="price_per_hour">Price per Hour</string>
+    <string name="enter_price_in_cad">Enter Price in CAD$</string>
+    <string name="continue_">Continue</string>
+    <string name="add_new_parking_location">Add New Parking Location</string>
+    <string name="add_new_slot">Add New Slot</string>
+    <string name="parking_slot_id_name">Parking Slot ID/Name</string>
+    <string name="sensor_type">Sensor Type</string>
+    <string name="sensor_details">Sensor Details</string>
+    <string name="battery_level">Battery Level</string>
+    <string name="add_slot">Add Slot</string>
+    <string name="parking_location_added_successfully">Parking Location Added Successfully</string>
+    <string name="please_select_a_location_using_the_search_bar">Please select a location using the search bar.</string>
+    <string name="invalid_price_format">Invalid price format.</string>
+    <string name="price_must_be_a_positive_value">Price must be a positive value.</string>
+    <string name="please_enter_the_price">Please enter the price.</string>
+    <string name="please_enter_the_postal_code">Please enter the postal code.</string>
+    <string name="please_enter_the_location_name">Please enter the location name.</string>
+    <string name="location_added_successfully">Location added successfully!</string>
+    <string name="parking_address">Parking Address</string>
+    <string name="enter_parking_address">Enter Parking Address</string>
+    <string name="slot_added_successfully">Slot Added Successfully</string>
+    <string name="failed_to_generate_slot_id">Failed To Generate Slot Id.</string>
+    <string name="failed_to_save_sensor_data">Failed To Save Sensor Data</string>
+    <string name="failed_to_save_slot_data">Fsiled To Save Slot Data</string>
+    <string name="failed_to_save_owner_sensor_data">"Failed To Save Sensor Data "</string>
+    <string name="failed_to_save_owner_slot_data">Failed to save slot data</string>
+    <string name="add_location">Add Location</string>
+    <string name="location_address">Location Address</string>
+    <string name="price_0_00">Price: $0.00</string>
+    <string name="slot_id">Slot ID</string>
+    <string name="status">Status</string>
+    <string name="sensor_info">Sensor Info</string>
+    <string name="no_user_is_logged_in">No user is logged in</string>
+    <string name="an_error_occurred">An error occurred</string>
     <string name="slot_already_occupied">Slot is Already Occupied</string>
     <string name="error_checking_slot_availability">Error Checking slot availability</string>
+    <string name="small_owner">owner</string>
+    <string name="please_enter_your_first_name">Please enter your first name</string>
+    <string name="please_enter_your_last_name">Please enter your last name</string>
+    <string name="enter_phone_number">Enter phone number</string>
+    <string name="passwords_do_not_match">Passwords do not match</string>
+    <string name="sign_please_accept_the_terms_and_conditions">Please accept the terms and conditions</string>
+    <string name="unrecognized_user_type_please_log_in_again">Unrecognized user type. Please log in again.</string>
+    <string name="invalid_user_type">Invalid user type</string>
+    <string name="invalid_password_format">Invalid password format</string>
+    <string name="confirm_password_is_required">Confirm password is required</string>
+    <string name="regex_string"><![CDATA[^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$]]></string>
+    <string name="invalid_email_format">Invalid email format</string>
+    <string name="regex_password_format_guide">Password must contain at least 8 characters, 1 uppercase, 1 lowercase, 1 number, and 1 special character.</string>
+    <string name="please_log_in_again">Please log in again.</string>
+    <string name="google_sign_in_failed">Google Sign-In failed</string>
+    <string name="enter_your_registered_email">Enter Your Registered Email</string>
+    <string name="someone_mail_com">someone@mail.com</string>
+    <string name="email_cannot_be_empty">Email cannot be empty</string>
+    <string name="parking_location_deleted_successfully">Parking Location Added Successfully</string>
+    <string name="failed_to_delete_owner_parking_location">Failed to delete owner parking location.</string>
+    <string name="failed_to_delete_parking_location">Failed to delete Parking Location</string>
+    <string name="slot_deleted_successfully">Slot Deleted Successfully</string>
+    <string name="failed_to_delete_owner_slot">Failed to delete owner slot</string>
+    <string name="failed_to_delete_slot">Failed to delete slot.</string>
+    <string name="slot_id_required">Slot ID is required</string>
+    <string name="battery_level_required">Battery level is required</string>
+    <string name="invalid_battery_level">Invalid battery level</string>
+    <string name="battery_level_range_error">Battery level must be between 0 and 100</string>
+    <string name="sensor">sensor_</string>
 
 
 </resources>

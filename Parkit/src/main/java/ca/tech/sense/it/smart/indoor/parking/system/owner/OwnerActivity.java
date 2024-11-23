@@ -2,25 +2,27 @@ package ca.tech.sense.it.smart.indoor.parking.system.owner;
 
 import android.os.Bundle;
 import android.view.MenuItem;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationBarView;
 
-import ca.tech.sense.it.smart.indoor.parking.system.Manager.FragmentManagerHelper;
-import ca.tech.sense.it.smart.indoor.parking.system.Manager.PreferenceManager;
+import java.util.Objects;
+
+import ca.tech.sense.it.smart.indoor.parking.system.manager.FragmentManagerHelper;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.PreferenceManager;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.DashboardFragment;
-import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.LocationsFragment;
+import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.location.LocationsFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.TransactionsFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountFragment;
 
+public class OwnerActivity extends AppCompatActivity implements BottomNavigationView.OnItemSelectedListener {
 
-public class OwnerActivity extends AppCompatActivity implements NavigationBarView.OnItemSelectedListener {
-    private Toolbar toolbar;
+    private static final String TAG = "OwnerMainActivity";
+
     private final DashboardFragment dashboardFragment = new DashboardFragment();
     private final LocationsFragment locationsFragment = new LocationsFragment();
     private final TransactionsFragment transactionsFragment = new TransactionsFragment();
@@ -35,8 +37,7 @@ public class OwnerActivity extends AppCompatActivity implements NavigationBarVie
 
         // Initialize UI components
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation_owner);
-        toolbar = findViewById(R.id.toolbar_owner);
-        setSupportActionBar(toolbar);
+        setSupportActionBar(findViewById(R.id.toolbar_owner));
 
         // Initialize helpers
         fragmentManagerHelper = new FragmentManagerHelper(getSupportFragmentManager(), R.id.fragment_container_owner);
@@ -44,14 +45,7 @@ public class OwnerActivity extends AppCompatActivity implements NavigationBarVie
 
         // Set BottomNavigationView listener
         bottomNavigationView.setOnItemSelectedListener(this);
-
-        // Load the saved fragment or default fragment
-        String currentFragment = preferenceManager.getCurrentFragment();
-        if (currentFragment.equals("accountFragment")) {
-            openFragment(accountFragment, "accountFragment");
-        } else {
-            openFragment(dashboardFragment, "dashboardFragment");
-        }
+        bottomNavigationView.setSelectedItemId(R.id.navigation_dashboard);
     }
 
     @Override
@@ -80,7 +74,7 @@ public class OwnerActivity extends AppCompatActivity implements NavigationBarVie
 
         if (selectedFragment != null) {
             openFragment(selectedFragment, fragmentTag);
-            toolbar.setTitle(toolbarTitle);
+            Objects.requireNonNull(getSupportActionBar()).setTitle(toolbarTitle);  // Update toolbar title
         }
 
         return true;
@@ -91,4 +85,3 @@ public class OwnerActivity extends AppCompatActivity implements NavigationBarVie
         preferenceManager.saveCurrentFragment(fragmentTag);
     }
 }
-

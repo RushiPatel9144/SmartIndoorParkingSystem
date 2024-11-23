@@ -41,15 +41,18 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.currency.Currency;
 import ca.tech.sense.it.smart.indoor.parking.system.currency.CurrencyManager;
 import ca.tech.sense.it.smart.indoor.parking.system.currency.CurrencyPreferenceManager;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseDatabaseSingleton;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.ParkingLocationManager;
 import ca.tech.sense.it.smart.indoor.parking.system.model.activity.Booking;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingSlot;
+import ca.tech.sense.it.smart.indoor.parking.system.utility.ParkingInterface;
 
 public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment {
 
@@ -75,14 +78,16 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
     private Currency selectedCurrency;
     private FirebaseAuth firebaseAuth;
     private DatabaseReference databaseReference;
-
+    private final ParkingLocationManager parkingLocationManager = new ParkingLocationManager();
+    private ExecutorService executorService;
 
     private ParkingLocation location; // Define the ParkingLocation variable
     // Constructor with dependency injection
-    public BookingBottomSheetDialogFragment(String locationId, BookingManager bookingManager, Context context) {
+    public BookingBottomSheetDialogFragment(ExecutorService executorService, String locationId, BookingManager bookingManager, Context context) {
         this.locationId = locationId;
         this.bookingManager = bookingManager;
         this.context = context;
+        this.executorService = executorService;
     }
 
     @Override
@@ -136,7 +141,7 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
     private void fetchParkingLocationData() {
         progressBar.setVisibility(View.VISIBLE);
 
-        bookingManager.fetchParkingLocation(locationId, new BookingManager.FetchLocationCallback() {
+        parkingLocationManager.fetchParkingLocation(context,executorService,locationId, new ParkingInterface.FetchLocationCallback() {
             @Override
             public void onFetchSuccess(ParkingLocation fetchedLocation) {
                 if (fetchedLocation != null) {

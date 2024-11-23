@@ -80,14 +80,15 @@ public class NotificationHelper {
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true)
-                .build();
+                .build();  // This builds the actual android.app.Notification object
 
         if (notificationManager != null) {
             notificationManager.notify((int) timestamp, notification); // Use timestamp as ID to avoid overwriting
         }
     }
 
-    private static void saveNotificationToFirebase(String notificationId, String title, String message, long timestamp, String userId) {
+
+    public static void saveNotificationToFirebase(String notificationId, String title, String message, long timestamp, String userId) {
         DatabaseReference notificationsRef = FirebaseDatabase.getInstance().getReference("users").child(userId).child("notifications").child(notificationId);
         Notification notification = new Notification(notificationId, title, message, timestamp); // Use your Notification constructor
 

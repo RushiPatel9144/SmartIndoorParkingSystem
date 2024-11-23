@@ -55,7 +55,7 @@ public class NetworkManager {
         }
     }
 
-    private void handleNetworkAvailability(Context context, Network network) {
+    public void handleNetworkAvailability(Context context, Network network) {
         if (hasInternetAccess(context, network)) {
             if (wasNetworkLost) {
                 showToast(context, context.getString(R.string.network_is_available));
@@ -66,12 +66,12 @@ public class NetworkManager {
         }
     }
 
-    private void handleNetworkLoss(Context context) {
+    public void handleNetworkLoss(Context context) {
         wasNetworkLost = true;
         showToastAndOpenNoNetworkActivity(context);
     }
 
-    private void handleNetworkCapabilitiesChange(Context context, NetworkCapabilities networkCapabilities) {
+    public void handleNetworkCapabilitiesChange(Context context, NetworkCapabilities networkCapabilities) {
         if (networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)) {
             if (wasNetworkLost) {
                 showToast(context, context.getString(R.string.network_is_available));
@@ -83,7 +83,7 @@ public class NetworkManager {
     }
 
     private void showToastAndOpenNoNetworkActivity(Context context) {
-        showToast(context, context.getString(R.string.no_internet_access));
+        showToast(context, context.getString(R.string.no_internet_connection));
         Intent intent = new Intent(context, NoNetworkActivity.class);
         context.startActivity(intent);
     }
@@ -95,7 +95,7 @@ public class NetworkManager {
         return capabilities != null && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
     }
 
-    private static void showToast(Context context, String message) {
+    public static void showToast(Context context, String message) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
     }
 }

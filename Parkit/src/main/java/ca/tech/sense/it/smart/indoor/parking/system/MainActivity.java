@@ -1,9 +1,7 @@
 package ca.tech.sense.it.smart.indoor.parking.system;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,7 +11,6 @@ import android.widget.Toast;
 import android.Manifest;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -26,10 +23,10 @@ import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import ca.tech.sense.it.smart.indoor.parking.system.Manager.NotificationManagerHelper;
-import ca.tech.sense.it.smart.indoor.parking.system.Manager.ThemeManager;
-import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui.LoginActivity;
-import ca.tech.sense.it.smart.indoor.parking.system.model.user.UserManager;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.NotificationManagerHelper;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.SessionDataManager;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.ThemeManager;
+import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui.FirstActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.Activity;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.Home;
@@ -39,6 +36,8 @@ import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.NotificationHelper;
 
 public class MainActivity extends MenuHandler implements NavigationBarView.OnItemSelectedListener {
+
+    private static final String TAG = "MainActivity";
 
     private BottomNavigationView bottomNavigationView;
     private Toolbar toolbar;
@@ -66,11 +65,17 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
         initFirebaseAuth();
         initUIComponents();
 
-        UserManager.getInstance().fetchUserData(user -> {
+        // Fetch session data (user or owner)
+        SessionDataManager.getInstance().fetchSessionData((user, owner) -> {
             if (user != null) {
-                Log.d("MainActivity", "User data loaded: " + user.getEmail());
+                Log.d(TAG, "User data loaded: " + user.getEmail());
+                // Handle user-specific logic
+            } else if (owner != null) {
+                Log.d(TAG, "Owner data loaded: " + owner.getEmail());
+                // Handle owner-specific logic
             } else {
-                Log.d("MainActivity", "Failed to load user data.");
+                Log.d(TAG, "No session data found.");
+                // Handle no data case (perhaps navigate to login screen)
             }
         });
 
@@ -94,7 +99,7 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
         FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
 
         if (firebaseUser == null) {
-            navigateToLoginActivity();
+            navigateToFirstActivity();
         }
     }
 
@@ -158,8 +163,8 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
 
 
 
-    private void navigateToLoginActivity() {
-        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+    private void navigateToFirstActivity() {
+        Intent intent = new Intent(getApplicationContext(), FirstActivity.class);
         startActivity(intent);
         finish();
     }

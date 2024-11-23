@@ -51,36 +51,6 @@ public class BookingManager {
         this.context = context;
     }
 
-    // Callback interface for fetching parking location
-    public interface FetchLocationCallback {
-        void onFetchSuccess(ParkingLocation location);
-        void onFetchFailure(Exception exception);
-    }
-
-    // Method to fetch parking location data from Firebase
-    public void fetchParkingLocation(String locationId, FetchLocationCallback callback) {
-        executorService.submit(() -> {
-            DatabaseReference locationRef = firebaseDatabase.getReference("parkingLocations").child(locationId);
-            locationRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    ParkingLocation location = snapshot.getValue(ParkingLocation.class);
-                    if (location != null) {
-                        callback.onFetchSuccess(location);
-                    } else {
-                        callback.onFetchFailure(new Exception(context.getString(R.string.location_data_is_not_available)));
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    callback.onFetchFailure(error.toException());
-                }
-            });
-        });
-    }
-
-
     // Method to fetch the price of a parking location from Firebase
     public void fetchPrice(String locationId, Consumer<Double> onSuccess) {
         executorService.submit(() -> {

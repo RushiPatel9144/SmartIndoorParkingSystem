@@ -67,6 +67,8 @@ dependencies {
     implementation libs.firebase.storage
     implementation libs.security.identity.credential
     implementation libs.core.ktx
+    implementation libs.testng
+    implementation libs.androidx.core
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
@@ -89,4 +91,25 @@ dependencies {
 
     implementation libs.androidx.lifecycle.viewmodel.ktx
     implementation libs.androidx.lifecycle.livedata.ktx
+
+    // Mockito
+    testImplementation libs.mockito.core
+
+    // Espresso
+    androidTestImplementation libs.androidx.espresso.core.v350
+    androidTestImplementation libs.ext.junit
+
+    // MockWebServer (for testing network calls)
+    testImplementation libs.mockwebserver
+    testImplementation libs.robolectric
+    implementation libs.ext.junit
+    testImplementation libs.firebase.database.v2010
+    testImplementation libs.robolectric.v4102
+    testImplementation libs.junit.jupiter.api
+    testImplementation libs.junit.jupiter.engine
+    testImplementation libs.powermock.module.junit4
+    testImplementation libs.powermock.api.mockito2
+    testImplementation libs.mockito.inline.v480
+
+
 }
