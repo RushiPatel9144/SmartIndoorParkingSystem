@@ -1,5 +1,6 @@
 package ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.location;
 
+import static ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.location.handleLocation.AddLocationValidator.validatePrice;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,6 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.manager.ParkingLocationManager;
@@ -26,6 +28,7 @@ import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.location.han
 import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.location.handleLocation.LocationAdapter;
 import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.location.handleLocation.SwipeToDeleteCallback;
 import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.location.handleSlot.SlotListBottomSheetDialogFragment;
+import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.ParkingInterface;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
@@ -39,7 +42,7 @@ public class LocationsFragment extends Fragment {
     private List<ParkingLocation> parkingLocations;
     private FirebaseAuth oAuth;
     private FloatingActionButton addButton;
-    private ParkingLocationManager parkingLocationManager = new ParkingLocationManager();
+    private final ParkingLocationManager parkingLocationManager = new ParkingLocationManager();
 
     @Nullable
     @Override
@@ -64,7 +67,7 @@ public class LocationsFragment extends Fragment {
         adapter = new LocationAdapter(parkingLocations, new LocationAdapter.OnItemClickListener() {
             @Override
             public void onChangePriceClick(String locationId, int position) {
-                // Handle change price action
+                changePrice(locationId);
             }
 
             @Override
@@ -79,7 +82,7 @@ public class LocationsFragment extends Fragment {
         locationsRecyclerView.setAdapter(adapter);
 
         // Add swipe-to-delete functionality
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteCallback(adapter,oAuth.getUid(),parkingLocationManager));
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteCallback(adapter, oAuth.getUid(), parkingLocationManager));
         itemTouchHelper.attachToRecyclerView(locationsRecyclerView);
 
         // Load data from Firebase
@@ -103,6 +106,7 @@ public class LocationsFragment extends Fragment {
                 progressBar.setVisibility(View.GONE);
                 updateUI();
             }
+
             @Override
             public void onFetchFailure(String errorMessage) {
                 progressBar.setVisibility(View.GONE);
@@ -137,4 +141,29 @@ public class LocationsFragment extends Fragment {
         super.onResume();
         loadParkingLocations();
     }
+
+    public void changePrice(String locationId) {
+        DialogUtil.showInputDialog(
+                requireContext(),
+                getString(R.string.update_price) ,
+                getString(R.string.input_price_in_cad),
+                new DialogUtil.InputDialogCallback() {
+                    @Override
+                    public void onConfirm(String input) {
+                        double price = validatePrice(requireContext(), input);
+                        if (price >= 0) {
+                            updatePrice(locationId, price);
+                        }
+                    }
+                    @Override
+                    public void onCancel() {
+                        Toast.makeText(requireContext(), R.string.price_update_canceled , Toast.LENGTH_SHORT).show();
+                    }
+                }
+        );
+    }
+        private void updatePrice(String locationId, double price) {
+            parkingLocationManager.changePrice(requireContext(), Objects.requireNonNull(oAuth.getUid()), locationId, price);
+            Toast.makeText(requireContext(), R.string.price_updated_successfully, Toast.LENGTH_SHORT).show();
+        }
 }

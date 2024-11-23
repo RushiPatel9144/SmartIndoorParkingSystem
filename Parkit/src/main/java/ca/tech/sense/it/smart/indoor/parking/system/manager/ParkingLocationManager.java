@@ -1,5 +1,6 @@
 package ca.tech.sense.it.smart.indoor.parking.system.manager;
 
+import static com.android.volley.VolleyLog.TAG;
 import static ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.LauncherUtils.showToast;
 import android.content.Context;
 import android.os.Handler;
@@ -161,5 +162,27 @@ public class ParkingLocationManager {
                 callback.onFetchFailure(error.getMessage());
             }
         });
+    }
+
+    public void changePrice(@NonNull Context context, @NonNull String ownerId,
+                            @NonNull String locationId, double newPrice) {
+        // Get the reference to the parking location
+        DatabaseReference locationRef = databaseReference.child(locationId);
+        // Update the price of the parking location
+        locationRef.child("price").setValue(newPrice)
+                .addOnSuccessListener(aVoid -> {
+                    // Optionally update the price in the owner's collection as well
+                    DatabaseReference ownerLocationRef = ownerReference.child(ownerId)
+                            .child(COLLECTION_LOCATION_OWNER).child(locationId);
+                    ownerLocationRef.child("price").setValue(newPrice)
+                            .addOnSuccessListener(aVoid1 ->
+                                showToast(context, context.getString(R.string.price_updated_successfully)))
+                            .addOnFailureListener(e ->
+                                Log.e(TAG, "Failed to update price in owner's collection: " + e.getMessage()));
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Failed to update price: " + e.getMessage());
+                    showToast(context, context.getString(R.string.error_updating_price));
+                });
     }
 }
