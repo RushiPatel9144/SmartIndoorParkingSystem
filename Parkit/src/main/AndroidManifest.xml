@@ -57,7 +57,7 @@
             android:windowSoftInputMode="adjustResize"
             android:exported="false" />
         <activity
-            android:name=".launcherActivity.ui.LoginActivity"
+            android:name=".launcherActivity.ui.login.LoginActivity"
             android:exported="true" />
         <activity
             android:name=".launcherActivity.SplashScreen"
