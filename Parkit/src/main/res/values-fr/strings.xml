@@ -344,4 +344,6 @@
     <string name="invalid_user_type">Invalid user type</string>
     <string name="are_you_sure_you_want_to_log_out">Are you sure you want to Log out?</string>
     <string name="no_internet_connection">NO internet connection</string>
+    <string name="failed_to_delete_owner_slot">Failed to delete owner slot</string>
+    <string name="failed_to_delete_slot">Failed to delete slot.</string>
 </resources>

@@ -18,7 +18,7 @@ import com.google.android.material.checkbox.MaterialCheckBox;
 
 import java.util.Objects;
 
-import ca.tech.sense.it.smart.indoor.parking.system.Manager.SessionManager;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.SessionManager;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.LauncherUtils;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.credentialManagerGoogle.GoogleAuthClient;

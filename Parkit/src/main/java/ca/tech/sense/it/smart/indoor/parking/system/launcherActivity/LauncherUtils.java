@@ -16,7 +16,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import ca.tech.sense.it.smart.indoor.parking.system.MainActivity;
-import ca.tech.sense.it.smart.indoor.parking.system.Manager.SessionManager;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.SessionManager;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.model.owner.Owner;
 import ca.tech.sense.it.smart.indoor.parking.system.model.user.User;

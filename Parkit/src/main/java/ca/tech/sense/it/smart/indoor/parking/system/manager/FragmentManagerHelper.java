@@ -1,4 +1,4 @@
-package ca.tech.sense.it.smart.indoor.parking.system.Manager;
+package ca.tech.sense.it.smart.indoor.parking.system.manager;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;

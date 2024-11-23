@@ -381,6 +381,17 @@
     <string name="enter_your_registered_email">Enter Your Registered Email</string>
     <string name="someone_mail_com">someone@mail.com</string>
     <string name="email_cannot_be_empty">Email cannot be empty</string>
+    <string name="parking_location_deleted_successfully">Parking Location Added Successfully</string>
+    <string name="failed_to_delete_owner_parking_location">Failed to delete owner parking location.</string>
+    <string name="failed_to_delete_parking_location">Failed to delete Parking Location</string>
+    <string name="slot_deleted_successfully">Slot Deleted Successfully</string>
+    <string name="failed_to_delete_owner_slot">Failed to delete owner slot</string>
+    <string name="failed_to_delete_slot">Failed to delete slot.</string>
+    <string name="slot_id_required">Slot ID is required</string>
+    <string name="battery_level_required">Battery level is required</string>
+    <string name="invalid_battery_level">Invalid battery level</string>
+    <string name="battery_level_range_error">Battery level must be between 0 and 100</string>
+    <string name="sensor">sensor_</string>
 
 
 </resources>

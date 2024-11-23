@@ -10,12 +10,15 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
+import com.google.firebase.auth.FirebaseAuth;
+
+import java.util.Objects;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSingleton;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.ParkingLocationManager;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.AutocompleteSearchHelper;
-import ca.tech.sense.it.smart.indoor.parking.system.utility.ParkingUtility;
 
 public class AddLocationActivity extends AppCompatActivity {
 
@@ -28,13 +31,14 @@ public class AddLocationActivity extends AppCompatActivity {
     private double latitude;
     private double longitude;
     private String locationAddress;
-    private ParkingUtility parkingUtility = new ParkingUtility();
+    private FirebaseAuth oAuth;
+    private ParkingLocationManager parkingLocationManager = new ParkingLocationManager();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_location);
-
+        oAuth = FirebaseAuthSingleton.getInstance();
         initializeUI();
         initializeAutocomplete();
     }
@@ -58,11 +62,11 @@ public class AddLocationActivity extends AppCompatActivity {
                 new AutocompleteSearchHelper.PlaceSelectionCallback() {
                     @Override
                     public void onPlaceSelected(Place place) {
-                        latitude = place.getLatLng().latitude;
-                        longitude = place.getLatLng().longitude;
-                        locationAddress = place.getAddress();
+                        latitude = Objects.requireNonNull(place.getLocation()).latitude;
+                        longitude = place.getLocation().longitude;
+                        locationAddress = place.getFormattedAddress();
                         locationAddressName.setText(locationAddress);
-                        locationName.setText(place.getName());
+                        locationName.setText(place.getDisplayName());
                     }
 
                     @Override
@@ -100,9 +104,9 @@ public class AddLocationActivity extends AppCompatActivity {
         double priceValue = Double.parseDouble(price.getText().toString().trim());
 
         ParkingLocation newLocation = new ParkingLocation(
-                null, null, postalCodeStr, locationNameStr, longitude, latitude, locationAddress, priceValue);
+                null, oAuth.getUid() ,null, postalCodeStr, locationNameStr, longitude, latitude, locationAddress, priceValue);
 
-        parkingUtility.addParkingLocation(this, FirebaseAuthSingleton.getInstance().getUid(), newLocation);
+        parkingLocationManager.addParkingLocation(this, FirebaseAuthSingleton.getInstance().getUid(), newLocation);
     }
 
     private void clearForm() {
