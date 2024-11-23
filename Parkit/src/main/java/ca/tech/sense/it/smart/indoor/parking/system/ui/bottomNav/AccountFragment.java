@@ -16,11 +16,13 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import java.util.Objects;
+
+import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.credentialManagerGoogle.CoroutineHelper;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.credentialManagerGoogle.GoogleAuthClient;
 import ca.tech.sense.it.smart.indoor.parking.system.manager.SessionManager;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
-import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui.FirstActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems.*;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
@@ -118,9 +120,17 @@ public class AccountFragment extends Fragment {
                 new DialogUtil.BackPressCallback() {
                     @Override
                     public void onConfirm() {
-                        FirebaseAuthSingleton.getInstance().signOut();
 
+                        GoogleAuthClient googleAuthClient = new GoogleAuthClient(requireContext());
+
+                        FirebaseAuthSingleton.getInstance().signOut();
                         sessionManager.logout();
+
+                        if (googleAuthClient.isSingedIn()){
+                            CoroutineHelper.Companion.signOutWithGoogle(requireContext(), googleAuthClient, () -> {});
+                        }
+
+
 
                         Intent intent = new Intent(requireActivity(), FirstActivity.class);
                         startActivity(intent);

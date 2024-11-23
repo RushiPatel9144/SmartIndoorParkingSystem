@@ -1,6 +1,6 @@
 package ca.tech.sense.it.smart.indoor.parking.system.manager;
 
-import static ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.LauncherUtils.showToast;
+import static ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.launcherUtililty.ToastHelper.showToast;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;

@@ -1,4 +1,7 @@
-package ca.tech.sense.it.smart.indoor.parking.system.launcherActivity;
+package ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui.login;
+
+import static ca.tech.sense.it.smart.indoor.parking.system.utility.Constants.USER_TYPE_OWNER;
+import static ca.tech.sense.it.smart.indoor.parking.system.utility.Constants.USER_TYPE_USER;
 
 import android.content.Context;
 import android.content.Intent;
@@ -9,8 +12,14 @@ import android.widget.ProgressBar;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.checkbox.MaterialCheckBox;
+
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.launcherUtililty.ToastHelper;
+import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.launcherUtililty.InputValidatorHelper;
+import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.launcherUtililty.NavigationHelper;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui.SignUpActivity;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.SessionManager;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
 
 public class LoginHelper {
@@ -33,9 +42,19 @@ public class LoginHelper {
         String password = editTextPassword.getText().toString().trim();
 
         // Validate the input and proceed with login if valid
-        if (LauncherUtils.validateInputLogin(editTextEmail, editTextPassword)) {
+        if (InputValidatorHelper.validateInputLogin(editTextEmail, editTextPassword)) {
             progressBar.setVisibility(View.VISIBLE);  // Show progress bar while logging in
             loginViewModel.login(email, password, userType);  // Trigger login in ViewModel
+        }
+    }
+
+    public static void handleSuccessfulLogin(String authToken, String userType, MaterialCheckBox rememberMeCheckBox, SessionManager sessionManager, AppCompatActivity activity) {
+        sessionManager.saveAuthToken(authToken, userType, rememberMeCheckBox.isChecked());
+
+        if (USER_TYPE_USER.equals(userType)) {
+            NavigationHelper.navigateToMainActivity(activity);
+        } else if (USER_TYPE_OWNER.equals(userType)) {
+            NavigationHelper.navigateToOwnerDashboard(activity);
         }
     }
 
@@ -76,7 +95,7 @@ public class LoginHelper {
                     public void onConfirm(String inputText) {
                         // Validate the input email and send password reset email if valid
                         if (TextUtils.isEmpty(inputText)) {
-                            LauncherUtils.showToast(context, context.getString(R.string.email_cannot_be_empty));  // Show error if email is empty
+                            ToastHelper.showToast(context, context.getString(R.string.email_cannot_be_empty));  // Show error if email is empty
                         } else {
                             loginViewModel.sendPasswordResetEmail(inputText, userType);  // Trigger password reset in ViewModel
                         }

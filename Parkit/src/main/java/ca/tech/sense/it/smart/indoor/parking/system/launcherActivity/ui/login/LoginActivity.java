@@ -1,4 +1,4 @@
-package ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui;
+package ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui.login;
 
 import android.os.Bundle;
 import android.view.View;
@@ -15,17 +15,13 @@ import com.google.android.material.checkbox.MaterialCheckBox;
 
 import java.util.Objects;
 
-import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.LauncherUtils;
-import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.LoginHelper;
-import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.credentialManagerGoogle.GoogleAuthClient;
+import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.launcherUtililty.ToastHelper;
 import ca.tech.sense.it.smart.indoor.parking.system.viewModel.LoginViewModelFactory;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
-import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.LoginViewModel;
 import ca.tech.sense.it.smart.indoor.parking.system.repository.AuthRepository;
 import ca.tech.sense.it.smart.indoor.parking.system.manager.SessionManager;
 
 import static ca.tech.sense.it.smart.indoor.parking.system.utility.Constants.USER_TYPE_OWNER;
-import static ca.tech.sense.it.smart.indoor.parking.system.utility.Constants.USER_TYPE_USER;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -115,7 +111,7 @@ public class LoginActivity extends AppCompatActivity {
     private void setupListeners() {
         buttonLogin.setOnClickListener(v -> LoginHelper.handleLogin(editTextEmail, editTextPassword, progressBar, loginViewModel, userType)); // Login button click handler
         textViewSignUp.setOnClickListener(v -> LoginHelper.navigateToSignUp(this, userType));  // Sign-up text click handler
-        googleButton.setOnClickListener(v -> loginViewModel.signInWithGoogle(this));  // Google sign-in button click handler
+        googleButton.setOnClickListener(v -> loginViewModel.signInWithGoogle(this,sessionManager, rememberMeCheckBox));  // Google sign-in button click handler
         forgotPasswordTextView.setOnClickListener(v ->  LoginHelper.showForgotPasswordDialog(this, loginViewModel, userType));  // Forgot password text click handler
     }
 
@@ -133,15 +129,15 @@ public class LoginActivity extends AppCompatActivity {
 
             // If login was successful (token received), handle successful login
             if (status.startsWith("token:")) {
-                LauncherUtils.handleSuccessfulLogin(status.substring(6), userType, rememberMeCheckBox, sessionManager, this);
+                LoginHelper.handleSuccessfulLogin(status.substring(6), userType, rememberMeCheckBox, sessionManager, this);
             } else if (status.startsWith("error:")) {  // If an error occurred during login
-                LauncherUtils.showToast(this, status.substring(6));  // Show error message
+                ToastHelper.showToast(this, status.substring(6));  // Show error message
             }
         });
 
         // Observe reset password status and show the corresponding message
         loginViewModel.getResetPasswordStatus().observe(this, status -> {
-            LauncherUtils.showToast(this, status);  // Show reset password status message
+            ToastHelper.showToast(this, status);  // Show reset password status message
         });
     }
 }

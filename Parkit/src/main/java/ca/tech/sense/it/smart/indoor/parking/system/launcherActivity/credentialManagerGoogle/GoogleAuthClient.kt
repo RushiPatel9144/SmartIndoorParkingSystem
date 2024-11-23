@@ -10,6 +10,7 @@
     import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSingleton
     import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirestoreSingleton
     import ca.tech.sense.it.smart.indoor.parking.system.model.user.User
+    import ca.tech.sense.it.smart.indoor.parking.system.utility.Constants.APP_CLIENT_ID
     import com.google.android.libraries.identity.googleid.GetGoogleIdOption
     import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
     import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
@@ -107,9 +108,7 @@
                 .addCredentialOption(
                     GetGoogleIdOption.Builder()
                         .setFilterByAuthorizedAccounts(false)
-                        .setServerClientId(
-                            "361561575523-vh9n3c4q3brm58ejsqgj8s9henk085i5.apps.googleusercontent.com"
-                        )
+                        .setServerClientId(APP_CLIENT_ID)
                         .setAutoSelectEnabled(false)
                         .build()
                 )
@@ -120,11 +119,13 @@
             )
         }
 
-        suspend fun signOut() {
+        suspend fun signOut(): Boolean {
             credentialManager.clearCredentialState(
                 ClearCredentialStateRequest()
             )
             firebaseAuth.signOut()
+
+            return true
         }
 
     }

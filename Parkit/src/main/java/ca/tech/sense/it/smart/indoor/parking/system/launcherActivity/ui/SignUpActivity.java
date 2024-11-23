@@ -17,7 +17,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import java.util.Objects;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
-import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.LauncherUtils;
+import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.launcherUtililty.ToastHelper;
+import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.launcherUtililty.FirestoreHelper;
+import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.launcherUtililty.InputValidatorHelper;
+import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui.login.LoginActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.network.BaseActivity;
 
 public class SignUpActivity extends BaseActivity {
@@ -96,7 +99,7 @@ public class SignUpActivity extends BaseActivity {
             String phoneNumber = phone.getText().toString().trim();
 
             // Input validation
-            if (!LauncherUtils.validateInputSignUp(SignUpActivity.this, firstName, lastName, editTextEmail, phone, editTextPassword, editTextConfirmPassword, checkBox, fName, lName, email, password, confirmPassword, phoneNumber)) {
+            if (!InputValidatorHelper.validateInputSignUp(SignUpActivity.this, firstName, lastName, editTextEmail, phone, editTextPassword, editTextConfirmPassword, checkBox, fName, lName, email, password, confirmPassword, phoneNumber)) {
                 progressBar.setVisibility(View.GONE);
                 return;
             }
@@ -112,14 +115,14 @@ public class SignUpActivity extends BaseActivity {
 
                             // Handle User or Owner data storage
                             if ("owner".equals(userType)) {
-                                LauncherUtils.saveOwnerToFirestore(this, userID, fName, lName, email, phoneNumber);
+                                FirestoreHelper.saveOwnerToFirestore(this, userID, fName, lName, email, phoneNumber);
                             } else {
-                                LauncherUtils.saveUserToFirestore(this, userID, fName, lName, email, phoneNumber);
+                                FirestoreHelper.saveUserToFirestore(this, userID, fName, lName, email, phoneNumber);
                             }
 
                         } else {
                             Log.e("SignUpActivity", "Firebase Auth failed: " + Objects.requireNonNull(task.getException()).getMessage());
-                            LauncherUtils.showToast(this, Objects.requireNonNull(task.getException()).getMessage());
+                            ToastHelper.showToast(this, Objects.requireNonNull(task.getException()).getMessage());
                         }
                     });
         });

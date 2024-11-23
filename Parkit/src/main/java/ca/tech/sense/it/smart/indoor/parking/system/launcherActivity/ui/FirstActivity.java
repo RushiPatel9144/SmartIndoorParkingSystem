@@ -13,9 +13,10 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.button.MaterialButton;
 
+import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.launcherUtililty.NavigationHelper;
 import ca.tech.sense.it.smart.indoor.parking.system.manager.SessionManager;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
-import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.LauncherUtils;
+import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.launcherUtililty.ToastHelper;
 import ca.tech.sense.it.smart.indoor.parking.system.network.BaseActivity;
 
 import static ca.tech.sense.it.smart.indoor.parking.system.utility.Constants.USER_TYPE_OWNER;
@@ -59,19 +60,19 @@ public class FirstActivity extends BaseActivity {
     private void navigateBasedOnUserType(String userType, Context context) {
         switch (userType) {
             case USER_TYPE_OWNER:
-                LauncherUtils.navigateToOwnerDashboard((AppCompatActivity) context);
+                NavigationHelper.navigateToOwnerDashboard((AppCompatActivity) context);
                 break;
             case USER_TYPE_USER:
-                LauncherUtils.navigateToMainActivity((AppCompatActivity) context);
+                NavigationHelper.navigateToMainActivity((AppCompatActivity) context);
                 break;
             default:
-                LauncherUtils.showToast(context, getString(R.string.unrecognized_user_type_please_log_in_again));
+                ToastHelper.showToast(context, getString(R.string.unrecognized_user_type_please_log_in_again));
         }
     }
 
     private void setButtonListeners() {
-        signInAsUserButton.setOnClickListener(v -> LauncherUtils.navigateToLoginFromFirst(USER_TYPE_USER, this));
-        signInAsOwnerButton.setOnClickListener(v -> LauncherUtils.navigateToLoginFromFirst(USER_TYPE_OWNER,this));
+        signInAsUserButton.setOnClickListener(v -> NavigationHelper.navigateToLoginFromFirst(USER_TYPE_USER, this));
+        signInAsOwnerButton.setOnClickListener(v -> NavigationHelper.navigateToLoginFromFirst(USER_TYPE_OWNER,this));
     }
 
     private void handleEdgeToEdgeLayout() {
