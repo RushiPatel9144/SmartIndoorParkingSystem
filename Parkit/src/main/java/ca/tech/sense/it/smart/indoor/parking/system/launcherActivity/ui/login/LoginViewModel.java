@@ -53,7 +53,7 @@ public class LoginViewModel extends ViewModel {
                             if (task.isSuccessful()) {
                                 String authToken = task.getResult().getToken();
                                 if ("owner".equals(userType)) {
-                                    checkIfOwner(user.getUid(), authToken); // Pass the token
+                                    checkIfOwner(user.getUid(),"token:" + authToken); // Pass the token
                                 } else {
                                     loginStatus.setValue("token:" + authToken); // User login
                                 }

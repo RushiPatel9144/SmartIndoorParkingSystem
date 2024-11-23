@@ -381,7 +381,7 @@
     <string name="enter_your_registered_email">Enter Your Registered Email</string>
     <string name="someone_mail_com">someone@mail.com</string>
     <string name="email_cannot_be_empty">Email cannot be empty</string>
-    <string name="parking_location_deleted_successfully">Parking Location Added Successfully</string>
+    <string name="parking_location_deleted_successfully">Parking Location deleted Successfully</string>
     <string name="failed_to_delete_owner_parking_location">Failed to delete owner parking location.</string>
     <string name="failed_to_delete_parking_location">Failed to delete Parking Location</string>
     <string name="slot_deleted_successfully">Slot Deleted Successfully</string>
@@ -392,6 +392,21 @@
     <string name="invalid_battery_level">Invalid battery level</string>
     <string name="battery_level_range_error">Battery level must be between 0 and 100</string>
     <string name="sensor">sensor_</string>
+    <string name="manage_slots">Manage Slots</string>
+    <string name="change_price">Change Price</string>
+    <string name="delete">Delete</string>
+    <string name="cancelled_deletion_of">"Cancelled deletion of "</string>
+    <string name="delete_confirmation">Delete Confirmation</string>
+    <string name="are_you_sure_you_want_to_delete">"Are you sure you want to delete "</string>
+    <string name="please_wait_15_seconds_to_confirm">\? Please wait 15 seconds to confirm.</string>
+    <string name="error_updating_price">Error Updating Price</string>
+    <string name="price_updated_successfully">Price Updated Successfully</string>
+    <string name="price_cannot_be_empty">Price cannot be empty</string>
+    <string name="price_cannot_be_negative">Price cannot be negative</string>
+    <string name="invalid_price_format_please_enter_a_valid_number">Invalid price format. Please enter a valid number.</string>
+    <string name="price_update_canceled">Price update canceled.</string>
+    <string name="input_price_in_cad">Input Price in CAD</string>
+    <string name="update_price">Update Price</string>
 
 
 </resources>

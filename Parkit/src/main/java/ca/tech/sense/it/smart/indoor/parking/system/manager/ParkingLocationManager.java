@@ -1,6 +1,8 @@
 package ca.tech.sense.it.smart.indoor.parking.system.manager;
 
 import static ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.launcherUtililty.ToastHelper.showToast;
+import static com.android.volley.VolleyLog.TAG;
+import static ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.LauncherUtils.showToast;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
@@ -14,7 +16,9 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
@@ -25,6 +29,7 @@ import ca.tech.sense.it.smart.indoor.parking.system.utility.ParkingInterface;
 public class ParkingLocationManager {
     private final DatabaseReference databaseReference;
     private final DatabaseReference ownerReference;
+    private static final String COLLECTION_LOCATION_OWNER = "parkingLocationIds";
 
     public ParkingLocationManager() {
         databaseReference = FirebaseDatabaseSingleton.getInstance().getReference("parkingLocations");
@@ -38,7 +43,7 @@ public class ParkingLocationManager {
         assert locationId != null;
         databaseReference.child(locationId).setValue(location)
                 .addOnSuccessListener(aVoid -> {
-                    DatabaseReference ownersRef = ownerReference.child(ownerId).child("parkingLocationIds");
+                    DatabaseReference ownersRef = ownerReference.child(ownerId).child(COLLECTION_LOCATION_OWNER);
                     ownersRef.child(locationId).setValue(location)
                             .addOnSuccessListener(aVoid1 ->
                                     showToast(context, context.getString(R.string.parking_location_added_successfully)))
@@ -52,7 +57,7 @@ public class ParkingLocationManager {
     public void deleteParkingLocation(Context context, String ownerId, String locationId) {
         // References to the parking location in the main database and owner's collection
         DatabaseReference locationRef = databaseReference.child(locationId);
-        DatabaseReference ownerLocationRef = ownerReference.child(ownerId).child("parkingLocationIds").child(locationId);
+        DatabaseReference ownerLocationRef = ownerReference.child(ownerId).child(COLLECTION_LOCATION_OWNER).child(locationId);
 
         // First delete from the main database
         locationRef.removeValue()
@@ -136,5 +141,49 @@ public class ParkingLocationManager {
                 callback.onFetchFailure(task.getException());
             }
         });
+    }
+
+    public void fetchParkingLocationsByOwnerId(String ownerId, ParkingInterface.ParkingLocationFetchCallback callback) {
+        DatabaseReference db = ownerReference.child(ownerId).child(COLLECTION_LOCATION_OWNER);
+        db.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                List<ParkingLocation> fetchedLocations = new ArrayList<>();
+                for (DataSnapshot locationSnapshot : snapshot.getChildren()) {
+                    ParkingLocation location = locationSnapshot.getValue(ParkingLocation.class);
+                    if (location != null) {
+                        fetchedLocations.add(location);
+                    }
+                }
+                callback.onFetchSuccess(fetchedLocations);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                callback.onFetchFailure(error.getMessage());
+            }
+        });
+    }
+
+    public void changePrice(@NonNull Context context, @NonNull String ownerId,
+                            @NonNull String locationId, double newPrice) {
+        // Get the reference to the parking location
+        DatabaseReference locationRef = databaseReference.child(locationId);
+        // Update the price of the parking location
+        locationRef.child("price").setValue(newPrice)
+                .addOnSuccessListener(aVoid -> {
+                    // Optionally update the price in the owner's collection as well
+                    DatabaseReference ownerLocationRef = ownerReference.child(ownerId)
+                            .child(COLLECTION_LOCATION_OWNER).child(locationId);
+                    ownerLocationRef.child("price").setValue(newPrice)
+                            .addOnSuccessListener(aVoid1 ->
+                                showToast(context, context.getString(R.string.price_updated_successfully)))
+                            .addOnFailureListener(e ->
+                                Log.e(TAG, "Failed to update price in owner's collection: " + e.getMessage()));
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Failed to update price: " + e.getMessage());
+                    showToast(context, context.getString(R.string.error_updating_price));
+                });
     }
 }
