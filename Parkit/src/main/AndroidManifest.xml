@@ -40,6 +40,9 @@
             android:name=".booking.PaymentActivity"
             android:exported="false" />
         <activity
+            android:name=".booking.ParkingTicket"
+            android:exported="false" />
+        <activity
             android:name=".owner.OwnerActivity"
             android:exported="false" />
         <activity

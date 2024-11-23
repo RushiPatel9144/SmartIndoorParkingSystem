@@ -215,7 +215,7 @@ public class PaymentActivity extends AppCompatActivity {
             // Use Handler with Looper.getMainLooper() for a delay
             new Handler(Looper.getMainLooper()).postDelayed(() -> {
                 confirmBooking();
-                finish();
+                openParkingTicketActivity();
             }, 2000); // 2-second delay
         } else if (paymentSheetResult instanceof PaymentSheetResult.Failed) {
             showToast("Payment Failed: " + ((PaymentSheetResult.Failed) paymentSheetResult).getError());
@@ -298,6 +298,14 @@ public class PaymentActivity extends AppCompatActivity {
         timeTextView.setText(MessageFormat.format("Time: {0} - {1}", formattedStartTime, formattedEndTime));
     }
 
+
+    private void openParkingTicketActivity() {
+        Intent intent = new Intent(this, ParkingTicket.class);
+        intent.putExtra("passkey", booking.getPassKey()); // Pass the reference number or passkey
+        startActivity(intent);
+        finish();
+    }
+
     private void applyPromoCode(String promoCode) {
         DatabaseReference promotionsRef = FirebaseDatabase.getInstance().getReference("Promotions");
         promotionsRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -351,6 +359,4 @@ public class PaymentActivity extends AppCompatActivity {
             }
         });
     }
-
-
 }
