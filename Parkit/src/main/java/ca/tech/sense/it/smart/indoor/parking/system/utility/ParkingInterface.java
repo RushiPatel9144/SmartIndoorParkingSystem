@@ -6,6 +6,8 @@
 package ca.tech.sense.it.smart.indoor.parking.system.utility;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingSlot;
+
+import java.util.List;
 import java.util.Map;
 
 public class ParkingInterface {
@@ -25,5 +27,12 @@ public class ParkingInterface {
         void onFetchSuccess(Map<String, ParkingSlot> slots);
         void onFetchFailure(Exception exception);
     }
+
+    public interface ParkingLocationFetchCallback {
+        void onFetchSuccess(List<ParkingLocation> locations);
+
+        void onFetchFailure(String errorMessage);
+    }
+
 
 }

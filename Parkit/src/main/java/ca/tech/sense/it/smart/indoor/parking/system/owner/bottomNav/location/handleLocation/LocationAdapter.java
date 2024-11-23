@@ -3,6 +3,7 @@ package ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.location.ha
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -18,7 +19,7 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
     private final List<ParkingLocation> locations;
     private final OnItemClickListener listener;
 
-    // Constructor for initializing the list and listener
+    // Constructor
     public LocationAdapter(List<ParkingLocation> locations, OnItemClickListener listener) {
         this.locations = locations;
         this.listener = listener;
@@ -27,9 +28,8 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
     @NonNull
     @Override
     public LocationViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // Inflate the item layout
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.location_item, parent, false);
-        return new LocationViewHolder(view);
+        return new LocationViewHolder(view, listener);
     }
 
     @Override
@@ -42,14 +42,7 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
         holder.locationPriceTextView.setText(String.format("Price: $%s", location.getPrice()));
 
         // Store the locationId in the ViewHolder
-        holder.setLocationId(location.getId()); // Set the locationId
-
-        // Set click listener for each item
-        holder.itemView.setOnClickListener(v -> {
-            if (listener != null) {
-                listener.onItemClick(location, position);
-            }
-        });
+        holder.setLocationId(location.getId());
     }
 
     @Override
@@ -63,32 +56,53 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
         notifyItemRemoved(position);
     }
 
-    // ViewHolder class to hold each item
+    // ViewHolder class
     public static class LocationViewHolder extends RecyclerView.ViewHolder {
+
         TextView locationNameTextView;
         TextView locationAddressTextView;
         TextView locationPriceTextView;
-        private String locationId; // Store the locationId
+        Button changePriceButton;
+        Button addSlotsButton;
+        private String locationId;
 
-        public LocationViewHolder(View itemView) {
+        public LocationViewHolder(View itemView, OnItemClickListener listener) {
             super(itemView);
+
             // Find views
             locationNameTextView = itemView.findViewById(R.id.locationName);
             locationAddressTextView = itemView.findViewById(R.id.locationAddress);
             locationPriceTextView = itemView.findViewById(R.id.locationPrice);
+            changePriceButton = itemView.findViewById(R.id.changePriceButton);
+            addSlotsButton = itemView.findViewById(R.id.addSlotsButton);
+
+            // Button click listeners
+            changePriceButton.setOnClickListener(v -> {
+                if (listener != null) {
+                    listener.onChangePriceClick(locationId, getBindingAdapterPosition());
+                }
+            });
+
+            addSlotsButton.setOnClickListener(v -> {
+                if (listener != null) {
+                    listener.onAddSlotsClick(locationId, getBindingAdapterPosition());
+                }
+            });
         }
 
         public void setLocationId(String locationId) {
-            this.locationId = locationId; // Set the locationId
+            this.locationId = locationId;
         }
 
         public String getLocationId() {
-            return locationId; // Getter for locationId
+            return locationId;
         }
     }
 
-    // Callback interface for item clicks
+    // Callback interface
     public interface OnItemClickListener {
-        void onItemClick(ParkingLocation location, int position);
+        void onChangePriceClick(String locationId, int position);
+        void onAddSlotsClick(String locationId, int position);
     }
 }
+

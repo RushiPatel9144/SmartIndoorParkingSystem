@@ -14,7 +14,9 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
@@ -25,6 +27,7 @@ import ca.tech.sense.it.smart.indoor.parking.system.utility.ParkingInterface;
 public class ParkingLocationManager {
     private final DatabaseReference databaseReference;
     private final DatabaseReference ownerReference;
+    private static final String COLLECTION_LOCATION_OWNER = "parkingLocationIds";
 
     public ParkingLocationManager() {
         databaseReference = FirebaseDatabaseSingleton.getInstance().getReference("parkingLocations");
@@ -38,7 +41,7 @@ public class ParkingLocationManager {
         assert locationId != null;
         databaseReference.child(locationId).setValue(location)
                 .addOnSuccessListener(aVoid -> {
-                    DatabaseReference ownersRef = ownerReference.child(ownerId).child("parkingLocationIds");
+                    DatabaseReference ownersRef = ownerReference.child(ownerId).child(COLLECTION_LOCATION_OWNER);
                     ownersRef.child(locationId).setValue(location)
                             .addOnSuccessListener(aVoid1 ->
                                     showToast(context, context.getString(R.string.parking_location_added_successfully)))
@@ -52,7 +55,7 @@ public class ParkingLocationManager {
     public void deleteParkingLocation(Context context, String ownerId, String locationId) {
         // References to the parking location in the main database and owner's collection
         DatabaseReference locationRef = databaseReference.child(locationId);
-        DatabaseReference ownerLocationRef = ownerReference.child(ownerId).child("parkingLocationIds").child(locationId);
+        DatabaseReference ownerLocationRef = ownerReference.child(ownerId).child(COLLECTION_LOCATION_OWNER).child(locationId);
 
         // First delete from the main database
         locationRef.removeValue()
@@ -134,6 +137,28 @@ public class ParkingLocationManager {
                 }
             } else {
                 callback.onFetchFailure(task.getException());
+            }
+        });
+    }
+
+    public void fetchParkingLocationsByOwnerId(String ownerId, ParkingInterface.ParkingLocationFetchCallback callback) {
+        DatabaseReference db = ownerReference.child(ownerId).child(COLLECTION_LOCATION_OWNER);
+        db.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                List<ParkingLocation> fetchedLocations = new ArrayList<>();
+                for (DataSnapshot locationSnapshot : snapshot.getChildren()) {
+                    ParkingLocation location = locationSnapshot.getValue(ParkingLocation.class);
+                    if (location != null) {
+                        fetchedLocations.add(location);
+                    }
+                }
+                callback.onFetchSuccess(fetchedLocations);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                callback.onFetchFailure(error.getMessage());
             }
         });
     }

@@ -18,24 +18,19 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSingleton;
-import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseDatabaseSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.manager.ParkingLocationManager;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
 import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.location.handleLocation.AddLocationActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.location.handleLocation.LocationAdapter;
 import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.location.handleLocation.SwipeToDeleteCallback;
 import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.location.handleSlot.SlotListBottomSheetDialogFragment;
+import ca.tech.sense.it.smart.indoor.parking.system.utility.ParkingInterface;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.ValueEventListener;
 
-public class LocationsFragment extends Fragment implements LocationAdapter.OnItemClickListener {
+public class LocationsFragment extends Fragment {
 
     private RecyclerView locationsRecyclerView;
     private LinearLayout emptyStateLayout;
@@ -66,7 +61,20 @@ public class LocationsFragment extends Fragment implements LocationAdapter.OnIte
 
         // Set up RecyclerView
         parkingLocations = new ArrayList<>();
-        adapter = new LocationAdapter(parkingLocations, this);
+        adapter = new LocationAdapter(parkingLocations, new LocationAdapter.OnItemClickListener() {
+            @Override
+            public void onChangePriceClick(String locationId, int position) {
+                // Handle change price action
+            }
+
+            @Override
+            public void onAddSlotsClick(String locationId, int position) {
+                SlotListBottomSheetDialogFragment bottomSheetFragment =
+                        SlotListBottomSheetDialogFragment.newInstance(locationId);
+                bottomSheetFragment.show(getChildFragmentManager(), bottomSheetFragment.getTag());
+            }
+        });
+
         locationsRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         locationsRecyclerView.setAdapter(adapter);
 
@@ -75,43 +83,33 @@ public class LocationsFragment extends Fragment implements LocationAdapter.OnIte
         itemTouchHelper.attachToRecyclerView(locationsRecyclerView);
 
         // Load data from Firebase
-        fetchParkingLocations();
+        loadParkingLocations();
 
         return view;
     }
 
-        private void fetchParkingLocations() {
-            DatabaseReference databaseReference;
-            progressBar.setVisibility(View.VISIBLE);
-            locationsRecyclerView.setVisibility(View.GONE);
-            emptyStateLayout.setVisibility(View.GONE);
+    private void loadParkingLocations() {
+        progressBar.setVisibility(View.VISIBLE);
+        locationsRecyclerView.setVisibility(View.GONE);
+        emptyStateLayout.setVisibility(View.GONE);
 
-            databaseReference = FirebaseDatabaseSingleton.getInstance().getReference("owners")
-                    .child(Objects.requireNonNull(oAuth.getUid())).child("parkingLocationIds");
-
-            databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-                @SuppressLint("NotifyDataSetChanged")
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    parkingLocations.clear();
-                    for (DataSnapshot locationSnapshot : snapshot.getChildren()) {
-                        ParkingLocation location = locationSnapshot.getValue(ParkingLocation.class);
-                        if (location != null) {
-                            parkingLocations.add(location);
-                        }
-                    }
-                    adapter.notifyDataSetChanged();
-                    progressBar.setVisibility(View.GONE);
-                    updateUI();
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    progressBar.setVisibility(View.GONE);
-                    showError(error.getMessage());
-                }
-            });
-        }
+        parkingLocationManager.fetchParkingLocationsByOwnerId(oAuth.getUid(), new ParkingInterface.ParkingLocationFetchCallback() {
+            @SuppressLint("NotifyDataSetChanged")
+            @Override
+            public void onFetchSuccess(List<ParkingLocation> locations) {
+                parkingLocations.clear();
+                parkingLocations.addAll(locations);
+                adapter.notifyDataSetChanged();
+                progressBar.setVisibility(View.GONE);
+                updateUI();
+            }
+            @Override
+            public void onFetchFailure(String errorMessage) {
+                progressBar.setVisibility(View.GONE);
+                showError(errorMessage);
+            }
+        });
+    }
 
     private void updateUI() {
         if (parkingLocations.isEmpty()) {
@@ -135,16 +133,8 @@ public class LocationsFragment extends Fragment implements LocationAdapter.OnIte
     }
 
     @Override
-    public void onItemClick(ParkingLocation location, int position) {
-        SlotListBottomSheetDialogFragment bottomSheetFragment =
-                SlotListBottomSheetDialogFragment.newInstance(location.getId());
-        bottomSheetFragment.show(getChildFragmentManager(), bottomSheetFragment.getTag());
-    }
-
-
-    @Override
     public void onResume() {
         super.onResume();
-        fetchParkingLocations();
+        loadParkingLocations();
     }
 }
