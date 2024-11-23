@@ -17,7 +17,7 @@ class CoroutineHelper {
             CoroutineScope(Dispatchers.Main).launch {
                 try {
                     val success = googleAuthClient.signIn()
-                    val message = if (success) "Sign-in successful" else "Sign-in failed"
+                    val message = if (success) "Sign-in successful" else "Goooooogle Sign-in failed"
                     Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                     if (success) run {
                         onSuccess.run()

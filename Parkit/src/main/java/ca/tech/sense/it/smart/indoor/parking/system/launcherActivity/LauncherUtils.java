@@ -16,7 +16,6 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import ca.tech.sense.it.smart.indoor.parking.system.MainActivity;
-import ca.tech.sense.it.smart.indoor.parking.system.manager.SessionManager;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.model.owner.Owner;
 import ca.tech.sense.it.smart.indoor.parking.system.model.user.User;
@@ -80,63 +79,29 @@ public class LauncherUtils {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
     }
 
-    public static void navigateBasedOnUserType(String userType, Context context) {
-        SessionManager sessionManager = new SessionManager(context);
-
-        // Check if user is logged in based on the user type
-        String authToken = sessionManager.getAuthToken();
-
-        if ("owner".equals(userType)) {
-            if (authToken != null) {
-                navigateToOwnerDashboard((AppCompatActivity) context);
-            } else {
-                showToast(context, "Owner session not found. Please log in again.");
-            }
-        } else if ("user".equals(userType)) {
-            if (authToken != null) {
-                navigateToMainActivity((AppCompatActivity) context);
-            } else {
-                showToast(context, "User session not found. Please log in again.");
-            }
-        } else {
-            showToast(context, "Invalid session. Please log in again.");
-        }
-    }
-
     // Save Owner Data to Firestore
     public static void saveOwnerToFirestore(Context context, String userID, String fName, String lName, String email, String phoneNumber) {
         DocumentReference ownerRef = fireStore.collection("owners").document(userID);
 
         // First check if the owner document already exists
-        ownerRef.get().addOnSuccessListener(documentSnapshot -> {
-            if (documentSnapshot.exists()) {
-                // If the document exists, update only specific fields
-                ownerRef.update("fName", fName, "lName", lName, "email", email, "phoneNumber", phoneNumber)
-                        .addOnSuccessListener(aVoid -> {
-                            Log.d("LauncherUtils", "Owner profile updated successfully: " + userID);
-                            navigateToOwnerDashboard((AppCompatActivity) context);
-                        })
-                        .addOnFailureListener(e -> {
-                            Log.e("LauncherUtils", "Error updating owner data: " + e.getMessage());
-                            showToast(context, "Failed to update owner data.");
+        ownerRef.get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    // If the document doesn't exist, create a new one
+                    Owner localOwner = new Owner(userID, fName, lName, email, phoneNumber, null);
+                    ownerRef.set(localOwner)
+                    .addOnSuccessListener(aVoid -> {
+                        Log.d("LauncherUtils", "Owner profile created successfully: " + userID);
+                        navigateToOwnerDashboard((AppCompatActivity) context);
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e("LauncherUtils", "Error saving owner data: " + e.getMessage());
+                        showToast(context, "Failed to save owner data.");
                         });
-            } else {
-                // If the document doesn't exist, create a new one
-                Owner localOwner = new Owner(userID, fName, lName, email, phoneNumber, null);
-                ownerRef.set(localOwner)
-                        .addOnSuccessListener(aVoid -> {
-                            Log.d("LauncherUtils", "Owner profile created successfully: " + userID);
-                            navigateToOwnerDashboard((AppCompatActivity) context);
-                        })
-                        .addOnFailureListener(e -> {
-                            Log.e("LauncherUtils", "Error saving owner data: " + e.getMessage());
-                            showToast(context, "Failed to save owner data.");
-                        });
-            }
-        }).addOnFailureListener(e -> {
-            Log.e("LauncherUtils", "Error checking owner data: " + e.getMessage());
-            showToast(context, "Failed to check owner data.");
-        });
+
+                }).addOnFailureListener(e -> {
+                    Log.e("LauncherUtils", "Error checking owner data: " + e.getMessage());
+                    showToast(context, "Failed to check owner data.");
+                });
     }
 
     // Save User Data to Firestore
@@ -144,19 +109,8 @@ public class LauncherUtils {
         DocumentReference userRef = fireStore.collection("users").document(userID);
 
         // First check if the user document already exists
-        userRef.get().addOnSuccessListener(documentSnapshot -> {
-            if (documentSnapshot.exists()) {
-                // If the document exists, update only specific fields
-                userRef.update("fName", fName, "lName", lName, "email", email, "phoneNumber", phoneNumber)
-                        .addOnSuccessListener(aVoid -> {
-                            Log.d("LauncherUtils", "User profile updated successfully: " + userID);
-                            navigateToMainActivity((AppCompatActivity) context);
-                        })
-                        .addOnFailureListener(e -> {
-                            Log.e("LauncherUtils", "Error updating user data: " + e.getMessage());
-                            showToast(context, "Failed to update user data.");
-                        });
-            } else {
+        userRef.get()
+                .addOnSuccessListener(documentSnapshot -> {
                 // If the document doesn't exist, create a new one
                 User localUser = new User(userID, fName, lName, email, phoneNumber, null);
                 userRef.set(localUser)
@@ -168,18 +122,18 @@ public class LauncherUtils {
                             Log.e("LauncherUtils", "Error saving user data: " + e.getMessage());
                             showToast(context, "Failed to save user data.");
                         });
-            }
-        }).addOnFailureListener(e -> {
-            Log.e("LauncherUtils", "Error checking user data: " + e.getMessage());
-            showToast(context, "Failed to check user data.");
-        });
+
+                }).addOnFailureListener(e -> {
+                    Log.e("LauncherUtils", "Error checking user data: " + e.getMessage());
+                    showToast(context, "Failed to check user data.");
+                });
     }
 
     // Validates input fields for sign-up (with EditText components)
-    public static boolean validateInput(Context context, EditText firstName, EditText lastName, EditText email, EditText phone,
-                                        EditText password, EditText confirmPassword, CheckBox checkBox,
-                                        String fName, String lName, String emailInput, String passwordInput,
-                                        String confirmPasswordInput, String phoneNumber) {
+    public static boolean validateInputSignUp(Context context, EditText firstName, EditText lastName, EditText email, EditText phone,
+                                              EditText password, EditText confirmPassword, CheckBox checkBox,
+                                              String fName, String lName, String emailInput, String passwordInput,
+                                              String confirmPasswordInput, String phoneNumber) {
 
         // Clear previous errors
         firstName.setError(null);

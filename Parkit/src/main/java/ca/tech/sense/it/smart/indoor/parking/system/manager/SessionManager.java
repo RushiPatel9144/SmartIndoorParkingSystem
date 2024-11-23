@@ -2,6 +2,7 @@ package ca.tech.sense.it.smart.indoor.parking.system.manager;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.util.Log;
 
 public class SessionManager {
@@ -21,6 +22,7 @@ public class SessionManager {
         editor = sharedPreferences.edit();
         this.context = context.getApplicationContext();
     }
+
 
     // Save authentication token and user type
     public void saveAuthToken(String authToken, String userType, boolean rememberMe) {
@@ -84,6 +86,14 @@ public class SessionManager {
     public boolean isOwnerLoggedIn() {
         SharedPreferences sharedPreferences = context.getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
         return sharedPreferences.contains("owner_authToken");
+    }
+
+    public void saveUserDetails(String name, String email, Uri photoUrl) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("user_name", name);
+        editor.putString("user_email", email);
+        editor.putString("user_photo_url", photoUrl != null ? photoUrl.toString() : null);
+        editor.apply();
     }
 
 }
