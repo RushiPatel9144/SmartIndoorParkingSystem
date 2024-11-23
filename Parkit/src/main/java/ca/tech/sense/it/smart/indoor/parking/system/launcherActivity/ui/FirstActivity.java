@@ -1,7 +1,7 @@
 package ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 
@@ -16,51 +16,65 @@ import com.google.android.material.button.MaterialButton;
 import ca.tech.sense.it.smart.indoor.parking.system.manager.SessionManager;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.LauncherUtils;
+import ca.tech.sense.it.smart.indoor.parking.system.network.BaseActivity;
 
-public class FirstActivity extends AppCompatActivity {
+import static ca.tech.sense.it.smart.indoor.parking.system.utility.Constants.USER_TYPE_OWNER;
+import static ca.tech.sense.it.smart.indoor.parking.system.utility.Constants.USER_TYPE_USER;
+
+public class FirstActivity extends BaseActivity {
+
     private MaterialButton signInAsUserButton, signInAsOwnerButton;
+    private SessionManager sessionManager;
 
-    @SuppressLint("WrongViewCast")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_first);
 
+        initViews();
+        initSessionManager();
+        handleRememberedUser();
+        setButtonListeners();
+        handleEdgeToEdgeLayout();
+    }
+
+    @SuppressLint("WrongViewCast")
+    private void initViews() {
         signInAsUserButton = findViewById(R.id.firstSignInBut);
         signInAsOwnerButton = findViewById(R.id.firstSignInAsOwnerBut);
+    }
 
-        // Initialize SessionManager
-        SessionManager sessionManager = new SessionManager(this);
+    private void initSessionManager() {
+        sessionManager = new SessionManager(this);
+    }
 
-        // Set up button listeners for user and owner sign-in
-        signInAsUserButton.setOnClickListener(v -> {
-            Intent intent = new Intent(this, LoginActivity.class);
-            intent.putExtra("userType", "user");
-            startActivity(intent);
-        });
-
-        signInAsOwnerButton.setOnClickListener(v -> {
-            Intent intent = new Intent(this, LoginActivity.class);
-            intent.putExtra("userType", "owner");
-            startActivity(intent);
-        });
-
-        if(sessionManager.isRememberMe()){
-            // Check if a user is already logged in
-            if (sessionManager.isUserLoggedIn()) {
-                String userType = sessionManager.getUserType();
-                if ("owner".equals(userType)) {
-                    LauncherUtils.navigateToOwnerDashboard(this);
-                } else if ("user".equals(userType)) {
-                    LauncherUtils.navigateToMainActivity(this);
-                } else {
-                    LauncherUtils.showToast(this, getString(R.string.unrecognized_user_type_please_log_in_again));
-                }
-            }
+    private void handleRememberedUser() {
+        if (sessionManager.isRememberMe() && sessionManager.isUserLoggedIn()) {
+            String userType = sessionManager.getUserType();
+            navigateBasedOnUserType(userType, this);
         }
+    }
 
-        // Handle edge-to-edge layout insets
+    private void navigateBasedOnUserType(String userType, Context context) {
+        switch (userType) {
+            case USER_TYPE_OWNER:
+                LauncherUtils.navigateToOwnerDashboard((AppCompatActivity) context);
+                break;
+            case USER_TYPE_USER:
+                LauncherUtils.navigateToMainActivity((AppCompatActivity) context);
+                break;
+            default:
+                LauncherUtils.showToast(context, getString(R.string.unrecognized_user_type_please_log_in_again));
+        }
+    }
+
+    private void setButtonListeners() {
+        signInAsUserButton.setOnClickListener(v -> LauncherUtils.navigateToLoginFromFirst(USER_TYPE_USER, this));
+        signInAsOwnerButton.setOnClickListener(v -> LauncherUtils.navigateToLoginFromFirst(USER_TYPE_OWNER,this));
+    }
+
+    private void handleEdgeToEdgeLayout() {
         View rootView = findViewById(R.id.firstmain);
         if (rootView != null) {
             ViewCompat.setOnApplyWindowInsetsListener(rootView, (v, insets) -> {

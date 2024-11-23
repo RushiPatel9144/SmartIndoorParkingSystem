@@ -1,6 +1,8 @@
 package ca.tech.sense.it.smart.indoor.parking.system.launcherActivity;
 
 import static ca.tech.sense.it.smart.indoor.parking.system.R.string.regex_password_format_guide;
+import static ca.tech.sense.it.smart.indoor.parking.system.utility.Constants.USER_TYPE_OWNER;
+import static ca.tech.sense.it.smart.indoor.parking.system.utility.Constants.USER_TYPE_USER;
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,11 +14,14 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import ca.tech.sense.it.smart.indoor.parking.system.MainActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui.LoginActivity;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.SessionManager;
 import ca.tech.sense.it.smart.indoor.parking.system.model.owner.Owner;
 import ca.tech.sense.it.smart.indoor.parking.system.model.user.User;
 import ca.tech.sense.it.smart.indoor.parking.system.owner.OwnerActivity;
@@ -214,6 +219,23 @@ public class LauncherUtils {
         return true;
     }
 
+
+    public static void navigateToLoginFromFirst(String userType, AppCompatActivity activity) {
+        Intent intent = new Intent(activity, LoginActivity.class);
+        intent.putExtra("userType", userType);
+        activity.startActivity(intent);
+        activity.finish();
+    }
+
+    public static void handleSuccessfulLogin(String authToken, String userType, MaterialCheckBox rememberMeCheckBox, SessionManager sessionManager, AppCompatActivity activity) {
+        sessionManager.saveAuthToken(authToken, userType, rememberMeCheckBox.isChecked());
+
+        if (USER_TYPE_USER.equals(userType)) {
+            navigateToMainActivity(activity);
+        } else if (USER_TYPE_OWNER.equals(userType)) {
+            navigateToOwnerDashboard(activity);
+        }
+    }
 
 }
 

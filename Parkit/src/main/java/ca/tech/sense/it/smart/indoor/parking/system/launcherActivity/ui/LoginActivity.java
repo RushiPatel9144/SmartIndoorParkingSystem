@@ -1,14 +1,11 @@
 package ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -19,7 +16,7 @@ import com.google.android.material.checkbox.MaterialCheckBox;
 import java.util.Objects;
 
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.LauncherUtils;
-import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
+import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.LoginHelper;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.credentialManagerGoogle.GoogleAuthClient;
 import ca.tech.sense.it.smart.indoor.parking.system.viewModel.LoginViewModelFactory;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
@@ -27,49 +24,52 @@ import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.LoginViewMo
 import ca.tech.sense.it.smart.indoor.parking.system.repository.AuthRepository;
 import ca.tech.sense.it.smart.indoor.parking.system.manager.SessionManager;
 
+import static ca.tech.sense.it.smart.indoor.parking.system.utility.Constants.USER_TYPE_OWNER;
+import static ca.tech.sense.it.smart.indoor.parking.system.utility.Constants.USER_TYPE_USER;
+
 public class LoginActivity extends AppCompatActivity {
 
-    GoogleAuthClient googleAuthClient;
-
-    // UI Elements for login screen
+    // UI Elements
     private EditText editTextEmail, editTextPassword;
     private MaterialButton buttonLogin, googleButton;
-    private TextView textViewSignUp;
-    private TextView forgotPasswordTextView;
+    private TextView textViewSignUp, forgotPasswordTextView, titleTV;
     private ProgressBar progressBar;
     private MaterialCheckBox rememberMeCheckBox;
 
-    // ViewModel to manage login logic
+    // Components
     private LoginViewModel loginViewModel;
+    private SessionManager sessionManager;
 
-    // User Type ("user" or "owner") passed from the previous activity
+    // User Type
     private String userType;
-
-    // Session Manager to handle user session details
-    SessionManager sessionManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        // Initialize UI elements and components
-        initializeElements();
+        // Initialize UI elements, components, and user type
+        initializeUI();
 
-        // Set OnClickListeners for buttons and actions
-        setOnClickListeners();
+        // Configure UI adjustments based on the user type (owner or user)
+        configureBasedOnUserType();
 
-        // Observe login status to navigate user based on login success
+        // Set up click listeners for UI interactions (login, sign up, forgot password, etc.)
+        setupListeners();
+
+        // Observe login status and reset password status to handle navigation and feedback
         observeLoginStatus();
-
     }
 
     /**
-     * Initializes the UI elements, SharedPreferences, ViewModel, and other components
+     * Initialize UI elements and components
+     * <p>
+     * This method sets up the UI elements such as email input, password input, buttons, progress bar, etc.
+     * It also initializes the SessionManager and LoginViewModel to handle session and login logic.
+     * </p>
      */
-    private void initializeElements() {
-
-        // Initialize UI elements from the layout
+    private void initializeUI() {
+        userType = getIntent().getStringExtra("userType");  // Get user type from intent
         editTextEmail = findViewById(R.id.login_email_editext);
         editTextPassword = findViewById(R.id.login_password_editext);
         buttonLogin = findViewById(R.id.login_btn);
@@ -78,142 +78,70 @@ public class LoginActivity extends AppCompatActivity {
         forgotPasswordTextView = findViewById(R.id.forgot_password);
         progressBar = findViewById(R.id.login_progressBar);
         rememberMeCheckBox = findViewById(R.id.remember_me_checkbox);
-        TextView titleTV = findViewById(R.id.titleTV);
+        titleTV = findViewById(R.id.titleTV);
 
-        // Initialize GoogleAuthClient
-        googleAuthClient = new GoogleAuthClient(this);
+        sessionManager = new SessionManager(this);  // Initialize session manager
 
-        // Hide or show Google sign-in for owners (assuming owner doesn't use Google sign-in)
-        LinearLayout divider = findViewById(R.id.or);
-
-        // Retrieve the userType ("user" or "owner") passed from the previous activity
-        userType = getIntent().getStringExtra("userType");
-        if (Objects.equals(userType, "owner")) {
-            // Adjust the UI for owner (hide Google sign-in and title update)
-            titleTV.setText(R.string.owner);
-            googleButton.setVisibility(View.GONE);
-            divider.setVisibility(View.GONE);
-        }
-
-        // Initialize the ViewModel for handling login logic
-        AuthRepository authRepository = new AuthRepository();
-        LoginViewModelFactory factory = new LoginViewModelFactory(authRepository);
-        loginViewModel = new ViewModelProvider(this, factory).get(LoginViewModel.class);
-
-        // Observing the resetPasswordStatus to show feedback to the user
-        loginViewModel.getResetPasswordStatus().observe(this, status -> {
-            // Display a toast message based on the reset password status
-            LauncherUtils.showToast(this, status);
-        });
+        AuthRepository authRepository = new AuthRepository();  // Initialize repository for authentication
+        LoginViewModelFactory factory = new LoginViewModelFactory(authRepository);  // Create ViewModel factory
+        loginViewModel = new ViewModelProvider(this, factory).get(LoginViewModel.class);  // Initialize ViewModel
     }
 
     /**
-     * Sets the onClick listeners for login button, sign-up navigation, Google sign-in, and forgot password actions
+     * Configure UI adjustments based on user type (user or owner)
+     * <p>
+     * This method adjusts the UI to show or hide elements based on the user type. For example, if the user is an owner,
+     * it hides the Google sign-in button and other related elements.
+     * </p>
      */
-    private void setOnClickListeners() {
-        // Handle login button click (verify inputs and trigger login in ViewModel)
-        buttonLogin.setOnClickListener(v -> {
-            String email = editTextEmail.getText().toString().trim();
-            String password = editTextPassword.getText().toString().trim();
+    private void configureBasedOnUserType() {
+        LinearLayout divider = findViewById(R.id.or);  // Get the divider view
 
-            // Validate the input fields and trigger login
-            if (LauncherUtils.validateInputLogin(editTextEmail, editTextPassword)) {
-                progressBar.setVisibility(View.VISIBLE);  // Show progress bar while logging in
-                loginViewModel.login(email, password, userType);
-            }
-        });
-
-        // Navigate to Sign-Up Activity
-        textViewSignUp.setOnClickListener(v -> {
-            Intent intent = new Intent(this, SignUpActivity.class);
-            intent.putExtra("userType", userType);
-            startActivity(intent);
-            finish(); // Close the current login activity
-        });
-
-        // Handle Google sign-in button click (trigger Google sign-in in ViewModel)
-        googleButton.setOnClickListener(v -> loginViewModel.signInWithGoogle(this));
-
-//        // Observe the loginStatus to navigate to the main activity on successful login
-//        loginViewModel.getLoginStatus().observe(this, status -> {
-//            if ("user".equals(status)) {
-//                // On successful user login, navigate to MainActivity
-//                LauncherUtils.navigateToMainActivity(this);
-//            } else {
-//                // If Google sign-in fails, show a failure message
-//                Toast.makeText(this, getString(R.string.google_sign_in_failed), Toast.LENGTH_SHORT).show();
-//            }
-//        });
-
-        // Handle forgot password click (show input dialog to enter email for password reset)
-        forgotPasswordTextView.setOnClickListener(v -> DialogUtil.showInputDialog(this, getString(R.string.enter_your_registered_email), getString(R.string.someone_mail_com), new DialogUtil.InputDialogCallback() {
-            @Override
-            public void onConfirm(String inputText) {
-                // Validate and send password reset email
-                if (TextUtils.isEmpty(inputText)) {
-                    Toast.makeText(LoginActivity.this, getString(R.string.email_cannot_be_empty), Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                loginViewModel.sendPasswordResetEmail(inputText, userType);
-            }
-
-            @Override
-            public void onCancel() {
-                // Do nothing if canceled
-            }
-        }));
-
-        // Observe the resetPasswordStatus LiveData and show feedback
-        loginViewModel.getResetPasswordStatus().observe(this, status -> {
-            // Display reset password status as a toast message
-            Toast.makeText(this, status, Toast.LENGTH_SHORT).show();
-        });
+        // If the user is an owner, update the UI accordingly
+        if (Objects.equals(userType, USER_TYPE_OWNER)) {
+            titleTV.setText(R.string.owner);  // Set the title to "Owner"
+            googleButton.setVisibility(View.GONE);  // Hide the Google sign-in button for owners
+            divider.setVisibility(View.GONE);  // Hide the divider separating the login options
+        }
     }
 
     /**
-     * Observe the login status and handle successful login or errors
+     * Set up click listeners for UI interactions.
+     * <p>
+     * This method sets up the listeners for button clicks (login, sign-up, forgot password, and Google sign-in),
+     * triggering the appropriate actions such as handling login, navigating to the sign-up screen, or showing the forgot password dialog.
+     * </p>
+     */
+    private void setupListeners() {
+        buttonLogin.setOnClickListener(v -> LoginHelper.handleLogin(editTextEmail, editTextPassword, progressBar, loginViewModel, userType)); // Login button click handler
+        textViewSignUp.setOnClickListener(v -> LoginHelper.navigateToSignUp(this, userType));  // Sign-up text click handler
+        googleButton.setOnClickListener(v -> loginViewModel.signInWithGoogle(this));  // Google sign-in button click handler
+        forgotPasswordTextView.setOnClickListener(v ->  LoginHelper.showForgotPasswordDialog(this, loginViewModel, userType));  // Forgot password text click handler
+    }
+
+    /**
+     * Observe changes in login status and handle navigation.
+     * <p>
+     * This method observes the login status and reset password status from the ViewModel. Based on the status received,
+     * it either proceeds with a successful login or shows an error message to the user.
+     * </p>
      */
     private void observeLoginStatus() {
+        // Observe login status and handle navigation or errors
         loginViewModel.getLoginStatus().observe(this, status -> {
-            // Hide the progress bar once login attempt is complete
-            progressBar.setVisibility(View.GONE);
+            progressBar.setVisibility(View.GONE);  // Hide progress bar once login status is received
 
-            // Initialize the SessionManager to manage session data
-            sessionManager = new SessionManager(this);
-
+            // If login was successful (token received), handle successful login
             if (status.startsWith("token:")) {
-                // Handle successful login (token received)
-                String authToken = status.substring(6); // Extract the token
-                sessionManager.saveAuthToken(authToken, userType, rememberMeCheckBox.isChecked());
-
-                // Navigate to the appropriate activity based on the user type
-                if ("user".equals(userType)) {
-                    LauncherUtils.navigateToMainActivity(this);
-                } else if ("owner".equals(userType)) {
-                    LauncherUtils.navigateToOwnerDashboard(this);
-                }
-            } else if (status.startsWith("error:")) {
-                // Handle login errors (show error message)
-                LauncherUtils.showToast(this, status.substring(6));
-            } else {
-                // Handle unrecognized user type or first-time login
-                if ("user".equals(userType)) {
-                    if (sessionManager.isUserLoggedIn()) {
-                        LauncherUtils.navigateToMainActivity(this);
-                    } else {
-                        LauncherUtils.showToast(this, getString(R.string.please_log_in_again));
-                    }
-                } else if ("owner".equals(userType)) {
-                    if (sessionManager.isOwnerLoggedIn()) {
-                        LauncherUtils.navigateToOwnerDashboard(this);
-                    } else {
-                        LauncherUtils.showToast(this, getString(R.string.please_log_in_again));
-                    }
-                } else {
-                    // Unrecognized user type (show error)
-                    LauncherUtils.showToast(this,  getString(R.string.unrecognized_user_type_please_log_in_again));
-                }
+                LauncherUtils.handleSuccessfulLogin(status.substring(6), userType, rememberMeCheckBox, sessionManager, this);
+            } else if (status.startsWith("error:")) {  // If an error occurred during login
+                LauncherUtils.showToast(this, status.substring(6));  // Show error message
             }
+        });
+
+        // Observe reset password status and show the corresponding message
+        loginViewModel.getResetPasswordStatus().observe(this, status -> {
+            LauncherUtils.showToast(this, status);  // Show reset password status message
         });
     }
 }
