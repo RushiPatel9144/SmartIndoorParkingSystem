@@ -30,7 +30,6 @@ public class SlotAdapter extends RecyclerView.Adapter<SlotAdapter.SlotViewHolder
     public void onBindViewHolder(@NonNull SlotViewHolder holder, int position) {
         ParkingSlot slot = parkingSlots.get(position);
         holder.slotIdTextView.setText(String.format("Slot ID: %s", slot.getId()));
-        holder.slotStatusTextView.setText(String.format("Status: %s", slot.getHourlyStatus()));
 
         if (slot.getSensor() != null) {
             holder.sensorInfoTextView.setText(MessageFormat.format("Sensor: {0} (Battery: {1}%)", slot.getSensor().getType(), slot.getSensor().getBatteryLevel()));
@@ -45,13 +44,11 @@ public class SlotAdapter extends RecyclerView.Adapter<SlotAdapter.SlotViewHolder
     public static class SlotViewHolder extends RecyclerView.ViewHolder {
 
         TextView slotIdTextView;
-        TextView slotStatusTextView;
         TextView sensorInfoTextView;
 
         public SlotViewHolder(View itemView) {
             super(itemView);
             slotIdTextView = itemView.findViewById(R.id.slotIdTextView);
-            slotStatusTextView = itemView.findViewById(R.id.slotStatusTextView);
             sensorInfoTextView = itemView.findViewById(R.id.sensorInfoTextView);
         }
     }
