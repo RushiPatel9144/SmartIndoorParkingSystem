@@ -4,60 +4,85 @@
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    card_view:cardCornerRadius="8dp"
-    card_view:cardElevation="4dp">
+    android:layout_margin="16dp"
+    card_view:cardCornerRadius="12dp"
+    card_view:cardElevation="6dp"
+    android:backgroundTint="@android:color/white">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="16dp"
+        android:weightSum="1">
 
-        <!-- Title and Description in a Vertical Layout -->
-        <TextView
-            android:id="@+id/PromotionTitle"
-            android:layout_width="wrap_content"
+        <!-- Horizontal Layout for Title and Discount -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/promotion_title"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:paddingBottom="4dp"/>
+            android:orientation="horizontal"
+            android:weightSum="1"
+            android:layout_marginBottom="8dp">
 
+            <!-- Title Text -->
+            <TextView
+                android:id="@+id/PromotionTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Limited Time Offer"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_weight="1"/>
+
+            <!-- Discount Text -->
+            <TextView
+                android:id="@+id/PromotionDiscount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="20% OFF"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/holo_green_dark"
+                android:layout_weight="0"/>
+
+        </LinearLayout>
+
+        <!-- Description Text -->
         <TextView
             android:id="@+id/PromotionDescription"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/promotion_description_goes_here"
-            android:textSize="16sp"/>
+            android:layout_marginBottom="12dp"
+            android:lineSpacingExtra="4dp"
+            android:text="Get an amazing discount on your next purchase. Don't miss out!"
+            android:textSize="16sp" />
 
-        <!-- Discount TextView -->
-        <TextView
-            android:id="@+id/PromotionDiscount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/_20"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:textColor="@android:color/holo_green_dark"
-            android:paddingTop="8dp"/>
-
-        <!-- Promo Code TextView -->
+        <!-- Promo Code Label -->
         <TextView
             android:id="@+id/PromotionCode"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Promo Code"
+            android:text="@string/promo_code"
             android:textSize="16sp"
-            android:paddingTop="8dp"/>
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp"
+            android:padding="8dp" />
+
 
         <!-- Claim Promo Button -->
         <Button
             android:id="@+id/ClaimPromoButton"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Claim Promo"
-            android:paddingTop="8dp"/>
+            android:textColor="@android:color/white"
+            android:backgroundTint="@color/colorAccent"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp"
+            android:textSize="16sp"
+            android:layout_gravity="center_horizontal"
+            android:cornerRadius="8dp"/>
+
     </LinearLayout>
 
 </androidx.cardview.widget.CardView>
