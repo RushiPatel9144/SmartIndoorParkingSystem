@@ -6,6 +6,8 @@
 
 package ca.tech.sense.it.smart.indoor.parking.system.launcherActivity;
 
+import static ca.tech.sense.it.smart.indoor.parking.system.utility.Constants.SPLASH_SCREEN_TIME_OUT;
+
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -22,7 +24,7 @@ import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui.FirstAct
 @SuppressLint("CustomSplashScreen")
 public class SplashScreen extends AppCompatActivity {
 
-    private static final int SPLASH_SCREEN_TIME_OUT = 3000; // 3 seconds
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
