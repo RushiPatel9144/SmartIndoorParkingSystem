@@ -10,7 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
-import ca.tech.sense.it.smart.indoor.parking.system.manager.parkingManager.ParkingLocationManager;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.ParkingLocationManager;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
 
 public class SwipeToDeleteCallback extends ItemTouchHelper.SimpleCallback {
