@@ -68,7 +68,6 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingV
     }
 
     public class BookingViewHolder extends RecyclerView.ViewHolder {
-        private final TextView bookingTitle;
         private final TextView bookingAddress;
         private final TextView bookingSlot;
         private final TextView bookingTime;
@@ -77,7 +76,6 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingV
 
         public BookingViewHolder(@NonNull View itemView) {
             super(itemView);
-            bookingTitle = itemView.findViewById(R.id.booking_title);
             bookingAddress = itemView.findViewById(R.id.booking_address);
             bookingSlot = itemView.findViewById(R.id.booking_slot);
             bookingTime = itemView.findViewById(R.id.booking_time);
@@ -118,7 +116,6 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingV
         }
 
         public void bind(Booking booking) {
-            bookingTitle.setText(R.string.park_it);
             bookingAddress.setText(booking.getLocation());
             bookingSlot.setText(booking.getSlotNumber());
             bookingTime.setText(formatTime(booking.getStartTime(), booking.getEndTime()));

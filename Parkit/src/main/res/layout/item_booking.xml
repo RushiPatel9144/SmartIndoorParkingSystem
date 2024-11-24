@@ -1,11 +1,11 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    app:cardCornerRadius="8dp"
-    app:cardElevation="4dp">
+    app:cardCornerRadius="12dp"
+    app:cardElevation="6dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -13,35 +13,60 @@
         android:orientation="vertical"
         android:padding="16dp">
 
+        <!-- Booking Title -->
         <TextView
             android:id="@+id/booking_title"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/park_it"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:paddingBottom="8dp" />
 
-        <TextView
-            android:id="@+id/booking_address"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/booking_address"
-            android:textSize="14sp"
-            android:paddingTop="4dp" />
-
+        <!-- Address -->
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:paddingTop="4dp">
+            android:gravity="center_vertical"
+            android:paddingBottom="8dp">
 
             <TextView
-                android:id="@+id/booking_slot_label"
+                android:id="@+id/address_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/slot_number"
+                android:text="Address:"
+                android:textStyle="bold"
                 android:textSize="14sp"
-                android:textStyle="bold" />
+                android:textColor="@color/black" />
+
+            <TextView
+                android:id="@+id/booking_address"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/booking_address"
+                android:textSize="14sp"
+                android:textColor="@color/gray"
+                android:paddingStart="8dp" />
+        </LinearLayout>
+
+        <!-- Slot Number -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingBottom="8dp">
+
+            <TextView
+                android:id="@+id/slot_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Slot Number:"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:textColor="@color/black" />
 
             <TextView
                 android:id="@+id/booking_slot"
@@ -49,39 +74,80 @@
                 android:layout_height="wrap_content"
                 android:text="@string/slot_number_1"
                 android:textSize="14sp"
-                android:paddingStart="4dp" />
+                android:textColor="@color/gray"
+                android:paddingStart="8dp" />
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/booking_time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/booking_time"
-            android:textSize="14sp"
-            android:paddingTop="4dp" />
-
-        <TextView
-            android:id="@+id/booking_price"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/price_25"
-            android:textSize="14sp"
-            android:paddingTop="4dp"
-            android:textColor="@android:color/holo_green_dark" />
-
+        <!-- Booking Date -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:padding="2dp">
+            android:gravity="center_vertical"
+            android:paddingBottom="8dp">
 
             <TextView
-                android:id="@+id/passkeyLabel"
+                android:id="@+id/booking_date_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Booking Date:"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:textColor="@color/black" />
+
+            <TextView
+                android:id="@+id/booking_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/booking_time"
+                android:textSize="14sp"
+                android:textColor="@color/gray"
+                android:paddingStart="8dp" />
+        </LinearLayout>
+
+        <!-- Price -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingBottom="8dp">
+
+            <TextView
+                android:id="@+id/price_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Price:"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:textColor="@color/black" />
+
+            <TextView
+                android:id="@+id/booking_price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/price_25"
+                android:textSize="14sp"
+                android:textColor="@android:color/holo_green_dark"
+                android:paddingStart="8dp" />
+        </LinearLayout>
+
+        <!-- Passkey -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingBottom="8dp">
+
+            <TextView
+                android:id="@+id/passkey_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Passkey:"
                 android:textStyle="bold"
-                android:paddingEnd="8dp"/>
+                android:textSize="14sp"
+                android:textColor="@color/black" />
 
             <TextView
                 android:id="@+id/booking_pass_key"
@@ -89,25 +155,35 @@
                 android:layout_height="wrap_content"
                 android:text="Pass Key"
                 android:textStyle="bold"
-                android:textSize="16sp"
-                android:textColor="@android:color/holo_red_dark"/>
+                android:textSize="14sp"
+                android:textColor="@android:color/holo_red_dark"
+                android:paddingStart="8dp" />
         </LinearLayout>
 
-        <Button
-            android:id="@+id/cancel_button"
-            android:layout_width="wrap_content"
+        <!-- Buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Cancel Booking"
-            android:layout_gravity="end"
-            android:paddingTop="8dp" />
+            android:orientation="horizontal"
+            android:gravity="end"
+            android:paddingTop="8dp">
 
-        <Button
-            android:id="@+id/action_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Action"
-            android:layout_gravity="end"
-            android:paddingTop="8dp" />
+            <Button
+                android:id="@+id/cancel_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Cancel"
+                android:backgroundTint="@color/red"
+                android:textColor="@color/offWhite"
+                android:layout_marginEnd="8dp" />
 
+            <Button
+                android:id="@+id/action_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Navigate"
+                android:backgroundTint="@color/theme"
+                android:textColor="@color/offWhite" />
+        </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>
