@@ -31,10 +31,10 @@ public class AuthRepository {
     }
 
     public Task<DocumentSnapshot> checkOwner(String userId) {
-        return firestore.collection(USER_TYPE_OWNER).document(userId).get();
+        return firestore.collection("owners").document(userId).get();
     }
     public Task<DocumentSnapshot> checkUser(String userId) {
-        return firestore.collection(USER_TYPE_USER).document(userId).get();
+        return firestore.collection("users").document(userId).get();
     }
 
     // Add this method to check if the email exists in a given Firestore collection

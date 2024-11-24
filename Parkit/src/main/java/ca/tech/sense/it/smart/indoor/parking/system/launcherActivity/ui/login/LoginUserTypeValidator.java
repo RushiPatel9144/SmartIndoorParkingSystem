@@ -1,5 +1,7 @@
 package ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui.login;
 
+import android.util.Log;
+
 import androidx.lifecycle.MutableLiveData;
 import ca.tech.sense.it.smart.indoor.parking.system.repository.AuthRepository;
 
@@ -26,7 +28,12 @@ public class LoginUserTypeValidator {
                         loginStatus.setValue("error:Not an owner. Please sign up.");
                     }
                 })
-                .addOnFailureListener(e -> loginStatus.setValue("error:Failed to check owner: " + e.getMessage()));
+
+                .addOnFailureListener(e -> {
+                    loginStatus.setValue("error:Failed to check owner: " + e.getMessage());
+                    Log.e("LoginViewModel", "Failed to check owner: ", e);
+                        });
+
     }
 
     // Validate if the user is a regular user
@@ -39,6 +46,9 @@ public class LoginUserTypeValidator {
                         loginStatus.setValue("error:Not a user. Please sign up.");
                     }
                 })
-                .addOnFailureListener(e -> loginStatus.setValue("error:Failed to check user: " + e.getMessage()));
+                .addOnFailureListener(e -> {
+                    Log.e("LoginViewModel", "Failed to check user: ", e);
+                    loginStatus.setValue("error:Failed to check user: " + e.getMessage());
+                });
     }
 }
