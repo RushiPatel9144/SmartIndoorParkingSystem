@@ -113,24 +113,40 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
-                    getSupportFragmentManager().popBackStack();
-                } else {
-                    DialogUtil.showLeaveAppDialog(MainActivity.this, getString(R.string.confirm_exit), getString(R.string.are_you_sure_you_want_to_exit_the_app), R.drawable.crisis,
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                Fragment currentFragment = fragmentManager.findFragmentById(R.id.flFragment);
+
+                // Check if the current fragment is one of the four specific fragments
+                if (currentFragment instanceof Home || currentFragment instanceof Park ||
+                        currentFragment instanceof Activity || currentFragment instanceof AccountFragment) {
+
+                    // Show confirmation dialog when one of the specific fragments is visible
+                    DialogUtil.showLeaveAppDialog(MainActivity.this, getString(R.string.confirm_exit),
+                            getString(R.string.are_you_sure_you_want_to_exit_the_app), R.drawable.crisis,
                             new DialogUtil.BackPressCallback() {
                                 @Override
                                 public void onConfirm() {
-                                    finishAffinity();
+                                    finishAffinity(); // Exit the app
                                 }
 
                                 @Override
                                 public void onCancel() {
-                                    //dismiss
+                                    // Dismiss the dialog
                                 }
-                            });}
+                            });
+                } else {
+                    // Pop the fragment from the back stack if it's not one of the specific fragments
+                    if (fragmentManager.getBackStackEntryCount() > 0) {
+                        fragmentManager.popBackStack();
+                    } else {
+                        // Default behavior if no fragments are left in the back stack
+                    }
+                }
             }
-        };getOnBackPressedDispatcher().addCallback(this, callback);
+        };
+        getOnBackPressedDispatcher().addCallback(this, callback);
     }
+
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -160,7 +176,6 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
         transaction.replace(R.id.flFragment,fragment,tag);
         transaction.commit();
     }
-
 
 
     private void navigateToFirstActivity() {
