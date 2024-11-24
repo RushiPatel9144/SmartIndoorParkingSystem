@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -23,12 +24,14 @@ import ca.tech.sense.it.smart.indoor.parking.system.manager.sessionManager.Sessi
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui.FirstActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems.*;
+import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems.manageAccount.ManageAccountFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
 
 public class AccountFragment extends Fragment {
     private static final String ARG_CONTAINER_VIEW_ID = "containerViewId";
     private int containerViewId;
     SessionManager sessionManager;
+    ImageView profilePic;
     private String tag = "AccountFragment";
 
     public AccountFragment() {
@@ -56,6 +59,9 @@ public class AccountFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_account, container, false);
 
         sessionManager = new SessionManager(requireContext());
+        profilePic = view.findViewById(R.id.accountFrag_ProfilePic);
+
+
         setupClickListeners(view);
         return view;
     }
