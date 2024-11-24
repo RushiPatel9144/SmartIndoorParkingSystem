@@ -1,4 +1,4 @@
-package ca.tech.sense.it.smart.indoor.parking.system.booking;
+package ca.tech.sense.it.smart.indoor.parking.system.ui.adapters;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -10,10 +10,9 @@ import android.widget.TextView;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
-import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.bookingManager.BookingManager;
 
 public class SlotAdapter extends ArrayAdapter<String> {
     private Map<String, String> slotStatusMap = new HashMap<>();
@@ -31,7 +30,7 @@ public class SlotAdapter extends ArrayAdapter<String> {
 
         // Initialize slotStatusMap with the status of each slot
         for (String slot : objects) {
-            bookingManager.checkSlotAvailability(locationId, slot, selectedDate, selectedHour, status -> {
+            bookingManager.getSlotService().checkSlotAvailability(locationId, slot, selectedDate, selectedHour, status -> {
                 slotStatusMap.put(slot, status);
                 Log.d("SlotAdapter", "Slot: " + slot + ", Status: " + status); // Add logging
                 notifyDataSetChanged(); // Refresh the adapter when status is updated

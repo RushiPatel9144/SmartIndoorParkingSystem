@@ -1,4 +1,4 @@
-package ca.tech.sense.it.smart.indoor.parking.system.manager;
+package ca.tech.sense.it.smart.indoor.parking.system.manager.parkingManager;
 
 import static android.content.ContentValues.TAG;
 import static ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.launcherUtililty.ToastHelper.showToast;

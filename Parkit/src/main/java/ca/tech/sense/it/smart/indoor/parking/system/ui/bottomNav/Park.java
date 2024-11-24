@@ -48,11 +48,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
-import ca.tech.sense.it.smart.indoor.parking.system.booking.BookingBottomSheetDialogFragment;
-import ca.tech.sense.it.smart.indoor.parking.system.booking.BookingManager;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.bookingManager.BookingBottomSheetDialogFragment;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.bookingManager.BookingManager;
 import ca.tech.sense.it.smart.indoor.parking.system.currency.CurrencyManager;
 import ca.tech.sense.it.smart.indoor.parking.system.currency.CurrencyService;
-import ca.tech.sense.it.smart.indoor.parking.system.manager.ParkingLocationManager;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.parkingManager.ParkingLocationManager;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
 
 import ca.tech.sense.it.smart.indoor.parking.system.utility.AutocompleteSearchHelper;

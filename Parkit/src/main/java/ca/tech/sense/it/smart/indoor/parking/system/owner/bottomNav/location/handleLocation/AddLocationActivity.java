@@ -16,9 +16,8 @@ import java.util.Objects;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSingleton;
-import ca.tech.sense.it.smart.indoor.parking.system.manager.ParkingLocationManager;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.parkingManager.ParkingLocationManager;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
-import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.location.LocationsFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.AutocompleteSearchHelper;
 
 public class AddLocationActivity extends AppCompatActivity {

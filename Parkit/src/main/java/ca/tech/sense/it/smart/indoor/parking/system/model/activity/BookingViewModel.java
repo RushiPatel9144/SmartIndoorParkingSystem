@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Executors;
 
-import ca.tech.sense.it.smart.indoor.parking.system.booking.BookingManager;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.bookingManager.BookingManager;
 
 public class BookingViewModel extends AndroidViewModel {
     private final MutableLiveData<List<Booking>> activeBookingsLiveData = new MutableLiveData<>();
@@ -67,7 +67,7 @@ public class BookingViewModel extends AndroidViewModel {
                         booking.setId(bookingSnapshot.getKey());
                         if (booking.getEndTime() < currentTime) {
                             historyBookings.add(booking);
-                            bookingManager.expirePassKey(userId, bookingSnapshot.getKey());
+                            bookingManager.getUserService().expirePassKey(userId, bookingSnapshot.getKey());
                         } else if (booking.getStartTime() > currentTime) {
                             upcomingBookings.add(booking);
                         } else {

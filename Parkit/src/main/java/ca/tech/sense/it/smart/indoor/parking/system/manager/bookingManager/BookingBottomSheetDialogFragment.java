@@ -1,4 +1,4 @@
-package ca.tech.sense.it.smart.indoor.parking.system.booking;
+package ca.tech.sense.it.smart.indoor.parking.system.manager.bookingManager;
 
 import static androidx.core.content.ContextCompat.getColor;
 import android.annotation.SuppressLint;
@@ -44,14 +44,17 @@ import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.booking.PaymentActivity;
+import ca.tech.sense.it.smart.indoor.parking.system.ui.adapters.SlotAdapter;
 import ca.tech.sense.it.smart.indoor.parking.system.currency.Currency;
 import ca.tech.sense.it.smart.indoor.parking.system.currency.CurrencyManager;
 import ca.tech.sense.it.smart.indoor.parking.system.currency.CurrencyPreferenceManager;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseDatabaseSingleton;
-import ca.tech.sense.it.smart.indoor.parking.system.manager.ParkingLocationManager;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.parkingManager.ParkingLocationManager;
 import ca.tech.sense.it.smart.indoor.parking.system.model.activity.Booking;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingSlot;
+import ca.tech.sense.it.smart.indoor.parking.system.utility.BookingUtils;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.ParkingInterface;
 
 public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment {
@@ -150,7 +153,7 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
                     addressText.setText(location.getAddress());
                     postalCodeText.setText(location.getPostalCode());
                     setupSlotSpinnerData(location.getSlots(), locationId, selectedDate, selectedHour, bookingManager);
-                    bookingManager.fetchPrice(locationId, price -> displayConvertedPrice(price));
+                    bookingManager.getSlotService().fetchPrice(locationId, price -> displayConvertedPrice(price));
                 } else {
                     setErrorMessage(requireContext().getString(R.string.location_data_is_not_available));
                 }
@@ -287,7 +290,7 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
             if (selectedSlot != null && selectedTimeSlot != null && selectedDate != null) {
                 String selectedHour = selectedTimeSlot.split(" - ")[0];
 
-                bookingManager.checkSlotAvailability(locationId, selectedSlot, selectedDate, selectedHour, status -> {
+                bookingManager.getSlotService().checkSlotAvailability(locationId, selectedSlot, selectedDate, selectedHour, status -> {
                     if ("occupied".equals(status)) {
                         Toast.makeText(requireContext(), R.string.slot_already_occupied, Toast.LENGTH_SHORT).show();
                     } else {
@@ -302,7 +305,7 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
                                 selectedCurrency.getCode(),
                                 selectedCurrency.getSymbol(),
                                 selectedSlot,
-                                bookingManager.generatePassKey(), // Generate the pass key
+                                BookingUtils.generatePassKey(), // Generate the pass key
                                 locationId // Add the locationId to the booking
                         );
 
@@ -423,7 +426,7 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
                                 String name = snapshot.child("name").getValue(String.class);
                                 if (name != null) {
-                                    bookingManager.saveLocationToFavorites(locationId, address, postalCode, name, () -> {
+                                    bookingManager.getUserService().saveLocationToFavorites(locationId, address, postalCode, name, () -> {
                                         starButton.setColorFilter(getColor(context, R.color.logo));
                                         Toast.makeText(context, R.string.location_saved_to_favorites, Toast.LENGTH_SHORT).show();
                                     }, error -> {

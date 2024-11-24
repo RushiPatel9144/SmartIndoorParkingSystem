@@ -11,8 +11,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.Objects;
 
-import ca.tech.sense.it.smart.indoor.parking.system.manager.FragmentManagerHelper;
-import ca.tech.sense.it.smart.indoor.parking.system.manager.PreferenceManager;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.favoriteManager.FragmentManagerHelper;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.preferenceManager.PreferenceManager;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.DashboardFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.location.LocationsFragment;

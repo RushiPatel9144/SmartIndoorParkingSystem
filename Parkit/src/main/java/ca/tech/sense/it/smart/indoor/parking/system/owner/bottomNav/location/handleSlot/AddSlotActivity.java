@@ -10,7 +10,7 @@ import java.util.Locale;
 import java.util.Objects;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSingleton;
-import ca.tech.sense.it.smart.indoor.parking.system.manager.ParkingSlotManager;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.parkingManager.ParkingSlotManager;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingSensor;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingSlot;
 

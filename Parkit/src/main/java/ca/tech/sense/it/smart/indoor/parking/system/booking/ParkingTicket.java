@@ -5,8 +5,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
+import android.util.Log;
+import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -16,13 +21,13 @@ import ca.tech.sense.it.smart.indoor.parking.system.model.activity.Booking;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.*;
 
+import java.util.Objects;
+
 public class ParkingTicket extends AppCompatActivity {
 
-    private TextView referenceNumberTextView;
     private TextView addressTitle;
     private TextView addressText;
-    private Button cancelButton;
-    private Button getDirectionButton;
+    private ProgressBar progressBar; // ProgressBar variable
     private String address; // Variable to store the address
 
     @Override
@@ -30,17 +35,19 @@ public class ParkingTicket extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_parking_ticket);
 
-        referenceNumberTextView = findViewById(R.id.referenceNumberTextView);
-        cancelButton = findViewById(R.id.cancelButton);
-        getDirectionButton = findViewById(R.id.getDirectionButton);
+        TextView referenceNumberTextView = findViewById(R.id.referenceNumberTextView);
+        Button cancelButton = findViewById(R.id.cancelButton);
+        Button getDirectionButton = findViewById(R.id.getDirectionButton);
         addressTitle = findViewById(R.id.addressTitle);
         addressText = findViewById(R.id.addressText);
+        progressBar = findViewById(R.id.progressBar); // Initialize ProgressBar
 
         Intent intent = getIntent();
         if (intent != null && intent.hasExtra("passkey")) {
             String passkey = intent.getStringExtra("passkey");
             if (!TextUtils.isEmpty(passkey)) {
                 referenceNumberTextView.setText(passkey);
+                progressBar.setVisibility(View.VISIBLE); // Show ProgressBar
                 fetchBookingDetails(passkey); // Fetch booking details
             } else {
                 showToast("Passkey is missing");
@@ -55,7 +62,7 @@ public class ParkingTicket extends AppCompatActivity {
 
     private void fetchBookingDetails(String passkey) {
         DatabaseReference bookingRef = FirebaseDatabase.getInstance().getReference("users")
-                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .child(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid())
                 .child("bookings")
                 .orderByChild("passKey")
                 .equalTo(passkey).getRef();
@@ -67,17 +74,24 @@ public class ParkingTicket extends AppCompatActivity {
                     for (DataSnapshot bookingSnapshot : snapshot.getChildren()) {
                         Booking booking = bookingSnapshot.getValue(Booking.class);
                         if (booking != null) {
-                            updateUIWithBookingDetails(booking);
+                            // Debug log
+                            Log.d("ParkingTicket", "Fetched booking: " + booking.getLocation());
+                            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                                updateUIWithBookingDetails(booking);
+                                progressBar.setVisibility(View.GONE); // Hide ProgressBar
+                            }, 2000); // 2 seconds delay
                         }
                     }
                 } else {
                     showToast("Booking details not found");
+                    progressBar.setVisibility(View.GONE); // Hide ProgressBar
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 showToast("Failed to fetch booking details: " + error.getMessage());
+                progressBar.setVisibility(View.GONE); // Hide ProgressBar
             }
         });
     }
@@ -88,6 +102,11 @@ public class ParkingTicket extends AppCompatActivity {
 
         addressTitle.setText(addressName);
         addressText.setText(String.format("%s", address));
+
+        // Show toast if location is not fetched
+        if (TextUtils.isEmpty(address)) {
+            showToast("Failed to fetch location details");
+        }
     }
 
     private void openMap() {
