@@ -51,7 +51,7 @@ public class FirstActivity extends BaseActivity {
     }
 
     private void handleRememberedUser() {
-        if (sessionManager.isRememberMe() && sessionManager.isUserLoggedIn()) {
+        if (sessionManager.isRememberMe() && (sessionManager.isUserLoggedIn() || sessionManager.isOwnerLoggedIn()) ) {
             String userType = sessionManager.getUserType();
             navigateBasedOnUserType(userType, this);
         }
