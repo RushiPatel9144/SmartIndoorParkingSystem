@@ -430,7 +430,7 @@ public class ManageAccountFragment extends Fragment {
         }
     }
 
-    private void checkUserType() {
+    public void checkUserType() {
         if (currentUser != null) {
             UserCheckHelper userCheckHelper = new UserCheckHelper();
             userCheckHelper.checkUserType(currentUser.getUid(), getContext(), new UserCheckHelper.UserTypeCallback() {

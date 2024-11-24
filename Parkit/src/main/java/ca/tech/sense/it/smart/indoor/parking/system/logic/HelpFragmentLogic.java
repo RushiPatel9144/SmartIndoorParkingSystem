@@ -1,7 +1,11 @@
 package ca.tech.sense.it.smart.indoor.parking.system.logic;
 
+import static ca.tech.sense.it.smart.indoor.parking.system.utility.Constants.USER_TYPE_OWNER;
+import static ca.tech.sense.it.smart.indoor.parking.system.utility.Constants.USER_TYPE_USER;
+
 import android.content.Context;
 import android.os.Handler;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
@@ -15,11 +19,13 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.sessionManager.SessionManager;
 import ca.tech.sense.it.smart.indoor.parking.system.model.Help;
+import ca.tech.sense.it.smart.indoor.parking.system.model.owner.Owner;
+import ca.tech.sense.it.smart.indoor.parking.system.model.user.User;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
 
 public class HelpFragmentLogic {
@@ -30,6 +36,7 @@ public class HelpFragmentLogic {
     private ProgressBar progressBar;
     private FirebaseFirestore db;
     private FirebaseAuth auth;
+    private String TAG = "HelpFragmentLogic :";
 
     public HelpFragmentLogic(Context context, EditText etName, EditText etPhone, EditText etEmail, EditText etComment, Button btnSubmitHelp, ProgressBar progressBar) {
         this.context = context;
@@ -43,28 +50,59 @@ public class HelpFragmentLogic {
         this.auth = FirebaseAuth.getInstance();
     }
 
+
+
+
     public void fetchUserData() {
-        String currentUserID = auth.getCurrentUser().getUid();
-        db.collection("users").document(currentUserID).get()
-                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        if (documentSnapshot.exists()) {
-                            etName.setText(documentSnapshot.getString("firstName") + " " + documentSnapshot.getString("lastName"));
-                            etPhone.setText(documentSnapshot.getString("phone"));
-                            etEmail.setText(documentSnapshot.getString("email"));
-                        } else {
-                            Toast.makeText(context, context.getString(R.string.user_not_found), Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(context, "Error fetching data", Toast.LENGTH_SHORT).show();
-                    }
-                });
+        SessionManager sessionManager = SessionManager.getInstance(context);
+        String userType = sessionManager.getUserType();
+
+        if (userType == null || (!userType.equals(USER_TYPE_USER) && !userType.equals(USER_TYPE_OWNER))) {
+            Log.e(TAG, "Invalid user type: " + userType);
+            Toast.makeText(context, "Invalid user type", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Determine the correct object based on userType
+        Object sessionData = USER_TYPE_USER.equals(userType) ? sessionManager.getCurrentUser() : sessionManager.getCurrentOwner();
+
+        if (sessionData != null) {
+            populateUserData(sessionData);  // Populate UI with the session data
+        } else {
+            Log.e(TAG, userType + " data is missing from the session.");
+            Toast.makeText(context, userType + " data not found", Toast.LENGTH_SHORT).show();
+        }
     }
+
+    private void populateUserData(Object sessionData) {
+        String firstName = null, lastName = null, phone = null, email = null;
+
+        if (sessionData instanceof User) {
+            User user = (User) sessionData;
+            firstName = user.getFirstName();
+            lastName = user.getLastName();
+            phone = user.getPhone();
+            email = user.getEmail();
+        } else if (sessionData instanceof Owner) {
+            Owner owner = (Owner) sessionData;
+            firstName = owner.getFirstName();
+            lastName = owner.getLastName();
+            phone = owner.getPhone();
+            email = owner.getEmail();
+        }
+
+        // Populate UI fields
+        if (firstName != null && lastName != null) {
+            etName.setText(firstName + " " + lastName);
+        }
+        if (phone != null) {
+            etPhone.setText(phone);
+        }
+        if (email != null) {
+            etEmail.setText(email);
+        }
+    }
+
 
     public void submitHelpRequest() {
         String name = etName.getText().toString().trim();
@@ -72,6 +110,7 @@ public class HelpFragmentLogic {
         String email = etEmail.getText().toString().trim();
         String comment = etComment.getText().toString().trim();
 
+        // Validations
         if (name.isEmpty()) {
             etName.setError("Please fill the name");
             etName.requestFocus();
@@ -124,7 +163,8 @@ public class HelpFragmentLogic {
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
                                     // Show error message
-                                    Toast.makeText(context, context.getString(R.string.error_adding_document), Toast.LENGTH_SHORT).show();
+                                    String errorMessage = "Error submitting help request: " + e.getMessage();
+                                    Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show();
                                 }
                             });
 

@@ -1,14 +1,14 @@
 package ca.tech.sense.it.smart.indoor.parking.system;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
-import android.Manifest;
+
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
@@ -23,10 +23,12 @@ import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import ca.tech.sense.it.smart.indoor.parking.system.manager.notificationManager.NotificationManagerHelper;
-import ca.tech.sense.it.smart.indoor.parking.system.manager.sessionManager.SessionDataManager;
-import ca.tech.sense.it.smart.indoor.parking.system.manager.themeManager.ThemeManager;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui.FirstActivity;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.notificationManager.NotificationManagerHelper;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.sessionManager.SessionManager;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.themeManager.ThemeManager;
+import ca.tech.sense.it.smart.indoor.parking.system.model.owner.Owner;
+import ca.tech.sense.it.smart.indoor.parking.system.model.user.User;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.Activity;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.Home;
@@ -65,17 +67,17 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
         initFirebaseAuth();
         initUIComponents();
 
-        // Fetch session data (user or owner)
-        SessionDataManager.getInstance().fetchSessionData((user, owner) -> {
-            if (user != null) {
-                Log.d(TAG, "User data loaded: " + user.getEmail());
-                // Handle user-specific logic
-            } else if (owner != null) {
-                Log.d(TAG, "Owner data loaded: " + owner.getEmail());
-                // Handle owner-specific logic
-            } else {
-                Log.d(TAG, "No session data found.");
-                // Handle no data case (perhaps navigate to login screen)
+        // Fetch session data when the activity is created
+        SessionManager sessionManager = SessionManager.getInstance(this);
+        sessionManager.fetchSessionData(new SessionManager.OnSessionDataFetchedCallback() {
+            @Override
+            public void onSessionDataFetched(User user, Owner owner) {
+                // You can now use 'user' or 'owner' data for your UI
+                if (user != null) {
+                    // Use user data
+                } else if (owner != null) {
+                    // Use owner data
+                }
             }
         });
 

@@ -6,6 +6,7 @@ import static ca.tech.sense.it.smart.indoor.parking.system.utility.Constants.USE
 import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -52,6 +53,7 @@ public class LoginHelper {
 
     public static void handleSuccessfulLogin(String authToken, String userType, MaterialCheckBox rememberMeCheckBox, SessionManager sessionManager, AppCompatActivity activity) {
         sessionManager.saveAuthToken(authToken, userType, rememberMeCheckBox.isChecked());
+        Log.e("LoginHelper",authToken);
 
         if (USER_TYPE_USER.equals(userType)) {
             NavigationHelper.navigateToMainActivity(activity);

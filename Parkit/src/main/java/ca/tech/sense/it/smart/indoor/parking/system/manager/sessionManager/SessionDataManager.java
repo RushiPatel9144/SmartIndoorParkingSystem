@@ -7,6 +7,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSingleton;
+import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirestoreSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.model.owner.Owner;
 import ca.tech.sense.it.smart.indoor.parking.system.model.user.User;
 
@@ -22,8 +24,8 @@ public class SessionDataManager {
 
     // Private constructor to prevent direct instantiation
     private SessionDataManager() {
-        mAuth = FirebaseAuth.getInstance();
-        db = FirebaseFirestore.getInstance();
+        mAuth = FirebaseAuthSingleton.getInstance();
+        db = FirestoreSingleton.getInstance();
     }
 
     // Singleton instance
@@ -57,7 +59,7 @@ public class SessionDataManager {
     }
 
     // Fetch user/owner data from Firestore based on the user type
-    public void fetchSessionData(OnSessionDataFetchedCallback callback) {
+    public void fetchSessionData(String userType,OnSessionDataFetchedCallback callback) {
         FirebaseUser firebaseUser = mAuth.getCurrentUser();
 
         if (firebaseUser == null) {
