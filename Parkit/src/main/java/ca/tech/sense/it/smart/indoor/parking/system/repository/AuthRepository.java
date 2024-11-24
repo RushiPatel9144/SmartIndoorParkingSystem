@@ -1,5 +1,8 @@
 package ca.tech.sense.it.smart.indoor.parking.system.repository;
 
+import static ca.tech.sense.it.smart.indoor.parking.system.utility.Constants.USER_TYPE_OWNER;
+import static ca.tech.sense.it.smart.indoor.parking.system.utility.Constants.USER_TYPE_USER;
+
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -30,6 +33,29 @@ public class AuthRepository {
     public Task<DocumentSnapshot> checkOwner(String userId) {
         return firestore.collection("owners").document(userId).get();
     }
+    public Task<DocumentSnapshot> checkUser(String userId) {
+        return firestore.collection("users").document(userId).get();
+    }
+
+    // Add this method to check if the email exists in a given Firestore collection
+    public Task<Boolean> isEmailRegisteredInCollection(String email, String collection) {
+        return firestore.collection(collection)
+                .whereEqualTo("email", email) // Assuming 'email' is a field in your Firestore documents
+                .get()
+                .continueWith(task -> {
+                    if (task.isSuccessful()) {
+                        return !task.getResult().isEmpty(); // Returns true if the email is found
+                    } else {
+                        throw task.getException(); // Rethrow any exception that occurred
+                    }
+                });
+    }
+
+    // Send a password reset email
+    public Task<Void> sendPasswordResetEmail(String email) {
+        return FirebaseAuth.getInstance().sendPasswordResetEmail(email);
+    }
+
 
     public FirebaseUser getCurrentUser() {
         return firebaseAuth.getCurrentUser();

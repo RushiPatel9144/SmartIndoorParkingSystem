@@ -56,7 +56,7 @@
             android:exported="false"
             android:theme="@style/Base.Theme.SmartIndoorParkingSystem" />
         <activity
-            android:name=".launcherActivity.ui.SignUpActivity"
+            android:name=".launcherActivity.ui.signUp.SignUpActivity"
             android:windowSoftInputMode="adjustResize"
             android:exported="false" />
         <activity
