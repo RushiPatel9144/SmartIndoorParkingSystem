@@ -104,7 +104,7 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
     }
 
     private void initUIComponents() {
-        toolbar = findViewById(R.id.nisToolbar);
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         bottomNavigationView = findViewById(R.id.bottom_navigation);
     }
@@ -184,13 +184,14 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
         finish();
     }
 
-    @SuppressLint("InlinedApi")
     private void requestNotificationPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
                 != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.POST_NOTIFICATIONS},
-                    NOTIFICATION_PERMISSION_CODE);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.POST_NOTIFICATIONS},
+                        NOTIFICATION_PERMISSION_CODE);
+            }
         } else {
             notificationManagerHelper.sendWelcomeBackNotification();
         }
