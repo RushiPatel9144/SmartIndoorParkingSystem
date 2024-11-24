@@ -1,5 +1,8 @@
 package ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui.login;
 
+import static ca.tech.sense.it.smart.indoor.parking.system.utility.Constants.USER_TYPE_OWNER;
+import static ca.tech.sense.it.smart.indoor.parking.system.utility.Constants.USER_TYPE_USER;
+
 import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
@@ -9,9 +12,9 @@ public class LoginUserTypeValidator {
 
     // Public method to validate user type and trigger appropriate validation
     public static void validateUserType(String userId, String userType, String authToken, MutableLiveData<String> loginStatus, AuthRepository authRepository) {
-        if ("owner".equals(userType)) {
+        if (USER_TYPE_OWNER.equals(userType)) {
             validateOwner(userId, authToken, authRepository, loginStatus);
-        } else if ("user".equals(userType)) {
+        } else if (USER_TYPE_USER.equals(userType)) {
             validateUser(userId, authToken, authRepository, loginStatus);
         } else {
             loginStatus.setValue("error:Invalid user type.");
