@@ -122,9 +122,7 @@ public class LoginViewModel extends ViewModel {
         CoroutineHelper.Companion.signInWithGoogle(context, googleAuthClient, () -> {
             // On success, update login status to "user" (since this is for the user)
             loginStatus.setValue("user");
-
             NavigationHelper.navigateToMainActivity((AppCompatActivity) context);
-            //ths
             sessionManager.saveAuthToken("googleuser", USER_TYPE_USER, rememberMeCheckBox.isChecked() );
         });
     }
