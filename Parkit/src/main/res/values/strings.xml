@@ -408,5 +408,13 @@
     <string name="input_price_in_cad">Input Price in CAD</string>
     <string name="update_price">Update Price</string>
 
+    <string name="success_icon">Success Icon</string>
+    <string name="email_confirmation_sent">An email confirmation has been sent.</string>
+    <string name="qr_code">QR Code</string>
+    <string name="reference_number">Reference Number</string>
+    <string name="loading_address">Loading address...</string>
+    <string name="get_direction">Get Directions</string>
+    <string name="close">Close</string>
+
 
 </resources>

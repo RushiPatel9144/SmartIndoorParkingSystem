@@ -215,8 +215,8 @@ public class PaymentActivity extends AppCompatActivity {
         if (paymentSheetResult instanceof PaymentSheetResult.Completed) {
             // Use Handler with Looper.getMainLooper() for a delay
             new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                confirmBooking();
-                openParkingTicketActivity();
+                confirmBooking(); // Confirm the booking
+                openParkingTicketActivity(); // Pass data to ParkingTicket
             }, 2000); // 2-second delay
         } else if (paymentSheetResult instanceof PaymentSheetResult.Failed) {
             showToast("Payment Failed: " + ((PaymentSheetResult.Failed) paymentSheetResult).getError());
@@ -300,9 +300,15 @@ public class PaymentActivity extends AppCompatActivity {
     }
 
 
+
     private void openParkingTicketActivity() {
         Intent intent = new Intent(this, ParkingTicket.class);
-        intent.putExtra("passkey", booking.getPassKey()); // Pass the reference number or passkey
+
+        if (booking != null) {
+            intent.putExtra("address", booking.getLocation()); // Pass address
+            intent.putExtra("passkey", booking.getPassKey());  // Pass reference key
+        }
+
         startActivity(intent);
         finish();
     }

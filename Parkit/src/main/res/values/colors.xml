@@ -24,4 +24,9 @@
     <color name="bg">#F4F4F4</color>
     <color name="red">#D30808</color>
     <color name="semi_transparent_black">#80000000</color>
+    <color name="lightGray">#F5F5F5</color>
+    <color name="primaryText">#212121</color>
+    <color name="secondaryText">#757575</color>
+    <color name="primary">#6200EE</color>
+    <color name="accent">#03DAC5</color>
 </resources>
