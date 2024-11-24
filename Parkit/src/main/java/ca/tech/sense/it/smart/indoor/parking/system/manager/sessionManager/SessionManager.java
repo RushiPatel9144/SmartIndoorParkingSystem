@@ -1,4 +1,4 @@
-package ca.tech.sense.it.smart.indoor.parking.system.manager;
+package ca.tech.sense.it.smart.indoor.parking.system.manager.sessionManager;
 
 import android.content.Context;
 import android.content.SharedPreferences;

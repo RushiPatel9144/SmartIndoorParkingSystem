@@ -117,16 +117,26 @@
                         android:id="@+id/addressTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Parking Address"
                         android:textStyle="bold"
                         android:textSize="16sp"
                         android:textColor="#333333"/>
+
+                    <!-- ProgressBar -->
+                    <ProgressBar
+                        android:id="@+id/progressBar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        android:layout_gravity="center"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
 
                     <TextView
                         android:id="@+id/addressText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Building No. 26, Al Barsha 2, Street 43 A.T., Dubai, UAE"
                         android:textSize="14sp"
                         android:textColor="#666666"
                         android:layout_marginTop="8dp"/>

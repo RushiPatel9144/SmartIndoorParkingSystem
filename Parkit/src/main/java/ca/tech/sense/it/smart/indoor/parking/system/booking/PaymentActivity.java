@@ -45,6 +45,7 @@ import java.util.concurrent.Executors;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseDatabaseSingleton;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.bookingManager.BookingManager;
 import ca.tech.sense.it.smart.indoor.parking.system.model.Promotion;
 import ca.tech.sense.it.smart.indoor.parking.system.model.activity.Booking;
 
@@ -238,7 +239,7 @@ public class PaymentActivity extends AppCompatActivity {
         String selectedDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date(booking.getStartTime()));
 
         try {
-            bookingManager.confirmBooking(
+            bookingManager.getBookingService().confirmBooking(
                     booking.getLocationId(),        // Pass location ID
                     booking.getSlotNumber(),       // Pass slot number
                     selectedTimeSlot,              // Valid time slot

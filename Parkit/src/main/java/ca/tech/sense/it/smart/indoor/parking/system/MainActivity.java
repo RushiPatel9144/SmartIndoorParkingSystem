@@ -23,9 +23,9 @@ import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import ca.tech.sense.it.smart.indoor.parking.system.manager.NotificationManagerHelper;
-import ca.tech.sense.it.smart.indoor.parking.system.manager.SessionDataManager;
-import ca.tech.sense.it.smart.indoor.parking.system.manager.ThemeManager;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.notificationManager.NotificationManagerHelper;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.sessionManager.SessionDataManager;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.themeManager.ThemeManager;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui.FirstActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.Activity;

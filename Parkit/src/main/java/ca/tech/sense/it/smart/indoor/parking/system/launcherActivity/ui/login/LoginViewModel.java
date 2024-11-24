@@ -19,7 +19,7 @@ import java.util.Objects;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.credentialManagerGoogle.CoroutineHelper;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.credentialManagerGoogle.GoogleAuthClient;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.launcherUtililty.NavigationHelper;
-import ca.tech.sense.it.smart.indoor.parking.system.manager.SessionManager;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.sessionManager.SessionManager;
 import ca.tech.sense.it.smart.indoor.parking.system.repository.AuthRepository;
 
 
