@@ -24,6 +24,7 @@ import ca.tech.sense.it.smart.indoor.parking.system.manager.sessionManager.Sessi
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui.FirstActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems.*;
+import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems.manageAccount.ManageAccountFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
 
 public class AccountFragment extends Fragment {
