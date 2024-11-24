@@ -18,17 +18,17 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:paddingEnd="10dp"
             android:text="@string/notifications"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:paddingEnd="10dp"
-            android:layout_weight="1" />
+            tools:ignore="RtlSymmetry" />
 
         <Button
             android:id="@+id/btnClearNotifications"
-            android:layout_width="65dp"
-            android:layout_height="match_parent"
-            android:background="@drawable/button_background"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:padding="4dp"
             android:text="@string/clear"
             android:textSize="10sp"
