@@ -1,6 +1,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
+    android:id="@+id/ownerLocationFragment"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp"
@@ -27,17 +28,6 @@
             android:ellipsize="end"
             android:maxLines="1" />
 
-        <!-- Button to Add Location (on the right) -->
-        <ImageButton
-            android:id="@+id/addLocationButton"
-            android:layout_width="45dp"
-            android:layout_height="match_parent"
-            android:layout_gravity="center_vertical"
-            android:background="@android:color/transparent"
-            android:contentDescription="@string/add_new_location"
-            android:scaleType="fitCenter"
-            android:src="@drawable/pin"
-            android:visibility="gone" />
     </LinearLayout>
 
     <!-- Progress and Empty State -->
@@ -46,28 +36,28 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <!-- RecyclerView to List Locations -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/locationsRecyclerView"
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipeRefreshLayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scrollbars="vertical"
-            android:visibility="gone" />
+            android:layout_height="match_parent">
 
-        <!-- Progress Bar centered -->
-        <ProgressBar
-            android:id="@+id/progressBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center" />
+            <!-- RecyclerView to List Locations -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/locationsRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scrollbars="vertical" />
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
 
         <!-- Empty State Layout -->
         <LinearLayout
             android:id="@+id/emptyStateLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
             android:gravity="center"
+            android:orientation="vertical"
             android:visibility="gone">
 
             <TextView
@@ -75,16 +65,27 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/no_parking_locations_available"
-                android:textSize="18sp"
-                android:textColor="#888888" />
+                android:textColor="#888888"
+                android:textSize="18sp" />
 
             <Button
                 android:id="@+id/addLocationEmptyStateButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/add_your_parking"
-                android:layout_marginTop="8dp" />
+                android:layout_marginTop="8dp"
+                android:text="@string/add_your_parking" />
         </LinearLayout>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/addLocationButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:layout_margin="16dp"
+            android:contentDescription="@string/submit"
+            android:src="@drawable/baseline_add_24"
+            app:fabSize="auto"
+            app:backgroundTint="#DEDBDB" />
     </FrameLayout>
 
 </LinearLayout>

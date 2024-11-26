@@ -23,13 +23,6 @@
             android:textSize="18sp"
             android:textStyle="bold" />
 
-        <!-- Slot Status -->
-        <TextView
-            android:id="@+id/slotStatusTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/status"
-            android:textSize="16sp" />
 
         <!-- Sensor Info -->
         <TextView

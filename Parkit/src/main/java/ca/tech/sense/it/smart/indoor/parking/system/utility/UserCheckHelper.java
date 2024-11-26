@@ -11,13 +11,12 @@ public class UserCheckHelper {
 
     private static final String USERS_COLLECTION = "users";
     private static final String OWNERS_COLLECTION = "owners";
-    private FirebaseFirestore db;
+    private final FirebaseFirestore db;
 
     public UserCheckHelper() {
         db = FirestoreSingleton.getInstance();
     }
 
-    // Method to check if the user is an owner or regular user
     public void checkUserType(String userId, Context context, UserTypeCallback callback) {
         db.collection(OWNERS_COLLECTION).document(userId).get()
                 .addOnSuccessListener(documentSnapshot -> {
@@ -58,7 +57,6 @@ public class UserCheckHelper {
     // Callback interface for passing the result back to the caller
     public interface UserTypeCallback {
         void onUserTypeDetermined(UserType userType);
-
         void onError();
     }
 }

@@ -19,6 +19,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -27,7 +28,6 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
-import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -39,43 +39,46 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
-import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
-import ca.tech.sense.it.smart.indoor.parking.system.booking.BookingBottomSheetDialogFragment;
-import ca.tech.sense.it.smart.indoor.parking.system.booking.BookingManager;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.bookingManager.BookingBottomSheetDialogFragment;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.bookingManager.BookingManager;
 import ca.tech.sense.it.smart.indoor.parking.system.currency.CurrencyManager;
 import ca.tech.sense.it.smart.indoor.parking.system.currency.CurrencyService;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.parkingManager.ParkingLocationManager;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
 
 import ca.tech.sense.it.smart.indoor.parking.system.utility.AutocompleteSearchHelper;
-import ca.tech.sense.it.smart.indoor.parking.system.utility.ParkingUtility;
+import ca.tech.sense.it.smart.indoor.parking.system.utility.ParkingInterface;
 
 public class Park extends Fragment implements OnMapReadyCallback {
 
     private static final String TAG = "ParkFragment";
     private GoogleMap mMap;
-    private ParkingUtility parkingUtility;
+    private ParkingLocationManager parkingLocationManager = new ParkingLocationManager();
     private ExecutorService executorService;
     private ActivityResultLauncher<String> requestPermissionLauncher;
     private FusedLocationProviderClient fusedLocationClient;
+    private ScheduledExecutorService scheduledExecutorService;
     private boolean ratesFetched = false;
+    private ProgressBar progressBar;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        parkingUtility = new ParkingUtility();
-        executorService = Executors.newSingleThreadExecutor(); // Executor for background tasks
+        scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+        executorService = Executors.newFixedThreadPool(4);
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext());
         if (!ratesFetched) {
             fetchExchangeRates();
@@ -85,16 +88,22 @@ public class Park extends Fragment implements OnMapReadyCallback {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_park, container, false);
+        View view = inflater.inflate(R.layout.fragment_park, container, false);
+        progressBar = view.findViewById(R.id.progressBar);
+        return view;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        executorService.execute(() -> requireActivity().runOnUiThread(() -> {
-            initializeMap();
-            initializeAutocomplete();
-        }));
+        if (progressBar != null) {
+            progressBar.setVisibility(View.VISIBLE);
+        }
+        scheduledExecutorService.schedule(() ->
+            requireActivity().runOnUiThread(() -> {
+                initializeMap();
+                initializeAutocomplete();
+            }), 1, TimeUnit.SECONDS);
 
         // Check if there is a locationId passed from the FavoritesFragment
         if (getActivity() != null && getActivity().getIntent() != null) {
@@ -175,7 +184,7 @@ public class Park extends Fragment implements OnMapReadyCallback {
 
     private void addParkingSpotsToMap() {
         // Fetch parking locations in the background
-        parkingUtility.fetchAllParkingLocations(new ParkingUtility.FetchLocationsCallback() {
+        parkingLocationManager.fetchAllParkingLocations(new ParkingInterface.FetchLocationsCallback() {
             @Override
             public void onFetchSuccess(Map<String, ParkingLocation> locations) {
                 requireActivity().runOnUiThread(() -> {
@@ -191,6 +200,9 @@ public class Park extends Fragment implements OnMapReadyCallback {
                                 );
                                 assert marker != null;
                                 marker.setTag(location.getId());
+                                if (progressBar != null) {
+                                    progressBar.setVisibility(View.GONE);
+                                }
                             }
                         }
                     }
@@ -221,24 +233,23 @@ public class Park extends Fragment implements OnMapReadyCallback {
     public void showBookingBottomSheet(Marker marker) {
         String parkingLocationId = (String) marker.getTag();
         // Create an instance of ExecutorService
-        ExecutorService executorService = Executors.newFixedThreadPool(4);
 
         // Get instances of FirebaseDatabase and FirebaseAuth
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         BookingManager bookingManager = new BookingManager(executorService, firebaseDatabase, firebaseAuth,getContext());
-        BookingBottomSheetDialogFragment paymentFragment = new BookingBottomSheetDialogFragment (parkingLocationId, bookingManager, getContext());
+        BookingBottomSheetDialogFragment paymentFragment = new BookingBottomSheetDialogFragment (executorService,parkingLocationId, bookingManager, getContext());
         paymentFragment.show(getChildFragmentManager(), "BookingBottomSheetDialogFragment");
     }
 
     public void showBookingBottomSheet(String locationId) {
         // Create an instance of ExecutorService
-        ExecutorService executorService = Executors.newFixedThreadPool(4);
         // Get instances of FirebaseDatabase and FirebaseAuth
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         BookingManager bookingManager = new BookingManager(executorService, firebaseDatabase, firebaseAuth, getContext());
-        BookingBottomSheetDialogFragment bookingDialog = new BookingBottomSheetDialogFragment( locationId, bookingManager, getContext());
+        BookingBottomSheetDialogFragment bookingDialog = new BookingBottomSheetDialogFragment(executorService, locationId, bookingManager, getContext());
+
         bookingDialog.show(getChildFragmentManager(), "BookingBottomSheetDialogFragment");
     }
 

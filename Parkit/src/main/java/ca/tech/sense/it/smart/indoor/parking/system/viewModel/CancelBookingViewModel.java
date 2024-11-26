@@ -12,8 +12,8 @@ import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
-import ca.tech.sense.it.smart.indoor.parking.system.booking.BookingManager;
-import ca.tech.sense.it.smart.indoor.parking.system.model.activity.Booking;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.bookingManager.BookingManager;
+import ca.tech.sense.it.smart.indoor.parking.system.model.booking.Booking;
 
 public class CancelBookingViewModel extends AndroidViewModel {
     private final BookingManager bookingManager;
@@ -23,18 +23,18 @@ public class CancelBookingViewModel extends AndroidViewModel {
         bookingManager = new BookingManager(Executors.newSingleThreadExecutor(), FirebaseDatabase.getInstance(), FirebaseAuth.getInstance(), application.getApplicationContext());
     }
 
-    public void cancelBooking(String bookingId, Runnable onSuccess, Consumer<Exception> onFailure) {
+    public void cancelBooking(String transactionId, String bookingId, Runnable onSuccess, Consumer<Exception> onFailure) {
         String userId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
-        bookingManager.cancelBooking(userId, bookingId, onSuccess, onFailure);
+        bookingManager.getUserService().cancelBookingAndRequestRefund(userId,bookingId, transactionId, onSuccess, onFailure);
     }
 
     public void clearAllBookingHistory(Runnable onSuccess, Consumer<Exception> onFailure) {
         String userId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
-        bookingManager.clearAllBookingHistory(userId, bookings -> {
+        bookingManager.getUserService().clearAllBookingHistory(userId, bookings -> {
             long currentTime = System.currentTimeMillis();
             for (Booking booking : bookings) {
                 if (booking.getEndTime() < currentTime) {
-                    bookingManager.clearBookingHistory(userId, booking.getId(), onSuccess, onFailure);
+                    bookingManager.getUserService().clearBookingHistory(userId, booking.getId(), onSuccess, onFailure);
                 }
             }
             onSuccess.run();

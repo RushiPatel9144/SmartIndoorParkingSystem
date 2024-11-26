@@ -41,6 +41,7 @@ public class HelpFragment extends Fragment {
         btnSubmitHelp = view.findViewById(R.id.submit_feedback_button);
         progressBar = view.findViewById(R.id.progress_bar);
 
+
         // Initialize logic class
         helpFragmentLogic = new HelpFragmentLogic(getActivity(), etName, etPhone, etEmail, etComment, btnSubmitHelp, progressBar);
 

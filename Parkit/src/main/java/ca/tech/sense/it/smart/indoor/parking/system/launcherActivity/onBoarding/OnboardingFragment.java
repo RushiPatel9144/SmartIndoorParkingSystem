@@ -18,22 +18,36 @@ import androidx.fragment.app.Fragment;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui.FirstActivity;
 
+/**
+ * Fragment for onboarding screens with dynamic content.
+ */
 public class OnboardingFragment extends Fragment {
 
+    // Keys for arguments
     private static final String ARG_TITLE = "title";
     private static final String ARG_DESCRIPTION = "description";
     private static final String ARG_IMAGE_RES_ID = "imageResId";
     private static final String ARG_IS_LAST_PAGE = "isLastPage";
 
+    // Instance variables
     private String title;
     private String description;
     private int imageResId;
     private boolean isLastPage;
 
     public OnboardingFragment() {
-        // Required empty public constructor
+        // Default constructor
     }
 
+    /**
+     * Creates a new instance of the onboarding fragment with specified arguments.
+     *
+     * @param title       The title text for the onboarding screen.
+     * @param description The description text for the onboarding screen.
+     * @param imageResId  The resource ID of the image to display.
+     * @param isLastPage  Whether this is the last onboarding page.
+     * @return A configured instance of OnboardingFragment.
+     */
     public static OnboardingFragment newInstance(String title, String description, int imageResId, boolean isLastPage) {
         OnboardingFragment fragment = new OnboardingFragment();
         Bundle args = new Bundle();
@@ -48,6 +62,8 @@ public class OnboardingFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Retrieve arguments if available
         if (getArguments() != null) {
             title = getArguments().getString(ARG_TITLE);
             description = getArguments().getString(ARG_DESCRIPTION);
@@ -58,36 +74,60 @@ public class OnboardingFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_onboarding, container, false);
 
+        // Initialize views
+        initializeViews(view);
+
+        return view;
+    }
+
+    /**
+     * Initializes the UI components of the fragment.
+     *
+     * @param view The root view of the fragment.
+     */
+    private void initializeViews(View view) {
         TextView titleTextView = view.findViewById(R.id.onBoard_titleTextView);
         TextView descriptionTextView = view.findViewById(R.id.onBoard_descriptionTextView);
         ImageView imageView = view.findViewById(R.id.onBoard_imageView);
         Button getStartedButton = view.findViewById(R.id.onBoard_getStartedButton);
 
-
+        // Set the content for the fragment
         titleTextView.setText(title);
         descriptionTextView.setText(description);
         imageView.setImageResource(imageResId);
 
-
-        // Show "Get Started" button only if this is the last page
-        if (isLastPage) {
-            getStartedButton.setVisibility(View.VISIBLE);
-            getStartedButton.setOnClickListener(v -> {
-                // Set onboarding completed in SharedPreferences
-                SharedPreferences preferences = requireActivity().getSharedPreferences("app_preferences", Context.MODE_PRIVATE);
-                preferences.edit().putBoolean("isFirstTime", false).apply();
-
-                // Navigate to FirstActivity
-                startActivity(new Intent(getActivity(), FirstActivity.class));
-                requireActivity().finish();
-            });
-        }
-
-        return view;
+        // Configure the "Get Started" button for the last page
+        configureGetStartedButton(getStartedButton);
     }
 
+    /**
+     * Configures the "Get Started" button. Only visible and functional on the last page.
+     *
+     * @param getStartedButton The button to be configured.
+     */
+    private void configureGetStartedButton(Button getStartedButton) {
+        if (isLastPage) {
+            getStartedButton.setVisibility(View.VISIBLE);
+            getStartedButton.setOnClickListener(v -> completeOnboarding());
+        } else {
+            getStartedButton.setVisibility(View.GONE);
+        }
+    }
+
+    /**
+     * Marks onboarding as complete and navigates to the first activity.
+     */
+    private void completeOnboarding() {
+        // Update shared preferences to indicate onboarding completion
+        SharedPreferences preferences = requireActivity().getSharedPreferences("app_preferences", Context.MODE_PRIVATE);
+        preferences.edit().putBoolean("isFirstTime", false).apply();
+
+        // Navigate to the first activity
+        startActivity(new Intent(getActivity(), FirstActivity.class));
+        requireActivity().finish();
+    }
 }

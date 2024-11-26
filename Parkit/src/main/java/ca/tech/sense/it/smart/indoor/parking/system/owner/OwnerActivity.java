@@ -1,24 +1,25 @@
 package ca.tech.sense.it.smart.indoor.parking.system.owner;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.activity.OnBackPressedCallback;
+
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.Objects;
 
-import ca.tech.sense.it.smart.indoor.parking.system.Manager.FragmentManagerHelper;
-import ca.tech.sense.it.smart.indoor.parking.system.Manager.PreferenceManager;
-import ca.tech.sense.it.smart.indoor.parking.system.Manager.SessionDataManager;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.favoriteManager.FragmentManagerHelper;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.preferenceManager.PreferenceManager;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.sessionManager.SessionManager;
+import ca.tech.sense.it.smart.indoor.parking.system.model.owner.Owner;
+import ca.tech.sense.it.smart.indoor.parking.system.model.user.User;
 import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.DashboardFragment;
+import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.transactions.TransactionsFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.location.LocationsFragment;
-import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.TransactionsFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountFragment;
 
 public class OwnerActivity extends AppCompatActivity implements BottomNavigationView.OnItemSelectedListener {
@@ -40,6 +41,20 @@ public class OwnerActivity extends AppCompatActivity implements BottomNavigation
         // Initialize UI components
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation_owner);
         setSupportActionBar(findViewById(R.id.toolbar_owner));
+
+        // Fetch session data when the activity is created
+        SessionManager sessionManager = SessionManager.getInstance(this);
+        sessionManager.fetchSessionData(new SessionManager.OnSessionDataFetchedCallback() {
+            @Override
+            public void onSessionDataFetched(User user, Owner owner) {
+                // You can now use 'user' or 'owner' data for your UI
+                if (user != null) {
+                    // Use user data
+                } else if (owner != null) {
+                    // Use owner data
+                }
+            }
+        });
 
         // Initialize helpers
         fragmentManagerHelper = new FragmentManagerHelper(getSupportFragmentManager(), R.id.fragment_container_owner);

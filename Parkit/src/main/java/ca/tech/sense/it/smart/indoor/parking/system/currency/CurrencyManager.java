@@ -1,9 +1,7 @@
 package ca.tech.sense.it.smart.indoor.parking.system.currency;
 
-import android.util.Log;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 public class CurrencyManager {
     private static CurrencyManager instance;
@@ -61,7 +59,6 @@ public class CurrencyManager {
             Currency currency = currencies.get(entry.getKey());
             if (currency != null) {
                 currency.setExchangeRateToBase(entry.getValue());
-                Log.d("CurrencyManager", "Updated " + entry.getKey() + " rate: " + entry.getValue());
             }
         }
 
@@ -85,8 +82,6 @@ public class CurrencyManager {
                 return amountInCAD * exchangeRate;
             }
         }
-        // Fallback if exchange rate is missing or invalid
-        Log.e("CurrencyManager", "Invalid or missing exchange rate for: " + targetCurrencyCode);
         return amountInCAD;
     }
 }

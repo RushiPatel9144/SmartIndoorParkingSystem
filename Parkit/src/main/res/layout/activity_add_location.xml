@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    android:background="@color/bg">
+    android:background="@color/bg"
+    android:fitsSystemWindows="true">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -147,7 +148,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/back"
+                android:text="@string/cancel"
                 android:backgroundTint="@color/gray"
                 android:paddingVertical="12dp"
                 android:layout_marginEnd="8dp"
@@ -161,7 +162,7 @@
                 android:backgroundTint="@color/theme"
                 android:paddingVertical="12dp"
                 android:layout_marginStart="8dp"
-                android:text="@string/stripe_continue_button_label"
+                android:text="@string/add_location"
                 android:textSize="16sp" />
         </LinearLayout>
 

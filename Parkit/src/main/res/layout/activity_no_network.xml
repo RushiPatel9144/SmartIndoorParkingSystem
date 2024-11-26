@@ -5,7 +5,8 @@
     android:orientation="vertical"
     android:gravity="center"
     android:padding="24dp"
-    android:background="@color/white"> <!-- Add a drawable for background pattern -->
+    android:background="@color/white"
+    android:fitsSystemWindows="true"> <!-- Add a drawable for background pattern -->
 
     <!-- Icon with increased size -->
     <ImageView

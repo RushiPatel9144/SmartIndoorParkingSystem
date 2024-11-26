@@ -1,19 +1,16 @@
 package ca.tech.sense.it.smart.indoor.parking.system;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
-import android.Manifest;
+
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -26,11 +23,12 @@ import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import ca.tech.sense.it.smart.indoor.parking.system.Manager.NotificationManagerHelper;
-import ca.tech.sense.it.smart.indoor.parking.system.Manager.SessionDataManager;
-import ca.tech.sense.it.smart.indoor.parking.system.Manager.ThemeManager;
-import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui.LoginActivity;
-import ca.tech.sense.it.smart.indoor.parking.system.model.user.UserManager;
+import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui.FirstActivity;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.notificationManager.NotificationManagerHelper;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.sessionManager.SessionManager;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.themeManager.ThemeManager;
+import ca.tech.sense.it.smart.indoor.parking.system.model.owner.Owner;
+import ca.tech.sense.it.smart.indoor.parking.system.model.user.User;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.Activity;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.Home;
@@ -69,17 +67,17 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
         initFirebaseAuth();
         initUIComponents();
 
-        // Fetch session data (user or owner)
-        SessionDataManager.getInstance().fetchSessionData((user, owner) -> {
-            if (user != null) {
-                Log.d(TAG, "User data loaded: " + user.getEmail());
-                // Handle user-specific logic
-            } else if (owner != null) {
-                Log.d(TAG, "Owner data loaded: " + owner.getEmail());
-                // Handle owner-specific logic
-            } else {
-                Log.d(TAG, "No session data found.");
-                // Handle no data case (perhaps navigate to login screen)
+        // Fetch session data when the activity is created
+        SessionManager sessionManager = SessionManager.getInstance(this);
+        sessionManager.fetchSessionData(new SessionManager.OnSessionDataFetchedCallback() {
+            @Override
+            public void onSessionDataFetched(User user, Owner owner) {
+                // You can now use 'user' or 'owner' data for your UI
+                if (user != null) {
+                    // Use user data
+                } else if (owner != null) {
+                    // Use owner data
+                }
             }
         });
 
@@ -103,12 +101,12 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
         FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
 
         if (firebaseUser == null) {
-            navigateToLoginActivity();
+            navigateToFirstActivity();
         }
     }
 
     private void initUIComponents() {
-        toolbar = findViewById(R.id.nisToolbar);
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         bottomNavigationView = findViewById(R.id.bottom_navigation);
     }
@@ -117,24 +115,40 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
-                    getSupportFragmentManager().popBackStack();
-                } else {
-                    DialogUtil.showLeaveAppDialog(MainActivity.this, getString(R.string.confirm_exit), getString(R.string.are_you_sure_you_want_to_exit_the_app), R.drawable.crisis,
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                Fragment currentFragment = fragmentManager.findFragmentById(R.id.flFragment);
+
+                // Check if the current fragment is one of the four specific fragments
+                if (currentFragment instanceof Home || currentFragment instanceof Park ||
+                        currentFragment instanceof Activity || currentFragment instanceof AccountFragment) {
+
+                    // Show confirmation dialog when one of the specific fragments is visible
+                    DialogUtil.showLeaveAppDialog(MainActivity.this, getString(R.string.confirm_exit),
+                            getString(R.string.are_you_sure_you_want_to_exit_the_app), R.drawable.crisis,
                             new DialogUtil.BackPressCallback() {
                                 @Override
                                 public void onConfirm() {
-                                    finishAffinity();
+                                    finishAffinity(); // Exit the app
                                 }
 
                                 @Override
                                 public void onCancel() {
-                                    //dismiss
+                                    // Dismiss the dialog
                                 }
-                            });}
+                            });
+                } else {
+                    // Pop the fragment from the back stack if it's not one of the specific fragments
+                    if (fragmentManager.getBackStackEntryCount() > 0) {
+                        fragmentManager.popBackStack();
+                    } else {
+                        // Default behavior if no fragments are left in the back stack
+                    }
+                }
             }
-        };getOnBackPressedDispatcher().addCallback(this, callback);
+        };
+        getOnBackPressedDispatcher().addCallback(this, callback);
     }
+
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -166,20 +180,20 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
     }
 
 
-
-    private void navigateToLoginActivity() {
-        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+    private void navigateToFirstActivity() {
+        Intent intent = new Intent(getApplicationContext(), FirstActivity.class);
         startActivity(intent);
         finish();
     }
 
-    @SuppressLint("InlinedApi")
     private void requestNotificationPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
                 != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.POST_NOTIFICATIONS},
-                    NOTIFICATION_PERMISSION_CODE);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.POST_NOTIFICATIONS},
+                        NOTIFICATION_PERMISSION_CODE);
+            }
         } else {
             notificationManagerHelper.sendWelcomeBackNotification();
         }

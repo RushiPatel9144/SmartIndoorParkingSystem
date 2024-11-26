@@ -17,7 +17,7 @@ class CoroutineHelper {
             CoroutineScope(Dispatchers.Main).launch {
                 try {
                     val success = googleAuthClient.signIn()
-                    val message = if (success) "Sign-in successful" else "Sign-in failed"
+                    val message = if (success) "Sign-in successful" else "Google Sign-in failed"
                     Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                     if (success) run {
                         onSuccess.run()
@@ -37,6 +37,26 @@ class CoroutineHelper {
                     ).show()
                 }
             }
+        }
+
+        fun signOutWithGoogle(
+            context: Context,
+            googleAuthClient: GoogleAuthClient,
+            onSuccess: Runnable
+        ) { CoroutineScope(Dispatchers.Main).launch {
+            try {
+                val success = googleAuthClient.signOut()
+                val message = if (success) { "Sign-out successful" } else "Google Sign-out failed"
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                if (success) run {
+                    onSuccess.run()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Toast.makeText(context, "Error during sign-out: ${e.message}", Toast.LENGTH_SHORT)
+                    .show()
+            }
+        }
         }
     }
 }
