@@ -106,7 +106,6 @@ public class ManageAccountFragment extends Fragment {
         checkUserType();
         scheduleCheckUserType();
         swipeRefreshLayout.setOnRefreshListener(this::scheduleCheckUserType);
-
         return rootView;
     }
 
