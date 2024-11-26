@@ -24,7 +24,8 @@ import static ca.tech.sense.it.smart.indoor.parking.system.utility.Constants.USE
 
 public class FirstActivity extends AppCompatActivity {
 
-    private MaterialButton signInAsUserButton, signInAsOwnerButton;
+    private MaterialButton signInAsUserButton;
+    private MaterialButton signInAsOwnerButton;
     private SessionManager sessionManager;
 
     @Override
