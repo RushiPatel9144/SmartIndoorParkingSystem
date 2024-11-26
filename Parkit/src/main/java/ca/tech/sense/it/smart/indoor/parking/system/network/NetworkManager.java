@@ -1,12 +1,14 @@
 package ca.tech.sense.it.smart.indoor.parking.system.network;
 
 import android.content.Context;
-import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
+
+import com.google.android.material.snackbar.Snackbar;
+
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 
 public class NetworkManager {
@@ -14,6 +16,7 @@ public class NetworkManager {
     private static NetworkManager instance;
     private ConnectivityManager.NetworkCallback networkCallback;
     private boolean wasNetworkLost = false;
+    private NetworkListener networkListener;
 
     private NetworkManager() {}
 
@@ -24,6 +27,12 @@ public class NetworkManager {
         return instance;
     }
 
+    // Register a listener for network changes (for fragments or activities)
+    public void setNetworkListener(NetworkListener listener) {
+        this.networkListener = listener;
+    }
+
+    // Start monitoring the network state
     public void startMonitoring(Context context) {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (cm != null) {
@@ -48,6 +57,7 @@ public class NetworkManager {
         }
     }
 
+    // Stop monitoring when not needed
     public void stopMonitoring(Context context) {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (cm != null && networkCallback != null) {
@@ -55,47 +65,64 @@ public class NetworkManager {
         }
     }
 
-    public void handleNetworkAvailability(Context context, Network network) {
+    private void handleNetworkAvailability(Context context, Network network) {
         if (hasInternetAccess(context, network)) {
             if (wasNetworkLost) {
                 showToast(context, context.getString(R.string.network_is_available));
                 wasNetworkLost = false;
             }
+            notifyNetworkAvailable();
         } else {
-            showToastAndOpenNoNetworkActivity(context);
+            showToast(context, context.getString(R.string.no_internet_connection));
+            notifyNetworkLost();
         }
     }
 
-    public void handleNetworkLoss(Context context) {
+    private void handleNetworkLoss(Context context) {
         wasNetworkLost = true;
-        showToastAndOpenNoNetworkActivity(context);
+        showToast(context, context.getString(R.string.no_internet_connection));
+        notifyNetworkLost();
     }
 
-    public void handleNetworkCapabilitiesChange(Context context, NetworkCapabilities networkCapabilities) {
+    private void handleNetworkCapabilitiesChange(Context context, NetworkCapabilities networkCapabilities) {
         if (networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)) {
             if (wasNetworkLost) {
                 showToast(context, context.getString(R.string.network_is_available));
                 wasNetworkLost = false;
             }
+            notifyNetworkAvailable();
         } else {
-            showToastAndOpenNoNetworkActivity(context);
+            showToast(context, context.getString(R.string.no_internet_connection));
+            notifyNetworkLost();
         }
     }
 
-    private void showToastAndOpenNoNetworkActivity(Context context) {
-        showToast(context, context.getString(R.string.no_internet_connection));
-        Intent intent = new Intent(context, NoNetworkActivity.class);
-        context.startActivity(intent);
+    private void notifyNetworkAvailable() {
+        if (networkListener != null) {
+            networkListener.onNetworkAvailable();
+        }
+    }
+
+    private void notifyNetworkLost() {
+        if (networkListener != null) {
+            networkListener.onNetworkLost();
+        }
     }
 
     private boolean hasInternetAccess(Context context, Network network) {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkCapabilities capabilities = cm.getNetworkCapabilities(network);
-
         return capabilities != null && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
     }
 
     public static void showToast(Context context, String message) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+    }
+
+
+    // Define the listener interface for fragments or activities to implement
+    public interface NetworkListener {
+        void onNetworkAvailable();
+        void onNetworkLost();
     }
 }

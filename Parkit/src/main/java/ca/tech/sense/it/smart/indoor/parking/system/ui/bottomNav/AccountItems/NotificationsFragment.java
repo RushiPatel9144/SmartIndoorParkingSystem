@@ -16,6 +16,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.network.BaseNetworkFragment;
+import ca.tech.sense.it.smart.indoor.parking.system.network.NoNetworkFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.viewModel.NotificationsViewModel;
 import ca.tech.sense.it.smart.indoor.parking.system.model.Notification;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.adapters.NotificationAdapter;

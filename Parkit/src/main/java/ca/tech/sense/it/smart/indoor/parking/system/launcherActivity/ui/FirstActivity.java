@@ -22,9 +22,10 @@ import ca.tech.sense.it.smart.indoor.parking.system.network.BaseActivity;
 import static ca.tech.sense.it.smart.indoor.parking.system.utility.Constants.USER_TYPE_OWNER;
 import static ca.tech.sense.it.smart.indoor.parking.system.utility.Constants.USER_TYPE_USER;
 
-public class FirstActivity extends BaseActivity {
+public class FirstActivity extends AppCompatActivity {
 
-    private MaterialButton signInAsUserButton, signInAsOwnerButton;
+    private MaterialButton signInAsUserButton;
+    private MaterialButton signInAsOwnerButton;
     private SessionManager sessionManager;
 
     @Override

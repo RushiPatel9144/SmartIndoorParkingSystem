@@ -36,8 +36,6 @@ public class SessionManager {
     private final FirebaseAuth mAuth;
     private final FirebaseFirestore db;
 
-
-
     private User currentUser;
     private Owner currentOwner;
 
