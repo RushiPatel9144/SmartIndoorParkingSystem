@@ -19,8 +19,8 @@ public class ParkingTicket extends AppCompatActivity {
 
     private TextView addressTitle;
     private TextView addressText;
-    private ProgressBar progressBar; // ProgressBar variable
-    private String address; // Variable to store the address
+    private ProgressBar progressBar;
+    private String address;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,32 +32,34 @@ public class ParkingTicket extends AppCompatActivity {
         Button getDirectionButton = findViewById(R.id.getDirectionButton);
         addressTitle = findViewById(R.id.addressTitle);
         addressText = findViewById(R.id.addressText);
-        progressBar = findViewById(R.id.progressBar); // Initialize ProgressBar
+        progressBar = findViewById(R.id.progressBar);
 
+        // Get data from the intent
         Intent intent = getIntent();
         if (intent != null) {
             try {
                 String passkey = intent.getStringExtra("passkey");
-                address = intent.getStringExtra("address"); // Retrieve the address
+                address = intent.getStringExtra("address");
 
+                // Check if passkey is not null and address is provided
                 if (!TextUtils.isEmpty(passkey)) {
                     referenceNumberTextView.setText(passkey);
+                    progressBar.setVisibility(View.VISIBLE);
 
-                    progressBar.setVisibility(View.VISIBLE); // Show ProgressBar
                     new Handler(Looper.getMainLooper()).postDelayed(() -> {
                         if (!TextUtils.isEmpty(address)) {
                             updateUIWithBookingDetails(address);
                         } else {
                             showToast("Address not provided");
                         }
-                        progressBar.setVisibility(View.GONE); // Hide ProgressBar
-                    }, 2000); // 2-second delay
+                        progressBar.setVisibility(View.GONE);
+                    }, 2000);
                 } else {
                     showToast("Passkey is missing");
                 }
             } catch (Exception e) {
                 showToast("An error occurred: " + e.getMessage());
-                progressBar.setVisibility(View.GONE); // Hide ProgressBar in case of an error
+                progressBar.setVisibility(View.GONE);
             }
         } else {
             showToast("Intent data is missing");
@@ -78,15 +80,18 @@ public class ParkingTicket extends AppCompatActivity {
 
     private void openMap() {
         try {
-            // Use the stored address for the destination
-            String destination = "geo:0,0?q=" + Uri.encode(address);
-            Uri gmmIntentUri = Uri.parse(destination);
-            Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
-            mapIntent.setPackage("com.google.android.apps.maps");
-            if (mapIntent.resolveActivity(getPackageManager()) != null) {
-                startActivity(mapIntent);
+            if (address != null) {
+                String destination = "geo:0,0?q=" + Uri.encode(address);
+                Uri gmmIntentUri = Uri.parse(destination);
+                Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+                mapIntent.setPackage("com.google.android.apps.maps");
+                if (mapIntent.resolveActivity(getPackageManager()) != null) {
+                    startActivity(mapIntent);
+                } else {
+                    showToast("Google Maps is not installed");
+                }
             } else {
-                showToast("Google Maps is not installed");
+                showToast("Address is missing for directions");
             }
         } catch (Exception e) {
             showToast("An error occurred while opening the map: " + e.getMessage());
