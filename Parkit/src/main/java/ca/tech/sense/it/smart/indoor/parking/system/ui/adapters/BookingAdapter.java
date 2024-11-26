@@ -101,11 +101,11 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingV
                     .setPositiveButton("Yes", (dialog, which) -> {
                         int position = getBindingAdapterPosition();
                         if (position != RecyclerView.NO_POSITION && position < bookingList.size()) {
-                            cancelBookingViewModel.cancelBooking(booking.getId(), () -> {
+                            cancelBookingViewModel.cancelBooking(booking.getTransactionId(), booking.getId(), () -> {
                                 bookingList.remove(position);
                                 notifyItemRemoved(position);
                                 notifyItemRangeChanged(position, bookingList.size());
-                                Toast.makeText(context, "Booking cancelled", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(context, "Booking cancelled and refunded. The money may take a few days to reach your bank account.", Toast.LENGTH_SHORT).show();
                                 // Refresh the list
                                 bookingViewModel.fetchUserBookings();
                             }, error -> Toast.makeText(context, "Failed to cancel booking: " + error.getMessage(), Toast.LENGTH_SHORT).show());

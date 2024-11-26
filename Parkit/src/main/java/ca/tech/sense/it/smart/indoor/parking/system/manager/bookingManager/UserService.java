@@ -103,6 +103,10 @@ public class UserService {
                 });
     }
 
+    public void cancelBookingAndRequestRefund(String userId, String bookingId, String transactionId, Runnable onSuccess, Consumer<Exception> onFailure) {
+        cancelBooking(userId, bookingId, () -> requestRefund(transactionId, onSuccess, onFailure), onFailure);
+    }
+
     public void cancelBooking(String userId, String bookingId, Runnable onSuccess, Consumer<Exception> onFailure) {
         if (bookingId == null) {
             onFailure.accept(new Exception("Booking ID is null"));
@@ -115,18 +119,12 @@ public class UserService {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 Booking booking = snapshot.getValue(Booking.class);
                 if (booking != null) {
-                    String transactionId = booking.getTransactionId();
-                    if (transactionId == null) {
-                        onFailure.accept(new Exception("Transaction ID is missing for this booking"));
-                        return;
-                    }
                     // Remove the booking
                     bookingRef.removeValue()
                             .addOnSuccessListener(aVoid -> {
                                 // Update the slot status to "available"
                                 SlotService slotService = new SlotService(executorService, firebaseDatabase, Executors.newScheduledThreadPool(1));
                                 slotService.updateSlotStatusToAvailable(booking.getLocationId(), booking.getSlotNumber(), booking.getStartTime(), booking.getEndTime(), onSuccess, onFailure);
-                                requestRefund(transactionId, onSuccess, onFailure);
                             })
                             .addOnFailureListener(onFailure::accept);
                 } else {
@@ -140,18 +138,18 @@ public class UserService {
             }
         });
     }
+
     private void requestRefund(String transactionId, Runnable onSuccess, Consumer<Exception> onFailure) {
         OkHttpClient client = new OkHttpClient();
         String url = "https://parkit-cd4c2ec26f90.herokuapp.com/refund-payment";
 
         JSONObject jsonRequest = new JSONObject();
         try {
-            jsonRequest.put("transactionId", transactionId); // Transaction ID to refund
+            jsonRequest.put("transactionId", transactionId);
         } catch (JSONException e) {
             onFailure.accept(e);
             return;
         }
-
         RequestBody body = RequestBody.create(
                 MediaType.parse("application/json"), jsonRequest.toString());
 

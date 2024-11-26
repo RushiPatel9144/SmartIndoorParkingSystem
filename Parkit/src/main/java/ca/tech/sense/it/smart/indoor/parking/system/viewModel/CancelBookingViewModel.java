@@ -23,9 +23,9 @@ public class CancelBookingViewModel extends AndroidViewModel {
         bookingManager = new BookingManager(Executors.newSingleThreadExecutor(), FirebaseDatabase.getInstance(), FirebaseAuth.getInstance(), application.getApplicationContext());
     }
 
-    public void cancelBooking(String bookingId, Runnable onSuccess, Consumer<Exception> onFailure) {
+    public void cancelBooking(String transactionId, String bookingId, Runnable onSuccess, Consumer<Exception> onFailure) {
         String userId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
-        bookingManager.getUserService().cancelBooking(userId, bookingId, onSuccess, onFailure);
+        bookingManager.getUserService().cancelBookingAndRequestRefund(userId,bookingId, transactionId, onSuccess, onFailure);
     }
 
     public void clearAllBookingHistory(Runnable onSuccess, Consumer<Exception> onFailure) {
