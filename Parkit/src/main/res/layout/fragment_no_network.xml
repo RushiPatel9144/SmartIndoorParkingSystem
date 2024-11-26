@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="24dp"
+    android:background="@color/white"
+    android:fitsSystemWindows="true"> <!-- Add a drawable for background pattern -->
+
+    <!-- Icon with increased size -->
+    <ImageView
+        android:id="@+id/errorIcon"
+        android:layout_width="216dp"
+        android:layout_height="158dp"
+        android:layout_marginTop="32dp"
+        android:src="@mipmap/ic_no_internet" />
+
+    <!-- Title Text with larger font size and accent color -->
+    <TextView
+        android:id="@+id/errorTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/ooops"
+        android:textSize="36sp"
+        android:textStyle="bold"
+        android:layout_marginTop="24dp"
+        android:textColor="#3C5A99" />
+
+    <!-- Message Text with adjusted padding for more readability -->
+    <TextView
+        android:id="@+id/errorMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:paddingHorizontal="32dp"
+        android:text="@string/it_seems_there_is_something_wrong_with_your_internet_connection_please_connect_to_the_internet_and_try_again"
+        android:textSize="18sp"
+        android:lineSpacingExtra="4dp"
+        android:textAlignment="center"/>
+
+    <!-- Retry Button with shadow and larger padding -->
+    <Button
+        android:id="@+id/retryButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:backgroundTint="#fa4350"
+        android:elevation="4dp"
+        android:paddingHorizontal="40dp"
+        android:paddingVertical="16dp"
+        android:text="@string/try_again"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <!-- Open Network Settings Button -->
+    <Button
+        android:id="@+id/openNetworkSettingsButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="#16a5d9"
+        android:paddingHorizontal="24dp"
+        android:paddingVertical="12dp"
+        android:text="@string/open_network_settings"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp" />
+
+</LinearLayout>
