@@ -70,6 +70,7 @@ public class PaymentActivity extends AppCompatActivity {
     private PaymentSheet paymentSheet;
     private String currency = "CAD";
     private double total;
+    private String transactionId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -195,6 +196,7 @@ public class PaymentActivity extends AppCompatActivity {
                     try {
                         JSONObject jsonResponse = new JSONObject(response.body().string());
                         String clientSecret = jsonResponse.getString("clientSecret");
+                        transactionId = jsonResponse.getString("transactionId");
                         runOnUiThread(() -> startPaymentFlow(clientSecret));
                     } catch (JSONException e) {
                         runOnUiThread(() -> showToast(getString(R.string.failed_to_parse_server_response)));
@@ -240,6 +242,7 @@ public class PaymentActivity extends AppCompatActivity {
 
         try {
             bookingManager.getBookingService().confirmBooking(
+                    transactionId,
                     booking.getLocationId(),        // Pass location ID
                     booking.getSlotNumber(),       // Pass slot number
                     selectedTimeSlot,              // Valid time slot

@@ -306,7 +306,8 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
                                 selectedCurrency.getSymbol(),
                                 selectedSlot,
                                 BookingUtils.generatePassKey(), // Generate the pass key
-                                locationId // Add the locationId to the booking
+                                locationId, // Add the locationId to the booking
+                                null
                         );
 
                         // Create an Intent to start PaymentActivity and pass the booking data
