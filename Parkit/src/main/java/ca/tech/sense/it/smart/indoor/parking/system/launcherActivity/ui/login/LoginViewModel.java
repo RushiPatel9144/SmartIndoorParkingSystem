@@ -1,6 +1,6 @@
 package ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui.login;
 
-import static ca.tech.sense.it.smart.indoor.parking.system.utility.Constants.USER_TYPE_USER;
+import static ca.tech.sense.it.smart.indoor.parking.system.utility.AppConstants.USER_TYPE_USER;
 
 import android.content.Context;
 import android.widget.CheckBox;
@@ -10,7 +10,6 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Objects;

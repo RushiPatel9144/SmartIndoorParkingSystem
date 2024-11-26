@@ -11,6 +11,7 @@ import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.Objects;
@@ -28,6 +29,7 @@ public class SignUpActivity extends BaseActivity {
     private FirebaseAuth mAuth;
     private CheckBox checkBox;
     private String userID,userType;
+    private TextInputLayout signup_first_name_layout, signup_last_name_layout, signup_phone_number_layout,signup_email_layout, signup_password_layout, signup_confirm_password_layout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,9 +55,15 @@ public class SignUpActivity extends BaseActivity {
         firstName = findViewById(R.id.editTextFirstName);
         lastName = findViewById(R.id.editTextLastName);
         phone = findViewById(R.id.signup_phoneNumber);
+
+        signup_first_name_layout = findViewById(R.id.signup_first_name_layout);
+        signup_last_name_layout = findViewById(R.id.signup_last_name_layout);
+        signup_phone_number_layout = findViewById(R.id.signup_phone_number_layout);
+        signup_email_layout = findViewById(R.id.signup_email_layout);
+        signup_password_layout = findViewById(R.id.signup_password_layout);
+        signup_confirm_password_layout = findViewById(R.id.signup_confirm_password_layout);
+
         TextView titleTV = findViewById(R.id.signup_title_tv);
-
-
 
         mAuth = FirebaseAuth.getInstance();
         userType =  getIntent().getStringExtra("userType");
@@ -71,8 +79,7 @@ public class SignUpActivity extends BaseActivity {
         jump_to_login.setOnClickListener(v -> SignUpHelper.navigateToLogin(this,userType));
 
         editTextPassword.setOnFocusChangeListener((v, hasFocus) -> SignUpHelper.scrollViewChangeBasedOnUi(hasFocus, editTextPassword, scrollView));
-
         // Handle Sign Up button click
-        button.setOnClickListener(v -> SignUpHelper.handleSignUp(progressBar, editTextEmail, editTextPassword, editTextConfirmPassword, firstName, lastName, phone, checkBox, userType, mAuth, this));
+        button.setOnClickListener(v -> SignUpHelper.handleSignUp(progressBar, editTextEmail, editTextPassword, editTextConfirmPassword, firstName, lastName, phone, checkBox, userType, mAuth, this,signup_email_layout,signup_password_layout,signup_confirm_password_layout,signup_phone_number_layout,signup_first_name_layout,signup_last_name_layout));
     }
 }

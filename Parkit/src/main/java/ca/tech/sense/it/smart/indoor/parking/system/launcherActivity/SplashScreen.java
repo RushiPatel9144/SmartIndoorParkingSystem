@@ -6,7 +6,7 @@
 
 package ca.tech.sense.it.smart.indoor.parking.system.launcherActivity;
 
-import static ca.tech.sense.it.smart.indoor.parking.system.utility.Constants.SPLASH_SCREEN_TIME_OUT;
+import static ca.tech.sense.it.smart.indoor.parking.system.utility.AppConstants.SPLASH_SCREEN_TIME_OUT;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;

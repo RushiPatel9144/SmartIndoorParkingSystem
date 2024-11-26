@@ -37,4 +37,7 @@ public class FirestoreHelper {
             }
         }).addOnFailureListener(e -> ToastHelper.showToast(context, "Failed to check user data."));
     }
+
+
+
 }

@@ -417,6 +417,9 @@
     <string name="close">Close</string>
     <string name="parking_ticket">Parking Ticket</string>
     <string name="no_transactions_yet">No Transactions Yet</string>
+    <string name="error_updating_profile_photo">Error updating profile photo</string>
+    <string name="error_uploading_photo">Error Uploading Photo</string>
+
 
     <!-- strings.xml -->
     <string name="user_responsibilities_content">
