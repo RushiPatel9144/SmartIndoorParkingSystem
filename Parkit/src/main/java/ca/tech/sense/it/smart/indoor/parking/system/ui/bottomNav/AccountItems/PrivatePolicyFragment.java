@@ -12,7 +12,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import org.json.JSONException;
 import org.json.JSONObject;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
-import ca.tech.sense.it.smart.indoor.parking.system.utility.FirestoreHelper;
+import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirestoreSingleton;
 
 public class PrivatePolicyFragment extends Fragment {
 
@@ -54,11 +54,7 @@ public class PrivatePolicyFragment extends Fragment {
         tvChangesToPrivacyPolicyContent = view.findViewById(R.id.tvChangesToPrivacyPolicyContent);
         tvContactUsContent = view.findViewById(R.id.tvContactUsContent);
 
-        db = FirebaseFirestore.getInstance();
-
-        FirestoreHelper firestoreHelper = new FirestoreHelper();
-        firestoreHelper.addLegalDocuments(); // Add this line to call the method
-
+        db = FirestoreSingleton.getInstance();
         fetchPrivacyPolicy();
         return view;
     }

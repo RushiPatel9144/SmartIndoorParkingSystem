@@ -12,7 +12,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import org.json.JSONException;
 import org.json.JSONObject;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
-import ca.tech.sense.it.smart.indoor.parking.system.utility.FirestoreHelper;
 
 public class TermsOfUseFragment extends Fragment {
 
@@ -31,10 +30,6 @@ public class TermsOfUseFragment extends Fragment {
         // Required empty public constructor
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
 
     @Nullable
     @Override
@@ -53,9 +48,6 @@ public class TermsOfUseFragment extends Fragment {
         tvLiabilityContent = view.findViewById(R.id.tvLiabilityContent);
 
         db = FirebaseFirestore.getInstance();
-
-        FirestoreHelper firestoreHelper = new FirestoreHelper();
-        firestoreHelper.addLegalDocuments(); // Add this line to call the method
 
         fetchTermsOfUse();
         return view;

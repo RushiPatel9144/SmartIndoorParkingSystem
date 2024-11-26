@@ -7,15 +7,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -31,10 +28,8 @@ import com.squareup.okhttp.Response;
 import com.stripe.android.PaymentConfiguration;
 import com.stripe.android.paymentsheet.PaymentSheet;
 import com.stripe.android.paymentsheet.PaymentSheetResult;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
@@ -42,8 +37,6 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseDatabaseSingleton;
@@ -232,7 +225,8 @@ public class PaymentActivity extends AppCompatActivity {
     }
 
     private void confirmBooking() {
-        if (!isBookingValid()) {
+        if (booking == null) {
+            showToast(getString(R.string.booking_data_is_missing));
             return;
         }
 
@@ -278,96 +272,10 @@ public class PaymentActivity extends AppCompatActivity {
                     },
                     error -> showToast("Failed to save booking: " + error.getMessage()));
         } catch (Exception e) {
-            handleUnexpectedError(e);
+            // Catch unexpected exceptions
+            showToast("An unexpected error occurred: " + e.getMessage());
         }
     }
-
-    private void onBookingFailure(Exception e) {
-    }
-
-    private boolean isBookingValid() {
-        if (booking == null) {
-            showToast(getString(R.string.booking_data_is_missing));
-            return false;
-        }
-        return true;
-    }
-
-    private String getSelectedTimeSlot() {
-        return new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date(booking.getStartTime())) + " - " +
-                new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date(booking.getEndTime()));
-    }
-
-    private String getSelectedDate() {
-        return new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date(booking.getStartTime()));
-    }
-
-    private void onBookingSuccess() {
-        showToast(getString(R.string.booking_confirmed));
-        String promoCode = promoCodeEditText.getText().toString().trim();
-        if (!promoCode.isEmpty()) {
-            markPromoCodeAsUsed(promoCode);
-        }
-    }
-
-    private void onBookingFailure(String error) {
-        showToast("Failed to save booking: " + error);
-    }
-
-    private void handleUnexpectedError(Exception e) {
-        showToast("An unexpected error occurred: " + e.getMessage());
-    }
-
-    private void markPromoCodeAsUsed(String promoCode) {
-        DatabaseReference promotionsRef = FirebaseDatabase.getInstance().getReference("Promotions");
-        promotionsRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                AtomicBoolean promoUpdated = new AtomicBoolean(false); // Track if promo was successfully updated
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    Promotion promotion = snapshot.getValue(Promotion.class);
-
-                    // Debug: Log retrieved promotion
-                    if (promotion != null) {
-                        Log.d("Promotion", "Retrieved promotion: " + promotion.getPromoCode() + ", Used: " + promotion.isUsed());
-                    }
-
-                    if (promotion != null && promoCode.equals(promotion.getPromoCode()) && !promotion.isUsed()) {
-                        Log.d("Promotion", "Promo code matched: " + promoCode);
-
-                        // Update promotion used status
-                        promotion.setUsed(true);
-
-                        // Debug: Log the ID being updated
-                        if (promotion.getId() == null) {
-                            Log.e("Promotion", "Promotion ID is null for promoCode: " + promoCode);
-                            return; // Avoid updating if ID is null
-                        }
-
-                        promotionsRef.child(promotion.getId()).setValue(promotion)
-                                .addOnSuccessListener(aVoid -> {
-                                    Log.d("Promotion", "Promo code marked as used successfully in Firebase");
-                                    promoUpdated.set(true);
-                                })
-                                .addOnFailureListener(e -> Log.e("Promotion", "Failed to mark promo code as used in Firebase", e));
-                        break;
-                    }
-                }
-                if (!promoUpdated.get()) {
-                    Log.d("Promotion", "Promo code already used, invalid, or no matching promo code found.");
-                    showToast("Invalid or already used promo code.");
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.e("Promotion", "Firebase onCancelled error: ", databaseError.toException());
-                showToast("Failed to validate promo code.");
-            }
-        });
-    }
-
-
 
     private void showToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
@@ -441,7 +349,6 @@ public class PaymentActivity extends AppCompatActivity {
             }
         });
     }
-
 
     private void setupPromoCodeEditText() {
         promoCodeEditText.setOnClickListener(v -> {

@@ -449,5 +449,6 @@
     <string name="governing_law_content">
     These terms are governed by the laws of the jurisdiction in which the app is operated.
 </string>
+    <string name="privacy_policy">Privacy Policy</string>
 
 </resources>

@@ -3,23 +3,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/bg"
     tools:context=".ui.bottomNav.AccountItems.PrivatePolicyFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp"
-        android:background="@color/white">
+        android:padding="24dp"
+        android:background="@color/bg">
 
         <TextView
             android:id="@+id/tvTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Privacy Policy"
+            android:text="@string/privacy_policy"
             android:textSize="24sp"
             android:textStyle="bold"
-            android:textColor="@color/black"
             android:paddingBottom="16dp" />
 
         <TextView
@@ -28,7 +28,6 @@
             android:text="Data We Collect"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:textColor="@color/black"
             android:paddingTop="8dp"
             android:paddingBottom="4dp" />
 
@@ -37,7 +36,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="16sp"
-            android:textColor="@color/black"
             android:paddingBottom="8dp" />
 
         <TextView
@@ -46,7 +44,6 @@
             android:text="How We Use Your Data"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:textColor="@color/black"
             android:paddingTop="8dp"
             android:paddingBottom="4dp" />
 
@@ -55,7 +52,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="16sp"
-            android:textColor="@color/black"
             android:paddingBottom="8dp" />
 
         <TextView
@@ -64,7 +60,6 @@
             android:text="Data Sharing"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:textColor="@color/black"
             android:paddingTop="8dp"
             android:paddingBottom="4dp" />
 
@@ -73,7 +68,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="16sp"
-            android:textColor="@color/black"
             android:paddingBottom="8dp" />
 
         <TextView
@@ -82,7 +76,6 @@
             android:text="Security"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:textColor="@color/black"
             android:paddingTop="8dp"
             android:paddingBottom="4dp" />
 
@@ -91,7 +84,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="16sp"
-            android:textColor="@color/black"
             android:paddingBottom="8dp" />
 
         <TextView
@@ -100,7 +92,6 @@
             android:text="Cookies and Tracking"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:textColor="@color/black"
             android:paddingTop="8dp"
             android:paddingBottom="4dp" />
 
@@ -109,7 +100,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="16sp"
-            android:textColor="@color/black"
             android:paddingBottom="8dp" />
 
         <TextView
@@ -118,7 +108,6 @@
             android:text="User Rights"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:textColor="@color/black"
             android:paddingTop="8dp"
             android:paddingBottom="4dp" />
 
@@ -127,7 +116,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="16sp"
-            android:textColor="@color/black"
             android:paddingBottom="8dp" />
 
         <TextView
@@ -136,7 +124,6 @@
             android:text="Location Data"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:textColor="@color/black"
             android:paddingTop="8dp"
             android:paddingBottom="4dp" />
 
@@ -145,7 +132,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="16sp"
-            android:textColor="@color/black"
             android:paddingBottom="8dp" />
 
         <TextView
@@ -154,7 +140,6 @@
             android:text="Children’s Privacy"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:textColor="@color/black"
             android:paddingTop="8dp"
             android:paddingBottom="4dp" />
 
@@ -163,7 +148,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="16sp"
-            android:textColor="@color/black"
             android:paddingBottom="8dp" />
 
         <TextView
@@ -172,7 +156,6 @@
             android:text="Changes to the Privacy Policy"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:textColor="@color/black"
             android:paddingTop="8dp"
             android:paddingBottom="4dp" />
 
@@ -181,7 +164,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="16sp"
-            android:textColor="@color/black"
             android:paddingBottom="8dp" />
 
         <TextView
@@ -190,7 +172,6 @@
             android:text="Contact Us"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:textColor="@color/black"
             android:paddingTop="8dp"
             android:paddingBottom="4dp" />
 
@@ -199,7 +180,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="16sp"
-            android:textColor="@color/black"
             android:paddingBottom="8dp" />
     </LinearLayout>
 </ScrollView>
