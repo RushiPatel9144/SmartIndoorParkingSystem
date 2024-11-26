@@ -22,11 +22,12 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.network.BaseNetworkFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.viewModel.RateUsViewModel;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.RateUsViewModelFactory;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
 
-public class RateUsFragment extends Fragment implements RateUsViewModel.FeedbackSubmissionCallback {
+public class RateUsFragment extends BaseNetworkFragment implements RateUsViewModel.FeedbackSubmissionCallback {
 
     RatingBar ratingBar;
     EditText feedbackComment;

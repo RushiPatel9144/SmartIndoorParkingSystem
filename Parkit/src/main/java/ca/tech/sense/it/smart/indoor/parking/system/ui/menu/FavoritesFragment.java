@@ -34,10 +34,11 @@ import java.util.Objects;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.model.Favorites;
+import ca.tech.sense.it.smart.indoor.parking.system.network.BaseNetworkFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.adapters.FavoritesAdapter;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.Park;
 
-public class FavoritesFragment extends Fragment {
+public class FavoritesFragment extends BaseNetworkFragment {
     private RecyclerView recyclerView;
     private List<Favorites> favoriteLocations; // Use List<String> to store addresses
     private DatabaseReference databaseRef;

@@ -29,10 +29,11 @@ import java.util.List;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.model.Promotion;
+import ca.tech.sense.it.smart.indoor.parking.system.network.BaseNetworkFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.adapters.PromotionAdapter;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.PromotionHelper;
 
-public class PromotionFragment extends Fragment {
+public class PromotionFragment extends BaseNetworkFragment {
     private RecyclerView recyclerView;
     private PromotionAdapter adapter;
     private final List<Promotion> promotionList = new ArrayList<>();

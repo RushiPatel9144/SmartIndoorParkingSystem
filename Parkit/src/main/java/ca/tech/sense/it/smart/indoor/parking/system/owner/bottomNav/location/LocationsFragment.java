@@ -25,6 +25,7 @@ import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.manager.parkingManager.ParkingLocationManager;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
+import ca.tech.sense.it.smart.indoor.parking.system.network.BaseNetworkFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.location.handleLocation.AddLocationActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.location.handleLocation.LocationAdapter;
 import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.location.handleLocation.SwipeToDeleteCallback;
@@ -34,7 +35,7 @@ import ca.tech.sense.it.smart.indoor.parking.system.utility.ParkingInterface;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 
-public class LocationsFragment extends Fragment {
+public class LocationsFragment extends BaseNetworkFragment {
 
 
     private RecyclerView locationsRecyclerView;

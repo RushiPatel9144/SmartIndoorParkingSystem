@@ -24,7 +24,7 @@ import ca.tech.sense.it.smart.indoor.parking.system.manager.sessionManager.Sessi
 import ca.tech.sense.it.smart.indoor.parking.system.repository.AuthRepository;
 import ca.tech.sense.it.smart.indoor.parking.system.viewModel.LoginViewModelFactory;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends BaseActivity {
 
     // UI Elements
     private EditText editTextEmail, editTextPassword;

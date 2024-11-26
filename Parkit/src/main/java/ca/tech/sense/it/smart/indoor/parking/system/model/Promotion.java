@@ -10,18 +10,17 @@ public class Promotion {
     private String title;
     private String description;
     private int discount;
-    private String promoCode;
-    private boolean isUsed;
+    private String promoCode = ""; // Default value
+    private boolean used = false;  // Default value
 
     // Empty constructor needed for Firebase
     public Promotion() {}
 
-    public Promotion(String id, String title, String description,int discount) {
-        this.id=id;
+    public Promotion(String id, String title, String description, int discount) {
+        this.id = id;
         this.title = title;
         this.description = description;
         this.discount = discount;
-
     }
 
     // Getters
@@ -41,21 +40,51 @@ public class Promotion {
         return discount;
     }
 
-    // Add getter and setter for promoCode and isUsed
     public String getPromoCode() {
         return promoCode;
+    }
+
+    public boolean isUsed() {
+        return used;
+    }
+
+    // Setters
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setDiscount(int discount) {
+        if (discount < 0) {
+            throw new IllegalArgumentException("Discount cannot be negative.");
+        }
+        this.discount = discount;
     }
 
     public void setPromoCode(String promoCode) {
         this.promoCode = promoCode;
     }
 
-    public boolean isUsed() {
-        return isUsed;
-    }
-
     public void setUsed(boolean used) {
-        isUsed = used;
+        this.used = used;
     }
 
+    @Override
+    public String toString() {
+        return "Promotion{" +
+                "id='" + id + '\'' +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", discount=" + discount +
+                ", promoCode='" + promoCode + '\'' +
+                ", used=" + used +
+                '}';
+    }
 }
