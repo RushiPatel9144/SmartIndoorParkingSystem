@@ -5,47 +5,53 @@
     android:background="@color/lightGray"
     android:orientation="vertical"
     android:padding="16dp"
-    android:paddingTop="32dp"> <!-- Added paddingTop to move everything down -->
+    android:clipToPadding="false"
+    android:clipChildren="false"
+    android:fitsSystemWindows="true">
 
-    <!-- Title for Parking Ticket -->
+    <!-- Title -->
     <TextView
         android:id="@+id/parkingTicketTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Parking Ticket"
+        android:text="@string/parking_ticket"
         android:textColor="@color/primaryText"
         android:textSize="24sp"
         android:fontFamily="sans-serif-medium"
         android:layout_gravity="center"
-        android:layout_marginBottom="32dp" /> <!-- Added marginBottom to separate title -->
+        android:layout_margin="16dp" />
 
     <!-- Success Icon -->
+
+    <!-- Main Card -->
     <ImageView
         android:id="@+id/successIcon"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
+        android:layout_width="84dp"
+        android:layout_height="69dp"
         android:layout_gravity="center"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="8dp"
         android:contentDescription="@string/success_icon"
         android:src="@drawable/smile" />
 
-    <!-- Main Card Container -->
     <androidx.cardview.widget.CardView
         android:id="@+id/cardContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:padding="16dp"
-        app:cardCornerRadius="16dp"
+        android:layout_marginVertical="16dp"
+        android:padding="32dp"
+        app:cardCornerRadius="12dp"
         app:cardElevation="8dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:orientation="vertical">
+            android:padding="16dp"
+            android:orientation="vertical"
+            android:clipToPadding="false"
+            android:clipChildren="false">
 
-            <!-- Title -->
+            <!-- Confirmation Message -->
             <TextView
                 android:id="@+id/bookingConfirmationText"
                 android:layout_width="wrap_content"
@@ -56,7 +62,6 @@
                 android:textColor="@color/primaryText"
                 android:textSize="20sp" />
 
-            <!-- Email Confirmation -->
             <TextView
                 android:id="@+id/emailConfirmationText"
                 android:layout_width="wrap_content"
@@ -73,7 +78,7 @@
                 android:id="@+id/qrCodeImage"
                 android:layout_width="160dp"
                 android:layout_height="160dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginVertical="16dp"
                 android:contentDescription="@string/qr_code"
                 android:src="@drawable/qr" />
 
@@ -82,7 +87,6 @@
                 android:id="@+id/referenceNumberLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
                 android:fontFamily="sans-serif-medium"
                 android:gravity="center"
                 android:text="@string/reference_number"
@@ -106,7 +110,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                app:cardCornerRadius="12dp"
+                app:cardCornerRadius="8dp"
                 app:cardElevation="4dp">
 
                 <LinearLayout
@@ -126,7 +130,7 @@
 
                     <TextView
                         android:id="@+id/addressText"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:fontFamily="sans-serif"
@@ -150,8 +154,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="16dp"
-        android:gravity="center">
+        android:gravity="center"
+        android:padding="8dp">
 
         <!-- Get Direction Button -->
         <com.google.android.material.button.MaterialButton
@@ -162,14 +166,8 @@
             android:layout_weight="1"
             android:text="@string/get_direction"
             app:cornerRadius="16dp"
-            app:iconGravity="textStart"
-            app:iconPadding="12dp"
-            app:strokeColor="#369765"
-            app:strokeWidth="2dp"
-            app:rippleColor="#369765"
-            android:textColor="#FFFFFF"
-            android:backgroundTint="#369765"
-            app:iconTint="#FFFFFF" />
+            android:backgroundTint="@color/theme"
+            android:textColor="@color/white" />
 
         <!-- Cancel Button -->
         <com.google.android.material.button.MaterialButton
@@ -180,13 +178,9 @@
             android:layout_weight="1"
             android:text="@string/close"
             app:cornerRadius="16dp"
-            app:iconGravity="textStart"
-            app:iconPadding="12dp"
-            app:strokeWidth="2dp"
-            app:strokeColor="#FF4C4C"
-            app:rippleColor="#FF0000"
-            android:textColor="#FF4C4C"
-            android:backgroundTint="#FFFFFF"
-            app:iconTint="#FF4C4C" />
+            android:backgroundTint="@color/white"
+            android:textColor="@color/red"
+            app:strokeColor="@color/red"
+            app:strokeWidth="2dp" />
     </LinearLayout>
 </LinearLayout>

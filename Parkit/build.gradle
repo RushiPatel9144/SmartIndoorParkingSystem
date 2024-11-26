@@ -48,7 +48,6 @@ android {
 }
 
 
-
 dependencies {
 
     implementation platform(libs.firebase.bom)
@@ -101,16 +100,14 @@ dependencies {
     androidTestImplementation libs.ext.junit
 
     // MockWebServer (for testing network calls)
-    testImplementation libs.mockwebserver
     testImplementation libs.robolectric
     implementation libs.ext.junit
     testImplementation libs.firebase.database.v2010
     testImplementation libs.robolectric.v4102
     testImplementation libs.junit.jupiter.api
     testImplementation libs.junit.jupiter.engine
-    testImplementation libs.powermock.module.junit4
-    testImplementation libs.powermock.api.mockito2
-    testImplementation libs.mockito.inline.v480
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
+    testImplementation 'org.robolectric:robolectric:4.10'
 
 
 

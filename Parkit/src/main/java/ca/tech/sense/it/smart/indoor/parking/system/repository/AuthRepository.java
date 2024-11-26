@@ -1,14 +1,13 @@
 package ca.tech.sense.it.smart.indoor.parking.system.repository;
 
-import static ca.tech.sense.it.smart.indoor.parking.system.utility.Constants.USER_TYPE_OWNER;
-import static ca.tech.sense.it.smart.indoor.parking.system.utility.Constants.USER_TYPE_USER;
-
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.Objects;
 
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSingleton;
 
@@ -46,7 +45,7 @@ public class AuthRepository {
                     if (task.isSuccessful()) {
                         return !task.getResult().isEmpty(); // Returns true if the email is found
                     } else {
-                        throw task.getException(); // Rethrow any exception that occurred
+                        throw Objects.requireNonNull(task.getException()); // Rethrow any exception that occurred
                     }
                 });
     }

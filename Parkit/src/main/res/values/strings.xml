@@ -415,6 +415,7 @@
     <string name="loading_address">Loading address...</string>
     <string name="get_direction">Get Directions</string>
     <string name="close">Close</string>
+    <string name="parking_ticket">Parking Ticket</string>
 
 
 </resources>

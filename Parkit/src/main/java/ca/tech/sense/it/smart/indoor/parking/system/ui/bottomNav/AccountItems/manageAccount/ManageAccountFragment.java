@@ -186,9 +186,6 @@ public class ManageAccountFragment extends Fragment {
     }
 
     // === Firebase and Storage Operations ===
-
-
-
     private void checkUserType() {
         if (currentUser != null) {
             UserCheckHelper userCheckHelper = new UserCheckHelper();
@@ -224,7 +221,7 @@ public class ManageAccountFragment extends Fragment {
                                 phoneNumberTextView.setText(owner.getPhone());
                             }
                         });
-//                ManageAccountFireBaseHelper.fetchUserDetailsFromFirestore(uid, db, collection, nameTextView, phoneNumberTextView, requireView(),sessionManager);
+//               ManageAccountFireBaseHelper.fetchUserDetailsFromFirestore(uid, db, collection, nameTextView, phoneNumberTextView, requireView(),sessionManager);
                 ManageAccountFireBaseHelper.loadProfilePicture(currentUser, db, collection, profilePicture, requireView(), requireContext());
             }
         }, 1, TimeUnit.SECONDS);

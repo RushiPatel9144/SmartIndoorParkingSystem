@@ -6,13 +6,15 @@
     android:id="@+id/owner_activity_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".OwnerActivity">
+    tools:context=".OwnerActivity"
+    >
 
     <!-- Main Content with LinearLayout -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:fitsSystemWindows="true">
 
         <!-- Toolbar -->
         <androidx.appcompat.widget.Toolbar
