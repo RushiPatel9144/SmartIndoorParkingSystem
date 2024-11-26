@@ -23,8 +23,8 @@ import java.util.List;
 import java.util.Locale;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
-import ca.tech.sense.it.smart.indoor.parking.system.model.activity.Booking;
-import ca.tech.sense.it.smart.indoor.parking.system.model.activity.BookingViewModel;
+import ca.tech.sense.it.smart.indoor.parking.system.model.booking.Booking;
+import ca.tech.sense.it.smart.indoor.parking.system.model.booking.BookingViewModel;
 import ca.tech.sense.it.smart.indoor.parking.system.viewModel.CancelBookingViewModel;
 
 import androidx.recyclerview.widget.DiffUtil;
@@ -101,11 +101,11 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingV
                     .setPositiveButton("Yes", (dialog, which) -> {
                         int position = getBindingAdapterPosition();
                         if (position != RecyclerView.NO_POSITION && position < bookingList.size()) {
-                            cancelBookingViewModel.cancelBooking(booking.getId(), () -> {
+                            cancelBookingViewModel.cancelBooking(booking.getTransactionId(), booking.getId(), () -> {
                                 bookingList.remove(position);
                                 notifyItemRemoved(position);
                                 notifyItemRangeChanged(position, bookingList.size());
-                                Toast.makeText(context, "Booking cancelled", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(context, "Booking cancelled and refunded. The money may take a few days to reach your bank account.", Toast.LENGTH_SHORT).show();
                                 // Refresh the list
                                 bookingViewModel.fetchUserBookings();
                             }, error -> Toast.makeText(context, "Failed to cancel booking: " + error.getMessage(), Toast.LENGTH_SHORT).show());

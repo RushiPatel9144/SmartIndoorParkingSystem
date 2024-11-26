@@ -1,4 +1,4 @@
-package ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav;
+package ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.transactions;
 
 import android.os.Bundle;
 

@@ -3,7 +3,7 @@
   Name: NisargKumar Pareshbhai Joshi, StudentID: N01545986,  section number: RCB
   Name: Rushi Manojkumar Patel, StudentID: N01539144, section number: RCB
  */
-package ca.tech.sense.it.smart.indoor.parking.system.model.activity;
+package ca.tech.sense.it.smart.indoor.parking.system.model.booking;
 
 import java.io.Serializable;
 
@@ -20,12 +20,13 @@ public class Booking implements Serializable {
     private String slotNumber;
     private String passKey;
     private String locationId; // Add this field
+    private String transactionId;
 
     // Default constructor required for calls to DataSnapshot.getValue(Booking.class)
     public Booking() {}
 
     // Add a constructor that includes the locationId
-    public Booking(String title, long startTime, long endTime, String location,String postalCode, double price, String currencyCode, String currencySymbol, String slotNumber, String passKey, String locationId) {
+    public Booking(String title, long startTime, long endTime, String location,String postalCode, double price, String currencyCode, String currencySymbol, String slotNumber, String passKey, String locationId,  String transactionId) {
         this.title = title;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -37,6 +38,13 @@ public class Booking implements Serializable {
         this.currencySymbol = currencySymbol;
         this.currencyCode = currencyCode;
         this.postalCode = postalCode;
+        this.transactionId = transactionId;
+    }
+
+    public String getTransactionId(){return transactionId;}
+
+    public void setTransactionId(String transactionId) {
+        this.transactionId = transactionId;
     }
 
     public String getPostalCode() {

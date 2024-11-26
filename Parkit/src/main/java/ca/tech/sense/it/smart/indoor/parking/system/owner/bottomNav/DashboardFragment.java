@@ -12,6 +12,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.location.LocationsFragment;
+import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.transactions.TransactionsFragment;
 
 import androidx.cardview.widget.CardView;
 

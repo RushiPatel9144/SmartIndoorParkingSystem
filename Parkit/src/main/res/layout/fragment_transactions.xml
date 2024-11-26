@@ -1,17 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".owner.bottomNav.TransactionsFragment"
-    android:background="@color/bg">
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@color/lightGray">
 
+    <!-- Title -->
     <TextView
+        android:id="@+id/transactionTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/transactions"
+        android:textSize="20sp"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="@color/primaryText"
+        android:layout_marginBottom="16dp" />
+
+    <!-- No Transactions Placeholder -->
+    <TextView
+        android:id="@+id/noTransactionsTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="@string/no_transactions_yet"
+        android:textSize="16sp"
+        android:textColor="@color/secondaryText"
+        android:visibility="gone" />
+
+    <!-- RecyclerView for Transactions -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/transactionRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/transactions"
-        android:textAlignment="center"
-        android:gravity="center"
-        android:textSize="30sp" />
-
-</FrameLayout>
+        android:clipToPadding="false"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp" />
+</LinearLayout>

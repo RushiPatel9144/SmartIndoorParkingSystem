@@ -19,6 +19,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -46,6 +47,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.manager.bookingManager.BookingBottomSheetDialogFragment;
@@ -66,12 +69,16 @@ public class Park extends Fragment implements OnMapReadyCallback {
     private ExecutorService executorService;
     private ActivityResultLauncher<String> requestPermissionLauncher;
     private FusedLocationProviderClient fusedLocationClient;
+    private ScheduledExecutorService scheduledExecutorService;
     private boolean ratesFetched = false;
+    private ProgressBar progressBar;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        executorService = Executors.newSingleThreadExecutor(); // Executor for background tasks
+        scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+        executorService = Executors.newFixedThreadPool(4);
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext());
         if (!ratesFetched) {
             fetchExchangeRates();
@@ -81,16 +88,22 @@ public class Park extends Fragment implements OnMapReadyCallback {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_park, container, false);
+        View view = inflater.inflate(R.layout.fragment_park, container, false);
+        progressBar = view.findViewById(R.id.progressBar);
+        return view;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        executorService.execute(() -> requireActivity().runOnUiThread(() -> {
-            initializeMap();
-            initializeAutocomplete();
-        }));
+        if (progressBar != null) {
+            progressBar.setVisibility(View.VISIBLE);
+        }
+        scheduledExecutorService.schedule(() ->
+            requireActivity().runOnUiThread(() -> {
+                initializeMap();
+                initializeAutocomplete();
+            }), 1, TimeUnit.SECONDS);
 
         // Check if there is a locationId passed from the FavoritesFragment
         if (getActivity() != null && getActivity().getIntent() != null) {
@@ -187,6 +200,9 @@ public class Park extends Fragment implements OnMapReadyCallback {
                                 );
                                 assert marker != null;
                                 marker.setTag(location.getId());
+                                if (progressBar != null) {
+                                    progressBar.setVisibility(View.GONE);
+                                }
                             }
                         }
                     }
@@ -217,7 +233,6 @@ public class Park extends Fragment implements OnMapReadyCallback {
     public void showBookingBottomSheet(Marker marker) {
         String parkingLocationId = (String) marker.getTag();
         // Create an instance of ExecutorService
-        ExecutorService executorService = Executors.newFixedThreadPool(4);
 
         // Get instances of FirebaseDatabase and FirebaseAuth
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
@@ -229,7 +244,6 @@ public class Park extends Fragment implements OnMapReadyCallback {
 
     public void showBookingBottomSheet(String locationId) {
         // Create an instance of ExecutorService
-        ExecutorService executorService = Executors.newFixedThreadPool(4);
         // Get instances of FirebaseDatabase and FirebaseAuth
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();

@@ -1,5 +1,7 @@
 package ca.tech.sense.it.smart.indoor.parking.system.manager.bookingManager;
 
+import static ca.tech.sense.it.smart.indoor.parking.system.network.NetworkManager.showToast;
+
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -10,7 +12,17 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.okhttp.Callback;
+import com.squareup.okhttp.MediaType;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
+import com.squareup.okhttp.Response;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,7 +32,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
-import ca.tech.sense.it.smart.indoor.parking.system.model.activity.Booking;
+import ca.tech.sense.it.smart.indoor.parking.system.model.booking.Booking;
 
 public class UserService {
 
@@ -91,6 +103,10 @@ public class UserService {
                 });
     }
 
+    public void cancelBookingAndRequestRefund(String userId, String bookingId, String transactionId, Runnable onSuccess, Consumer<Exception> onFailure) {
+        cancelBooking(userId, bookingId, () -> requestRefund(transactionId, onSuccess, onFailure), onFailure);
+    }
+
     public void cancelBooking(String userId, String bookingId, Runnable onSuccess, Consumer<Exception> onFailure) {
         if (bookingId == null) {
             onFailure.accept(new Exception("Booking ID is null"));
@@ -123,6 +139,46 @@ public class UserService {
         });
     }
 
+    private void requestRefund(String transactionId, Runnable onSuccess, Consumer<Exception> onFailure) {
+        OkHttpClient client = new OkHttpClient();
+        String url = "https://parkit-cd4c2ec26f90.herokuapp.com/refund-payment";
+
+        JSONObject jsonRequest = new JSONObject();
+        try {
+            jsonRequest.put("transactionId", transactionId);
+        } catch (JSONException e) {
+            onFailure.accept(e);
+            return;
+        }
+        RequestBody body = RequestBody.create(
+                MediaType.parse("application/json"), jsonRequest.toString());
+
+        Request request = new Request.Builder()
+                .url(url)
+                .post(body)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Request request, IOException e) {
+                new android.os.Handler(android.os.Looper.getMainLooper())
+                        .post(() -> onFailure.accept(new Exception("Failed to connect to server for refund")));
+            }
+
+            @Override
+            public void onResponse(Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    new android.os.Handler(android.os.Looper.getMainLooper())
+                            .post(onSuccess);
+                } else {
+                    new android.os.Handler(android.os.Looper.getMainLooper())
+                            .post(() -> onFailure.accept(new Exception("Server error: " + response.message())));
+                }
+            }
+        });
+    }
+
+
     public void clearBookingHistory(String userId, String bookingId, Runnable onSuccess, Consumer<Exception> onFailure) {
         if (bookingId == null) {
             onFailure.accept(new Exception("Booking ID is null"));
@@ -134,5 +190,9 @@ public class UserService {
                 .addOnSuccessListener(aVoid -> onSuccess.run())
                 .addOnFailureListener(onFailure::accept);
     }
+
+
+
+
 }
 

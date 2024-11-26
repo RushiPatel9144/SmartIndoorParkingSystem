@@ -19,6 +19,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.canhub.cropper.CropImageActivity;
 import com.google.firebase.auth.FirebaseAuth;
@@ -45,6 +46,7 @@ public class ManageAccountFragment extends Fragment {
     private TextView nameTextView, contactDetailsTextView, phoneNumberTextView;
     private LinearLayout manageProfilePicture, managePassword, manageEmail, managePhoneNumber;
     private FrameLayout progressFrame;
+    private SwipeRefreshLayout swipeRefreshLayout;
     private FirebaseFirestore db;
     private FirebaseUser currentUser;
     private String collection = "users"; // Default collection
@@ -96,15 +98,14 @@ public class ManageAccountFragment extends Fragment {
         bindViews(rootView);
         FirebaseAuth mAuth = FirebaseAuthSingleton.getInstance();
         currentUser = mAuth.getCurrentUser();
-        SessionManager sessionManager = new SessionManager(requireContext());
-
-// Fetch session data (if not already fetched)
-        sessionManager.fetchSessionData((user, owner) -> {
-
-        });
         db = FirestoreSingleton.getInstance();
+
+        SessionManager sessionManager = new SessionManager(requireContext());
+        // Fetch session data (if not already fetched)
+        sessionManager.fetchSessionData((user, owner) -> {});
         checkUserType();
         scheduleCheckUserType();
+        swipeRefreshLayout.setOnRefreshListener(this::scheduleCheckUserType);
         return rootView;
     }
 
@@ -129,6 +130,7 @@ public class ManageAccountFragment extends Fragment {
         manageEmail = view.findViewById(R.id.manageEmail);
         managePhoneNumber = view.findViewById(R.id.managePhoneNumber);
         progressFrame = view.findViewById(R.id.progressFrame);
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
     }
 
     private void setupProfilePictureButton() {
@@ -205,27 +207,28 @@ public class ManageAccountFragment extends Fragment {
     }
 
     private void scheduleCheckUserType() {
+        swipeRefreshLayout.setRefreshing(true);
         scheduledExecutorService.schedule(() -> {
             if (currentUser != null) {
-                String uid = currentUser.getUid();
                 SessionManager sessionManager = new SessionManager(requireContext());
                 sessionManager.fetchSessionData((user, owner) -> {
                             if (user != null) {
-                                nameTextView.setText(user.getFirstName() + " " + user.getLastName());
+                                nameTextView.setText(String.format("%s %s", user.getFirstName(), user.getLastName()));
                                 contactDetailsTextView.setText(user.getEmail());
                                 phoneNumberTextView.setText(user.getPhone());
                             }
                             if (owner != null) {
-                                nameTextView.setText(owner.getFirstName() + " " + owner.getLastName());
+                                nameTextView.setText(String.format("%s %s", owner.getFirstName(), owner.getLastName()));
                                 contactDetailsTextView.setText(owner.getEmail());
                                 phoneNumberTextView.setText(owner.getPhone());
                             }
                         });
-//               ManageAccountFireBaseHelper.fetchUserDetailsFromFirestore(uid, db, collection, nameTextView, phoneNumberTextView, requireView(),sessionManager);
                 ManageAccountFireBaseHelper.loadProfilePicture(currentUser, db, collection, profilePicture, requireView(), requireContext());
-            }
-        }, 1, TimeUnit.SECONDS);
+                swipeRefreshLayout.setRefreshing(false);
+            } swipeRefreshLayout.setRefreshing(false);
+        }, 3, TimeUnit.SECONDS);
     }
+
     private void cropImage(Uri uri) {
         Intent cropIntent = new Intent(requireContext(), CropImageActivity.class);  // Adjust as per your crop activity
         cropIntent.putExtra("imageUri", uri.toString());

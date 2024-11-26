@@ -416,6 +416,7 @@
     <string name="get_direction">Get Directions</string>
     <string name="close">Close</string>
     <string name="parking_ticket">Parking Ticket</string>
+    <string name="no_transactions_yet">No Transactions Yet</string>
 
 
 </resources>

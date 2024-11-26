@@ -51,7 +51,7 @@ import ca.tech.sense.it.smart.indoor.parking.system.currency.CurrencyManager;
 import ca.tech.sense.it.smart.indoor.parking.system.currency.CurrencyPreferenceManager;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseDatabaseSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.manager.parkingManager.ParkingLocationManager;
-import ca.tech.sense.it.smart.indoor.parking.system.model.activity.Booking;
+import ca.tech.sense.it.smart.indoor.parking.system.model.booking.Booking;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingSlot;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.BookingUtils;
@@ -306,7 +306,8 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
                                 selectedCurrency.getSymbol(),
                                 selectedSlot,
                                 BookingUtils.generatePassKey(), // Generate the pass key
-                                locationId // Add the locationId to the booking
+                                locationId, // Add the locationId to the booking
+                                null
                         );
 
                         // Create an Intent to start PaymentActivity and pass the booking data

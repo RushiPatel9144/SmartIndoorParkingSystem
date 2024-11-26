@@ -18,7 +18,7 @@ import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 
-import ca.tech.sense.it.smart.indoor.parking.system.model.activity.Booking;
+import ca.tech.sense.it.smart.indoor.parking.system.model.booking.Booking;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.BookingUtils;
 
 public class BookingService {
@@ -37,7 +37,7 @@ public class BookingService {
         this.slotService = slotService;
     }
 
-    public void confirmBooking(String locationId, String slot, String timing, String selectedDate, String address, Runnable onSuccess, Consumer<Exception> onFailure) {
+    public void confirmBooking(String transactionId, String locationId, String slot, String timing, String selectedDate, String address, Runnable onSuccess, Consumer<Exception> onFailure) {
         new Handler(Looper.getMainLooper()).postDelayed(() -> executorService.submit(() -> {
             String userId = Objects.requireNonNull(firebaseAuth.getCurrentUser()).getUid();
             String[] times = timing.split(" - ");
@@ -48,7 +48,7 @@ public class BookingService {
                 if ("occupied".equals(status)) {
                     notifyUserSlotOccupied(onFailure);
                 } else {
-                    fetchPriceAndConfirmBooking(locationId, slot, selectedDate, times, startTime, endTime, address, userId, onSuccess, onFailure);
+                    fetchPriceAndConfirmBooking(transactionId, locationId, slot, selectedDate, times, startTime, endTime, address, userId, onSuccess, onFailure);
                 }
             }, onFailure);
         }), 2000); // 2 seconds delay
@@ -61,7 +61,7 @@ public class BookingService {
         onFailure.accept(new Exception("Selected slot is already occupied."));
     }
 
-    private void fetchPriceAndConfirmBooking(String locationId, String slot, String selectedDate, String[] times, long startTime, long endTime, String address, String userId, Runnable onSuccess, Consumer<Exception> onFailure) {
+    private void fetchPriceAndConfirmBooking(String transactionId, String locationId, String slot, String selectedDate, String[] times, long startTime, long endTime, String address, String userId, Runnable onSuccess, Consumer<Exception> onFailure) {
         DatabaseReference priceRef = firebaseDatabase.getReference("parkingLocations").child(locationId).child("price");
         priceRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -88,7 +88,8 @@ public class BookingService {
                             null,
                             slot,
                             passKey,
-                            locationId // Add the locationId to the booking
+                            locationId, // Add the locationId to the booking
+                            transactionId
                     );
 
                     saveBooking(userId, booking, locationId, slot, selectedDate, times, onSuccess, onFailure);
