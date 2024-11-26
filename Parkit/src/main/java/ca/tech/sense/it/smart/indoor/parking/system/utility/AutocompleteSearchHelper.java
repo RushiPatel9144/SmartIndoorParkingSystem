@@ -1,6 +1,6 @@
 package ca.tech.sense.it.smart.indoor.parking.system.utility;
 
-import static ca.tech.sense.it.smart.indoor.parking.system.utility.Constants.API_PLACE_SEARCH;
+import static ca.tech.sense.it.smart.indoor.parking.system.utility.AppConstants.API_PLACE_SEARCH;
 import android.content.Context;
 import androidx.annotation.NonNull;
 import com.google.android.gms.common.api.Status;

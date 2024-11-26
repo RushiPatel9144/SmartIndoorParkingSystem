@@ -407,7 +407,6 @@
     <string name="price_update_canceled">Price update canceled.</string>
     <string name="input_price_in_cad">Input Price in CAD</string>
     <string name="update_price">Update Price</string>
-
     <string name="success_icon">Success Icon</string>
     <string name="email_confirmation_sent">An email confirmation has been sent.</string>
     <string name="qr_code">QR Code</string>
@@ -417,6 +416,9 @@
     <string name="close">Close</string>
     <string name="parking_ticket">Parking Ticket</string>
     <string name="no_transactions_yet">No Transactions Yet</string>
+    <string name="error_updating_profile_photo">Error updating profile photo</string>
+    <string name="error_uploading_photo">Error Uploading Photo</string>
+
 
 
 </resources>

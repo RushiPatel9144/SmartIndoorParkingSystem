@@ -9,6 +9,7 @@ import android.widget.ProgressBar;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.Objects;
@@ -73,7 +74,13 @@ public class SignUpHelper {
             CheckBox checkBox,
             String userType,
             FirebaseAuth mAuth,
-            AppCompatActivity activity
+            AppCompatActivity activity,
+            TextInputLayout signup_email_layout,
+            TextInputLayout signup_password_layout,
+            TextInputLayout signup_confirm_password_layout,
+            TextInputLayout signup_phone_layout,
+            TextInputLayout signup_firstname_layout,
+            TextInputLayout signup_lastname_layout
     ) {
         progressBar.setVisibility(View.VISIBLE);
 
@@ -87,9 +94,8 @@ public class SignUpHelper {
 
         // Validate user input; if invalid, stop further processing
         if (!InputValidatorHelper.validateInputSignUp(
-                activity, firstName, lastName, editTextEmail,
-                phone, editTextPassword, editTextConfirmPassword,
-                checkBox, fName, lName, email, password, confirmPassword, phoneNumber
+                activity,checkBox,fName, lName, email, password, confirmPassword, phoneNumber, signup_email_layout,signup_password_layout,signup_confirm_password_layout,signup_phone_layout,signup_firstname_layout,signup_lastname_layout
+
         )) {
             progressBar.setVisibility(View.GONE);
             return;

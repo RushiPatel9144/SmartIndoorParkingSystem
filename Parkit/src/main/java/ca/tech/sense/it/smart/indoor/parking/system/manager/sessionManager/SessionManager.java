@@ -1,7 +1,7 @@
 package ca.tech.sense.it.smart.indoor.parking.system.manager.sessionManager;
 
-import static ca.tech.sense.it.smart.indoor.parking.system.utility.Constants.USER_TYPE_OWNER;
-import static ca.tech.sense.it.smart.indoor.parking.system.utility.Constants.USER_TYPE_USER;
+import static ca.tech.sense.it.smart.indoor.parking.system.utility.AppConstants.USER_TYPE_OWNER;
+import static ca.tech.sense.it.smart.indoor.parking.system.utility.AppConstants.USER_TYPE_USER;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -35,8 +35,6 @@ public class SessionManager {
 
     private final FirebaseAuth mAuth;
     private final FirebaseFirestore db;
-
-
 
     private User currentUser;
     private Owner currentOwner;
@@ -117,13 +115,10 @@ public class SessionManager {
         editor.apply();
     }
 
-
-
     // Retrieve the "Remember Me" status
     public boolean isRememberMe() {
         return sharedPreferences.getBoolean(KEY_REMEMBER_ME, false);
     }
-
 
     // Clear session (logout)
     public void logout() {
@@ -192,12 +187,19 @@ public class SessionManager {
         void onSessionDataFetched(User user, Owner owner);
     }
 
-
-    public void saveUserDetails(String name, String email, Uri photoUrl) {
+    // Save User details (including name, email, and photo URL)
+    public void saveUserData(User user) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("user_name", name);
-        editor.putString("user_email", email);
-        editor.putString("user_photo_url", photoUrl != null ? photoUrl.toString() : null);
+        editor.putString("user_name", user.getFirstName() + " " + user.getLastName());
+        editor.putString("user_email", user.getEmail());
+        editor.putString("user_photo_url", user.getProfilePhotoUrl());
+        editor.apply();
+    }
+
+    // Update profile photo URL in SharedPreferences
+    public void updateProfilePhotoUrl(Uri photoUrl) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("user_photo_url", String.valueOf(photoUrl));
         editor.apply();
     }
 
@@ -212,7 +214,4 @@ public class SessionManager {
             Log.d("SharedPreferences", "Key: " + key + ", Value: " + value);
         }
     }
-
-
-
 }
