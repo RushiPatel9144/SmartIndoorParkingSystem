@@ -394,5 +394,33 @@
     <string name="sensor">sensor_</string>
     <string name="promo_code">Promo Code:</string>
 
+    <!-- strings.xml -->
+    <string name="user_responsibilities_content">
+    Users must provide accurate information, maintain the confidentiality of their account, and comply with all applicable laws and regulations.
+</string>
+
+    <string name="limitations_of_liability_content">
+    The app is provided "as is" without warranties. We are not liable for any direct, indirect, incidental, or consequential damages arising from the use of the app.
+</string>
+
+    <string name="acceptable_use_policies_content">
+    Users must not misuse the app, including but not limited to engaging in fraudulent activities, violating intellectual property rights, or interfering with the app\'s operation.
+</string>
+
+    <string name="dispute_resolution_content">
+    Any disputes arising from the use of the app will be resolved through binding arbitration in accordance with the rules of the American Arbitration Association.
+</string>
+
+    <string name="amendments_to_terms_content">
+    We may update these terms periodically. Users will be notified of any significant changes, and continued use of the app signifies acceptance of the updated terms.
+</string>
+
+    <string name="termination_content">
+    We reserve the right to terminate or suspend user accounts for violations of these terms or any other policies.
+</string>
+
+    <string name="governing_law_content">
+    These terms are governed by the laws of the jurisdiction in which the app is operated.
+</string>
 
 </resources>
