@@ -9,7 +9,6 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.button.MaterialButton;
@@ -21,6 +20,7 @@ import java.util.Objects;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.launcherUtililty.ToastHelper;
 import ca.tech.sense.it.smart.indoor.parking.system.manager.sessionManager.SessionManager;
+import ca.tech.sense.it.smart.indoor.parking.system.network.BaseActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.repository.AuthRepository;
 import ca.tech.sense.it.smart.indoor.parking.system.viewModel.LoginViewModelFactory;
 
