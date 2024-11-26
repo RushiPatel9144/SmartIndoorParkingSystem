@@ -236,6 +236,11 @@ public class PaymentActivity extends AppCompatActivity {
             return;
         }
 
+        // Extract valid time slot and date
+        String selectedTimeSlot = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date(booking.getStartTime())) + " - " +
+                new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date(booking.getEndTime()));
+        String selectedDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date(booking.getStartTime()));
+
         try {
             bookingManager.getBookingService().confirmBooking(
                     transactionId,
