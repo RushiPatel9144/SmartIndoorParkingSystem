@@ -8,6 +8,8 @@ package ca.tech.sense.it.smart.indoor.parking.system.ui.menu;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -16,7 +18,7 @@ import ca.tech.sense.it.smart.indoor.parking.system.network.BaseActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems.HelpFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems.NotificationsFragment;
 
-public class MenuHandler extends BaseActivity {
+public class MenuHandler extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

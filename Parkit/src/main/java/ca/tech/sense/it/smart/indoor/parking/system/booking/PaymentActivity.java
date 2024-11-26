@@ -47,8 +47,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseDatabaseSingleton;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.bookingManager.BookingManager;
 import ca.tech.sense.it.smart.indoor.parking.system.model.Promotion;
-import ca.tech.sense.it.smart.indoor.parking.system.model.activity.Booking;
+import ca.tech.sense.it.smart.indoor.parking.system.model.booking.Booking;
 
 public class PaymentActivity extends AppCompatActivity {
 
@@ -71,6 +72,7 @@ public class PaymentActivity extends AppCompatActivity {
     private PaymentSheet paymentSheet;
     private String currency = "CAD";
     private double total;
+    private String transactionId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -196,6 +198,7 @@ public class PaymentActivity extends AppCompatActivity {
                     try {
                         JSONObject jsonResponse = new JSONObject(response.body().string());
                         String clientSecret = jsonResponse.getString("clientSecret");
+                        transactionId = jsonResponse.getString("transactionId");
                         runOnUiThread(() -> startPaymentFlow(clientSecret));
                     } catch (JSONException e) {
                         runOnUiThread(() -> showToast(getString(R.string.failed_to_parse_server_response)));
@@ -216,8 +219,8 @@ public class PaymentActivity extends AppCompatActivity {
         if (paymentSheetResult instanceof PaymentSheetResult.Completed) {
             // Use Handler with Looper.getMainLooper() for a delay
             new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                confirmBooking();
-                finish();
+                confirmBooking(); // Confirm the booking
+                openParkingTicketActivity(); // Pass data to ParkingTicket
             }, 2000); // 2-second delay
         } else if (paymentSheetResult instanceof PaymentSheetResult.Failed) {
             showToast("Payment Failed: " + ((PaymentSheetResult.Failed) paymentSheetResult).getError());
@@ -234,18 +237,41 @@ public class PaymentActivity extends AppCompatActivity {
         }
 
         try {
-            String selectedTimeSlot = getSelectedTimeSlot();
-            String selectedDate = getSelectedDate();
+            bookingManager.getBookingService().confirmBooking(
+                    transactionId,
+                    booking.getLocationId(),        // Pass location ID
+                    booking.getSlotNumber(),       // Pass slot number
+                    selectedTimeSlot,              // Valid time slot
+                    selectedDate,                  // Valid date
+                    booking.getLocation(),         // Location
+                    () -> {
+                        showToast(getString(R.string.booking_confirmed));
 
-            bookingManager.confirmBooking(
-                    booking.getLocationId(),
-                    booking.getSlotNumber(),
-                    selectedTimeSlot,
-                    selectedDate,
-                    booking.getLocation(),
-                    this::onBookingSuccess,
-                    this::onBookingFailure
-            );
+                        // Validate and mark the promo code as used after booking confirmation
+                        String promoCode = promoCodeEditText.getText().toString().trim();
+                        if (!promoCode.isEmpty()) {
+                            DatabaseReference promotionsRef = FirebaseDatabase.getInstance().getReference("Promotions");
+                            promotionsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                        Promotion promotion = snapshot.getValue(Promotion.class);
+                                        if (promotion != null && promoCode.equals(promotion.getPromoCode())) {
+                                            promotion.setUsed(true); // Mark as used only after booking
+                                            promotionsRef.child(promotion.getId()).setValue(promotion);
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+                                    showToast("Failed to update promo code status.");
+                                }
+                            });
+                        }
+                    },
+                    error -> showToast("Failed to save booking: " + error.getMessage()));
         } catch (Exception e) {
             handleUnexpectedError(e);
         }
@@ -358,6 +384,20 @@ public class PaymentActivity extends AppCompatActivity {
         timeTextView.setText(MessageFormat.format("Time: {0} - {1}", formattedStartTime, formattedEndTime));
     }
 
+
+
+    private void openParkingTicketActivity() {
+        Intent intent = new Intent(this, ParkingTicket.class);
+
+        if (booking != null) {
+            intent.putExtra("address", booking.getLocation()); // Pass address
+            intent.putExtra("passkey", booking.getPassKey());  // Pass reference key
+        }
+
+        startActivity(intent);
+        finish();
+    }
+
     private void applyPromoCode(String promoCode) {
         DatabaseReference promotionsRef = FirebaseDatabase.getInstance().getReference("Promotions");
         promotionsRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -412,6 +452,4 @@ public class PaymentActivity extends AppCompatActivity {
             }
         });
     }
-
-
 }

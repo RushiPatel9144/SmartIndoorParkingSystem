@@ -12,12 +12,18 @@ import androidx.fragment.app.FragmentTransaction;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.location.LocationsFragment;
+import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.transactions.TransactionsFragment;
 
-import androidx.cardview.widget.CardView;  // Import CardView
+import androidx.cardview.widget.CardView;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class DashboardFragment extends Fragment {
     private static final String ARG_CONTAINER_VIEW_ID = "containerViewId";
     private int containerViewId;
+
+    private Map<Integer, DashboardSection> sectionMap;
 
     public DashboardFragment() {
         // Required empty public constructor
@@ -37,6 +43,12 @@ public class DashboardFragment extends Fragment {
         if (getArguments() != null) {
             containerViewId = getArguments().getInt(ARG_CONTAINER_VIEW_ID);
         }
+
+        // Initialize the section mapping
+        sectionMap = new HashMap<>();
+        sectionMap.put(R.id.cardLocations, DashboardSection.LOCATIONS);
+        sectionMap.put(R.id.cardTransactions, DashboardSection.TRANSACTIONS);
+        sectionMap.put(R.id.cardActiveParkingLot, DashboardSection.ACTIVE_PARKING);
     }
 
     @Override
@@ -49,13 +61,14 @@ public class DashboardFragment extends Fragment {
     }
 
     private void setupClickListeners(View view) {
-        setSectionClickListener(view, R.id.cardLocations, DashboardSection.LOCATIONS);
-        setSectionClickListener(view, R.id.cardTransactions, DashboardSection.TRANSACTIONS);
-        setSectionClickListener(view, R.id.cardActiveParkingLot, DashboardSection.ACTIVE_PARKING);
+        for (Map.Entry<Integer, DashboardSection> entry : sectionMap.entrySet()) {
+            int layoutId = entry.getKey();
+            DashboardSection section = entry.getValue();
+            setSectionClickListener(view, layoutId, section);
+        }
     }
 
     private void setSectionClickListener(View view, int layoutId, DashboardSection section) {
-        // Change LinearLayout to CardView
         CardView card = view.findViewById(layoutId);
         card.setOnClickListener(v -> handleSectionSelection(section));
     }
@@ -69,7 +82,7 @@ public class DashboardFragment extends Fragment {
                 openFragment(new TransactionsFragment());
                 break;
             case ACTIVE_PARKING:
-//                openFragment(new ActiveParkingFragment());
+//                openFragment(new ActiveParkingFragment()); // Uncomment this line once ActiveParkingFragment is created
                 break;
         }
     }
@@ -77,7 +90,7 @@ public class DashboardFragment extends Fragment {
     private void openFragment(Fragment fragment) {
         FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(containerViewId, fragment,getTag());
+        fragmentTransaction.replace(containerViewId, fragment, getTag());
         fragmentTransaction.addToBackStack(getTag());
         fragmentTransaction.commit();
     }

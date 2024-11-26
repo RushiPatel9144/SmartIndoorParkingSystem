@@ -19,8 +19,10 @@ import androidx.fragment.app.Fragment;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.logic.HelpFragmentLogic;
+import ca.tech.sense.it.smart.indoor.parking.system.network.BaseNetworkFragment;
+import ca.tech.sense.it.smart.indoor.parking.system.network.NoNetworkFragment;
 
-public class HelpFragment extends Fragment {
+public class HelpFragment extends BaseNetworkFragment {
 
     private EditText etName, etPhone, etEmail, etComment;
     private Button btnSubmitHelp;
@@ -40,6 +42,7 @@ public class HelpFragment extends Fragment {
         etComment = view.findViewById(R.id.feedback_comment);
         btnSubmitHelp = view.findViewById(R.id.submit_feedback_button);
         progressBar = view.findViewById(R.id.progress_bar);
+
 
         // Initialize logic class
         helpFragmentLogic = new HelpFragmentLogic(getActivity(), etName, etPhone, etEmail, etComment, btnSubmitHelp, progressBar);

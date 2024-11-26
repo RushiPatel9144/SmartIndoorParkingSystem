@@ -19,9 +19,10 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.network.BaseNetworkFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.menu.PromotionFragment;
 
-public class Home extends Fragment {
+public class Home extends BaseNetworkFragment {
 
     private TextView tvHeader;
     private ImageView imgTop;

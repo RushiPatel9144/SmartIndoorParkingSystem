@@ -5,7 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".YourFragment">
+    android:background="@color/bg"
+    tools:context=".YourFragment"
+    android:visibility="gone">
 
     <LinearLayout
         android:layout_marginTop="25dp"
@@ -13,8 +15,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="25dp"
         android:gravity="center"
-        android:layout_marginStart="25dp"
-        >
+        android:layout_marginStart="25dp">
 
         <!-- Top row with 2 CardViews -->
         <androidx.cardview.widget.CardView

@@ -3,11 +3,8 @@ package ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.onBoarding
 import android.os.Bundle;
 import android.widget.ProgressBar;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
-import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
 import java.util.ArrayList;
@@ -20,48 +17,86 @@ public class OnboardingActivity extends AppCompatActivity {
     private ViewPager2 viewPager;
     private ProgressBar progressBar;
     private List<Fragment> fragmentList;
-
-    int totalPages = 3;
+    private static final int TOTAL_PAGES = 3; // Number of onboarding screens
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_onboarding);
 
-        // Initialize the ProgressBar
+        initializeViews();         // Initialize UI components
+        setupFragmentList();       // Prepare fragments for onboarding screens
+        setupViewPager();          // Set up ViewPager2 with adapter
+        setupPageChangeListener(); // Attach listener to handle progress bar updates
+    }
+
+    /**
+     * Initializes the UI components used in the activity.
+     */
+    private void initializeViews() {
         progressBar = findViewById(R.id.onBoard_progressBar);
-
-        // Initialize ViewPager2
         viewPager = findViewById(R.id.viewPager);
+    }
 
-        // Set up the fragment list
+    /**
+     * Sets up the list of fragments for the onboarding flow.
+     */
+    private void setupFragmentList() {
         fragmentList = new ArrayList<>();
-        fragmentList.add(OnboardingFragment.newInstance(getString(R.string.onboard_title1),
-                getString(R.string.onboard_text1),
-                R.drawable.onboardone, false));
 
-        fragmentList.add(OnboardingFragment.newInstance(getString(R.string.onboard_title2),
-                getString(R.string.onboard_text2),
-                R.drawable.onboardtwo, false));
+        fragmentList.add(createOnboardingFragment(
+                R.string.onboard_title1,
+                R.string.onboard_text1,
+                R.drawable.onboardone,
+                false
+        ));
 
-        fragmentList.add(OnboardingFragment.newInstance(getString(R.string.onboard_title3),
-                getString(R.string.onboard_text3),
-                R.drawable.onboardthree, true));
+        fragmentList.add(createOnboardingFragment(
+                R.string.onboard_title2,
+                R.string.onboard_text2,
+                R.drawable.onboardtwo,
+                false
+        ));
 
-        // Set up ViewPager Adapter
-        ViewPagerAdapter adapter = new ViewPagerAdapter(this);
+        fragmentList.add(createOnboardingFragment(
+                R.string.onboard_title3,
+                R.string.onboard_text3,
+                R.drawable.onboardthree,
+                true
+        ));
+    }
+
+    /**
+     * Creates a new instance of OnboardingFragment with specified parameters.
+     */
+    private OnboardingFragment createOnboardingFragment(int titleRes, int textRes, int imageRes, boolean isLastPage) {
+        return OnboardingFragment.newInstance(
+                getString(titleRes),
+                getString(textRes),
+                imageRes,
+                isLastPage
+        );
+    }
+
+    /**
+     * Configures the ViewPager2 with an adapter and attaches the fragment list.
+     */
+    private void setupViewPager() {
+        OnBoardingViewPagerAdapter adapter = new OnBoardingViewPagerAdapter(this, fragmentList);
         viewPager.setAdapter(adapter);
+    }
 
-        // Add page change listener to update progress
+    /**
+     * Sets up a listener for ViewPager2 to update the progress bar as pages are swiped.
+     */
+    private void setupPageChangeListener() {
         viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                 super.onPageScrolled(position, positionOffset, positionOffsetPixels);
 
-                // Calculate the progress based on the current position and the offset during swipe
-                int progress = (int) (((float) position + positionOffset) / (totalPages - 1) * 100);
-
-                // Update the progress bar during the swipe
+                // Dynamically update progress based on current page and swipe position
+                int progress = (int) (((float) position + positionOffset) / (TOTAL_PAGES - 1) * 100);
                 progressBar.setProgress(progress);
             }
 
@@ -69,28 +104,13 @@ public class OnboardingActivity extends AppCompatActivity {
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
 
-                // Ensure the progress bar reaches 100% when the last page is selected
-                if (position == totalPages - 1) {
+                // Set progress to 100% on the last page
+                if (position == TOTAL_PAGES - 1) {
                     progressBar.setProgress(100);
                 }
             }
         });
     }
 
-    private class ViewPagerAdapter extends FragmentStateAdapter {
-        public ViewPagerAdapter(@NonNull FragmentActivity fa) {
-            super(fa);
-        }
 
-        @NonNull
-        @Override
-        public Fragment createFragment(int position) {
-            return fragmentList.get(position);
-        }
-
-        @Override
-        public int getItemCount() {
-            return fragmentList.size();
-        }
-    }
 }

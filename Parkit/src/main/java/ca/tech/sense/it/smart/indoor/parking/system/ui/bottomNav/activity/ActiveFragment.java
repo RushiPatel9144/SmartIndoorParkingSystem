@@ -21,11 +21,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
-import ca.tech.sense.it.smart.indoor.parking.system.model.activity.BookingViewModel;
+import ca.tech.sense.it.smart.indoor.parking.system.model.booking.BookingViewModel;
+import ca.tech.sense.it.smart.indoor.parking.system.network.BaseNetworkFragment;
+import ca.tech.sense.it.smart.indoor.parking.system.network.NoNetworkFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.adapters.BookingAdapter;
 import ca.tech.sense.it.smart.indoor.parking.system.viewModel.CancelBookingViewModel;
 
-public class ActiveFragment extends Fragment {
+public class ActiveFragment extends BaseNetworkFragment {
     private BookingViewModel bookingViewModel;
     private CancelBookingViewModel cancelBookingViewModel;
     private BookingAdapter bookingAdapter;
