@@ -47,7 +47,7 @@ import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSinglet
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseDatabaseSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.manager.bookingManager.BookingManager;
 import ca.tech.sense.it.smart.indoor.parking.system.model.Promotion;
-import ca.tech.sense.it.smart.indoor.parking.system.model.activity.Booking;
+import ca.tech.sense.it.smart.indoor.parking.system.model.booking.Booking;
 
 public class PaymentActivity extends AppCompatActivity {
 

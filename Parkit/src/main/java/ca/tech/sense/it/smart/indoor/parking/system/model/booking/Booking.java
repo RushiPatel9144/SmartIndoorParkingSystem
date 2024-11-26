@@ -3,7 +3,7 @@
   Name: NisargKumar Pareshbhai Joshi, StudentID: N01545986,  section number: RCB
   Name: Rushi Manojkumar Patel, StudentID: N01539144, section number: RCB
  */
-package ca.tech.sense.it.smart.indoor.parking.system.model.activity;
+package ca.tech.sense.it.smart.indoor.parking.system.model.booking;
 
 import java.io.Serializable;
 

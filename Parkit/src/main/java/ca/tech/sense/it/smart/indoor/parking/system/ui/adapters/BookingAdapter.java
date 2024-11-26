@@ -23,8 +23,8 @@ import java.util.List;
 import java.util.Locale;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
-import ca.tech.sense.it.smart.indoor.parking.system.model.activity.Booking;
-import ca.tech.sense.it.smart.indoor.parking.system.model.activity.BookingViewModel;
+import ca.tech.sense.it.smart.indoor.parking.system.model.booking.Booking;
+import ca.tech.sense.it.smart.indoor.parking.system.model.booking.BookingViewModel;
 import ca.tech.sense.it.smart.indoor.parking.system.viewModel.CancelBookingViewModel;
 
 import androidx.recyclerview.widget.DiffUtil;

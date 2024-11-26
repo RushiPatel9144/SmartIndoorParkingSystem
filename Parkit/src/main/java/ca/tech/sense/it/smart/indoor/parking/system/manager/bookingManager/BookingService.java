@@ -18,7 +18,7 @@ import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 
-import ca.tech.sense.it.smart.indoor.parking.system.model.activity.Booking;
+import ca.tech.sense.it.smart.indoor.parking.system.model.booking.Booking;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.BookingUtils;
 
 public class BookingService {

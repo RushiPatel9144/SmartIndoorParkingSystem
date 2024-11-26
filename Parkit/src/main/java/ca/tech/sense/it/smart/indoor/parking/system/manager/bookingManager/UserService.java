@@ -20,7 +20,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
-import ca.tech.sense.it.smart.indoor.parking.system.model.activity.Booking;
+import ca.tech.sense.it.smart.indoor.parking.system.model.booking.Booking;
 
 public class UserService {
 
