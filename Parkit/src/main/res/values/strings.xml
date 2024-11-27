@@ -450,7 +450,13 @@
     These terms are governed by the laws of the jurisdiction in which the app is operated.
 </string>
     <string name="privacy_policy">Privacy Policy</string>
+    <string name="set_display_name">Update Display Name</string>
+    <string name="invalid_name">Invalid Name</string>
+    <string name="profile_name_updated">Profile Name Updated</string>
+    <string name="enter_display_name_at_least_3_characters">Enter Display Name (At least 3 characters)</string>
+    <string name="failed_to_update_phone_number">Failed to update phone number</string>
     <string name="swipe_to_navigate">Swipe to navigate</string>
     <string name="create_account">Create Account</string>
+
 
 </resources>
