@@ -20,7 +20,6 @@ import ca.tech.sense.it.smart.indoor.parking.system.manager.favoriteManager.Frag
 import ca.tech.sense.it.smart.indoor.parking.system.manager.preferenceManager.PreferenceManager;
 import ca.tech.sense.it.smart.indoor.parking.system.manager.sessionManager.SessionManager;
 
-import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.DashboardFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.transactions.TransactionsFragment;
 
 import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.location.LocationsFragment;

@@ -49,10 +49,7 @@ public class HelpFragmentLogic {
         this.db = FirebaseFirestore.getInstance();
         this.auth = FirebaseAuth.getInstance();
     }
-
-
-
-
+    
     public void fetchUserData() {
         SessionManager sessionManager = SessionManager.getInstance(context);
         String userType = sessionManager.getUserType();
