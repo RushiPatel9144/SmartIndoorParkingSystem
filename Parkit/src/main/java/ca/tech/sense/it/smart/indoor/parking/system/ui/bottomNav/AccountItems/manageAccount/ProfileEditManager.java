@@ -1,8 +1,6 @@
 package ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems.manageAccount;
 
 import android.util.Log;
-import android.view.View;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
@@ -18,12 +16,10 @@ import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
 
 public class ProfileEditManager {
 
-    private FirebaseFirestore db;
+    private final FirebaseFirestore db;
     private String collection;
-    private String userId;
-    private Fragment fragment;
-    private View view;
-
+    private final String userId;
+    private final Fragment fragment;
 
     public ProfileEditManager(Fragment fragment, FirebaseFirestore db, String collection, String userId) {
         this.fragment = fragment;
@@ -93,7 +89,6 @@ public class ProfileEditManager {
         );
     }
     }
-
 
     public void fetchUserDetailsFromFirestore(FirebaseAuth mAuth, TextView contactDetailsTextView, TextView  nameTextView, TextView  phoneNumberTextView) {
         DocumentReference docRef = db.collection(collection).document(Objects.requireNonNull(mAuth.getUid()));
