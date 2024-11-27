@@ -11,6 +11,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.Objects;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirestoreSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems.HelpFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
 
@@ -21,11 +22,52 @@ public class ProfileEditManager {
     private final String userId;
     private final Fragment fragment;
 
+
     public ProfileEditManager(Fragment fragment, FirebaseFirestore db, String collection, String userId) {
         this.fragment = fragment;
         this.db = db;
         this.collection = collection;
         this.userId = userId;
+    }
+
+    public void manageName() {
+        if (fragment.isAdded()) {
+            DialogUtil.showInputDialog(
+                    fragment.requireContext(),
+                    fragment.getString(R.string.set_display_name),
+                    fragment.getString(R.string.enter_display_name_at_least_3_characters), // Default value (can be empty)
+                    new DialogUtil.InputDialogCallback() {
+                        @Override
+                        public void onConfirm(String inputText) {
+                            if (inputText != null && inputText.trim().length() >= 3) {
+                                inputText = inputText.trim();
+                                String[] nameParts = inputText.split(" ", 2); // Split by first space only
+
+                                String firstName = nameParts[0]; // First name is the first part
+                                String lastName = (nameParts.length > 1) ? nameParts[1] : "";
+
+                                // Update both first and last name in Firestore
+                                updateNameInFirestore(firstName, lastName);
+                                showSnackbar(R.string.invalid_name);
+                            }
+                        }
+                        @Override
+                        public void onCancel() {
+                            // Optionally, handle dialog cancellation
+                        }
+                    }
+            );
+        }
+    }
+
+    private void updateNameInFirestore(String firstName, String lastName) {
+        DocumentReference userRef = FirestoreSingleton.getInstance()
+                .collection(collection)
+                .document(Objects.requireNonNull(userId));
+
+        userRef.update("firstName", firstName, "lastName", lastName)
+                .addOnSuccessListener(aVoid -> showSnackbar(R.string.profile_name_updated))
+                .addOnFailureListener(e -> showSnackbar(R.string.update_failed));
     }
 
     public void managePhoneNumber() {
@@ -57,7 +99,7 @@ public class ProfileEditManager {
             userRef.update("phone", phoneNumber)
                     .addOnSuccessListener(aVoid -> showSnackbar(R.string.phone_number_updated))
                     .addOnFailureListener(e -> {
-                        Log.e("Firestore", "Failed to update phone number", e);
+                        Log.e("Firestore", fragment.getString(R.string.failed_to_update_phone_number), e);
                         showSnackbar(R.string.phone_number_update_failed);
                     });
         } else {

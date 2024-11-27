@@ -131,8 +131,8 @@ public class ProfilePictureManager {
                 DocumentSnapshot document = task.getResult();
                 if (document.exists()) {
                     String profilePictureUrl = document.getString(FIELD);
-
                     if (profilePictureUrl != null) {
+                        saveProfilePictureLocally(profilePictureUrl);
                         Glide.with(fragment.requireContext())
                                 .load(profilePictureUrl)
                                 .placeholder(R.drawable.ic_profile_placeholder)

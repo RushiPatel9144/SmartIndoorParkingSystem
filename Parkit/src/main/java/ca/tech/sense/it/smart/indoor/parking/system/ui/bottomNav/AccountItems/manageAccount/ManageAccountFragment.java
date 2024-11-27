@@ -52,6 +52,7 @@ public class ManageAccountFragment extends Fragment {
     private LinearLayout managePassword;
     private LinearLayout manageEmail;
     private LinearLayout managePhoneNumber;
+    private LinearLayout manageName;
     private View rootView;
     private FirebaseFirestore db;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -142,6 +143,7 @@ public class ManageAccountFragment extends Fragment {
         manageEmail = view.findViewById(R.id.manageEmail);
         managePhoneNumber = view.findViewById(R.id.managePhoneNumber);
         swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
+        manageName = view.findViewById(R.id.manageName);
     }
 
     // Setup profile picture update button
@@ -218,6 +220,7 @@ public class ManageAccountFragment extends Fragment {
         managePassword.setOnClickListener(v -> AuthUtils.showResetPasswordDialog(requireContext(), FirebaseAuth.getInstance()));
         manageEmail.setOnClickListener(view -> profileEditManager.manageEmail());
         managePhoneNumber.setOnClickListener(view -> profileEditManager.managePhoneNumber());
+        manageName.setOnClickListener(view -> profileEditManager.manageName());
     }
 
     // Check the user type (Owner/User) and update collection reference accordingly
