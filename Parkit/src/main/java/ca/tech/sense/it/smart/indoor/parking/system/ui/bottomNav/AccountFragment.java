@@ -5,25 +5,33 @@
  */
 package ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.credentialManagerGoogle.CoroutineHelper;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.credentialManagerGoogle.GoogleAuthClient;
-import ca.tech.sense.it.smart.indoor.parking.system.manager.sessionManager.SessionManager;
-import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui.FirstActivity;
-import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems.*;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.sessionManager.SessionManager;
+import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems.HelpFragment;
+import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems.NotificationsFragment;
+import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems.PrivatePolicyFragment;
+import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems.RateUsFragment;
+import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems.SettingsFragment;
+import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems.TermsOfUseFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems.manageAccount.ManageAccountFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
 
@@ -129,6 +137,8 @@ public class AccountFragment extends Fragment {
 
                         FirebaseAuthSingleton.getInstance().signOut();
                         sessionManager.logout();
+                        SharedPreferences rateUsSharedPreferences = requireContext().getSharedPreferences("RateUsPrefs", Context.MODE_PRIVATE);
+                        rateUsSharedPreferences.edit().clear().apply();
 
                         if (googleAuthClient.isSingedIn()){
                             CoroutineHelper.Companion.signOutWithGoogle(requireContext(), googleAuthClient, () -> {});
