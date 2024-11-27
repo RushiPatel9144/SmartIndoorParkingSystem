@@ -450,5 +450,6 @@
     These terms are governed by the laws of the jurisdiction in which the app is operated.
 </string>
     <string name="privacy_policy">Privacy Policy</string>
+    <string name="swipe_to_navigate">Swipe to navigate</string>
 
 </resources>

@@ -1,5 +1,7 @@
 package ca.tech.sense.it.smart.indoor.parking.system.manager.sessionManager;
 
+import static ca.tech.sense.it.smart.indoor.parking.system.utility.AppConstants.COLLECTION_OWNER;
+import static ca.tech.sense.it.smart.indoor.parking.system.utility.AppConstants.COLLECTION_USER;
 import static ca.tech.sense.it.smart.indoor.parking.system.utility.AppConstants.USER_TYPE_OWNER;
 import static ca.tech.sense.it.smart.indoor.parking.system.utility.AppConstants.USER_TYPE_USER;
 
@@ -12,8 +14,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-
-import java.util.Objects;
 
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirestoreSingleton;
@@ -75,7 +75,7 @@ public class SessionManager {
             return;
         }
 
-        editor.putBoolean("remember_me", rememberMe);
+        editor.putBoolean(KEY_REMEMBER_ME, rememberMe);
         editor.apply();
     }
 
@@ -91,7 +91,7 @@ public class SessionManager {
     // Retrieve the token based on the user type
     public String getAuthToken() {
         String userType = sharedPreferences.getString(KEY_USER_TYPE, null);
-        if ("owner".equals(userType)) {
+        if (USER_TYPE_OWNER.equals(userType)) {
             return sharedPreferences.getString(KEY_OWNER_TOKEN, null);
         } else {
             return sharedPreferences.getString(KEY_USER_TOKEN, null);
@@ -129,58 +129,44 @@ public class SessionManager {
     // Fetch session data based on the user type
     public void fetchSessionData(OnSessionDataFetchedCallback callback) {
         String userType = getUserType();
-        String authToken = getAuthToken();
         FirebaseUser user = mAuth.getCurrentUser();
 
-        if (authToken == null || userType == null) {
+        if (userType == null || user == null) {
             callback.onSessionDataFetched(null, null);
             return;
         }
 
-        if (USER_TYPE_USER.equals(userType)) {
-            fetchUserData(Objects.requireNonNull(user).getUid(), callback);
-        } else if (USER_TYPE_OWNER.equals(userType)) {
-            fetchOwnerData(Objects.requireNonNull(user).getUid(), callback);
-        } else {
+        String collection = USER_TYPE_USER.equals(userType) ? COLLECTION_USER : USER_TYPE_OWNER.equals(userType) ? COLLECTION_OWNER : null;
+
+        if (collection == null) {
             callback.onSessionDataFetched(null, null);
+            return;
         }
+
+        fetchDocumentData(collection, user.getUid(), userType, callback);
     }
 
-    private void fetchUserData(String userID, OnSessionDataFetchedCallback callback) {
-        db.collection("users").document(userID)
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot document = task.getResult();
-                        if (document != null && document.exists()) {
-                            currentUser = document.toObject(User.class);
-                            callback.onSessionDataFetched(currentUser, null);
-                        } else {
-                            callback.onSessionDataFetched(null, null);
-                        }
+    private void fetchDocumentData(String collection, String userID, String userType, OnSessionDataFetchedCallback callback) {
+        db.collection(collection).document(userID).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document != null && document.exists()) {
+                    if (USER_TYPE_USER.equals(userType)) {
+                        currentUser = document.toObject(User.class);
+                        callback.onSessionDataFetched(currentUser, null);
                     } else {
-                        callback.onSessionDataFetched(null, null);
+                        currentOwner = document.toObject(Owner.class);
+                        callback.onSessionDataFetched(null, currentOwner);
                     }
-                });
+                } else {
+                    callback.onSessionDataFetched(null, null);
+                }
+            } else {
+                callback.onSessionDataFetched(null, null);
+            }
+        });
     }
 
-    private void fetchOwnerData(String userID, OnSessionDataFetchedCallback callback) {
-        db.collection("owners").document(userID)
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot document = task.getResult();
-                        if (document != null && document.exists()) {
-                            currentOwner = document.toObject(Owner.class);
-                            callback.onSessionDataFetched(null, currentOwner);
-                        } else {
-                            callback.onSessionDataFetched(null, null);
-                        }
-                    } else {
-                        callback.onSessionDataFetched(null, null);
-                    }
-                });
-    }
 
     // Interface for callback
     public interface OnSessionDataFetchedCallback {

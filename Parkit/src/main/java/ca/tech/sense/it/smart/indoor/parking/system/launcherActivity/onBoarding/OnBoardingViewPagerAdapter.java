@@ -35,4 +35,6 @@ public class OnBoardingViewPagerAdapter extends FragmentStateAdapter {
     public int getItemCount() {
         return fragmentList.size(); // Return the total number of fragments
     }
+
+
 }
