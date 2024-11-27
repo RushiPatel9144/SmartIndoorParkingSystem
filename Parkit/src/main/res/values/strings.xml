@@ -455,5 +455,7 @@
     <string name="profile_name_updated">Profile Name Updated</string>
     <string name="enter_display_name_at_least_3_characters">Enter Display Name (At least 3 characters)</string>
     <string name="failed_to_update_phone_number">Failed to update phone number</string>
+    <string name="swipe_to_navigate">Swipe to navigate</string>
+
 
 </resources>

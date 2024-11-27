@@ -1,6 +1,6 @@
 package ca.tech.sense.it.smart.indoor.parking.system.manager.bookingManager;
 
-import static androidx.core.content.ContextCompat.getColor;
+
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.Context;
@@ -18,20 +18,9 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -40,11 +29,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.booking.PaymentActivity;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.favoriteManager.FavoritesManager;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.adapters.SlotAdapter;
 import ca.tech.sense.it.smart.indoor.parking.system.currency.Currency;
 import ca.tech.sense.it.smart.indoor.parking.system.currency.CurrencyManager;
@@ -80,7 +69,6 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
     private double convertedPrice;
     private Currency selectedCurrency;
     private FirebaseAuth firebaseAuth;
-    private DatabaseReference databaseReference;
     private final ParkingLocationManager parkingLocationManager = new ParkingLocationManager();
     private ExecutorService executorService;
 
@@ -111,10 +99,14 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
         setupProceedToPaymentButton();
         setupCancelButton();
         setupSelectDateButton();
-        setupStarButton();
 
         // Fetch the parking location data when the dialog is opened
         fetchParkingLocationData();
+
+        // Create an instance of FavoritesManager and setup the star button
+        FavoritesManager favoritesManager = new FavoritesManager(getContext(), firebaseAuth, starButton, locationId,
+                addressText, postalCodeText, bookingManager);
+        favoritesManager.setupStarButton();
 
         // Set up the time slots with the current date as default
         selectedDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
@@ -297,8 +289,8 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
                         // Create a Booking object with the selected details
                         Booking booking = new Booking(
                                 titleTextView.getText().toString(),
-                                convertToMillis(selectedDate + " " + selectedTimeSlot.split(" - ")[0]),
-                                convertToMillis(selectedDate + " " + selectedTimeSlot.split(" - ")[1]),
+                                BookingUtils.convertToMillis(selectedDate + " " + selectedTimeSlot.split(" - ")[0]),
+                                BookingUtils.convertToMillis(selectedDate + " " + selectedTimeSlot.split(" - ")[1]),
                                 addressText.getText().toString(),
                                 postalCodeText.getText().toString(),
                                 convertedPrice,
@@ -350,110 +342,6 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
             datePickerDialog.show();
         });
     }
-
-    // Method to handle adding to favorites (optional feature)
-    private void setupStarButton() {
-        if (firebaseAuth.getCurrentUser() == null) {
-            Toast.makeText(context, R.string.user_not_authenticated, Toast.LENGTH_SHORT).show();
-            return;
-        }
-        DatabaseReference userFavoritesRef = FirebaseDatabase.getInstance().getReference("users")
-                .child(Objects.requireNonNull(firebaseAuth.getCurrentUser()).getUid())
-                .child("saved_locations")
-                .child(locationId);
-        // Check if the location is already in the favorites
-        userFavoritesRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    // Location is already in favorites, set star button to green
-                    starButton.setColorFilter(ContextCompat.getColor(context, R.color.logo));
-                } else {
-                    // Location is not in favorites, set star button to black
-                    starButton.setColorFilter(ContextCompat.getColor(context, R.color.black));
-                }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(context, "Failed to check favorites"+ error.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-        // Listen for changes in the saved_locations database
-        userFavoritesRef.getParent().addChildEventListener(new ChildEventListener() {
-                                                               @Override
-                                                               public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                                                                   if (snapshot.getKey().equals(locationId)) {
-                                                                       starButton.setColorFilter(ContextCompat.getColor(context, R.color.logo));
-                                                                   }
-                                                               }
-                                                               @Override
-                                                               public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                                                                   // Not needed for this use case
-                                                               }
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-                if (snapshot.getKey().equals(locationId)) {
-                    starButton.setColorFilter(ContextCompat.getColor(context, R.color.black));
-                }
-            }
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                // Not needed for this use case
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(context, "Failed to listen for changes" + error.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-        starButton.setOnClickListener(v -> {
-            userFavoritesRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if (snapshot.exists()) {
-                        // Location is already in favorites, remove it
-                        userFavoritesRef.removeValue().addOnSuccessListener(aVoid -> {
-                            starButton.setColorFilter(ContextCompat.getColor(context, R.color.black));
-                            Toast.makeText(context, "Location removed from favorites", Toast.LENGTH_SHORT).show();
-                        }).addOnFailureListener(error -> {
-                            Toast.makeText(context, "Failed to remove location" + error.getMessage(), Toast.LENGTH_SHORT).show();
-                        });
-                    } else {// Location is not in favorites, add it
-                        String address = addressText.getText().toString();
-                        String postalCode = postalCodeText.getText().toString();
-                        // Fetch the name from the database
-                        DatabaseReference locationRef = FirebaseDatabase.getInstance().getReference("parkingLocations").child(locationId);
-                        locationRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                String name = snapshot.child("name").getValue(String.class);
-                                if (name != null) {
-                                    bookingManager.getUserService().saveLocationToFavorites(locationId, address, postalCode, name, () -> {
-                                        starButton.setColorFilter(getColor(context, R.color.logo));
-                                        Toast.makeText(context, R.string.location_saved_to_favorites, Toast.LENGTH_SHORT).show();
-                                    }, error -> {
-                                        Toast.makeText(context, context.getString(R.string.failed_to_save_location) + error.getMessage(), Toast.LENGTH_SHORT).show();
-                                    });
-                                } else {
-                                    Toast.makeText(context, "Failed to fetch the name", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError error) {
-                                Toast.makeText(context, "Failed to fetch the name" + error.getMessage(), Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }
-                }
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Toast.makeText(context, "Failed to check favorites" + error.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
-        });
-    }
-
-
-
     // Method to set error message
     public void setErrorMessage(String message) {
         if (errorTextView != null) {
@@ -461,16 +349,5 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
             errorTextView.setVisibility(View.VISIBLE);
         }
     }
-
-    // Helper method to convert date and time to milliseconds
-    private long convertToMillis(String dateTime) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
-        try {
-            Date date = sdf.parse(dateTime);
-            return date != null ? date.getTime() : 0;
-        } catch (ParseException e) {
-            e.printStackTrace();
-            return 0;
-        }
-    }
 }
+
