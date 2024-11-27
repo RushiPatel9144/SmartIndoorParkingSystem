@@ -31,6 +31,7 @@ import com.bumptech.glide.Glide;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -39,6 +40,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.IOException;
+import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -46,6 +48,7 @@ import java.util.concurrent.TimeUnit;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirestoreSingleton;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.sessionManager.SessionManager;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems.HelpFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.AuthUtils;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
@@ -74,6 +77,8 @@ public class ManageAccountFragment extends Fragment {
     private FirebaseUser currentUser;
     private LinearLayout linearLayout;
     private FrameLayout progressFrame;
+    private ProfileEditManager profileEditManager;
+    private FirebaseAuth mAuth;
     // Executor service to schedule tasks
     private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
 
@@ -104,6 +109,16 @@ public class ManageAccountFragment extends Fragment {
             }
     );
 
+    private final ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(
+            new ActivityResultContracts.RequestPermission(),
+            isGranted -> {
+                if (Boolean.TRUE.equals(isGranted)) {
+                    openGallery();
+                } else {
+                    showSnackbar(R.string.permission_denied_to_read_external_storage);
+                }
+            });
+
     private void loadCroppedImage(Uri imageUri) {
         try {
             Bitmap bitmap;
@@ -116,43 +131,26 @@ public class ManageAccountFragment extends Fragment {
         }
     }
 
-    private final ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(
-            new ActivityResultContracts.RequestPermission(),
-            isGranted -> {
-                if (Boolean.TRUE.equals(isGranted)) {
-                    openGallery();
-                } else {
-                    showSnackbar(R.string.permission_denied_to_read_external_storage);
-                }
-            });
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_manage_account, container, false);
         bindViews(rootView);
-        FirebaseAuth mAuth;
         mAuth = FirebaseAuthSingleton.getInstance();
         currentUser = mAuth.getCurrentUser();
         db = FirestoreSingleton.getInstance();
         checkUserType();
         scheduleCheckUserType();
+        profileEditManager = new ProfileEditManager(this, db, collection, currentUser.getUid());
         return rootView;
-    }
-    private void scheduleCheckUserType() {
-        scheduledExecutorService.schedule(() -> {
-            String uid = currentUser.getUid();
-            fetchUserDetailsFromFirestore(uid);
-            loadProfilePicture();
-        }, 1, TimeUnit.SECONDS);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setupProfilePictureButton();
-        setupPasswordResetButton();
-        manageEmail();
-        managePhoneNumber();
+        setupButton();
     }
 
     private void bindViews(View view) {
@@ -191,43 +189,6 @@ public class ManageAccountFragment extends Fragment {
         intent.putExtra(getString(R.string.imageuri), imageUri);
         imageCropLauncher.launch(intent);
     }
-
-    private void fetchUserDetailsFromFirestore(String uid) {
-        DocumentReference docRef = db.collection(collection).document(uid);
-        String email = currentUser.getEmail();
-        if (email != null) {
-            contactDetailsTextView.setText(email);
-        }
-        docRef.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                DocumentSnapshot document = task.getResult();
-                if (document.exists()) {
-                    // Fetch and set user details here (name, email, etc.)
-                    String firstName = document.getString("firstName");
-                    String lastName = document.getString("lastName");
-                    String phoneNumber = document.getString("phone");
-
-                    if (firstName != null) {
-                        nameTextView.setText(firstName);
-                    }
-                    if (lastName != null) {
-                        nameTextView.append(" " + lastName);
-                    }
-                    if (phoneNumber != null) {
-                        phoneNumberTextView.setText(phoneNumber);
-                    } else {
-                        phoneNumberTextView.setText(R.string.add_phone_number);
-                    }
-                } else {
-                    showSnackbar(R.string.user_data_not_found);
-                }
-            } else {
-                Log.e("TAG", getString(R.string.firestore_fetch_failed) + task.getException());
-                showSnackbar(R.string.fetch_data_failed);
-            }
-        });
-    }
-
 
     private void openGallery() {
         Intent intent = new Intent(Intent.ACTION_PICK);
@@ -273,13 +234,10 @@ public class ManageAccountFragment extends Fragment {
             showSnackbar(R.string.user_not_authenticated);
             return;
         }
-
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageReference = storage.getReference().child("profile_photos/" + currentUser.getUid() + ".jpg");
-
         // Upload the image to Firebase Storage
         UploadTask uploadTask = storageReference.putFile(uri);
-
         uploadTask.addOnSuccessListener(taskSnapshot -> storageReference.getDownloadUrl().addOnSuccessListener(downloadUrl -> saveProfilePictureUrlToFirestore(downloadUrl.toString()))).addOnFailureListener(e -> showSnackbar(R.string.update_failed));
     }
 
@@ -303,7 +261,6 @@ public class ManageAccountFragment extends Fragment {
             showSnackbar(R.string.user_not_found);
             return;
         }
-
         StorageReference storageRef = FirebaseStorage.getInstance().getReference()
                 .child("profile_photos/" + currentUser.getUid() + ".jpg");
 
@@ -332,18 +289,17 @@ public class ManageAccountFragment extends Fragment {
     private void saveProfilePictureLocally(String photoUrl) {
         SharedPreferences sharedPreferences = requireActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(KEY_PROFILE_PICTURE_URI, photoUrl);  // Save the Firebase URL as the key
+        editor.putString(KEY_PROFILE_PICTURE_URI, photoUrl);
         editor.apply();
     }
 
     private void saveProfilePhotoToFirestore(String photoUrl) {
         if (currentUser != null) {
-            // Update the profile photo URL in the correct collection
-            DocumentReference userRef = FirebaseFirestore.getInstance()
+            DocumentReference userRef = FirestoreSingleton.getInstance()
                     .collection(collection)
                     .document(currentUser.getUid());
 
-            userRef.update("profilePhotoUrl", photoUrl)  // Ensure that "profilePhotoUrl" is the correct field
+            userRef.update("profilePhotoUrl", photoUrl)
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
                             Log.d("Firestore", "Profile picture updated successfully.");
@@ -354,101 +310,35 @@ public class ManageAccountFragment extends Fragment {
         }
     }
 
-    private void showSnackbar(int messageResId) {
-        Snackbar.make(rootView, messageResId, -1).show();
-    }
-
-
     private boolean isPermissionGranted() {
         return ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
                 == PackageManager.PERMISSION_GRANTED;
     }
 
-    private void setupPasswordResetButton() {
+    private void scheduleCheckUserType() {
+        scheduledExecutorService.schedule(() -> {
+            profileEditManager.fetchUserDetailsFromFirestore(mAuth, contactDetailsTextView,nameTextView,phoneNumberTextView);
+            loadProfilePicture();
+        }, 1, TimeUnit.SECONDS);
+    }
+
+    public void setupButton(){
         managePassword.setOnClickListener(v -> AuthUtils.showResetPasswordDialog(requireContext(), FirebaseAuth.getInstance()));
-    }
-
-    private void manageEmail() {
-        manageEmail.setOnClickListener(v -> DialogUtil.showMessageDialog(
-                requireContext(),
-                getString(R.string.email_update_unavailable),
-                getString(R.string.changing_your_email_address_is_currently_not_permitted_please_reach_out_to_our_support_team_for_further_assistance),
-                getString(R.string.help),
-                new DialogUtil.DialogCallback() {
-                    @Override
-                    public void onConfirm() {
-                        getParentFragmentManager().beginTransaction()
-                                .replace(R.id.flFragment, new HelpFragment())
-                                .addToBackStack(null)
-                                .commit();
-                    }
-                    @Override
-                    public void onCancel() {
-                        // Do nothing, just close the dialog
-                    }
-                }
-        ));
-    }
-
-    private void managePhoneNumber() {
-        managePhoneNumber.setOnClickListener(v -> DialogUtil.showInputDialog(
-                requireContext(),
-                getString(R.string.set_phone_number),
-                "+1XXXXXXXXXX",
-                new DialogUtil.InputDialogCallback() {
-                    @Override
-                    public void onConfirm(String inputText) {
-                        if (inputText != null && inputText.trim().length() >= 12){
-                            updatePhoneNumberInFirestore(inputText);
-                        } else {
-                            showSnackbar(R.string.invalid_phone_number);
-                        }
-                    }
-                    @Override
-                    public void onCancel() {
-                        // Optionally, handle dialog cancellation
-                    }
-                }
-        ));
-    }
-
-    private void updatePhoneNumberInFirestore(String phoneNumber) {
-        if (currentUser != null) {
-            DocumentReference userRef = db.collection(collection).document(currentUser.getUid());
-            userRef.update("phone", phoneNumber)
-                    .addOnSuccessListener(aVoid -> {
-                        phoneNumberTextView.setText(phoneNumber);
-                        showSnackbar(R.string.phone_number_updated);
-                    })
-                    .addOnFailureListener(e -> {
-                        Log.e("Firestore", "Failed to update phone number", e);
-                        showSnackbar(R.string.phone_number_update_failed);
-                    });
-        } else {
-            showSnackbar(R.string.user_not_authenticated);
-        }
+        manageEmail.setOnClickListener(view -> profileEditManager.manageEmail());
+        managePhoneNumber.setOnClickListener(view -> profileEditManager.managePhoneNumber());
     }
 
     private void checkUserType() {
-        if (currentUser != null) {
-            UserCheckHelper userCheckHelper = new UserCheckHelper();
-            userCheckHelper.checkUserType(currentUser.getUid(), getContext(), new UserCheckHelper.UserTypeCallback() {
-                @Override
-                public void onUserTypeDetermined(UserCheckHelper.UserType userType) {
-                    if (userType == UserCheckHelper.UserType.OWNER) {
-                        collection = COLLECTION_OWNER;
-                    } else if (userType == UserCheckHelper.UserType.USER) {
-                        collection = COLLECTION_USER;
-                    }
-                }
-                @Override
-                public void onError() {
-                    Toast.makeText(getContext(), R.string.an_error_occurred, Toast.LENGTH_SHORT).show();
-                }
-            });
+        SessionManager sessionManager = new SessionManager(requireContext());
+        if (Objects.equals(sessionManager.getUserType(), "owner")) {
+            collection = COLLECTION_OWNER;
         } else {
-            Toast.makeText(getContext(), R.string.no_user_is_logged_in, Toast.LENGTH_SHORT).show();
+            collection = COLLECTION_USER;
         }
+    }
+
+    private void showSnackbar(int messageResId) {
+        Snackbar.make(rootView, messageResId, -1).show();
     }
 }
 

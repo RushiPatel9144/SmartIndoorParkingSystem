@@ -1,0 +1,135 @@
+package ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems.manageAccount;
+
+import android.util.Log;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import androidx.fragment.app.Fragment;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import java.util.Objects;
+import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems.HelpFragment;
+import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
+
+public class ProfileEditManager {
+
+    private FirebaseFirestore db;
+    private String collection;
+    private String userId;
+    private Fragment fragment;
+    private View view;
+
+
+    public ProfileEditManager(Fragment fragment, FirebaseFirestore db, String collection, String userId) {
+        this.fragment = fragment;
+        this.db = db;
+        this.collection = collection;
+        this.userId = userId;
+    }
+
+    public void managePhoneNumber() {
+        if (fragment.isAdded()){
+        DialogUtil.showInputDialog(
+                fragment.requireContext(),
+                fragment.getString(R.string.set_phone_number),
+                "+1XXXXXXXXXX",
+                new DialogUtil.InputDialogCallback() {
+                    @Override
+                    public void onConfirm(String inputText) {
+                        if (inputText != null && inputText.trim().length() >= 12) {
+                            updatePhoneNumberInFirestore(inputText);
+                        } else {
+                            showSnackbar(R.string.invalid_phone_number);
+                        }
+                    }
+                    @Override
+                    public void onCancel() {
+                        // Optionally, handle dialog cancellation
+                    }
+                }
+        );
+    }}
+
+    private void updatePhoneNumberInFirestore(String phoneNumber) {
+        if (userId != null) {
+            DocumentReference userRef = db.collection(collection).document(userId);
+            userRef.update("phone", phoneNumber)
+                    .addOnSuccessListener(aVoid -> showSnackbar(R.string.phone_number_updated))
+                    .addOnFailureListener(e -> {
+                        Log.e("Firestore", "Failed to update phone number", e);
+                        showSnackbar(R.string.phone_number_update_failed);
+                    });
+        } else {
+            showSnackbar(R.string.user_not_authenticated);
+        }
+    }
+
+    public void manageEmail() {
+        if (fragment.isAdded()){
+        DialogUtil.showMessageDialog(
+                fragment.requireContext(),
+                fragment.getString(R.string.email_update_unavailable),
+                fragment.getString(R.string.changing_your_email_address_is_currently_not_permitted_please_reach_out_to_our_support_team_for_further_assistance),
+                fragment.getString(R.string.help),
+                new DialogUtil.DialogCallback() {
+                    @Override
+                    public void onConfirm() {
+                        fragment.getParentFragmentManager().beginTransaction()
+                                .replace(R.id.flFragment, new HelpFragment())
+                                .addToBackStack(null)
+                                .commit();
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        // Do nothing, just close the dialog
+                    }
+                }
+        );
+    }
+    }
+
+
+    public void fetchUserDetailsFromFirestore(FirebaseAuth mAuth, TextView contactDetailsTextView, TextView  nameTextView, TextView  phoneNumberTextView) {
+        DocumentReference docRef = db.collection(collection).document(Objects.requireNonNull(mAuth.getUid()));
+        String email = Objects.requireNonNull(mAuth.getCurrentUser()).getEmail();
+        contactDetailsTextView.setText(email);
+
+        docRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+                    // Fetch and set user details here (name, email, etc.)
+                    String firstName = document.getString("firstName");
+                    String lastName = document.getString("lastName");
+                    String phoneNumber = document.getString("phone");
+
+                    if (firstName != null) {
+                        nameTextView.setText(firstName);
+                    }
+                    if (lastName != null) {
+                        nameTextView.append(" " + lastName);
+                    }
+                    if (phoneNumber != null) {
+                        phoneNumberTextView.setText(phoneNumber);
+                    } else {
+                        phoneNumberTextView.setText(R.string.add_phone_number);
+                    }
+                } else {
+                    showSnackbar(R.string.user_data_not_found);
+                }
+            } else {
+                showSnackbar(R.string.fetch_data_failed);
+            }
+        });
+    }
+
+    private void showSnackbar(int messageResId) {
+        Snackbar.make(fragment.requireView(), messageResId, -1).show();
+    }
+}
