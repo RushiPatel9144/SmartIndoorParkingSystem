@@ -1,6 +1,8 @@
 package ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.onBoarding;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -143,8 +145,8 @@ public class OnboardingFragment extends Fragment {
      */
     private void completeOnboarding() {
         // Update shared preferences to indicate onboarding completion
-//        SharedPreferences preferences = requireActivity().getSharedPreferences("app_preferences", Context.MODE_PRIVATE);
-//        preferences.edit().putBoolean("isFirstTime", false).apply();
+        SharedPreferences preferences = requireActivity().getSharedPreferences("app_preferences", Context.MODE_PRIVATE);
+        preferences.edit().putBoolean("isFirstTime", false).apply();
 
         // Navigate to the first activity
         startActivity(new Intent(getActivity(), FirstActivity.class));
