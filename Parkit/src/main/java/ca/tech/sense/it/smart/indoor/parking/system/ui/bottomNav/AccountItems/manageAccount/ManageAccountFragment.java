@@ -210,7 +210,7 @@ public class ManageAccountFragment extends Fragment {
             profileEditManager.fetchUserDetailsFromFirestore(mAuth, contactDetailsTextView, nameTextView, phoneNumberTextView);
             profilePictureManager.loadProfilePicture(profilePicture);
             requireActivity().runOnUiThread(() -> swipeRefreshLayout.setRefreshing(false));
-        }, 3, TimeUnit.SECONDS);
+        }, 2, TimeUnit.SECONDS);
     }
 
     // Setup buttons for managing profile information (password, email, phone number)
@@ -232,6 +232,8 @@ public class ManageAccountFragment extends Fragment {
 
     // Show a Snackbar message
     private void showSnackbar(int messageResId) {
-        Snackbar.make(rootView, messageResId, BaseTransientBottomBar.LENGTH_SHORT).show();
+        if (isAdded() && getView() != null) {
+            Snackbar.make(rootView, messageResId, BaseTransientBottomBar.LENGTH_SHORT).show();
+        }
     }
 }

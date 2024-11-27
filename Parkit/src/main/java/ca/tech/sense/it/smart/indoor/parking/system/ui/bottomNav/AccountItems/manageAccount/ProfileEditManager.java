@@ -125,6 +125,8 @@ public class ProfileEditManager {
     }
 
     private void showSnackbar(int messageResId) {
-        Snackbar.make(fragment.requireView(), messageResId, -1).show();
+        if (fragment.isAdded() && fragment.getView() != null) {
+            Snackbar.make(fragment.requireView(), messageResId, -1).show();
+        }
     }
 }

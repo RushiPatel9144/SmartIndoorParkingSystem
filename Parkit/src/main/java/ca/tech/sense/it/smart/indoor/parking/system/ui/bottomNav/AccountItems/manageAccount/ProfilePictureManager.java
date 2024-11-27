@@ -154,6 +154,8 @@ public class ProfilePictureManager {
     }
 
     private void showSnackbar(int messageResId) {
-        Snackbar.make(fragment.requireView(), fragment.getString(messageResId), BaseTransientBottomBar.LENGTH_SHORT).show();
+        if (fragment.isAdded() && fragment.getView() != null) {
+            Snackbar.make(fragment.requireView(), fragment.getString(messageResId), BaseTransientBottomBar.LENGTH_SHORT).show();
+        }
     }
 }
