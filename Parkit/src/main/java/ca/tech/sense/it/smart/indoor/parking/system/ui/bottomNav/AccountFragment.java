@@ -5,6 +5,9 @@
  */
 package ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav;
 
+
+import static ca.tech.sense.it.smart.indoor.parking.system.utility.AppConstants.KEY_PROFILE_PICTURE_URI;
+import static ca.tech.sense.it.smart.indoor.parking.system.utility.AppConstants.PREFS_NAME;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -19,7 +22,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-
+import com.bumptech.glide.Glide;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.credentialManagerGoogle.CoroutineHelper;
@@ -37,6 +40,9 @@ import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
 
 public class AccountFragment extends Fragment {
     private static final String ARG_CONTAINER_VIEW_ID = "containerViewId";
+    private static final String PREFS_NAME = "AccountPrefs";
+    private static final String KEY_PROFILE_PICTURE_URI = "profile_picture_uri";
+
     private int containerViewId;
     SessionManager sessionManager;
     ImageView profilePic;
@@ -69,11 +75,24 @@ public class AccountFragment extends Fragment {
         sessionManager = new SessionManager(requireContext());
         profilePic = view.findViewById(R.id.accountFrag_ProfilePic);
 
-
         setupClickListeners(view);
+        loadProfilePictureLocally();
         return view;
     }
 
+    private void loadProfilePictureLocally() {
+        SharedPreferences sharedPreferences;
+        sharedPreferences = requireActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        String photoUrl = sharedPreferences.getString(KEY_PROFILE_PICTURE_URI, null);
+
+        if (photoUrl != null) {
+            Glide.with(this)
+                    .load(photoUrl)
+                    .circleCrop()
+                    .error(R.drawable.ic_profile_placeholder)
+                    .into(profilePic);
+        }
+    }
     private void setupClickListeners(View view) {
         setSectionClickListener(view, R.id.manage_account, AccountSection.MANAGE_ACCOUNT);
         setSectionClickListener(view, R.id.settings, AccountSection.SETTINGS);
@@ -143,7 +162,6 @@ public class AccountFragment extends Fragment {
                         if (googleAuthClient.isSingedIn()){
                             CoroutineHelper.Companion.signOutWithGoogle(requireContext(), googleAuthClient, () -> {});
                         }
-
 
 
                         Intent intent = new Intent(requireActivity(), FirstActivity.class);
