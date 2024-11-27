@@ -15,14 +15,13 @@ import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.manager.favoriteManager.FragmentManagerHelper;
 import ca.tech.sense.it.smart.indoor.parking.system.manager.preferenceManager.PreferenceManager;
 import ca.tech.sense.it.smart.indoor.parking.system.manager.sessionManager.SessionManager;
-import ca.tech.sense.it.smart.indoor.parking.system.model.owner.Owner;
-import ca.tech.sense.it.smart.indoor.parking.system.model.user.User;
-import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.DashboardFragment;
-import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.transactions.TransactionsFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.location.LocationsFragment;
+import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.ownerDashboard.DashboardFragment;
+import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.transactions.TransactionsFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountFragment;
 
-public class OwnerActivity extends AppCompatActivity implements BottomNavigationView.OnItemSelectedListener {
+public class
+OwnerActivity extends AppCompatActivity implements BottomNavigationView.OnItemSelectedListener {
 
     private static final String TAG = "OwnerMainActivity";
 
@@ -32,6 +31,7 @@ public class OwnerActivity extends AppCompatActivity implements BottomNavigation
     private final AccountFragment accountFragment = AccountFragment.newInstance(R.id.fragment_container_owner);
     private FragmentManagerHelper fragmentManagerHelper;
     private PreferenceManager preferenceManager;
+    SessionManager sessionManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,16 +44,8 @@ public class OwnerActivity extends AppCompatActivity implements BottomNavigation
 
         // Fetch session data when the activity is created
         SessionManager sessionManager = SessionManager.getInstance(this);
-        sessionManager.fetchSessionData(new SessionManager.OnSessionDataFetchedCallback() {
-            @Override
-            public void onSessionDataFetched(User user, Owner owner) {
-                // You can now use 'user' or 'owner' data for your UI
-                if (user != null) {
-                    // Use user data
-                } else if (owner != null) {
-                    // Use owner data
-                }
-            }
+        sessionManager.fetchSessionData((user, owner) -> {
+
         });
 
         // Initialize helpers

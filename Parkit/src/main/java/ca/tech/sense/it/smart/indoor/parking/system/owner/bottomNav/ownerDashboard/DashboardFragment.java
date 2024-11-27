@@ -1,4 +1,4 @@
-package ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav;
+package ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.ownerDashboard;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -6,18 +6,17 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.location.LocationsFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.transactions.TransactionsFragment;
-
-import androidx.cardview.widget.CardView;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class DashboardFragment extends Fragment {
     private static final String ARG_CONTAINER_VIEW_ID = "containerViewId";

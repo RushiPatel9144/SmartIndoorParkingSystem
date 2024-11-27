@@ -451,5 +451,6 @@
 </string>
     <string name="privacy_policy">Privacy Policy</string>
     <string name="swipe_to_navigate">Swipe to navigate</string>
+    <string name="create_account">Create Account</string>
 
 </resources>

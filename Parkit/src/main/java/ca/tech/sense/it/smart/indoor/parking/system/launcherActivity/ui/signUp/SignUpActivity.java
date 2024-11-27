@@ -8,7 +8,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputLayout;
@@ -78,7 +77,7 @@ public class SignUpActivity extends BaseActivity {
         // Navigate to Login screen
         jump_to_login.setOnClickListener(v -> SignUpHelper.navigateToLogin(this,userType));
 
-        editTextPassword.setOnFocusChangeListener((v, hasFocus) -> SignUpHelper.scrollViewChangeBasedOnUi(hasFocus, editTextPassword, scrollView));
+        editTextPassword.setOnFocusChangeListener((v, hasFocus) -> SignUpHelper.scrollViewChangeBasedOnUi(hasFocus, editTextPassword,editTextConfirmPassword, scrollView));
         // Handle Sign Up button click
         button.setOnClickListener(v -> SignUpHelper.handleSignUp(progressBar, editTextEmail, editTextPassword, editTextConfirmPassword, firstName, lastName, phone, checkBox, userType, mAuth, this,signup_email_layout,signup_password_layout,signup_confirm_password_layout,signup_phone_number_layout,signup_first_name_layout,signup_last_name_layout));
     }

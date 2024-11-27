@@ -41,9 +41,9 @@ public class SignUpHelper {
      * @param editTextPassword  The password input field.
      * @param scrollView        The parent scroll view containing the input fields.
      */
-    public static void scrollViewChangeBasedOnUi(Boolean hasFocus, EditText editTextPassword, View scrollView) {
+    public static void scrollViewChangeBasedOnUi(Boolean hasFocus, EditText editTextPassword,EditText editTextConfirmPassword, View scrollView) {
         if (!hasFocus) {
-            scrollView.scrollTo(0, editTextPassword.getBottom());
+            scrollView.scrollTo(0, editTextConfirmPassword.getBottom());
         }
     }
 
