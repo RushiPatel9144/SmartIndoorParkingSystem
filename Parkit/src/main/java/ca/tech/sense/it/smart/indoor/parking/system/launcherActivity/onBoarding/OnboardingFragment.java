@@ -1,14 +1,13 @@
 package ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.onBoarding;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -34,6 +33,7 @@ public class OnboardingFragment extends Fragment {
     private String description;
     private int imageResId;
     private boolean isLastPage;
+    private LinearLayout swipeLayout;
 
     public OnboardingFragment() {
         // Default constructor
@@ -95,13 +95,29 @@ public class OnboardingFragment extends Fragment {
         ImageView imageView = view.findViewById(R.id.onBoard_imageView);
         Button getStartedButton = view.findViewById(R.id.onBoard_getStartedButton);
 
+        swipeLayout = view.findViewById(R.id.onBoard_swipe);
         // Set the content for the fragment
         titleTextView.setText(title);
         descriptionTextView.setText(description);
         imageView.setImageResource(imageResId);
 
         // Configure the "Get Started" button for the last page
-        configureGetStartedButton(getStartedButton);
+        configureGetStartedButton(getStartedButton,swipeLayout);
+        swipeLayout.setOnClickListener(v -> navigateToNextFragment());
+    }
+
+    private void navigateToNextFragment() {
+
+        if (getActivity() instanceof OnboardingActivity) {
+            OnboardingActivity activity = (OnboardingActivity) getActivity();
+            int currentItem = activity.getViewPager().getCurrentItem();
+            int totalItems = activity.getFragmentList().size();
+
+            if (currentItem < totalItems - 1) {
+                // Navigate to the next page
+                activity.getViewPager().setCurrentItem(currentItem + 1, true);
+            }
+        }
     }
 
     /**
@@ -109,22 +125,26 @@ public class OnboardingFragment extends Fragment {
      *
      * @param getStartedButton The button to be configured.
      */
-    private void configureGetStartedButton(Button getStartedButton) {
+    private void configureGetStartedButton(Button getStartedButton,LinearLayout swipeLayout) {
         if (isLastPage) {
+            swipeLayout.setVisibility(View.GONE);
             getStartedButton.setVisibility(View.VISIBLE);
             getStartedButton.setOnClickListener(v -> completeOnboarding());
         } else {
             getStartedButton.setVisibility(View.GONE);
+            swipeLayout.setVisibility(View.VISIBLE);
         }
     }
+
+
 
     /**
      * Marks onboarding as complete and navigates to the first activity.
      */
     private void completeOnboarding() {
         // Update shared preferences to indicate onboarding completion
-        SharedPreferences preferences = requireActivity().getSharedPreferences("app_preferences", Context.MODE_PRIVATE);
-        preferences.edit().putBoolean("isFirstTime", false).apply();
+//        SharedPreferences preferences = requireActivity().getSharedPreferences("app_preferences", Context.MODE_PRIVATE);
+//        preferences.edit().putBoolean("isFirstTime", false).apply();
 
         // Navigate to the first activity
         startActivity(new Intent(getActivity(), FirstActivity.class));
