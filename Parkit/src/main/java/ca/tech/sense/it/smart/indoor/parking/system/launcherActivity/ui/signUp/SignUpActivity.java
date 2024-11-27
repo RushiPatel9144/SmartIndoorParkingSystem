@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -27,6 +28,7 @@ public class SignUpActivity extends BaseActivity {
     private ProgressBar progressBar;
     private FirebaseAuth mAuth;
     private CheckBox checkBox;
+    private ImageView signup_back_button;
     private String userID,userType;
     private TextInputLayout signup_first_name_layout, signup_last_name_layout, signup_phone_number_layout,signup_email_layout, signup_password_layout, signup_confirm_password_layout;
 
@@ -54,6 +56,7 @@ public class SignUpActivity extends BaseActivity {
         firstName = findViewById(R.id.editTextFirstName);
         lastName = findViewById(R.id.editTextLastName);
         phone = findViewById(R.id.signup_phoneNumber);
+        signup_back_button = findViewById(R.id.signup_back_button);
 
         signup_first_name_layout = findViewById(R.id.signup_first_name_layout);
         signup_last_name_layout = findViewById(R.id.signup_last_name_layout);
@@ -76,6 +79,7 @@ public class SignUpActivity extends BaseActivity {
     private void setOnClickListeners(String userType, View scrollView) {
         // Navigate to Login screen
         jump_to_login.setOnClickListener(v -> SignUpHelper.navigateToLogin(this,userType));
+        signup_back_button.setOnClickListener(v -> SignUpHelper.navigateToLogin(this,userType));
 
         editTextPassword.setOnFocusChangeListener((v, hasFocus) -> SignUpHelper.scrollViewChangeBasedOnUi(hasFocus, editTextPassword,editTextConfirmPassword, scrollView));
         // Handle Sign Up button click

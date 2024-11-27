@@ -5,6 +5,7 @@ import static ca.tech.sense.it.smart.indoor.parking.system.utility.AppConstants.
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -33,6 +34,7 @@ public class LoginActivity extends BaseActivity {
     private ProgressBar progressBar;
     private MaterialCheckBox rememberMeCheckBox;
     private TextInputLayout login_password_layout,login_email_layout;
+    private ImageView login_back_button;
 
     // Components
     private LoginViewModel loginViewModel;
@@ -77,6 +79,7 @@ public class LoginActivity extends BaseActivity {
         progressBar = findViewById(R.id.login_progressBar);
         rememberMeCheckBox = findViewById(R.id.remember_me_checkbox);
         titleTV = findViewById(R.id.titleTV);
+        login_back_button = findViewById(R.id.login_back_button);
 
         login_password_layout = findViewById(R.id.login_password_layout);
         login_email_layout = findViewById(R.id.login_email_layout);
@@ -114,6 +117,7 @@ public class LoginActivity extends BaseActivity {
      * </p>
      */
     private void setupListeners() {
+        login_back_button.setOnClickListener(v -> LoginHelper.navigateToFirst(this));
         buttonLogin.setOnClickListener(v -> LoginHelper.handleLogin(editTextEmail, editTextPassword, progressBar, loginViewModel, userType,login_email_layout,login_password_layout)); // Login button click handler
         textViewSignUp.setOnClickListener(v -> LoginHelper.navigateToSignUp(this, userType));  // Sign-up text click handler
         googleButton.setOnClickListener(v -> loginViewModel.signInWithGoogle(this,sessionManager, rememberMeCheckBox));  // Google sign-in button click handler

@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
+
     android:orientation="vertical"
     android:fitsSystemWindows="true"
     android:scrollIndicators="top|left|bottom|start|end|none|right">
@@ -15,11 +16,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:padding="15dp"
         android:orientation="vertical">
 
         <ImageView
-            android:id="@+id/login_back_button"
+            android:id="@+id/signup_back_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="start"
