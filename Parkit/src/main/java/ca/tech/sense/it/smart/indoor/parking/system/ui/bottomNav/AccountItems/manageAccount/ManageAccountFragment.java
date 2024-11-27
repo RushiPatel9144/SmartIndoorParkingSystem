@@ -44,7 +44,6 @@ public class ManageAccountFragment extends Fragment {
     private static final String COLLECTION_USER = "users";
     private static final String COLLECTION_OWNER = "owners";
     private String collection = COLLECTION_USER;
-
     private ImageView profilePicture;
     private TextView nameTextView;
     private TextView contactDetailsTextView;
@@ -212,7 +211,6 @@ public class ManageAccountFragment extends Fragment {
             profilePictureManager.loadProfilePicture(profilePicture);
             requireActivity().runOnUiThread(() -> swipeRefreshLayout.setRefreshing(false));
         }, 3, TimeUnit.SECONDS);
-
     }
 
     // Setup buttons for managing profile information (password, email, phone number)
