@@ -12,27 +12,39 @@
     android:fitsSystemWindows="true">
 
     <ImageView
-        android:layout_marginTop="30dp"
+        android:id="@+id/login_back_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="15dp"
-        android:background="@color/white"
-        android:scaleX="1.5"
-        android:scaleY="1.5"
-        android:src="@drawable/account"
-        app:tint="@color/logo"
-        tools:ignore="UseAppTint" />
+        android:layout_gravity="start"
+        android:layout_marginTop="15dp"
+        android:layout_marginStart="23dp"
+        android:src="@drawable/baseline_arrow_back_24"
+        />
+
 
     <TextView
-        android:id="@+id/titleTV"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/user"
+        android:layout_gravity="left"
+        android:layout_marginTop="40dp"
+        android:layout_marginStart="23dp"
         android:fontFamily="@font/poppins_medium"
+        android:text="Welcome Back"
+        android:textColor="@color/colorAccent"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        tools:ignore="RtlHardcoded" />
+    <TextView
+        android:id="@+id/titleTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left"
+        android:textSize="20sp"
+        android:layout_marginStart="25dp"
         android:layout_marginBottom="32dp"
-        android:textAlignment="center"
-        android:textSize="28sp"
-        android:textStyle="bold" />
+        android:fontFamily="@font/poppins_medium"
+        android:text="@string/user"
+        tools:ignore="RtlHardcoded" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/login_email_layout"
@@ -42,8 +54,10 @@
         app:errorEnabled="true"
         android:layout_marginStart="25dp"
         android:layout_marginEnd="25dp"
-        app:boxBackgroundColor="@color/ic_launcher_background"
+        app:boxBackgroundColor="@color/bg"
         app:startIconTint="@color/colorAccent"
+        app:boxCornerRadiusTopEnd="16dp"
+        app:boxCornerRadiusTopStart="16dp"
         app:startIconContentDescription="email_icon_desc"
         app:startIconDrawable="@drawable/baseline_email_24">
 
@@ -52,6 +66,7 @@
             android:fontFamily="@font/poppins_medium"
             android:inputType="textEmailAddress"
             android:layout_width="match_parent"
+
             android:layout_height="wrap_content" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -64,7 +79,9 @@
         app:errorEnabled="true"
         app:startIconDrawable="@drawable/baseline_enhanced_encryption_24"
         app:startIconTint="@color/colorAccent"
-        app:boxBackgroundColor="@color/ic_launcher_background"
+        app:boxBackgroundColor="@color/bg"
+        app:boxCornerRadiusTopEnd="16dp"
+        app:boxCornerRadiusTopStart="16dp"
         app:endIconDrawable="@drawable/baseline_remove_red_eye_24"
         app:endIconMode="password_toggle">
 
@@ -131,10 +148,6 @@
         android:layout_marginEnd="47dp"
         android:elevation="20dp"
         android:fontFamily="@font/poppins_medium"
-        android:paddingStart="30dp"
-        android:paddingTop="10dp"
-        android:paddingEnd="30dp"
-        android:paddingBottom="10dp"
         android:text="@string/sign_in"
         android:textAllCaps="false"
         android:textColor="@android:color/white"
@@ -147,6 +160,8 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center"
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="15dp"
         android:layout_marginVertical="12dp"
         android:visibility="visible">
 

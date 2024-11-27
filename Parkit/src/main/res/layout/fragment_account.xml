@@ -8,9 +8,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp"
+        android:padding="8dp"
         android:background="@color/bg">
 
+        <!-- Item 1: Manage Account -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -22,6 +23,7 @@
                 android:id="@+id/manage_account"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+
                 android:layout_marginBottom="8dp"
                 android:background="?android:attr/selectableItemBackground"
                 android:gravity="center_vertical"
@@ -46,7 +48,7 @@
 
                 </FrameLayout>
 
-                <!-- Account Text -->
+
                 <TextView
                     android:id="@+id/textView_Account"
                     android:layout_width="0dp"
@@ -60,266 +62,248 @@
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
+        <!-- Item 2: Settings -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
             app:cardElevation="4dp"
             app:cardCornerRadius="8dp">
-        <!-- Item 2 -->
-        <LinearLayout
-            android:id="@+id/settings"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="16dp"
-            android:background="?android:attr/selectableItemBackground"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="8dp">
-
-            <ImageView
-                android:id="@+id/item_setting"
-                android:layout_width="46dp"
-                android:layout_height="33dp"
-                android:scaleType="fitCenter"
-                android:layout_marginEnd="16dp"
-                android:src="@drawable/nav_settings"
-                app:tint="@color/theme" />
-
-            <TextView
-                android:id="@+id/textView_Settings"
-                android:layout_width="0dp"
+            <LinearLayout
+                android:id="@+id/settings"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textSize="18sp"
-                android:text="@string/settings"
-                 app:drawableEndCompat="@drawable/baseline_arrow_forward_ios_24" />
-        </LinearLayout>
+                android:orientation="horizontal"
+                android:padding="16dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:gravity="center_vertical">
+                <ImageView
+                    android:id="@+id/item_setting"
+                    android:layout_width="46dp"
+                    android:layout_height="33dp"
+                    android:scaleType="fitCenter"
+                    android:layout_marginEnd="16dp"
+                    android:src="@drawable/nav_settings"
+                    app:tint="@color/theme" />
+                <TextView
+                    android:id="@+id/textView_Settings"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="18sp"
+                    android:text="@string/settings"
+                    app:drawableEndCompat="@drawable/baseline_arrow_forward_ios_24" />
+            </LinearLayout>
         </androidx.cardview.widget.CardView>
-        <!-- Divider -->
+
+        <!-- Item 3: Help -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
             app:cardElevation="4dp"
             app:cardCornerRadius="8dp">
-        <!-- Item 3 -->
-        <LinearLayout
-            android:id="@+id/help"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="16dp"
-            android:background="?android:attr/selectableItemBackground"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="8dp">
-
-            <ImageView
-                android:id="@+id/item_help"
-                android:layout_width="46dp"
-                android:layout_height="33dp"
-                android:scaleType="fitCenter"
-                android:layout_marginEnd="16dp"
-                android:src="@drawable/help_icon"
-                app:tint="@color/theme" />
-
-            <TextView
-                android:id="@+id/textView_help"
-                android:layout_width="0dp"
+            <LinearLayout
+                android:id="@+id/help"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textSize="18sp"
-                android:text="@string/help"
-                app:drawableEndCompat="@drawable/baseline_arrow_forward_ios_24" />
-        </LinearLayout>
+                android:orientation="horizontal"
+                android:padding="16dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="8dp">
+                <ImageView
+                    android:id="@+id/item_help"
+                    android:layout_width="46dp"
+                    android:layout_height="33dp"
+                    android:scaleType="fitCenter"
+                    android:layout_marginEnd="16dp"
+                    android:src="@drawable/help_icon"
+                    app:tint="@color/theme" />
+                <TextView
+                    android:id="@+id/textView_help"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="18sp"
+                    android:text="@string/help"
+                    app:drawableEndCompat="@drawable/baseline_arrow_forward_ios_24" />
+            </LinearLayout>
         </androidx.cardview.widget.CardView>
+
+        <!-- Item 4: Rate Us -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
             app:cardElevation="4dp"
             app:cardCornerRadius="8dp">
-        <!-- Item 4 -->
-
-
-        <LinearLayout
-            android:id="@+id/rate"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="16dp"
-            android:background="?android:attr/selectableItemBackground"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="8dp">
-
-            <ImageView
-                android:id="@+id/item_rate"
-                android:layout_width="46dp"
-                android:layout_height="33dp"
-                android:scaleType="fitCenter"
-                android:layout_marginEnd="16dp"
-                android:src="@drawable/rate"
-                app:tint="@color/theme" />
-
-            <TextView
-                android:id="@+id/textView_rate"
-                android:layout_width="0dp"
+            <LinearLayout
+                android:id="@+id/rate"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textSize="18sp"
-                android:text="@string/rate_us"
-                app:drawableEndCompat="@drawable/baseline_arrow_forward_ios_24" />
-        </LinearLayout>
+                android:orientation="horizontal"
+                android:padding="16dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="8dp">
+                <ImageView
+                    android:id="@+id/item_rate"
+                    android:layout_width="46dp"
+                    android:layout_height="33dp"
+                    android:scaleType="fitCenter"
+                    android:layout_marginEnd="16dp"
+                    android:src="@drawable/rate"
+                    app:tint="@color/theme" />
+                <TextView
+                    android:id="@+id/textView_rate"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="18sp"
+                    android:text="@string/rate_us"
+                    app:drawableEndCompat="@drawable/baseline_arrow_forward_ios_24" />
+            </LinearLayout>
         </androidx.cardview.widget.CardView>
+
+        <!-- Item 5: Notifications -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
             app:cardElevation="4dp"
             app:cardCornerRadius="8dp">
-
-        <!-- Item 5 -->
-        <LinearLayout
-            android:id="@+id/notification"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="16dp"
-            android:background="?android:attr/selectableItemBackground"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="8dp">
-
-            <ImageView
-                android:id="@+id/item_icon_notification"
-                android:layout_width="46dp"
-                android:layout_height="33dp"
-                android:scaleType="fitCenter"
-                android:layout_marginEnd="16dp"
-                android:src="@drawable/notifications"
-                app:tint="@color/theme" />
-
-            <TextView
-                android:id="@+id/textView_notification"
-                android:layout_width="0dp"
+            <LinearLayout
+                android:id="@+id/notification"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textSize="18sp"
-                android:text="@string/notifications"
-                app:drawableEndCompat="@drawable/baseline_arrow_forward_ios_24" />
-        </LinearLayout>
+                android:orientation="horizontal"
+                android:padding="16dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="8dp">
+                <ImageView
+                    android:id="@+id/item_icon_notification"
+                    android:layout_width="46dp"
+                    android:layout_height="33dp"
+                    android:scaleType="fitCenter"
+                    android:layout_marginEnd="16dp"
+                    android:src="@drawable/notifications"
+                    app:tint="@color/theme" />
+                <TextView
+                    android:id="@+id/textView_notification"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="18sp"
+                    android:text="@string/notifications"
+                    app:drawableEndCompat="@drawable/baseline_arrow_forward_ios_24" />
+            </LinearLayout>
         </androidx.cardview.widget.CardView>
+
+        <!-- Item 6: Privacy -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
             app:cardElevation="4dp"
             app:cardCornerRadius="8dp">
-
-        <!-- Item 6 -->
-        <LinearLayout
-            android:id="@+id/privacy"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="16dp"
-            android:background="?android:attr/selectableItemBackground"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="8dp">
-
-            <ImageView
-                android:id="@+id/item_icon_privacy"
-                android:layout_width="46dp"
-                android:layout_height="33dp"
-                android:scaleType="fitCenter"
-                android:layout_marginEnd="16dp"
-                android:src="@drawable/private_policy"
-                app:tint="@color/theme" />
-
-            <TextView
-                android:id="@+id/textView_privacy"
-                android:layout_width="0dp"
+            <LinearLayout
+                android:id="@+id/privacy"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textSize="18sp"
-                android:text="@string/private_policy"
-                app:drawableEndCompat="@drawable/baseline_arrow_forward_ios_24" />
-        </LinearLayout>
+                android:orientation="horizontal"
+                android:padding="16dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="8dp">
+                <ImageView
+                    android:id="@+id/item_icon_privacy"
+                    android:layout_width="46dp"
+                    android:layout_height="33dp"
+                    android:scaleType="fitCenter"
+                    android:layout_marginEnd="16dp"
+                    android:src="@drawable/private_policy"
+                    app:tint="@color/theme" />
+                <TextView
+                    android:id="@+id/textView_privacy"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="18sp"
+                    android:text="@string/private_policy"
+                    app:drawableEndCompat="@drawable/baseline_arrow_forward_ios_24" />
+            </LinearLayout>
         </androidx.cardview.widget.CardView>
+
+        <!-- Item 7: Terms of Use -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
             app:cardElevation="4dp"
             app:cardCornerRadius="8dp">
-
-        <!-- Item 7 -->
-        <LinearLayout
-            android:id="@+id/terms"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="16dp"
-            android:background="?android:attr/selectableItemBackground"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="8dp">
-
-            <ImageView
-                android:id="@+id/item_icon_terms"
-                android:layout_width="46dp"
-                android:layout_height="33dp"
-                android:scaleType="fitCenter"
-                android:layout_marginEnd="16dp"
-                android:src="@drawable/terms_of_use"
-                app:tint="@color/theme" />
-
-            <TextView
-                android:id="@+id/textView_term"
-                android:layout_width="0dp"
+            <LinearLayout
+                android:id="@+id/terms"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textSize="18sp"
-                android:text="@string/terms_of_use"
-                app:drawableEndCompat="@drawable/baseline_arrow_forward_ios_24" />
-        </LinearLayout>
+                android:orientation="horizontal"
+                android:padding="16dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="8dp">
+                <ImageView
+                    android:id="@+id/item_icon_terms"
+                    android:layout_width="46dp"
+                    android:layout_height="33dp"
+                    android:scaleType="fitCenter"
+                    android:layout_marginEnd="16dp"
+                    android:src="@drawable/terms_of_use"
+                    app:tint="@color/theme" />
+                <TextView
+                    android:id="@+id/textView_terms"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="18sp"
+                    android:text="@string/terms_of_use"
+                    app:drawableEndCompat="@drawable/baseline_arrow_forward_ios_24" />
+            </LinearLayout>
         </androidx.cardview.widget.CardView>
+
+        <!-- Item 8: Logout -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
             app:cardElevation="4dp"
             app:cardCornerRadius="8dp">
-
-        <!-- Item 8 -->
-        <LinearLayout
-            android:id="@+id/logout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="16dp"
-            android:background="?android:attr/selectableItemBackground"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="8dp">
-
-            <ImageView
-                android:id="@+id/item_icon_logout"
-                android:layout_width="46dp"
-                android:layout_height="33dp"
-                android:scaleType="fitCenter"
-                android:layout_marginEnd="16dp"
-                android:src="@drawable/nav_logout"
-                app:tint="@color/theme" />
-
-            <TextView
-                android:id="@+id/textView_2"
-                android:layout_width="0dp"
+            <LinearLayout
+                android:id="@+id/logout"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textSize="18sp"
-                android:text="@string/logout"
-                app:drawableEndCompat="@drawable/baseline_arrow_forward_ios_24" />
-        </LinearLayout>
+                android:orientation="horizontal"
+                android:padding="16dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:gravity="center_vertical">
+                <ImageView
+                    android:id="@+id/item_logout"
+                    android:layout_width="46dp"
+                    android:layout_height="33dp"
+                    android:scaleType="fitCenter"
+                    android:layout_marginEnd="16dp"
+                    android:src="@drawable/nav_logout"
+                    app:tint="@color/theme" />
+                <TextView
+                    android:id="@+id/textView_logout"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="18sp"
+                    android:text="@string/logout"
+                    app:drawableEndCompat="@drawable/baseline_arrow_forward_ios_24" />
+            </LinearLayout>
         </androidx.cardview.widget.CardView>
-
 
     </LinearLayout>
 </ScrollView>

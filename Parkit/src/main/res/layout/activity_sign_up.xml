@@ -6,30 +6,53 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
+
     android:orientation="vertical"
     android:fitsSystemWindows="true"
     android:scrollIndicators="top|left|bottom|start|end|none|right">
+
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:padding="15dp"
         android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/signup_back_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginTop="15dp"
+            android:layout_marginStart="23dp"
+            android:src="@drawable/baseline_arrow_back_24"
+            />
 
         <!-- Title Text -->
         <TextView
-
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_marginTop="40dp"
+            android:layout_marginStart="25dp"
+            android:textColor="@color/colorAccent"
+            android:fontFamily="@font/poppins_medium"
+            android:text="@string/create_account"
+            android:textSize="32sp"
+            android:textStyle="bold"
+            tools:ignore="RtlHardcoded" />
+        <TextView
             android:id="@+id/signup_title_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="62dp"
+            android:layout_gravity="left"
+            android:textSize="20sp"
+            android:layout_marginStart="25dp"
             android:layout_marginBottom="32dp"
             android:fontFamily="@font/poppins_medium"
             android:text="@string/user"
-            android:textSize="28sp"
-            android:textStyle="bold" />
+            tools:ignore="RtlHardcoded" />
+
 
         <!-- First Name -->
         <com.google.android.material.textfield.TextInputLayout
@@ -39,8 +62,10 @@
             android:layout_marginStart="25dp"
             android:layout_marginEnd="25dp"
             android:hint="@string/first_name"
+            app:boxBackgroundColor="@color/bg"
+            app:boxCornerRadiusTopEnd="16dp"
+            app:boxCornerRadiusTopStart="16dp"
             app:errorEnabled="true"
-            app:boxBackgroundColor="@color/colorAccentLight"
             app:startIconDrawable="@drawable/ic_person"
             app:startIconTint="@color/colorAccent">
 
@@ -56,12 +81,14 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/signup_last_name_layout"
             android:layout_width="match_parent"
-            app:errorEnabled="true"
             android:layout_height="wrap_content"
             android:layout_marginStart="25dp"
             android:layout_marginEnd="25dp"
             android:hint="@string/last_name"
-            app:boxBackgroundColor="@color/colorAccentLight"
+            app:boxBackgroundColor="@color/bg"
+            app:boxCornerRadiusTopEnd="16dp"
+            app:boxCornerRadiusTopStart="16dp"
+            app:errorEnabled="true"
             app:startIconDrawable="@drawable/ic_person"
             app:startIconTint="@color/colorAccent">
 
@@ -78,11 +105,13 @@
             android:id="@+id/signup_email_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:errorEnabled="true"
             android:layout_marginStart="25dp"
             android:layout_marginEnd="25dp"
             android:hint="@string/email"
-            app:boxBackgroundColor="@color/colorAccentLight"
+            app:boxBackgroundColor="@color/bg"
+            app:boxCornerRadiusTopEnd="16dp"
+            app:boxCornerRadiusTopStart="16dp"
+            app:errorEnabled="true"
             app:startIconDrawable="@drawable/baseline_email_24"
             app:startIconTint="@color/colorAccent">
 
@@ -99,11 +128,18 @@
             android:id="@+id/signup_phone_number_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:errorEnabled="true"
             android:layout_marginStart="25dp"
             android:layout_marginEnd="25dp"
             android:hint="@string/phone_number"
-            app:boxBackgroundColor="@color/colorAccentLight"
+
+
+            app:boxBackgroundColor="@color/bg"
+            app:boxCornerRadiusTopEnd="16dp"
+            app:boxCornerRadiusTopStart="16dp"
+            app:counterEnabled="true"
+            app:counterMaxLength="10"
+            app:endIconCheckable="false"
+            app:errorEnabled="true"
             app:startIconDrawable="@drawable/ic_phone"
             app:startIconTint="@color/colorAccent">
 
@@ -121,12 +157,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="25dp"
-            app:errorEnabled="true"
             android:layout_marginEnd="25dp"
             android:hint="@string/password"
-            app:boxBackgroundColor="@color/colorAccentLight"
+            app:boxBackgroundColor="@color/bg"
+            app:boxCornerRadiusTopEnd="16dp"
+            app:boxCornerRadiusTopStart="16dp"
+            app:counterEnabled="false"
             app:endIconDrawable="@drawable/baseline_remove_red_eye_24"
             app:endIconMode="password_toggle"
+            app:errorEnabled="true"
             app:startIconDrawable="@drawable/baseline_enhanced_encryption_24"
             app:startIconTint="@color/colorAccent">
 
@@ -146,7 +185,9 @@
             android:layout_marginStart="25dp"
             android:layout_marginEnd="25dp"
             android:hint="@string/confirm_password"
-            app:boxBackgroundColor="@color/colorAccentLight"
+            app:boxBackgroundColor="@color/bg"
+            app:boxCornerRadiusTopEnd="16dp"
+            app:boxCornerRadiusTopStart="16dp"
             app:endIconDrawable="@drawable/baseline_remove_red_eye_24"
             app:endIconMode="password_toggle"
             app:startIconDrawable="@drawable/baseline_enhanced_encryption_24"
@@ -154,11 +195,11 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editTextConfirmPassword"
-                app:errorEnabled="true"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins_medium"
-                android:inputType="textPassword" />
+                android:inputType="textPassword"
+                app:errorEnabled="true" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Terms & Conditions -->

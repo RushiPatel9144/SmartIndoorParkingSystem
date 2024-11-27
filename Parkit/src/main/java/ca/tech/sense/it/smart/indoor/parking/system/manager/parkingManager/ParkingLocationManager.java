@@ -1,12 +1,16 @@
 package ca.tech.sense.it.smart.indoor.parking.system.manager.parkingManager;
 
-import static ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.launcherUtililty.ToastHelper.showToast;
 import static com.android.volley.VolleyLog.TAG;
+import static ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.launcherUtililty.ToastHelper.showToast;
+import static ca.tech.sense.it.smart.indoor.parking.system.utility.AppConstants.COLLECTION_LOCATION_OWNER;
+
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+
 import androidx.annotation.NonNull;
+
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -20,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
+
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseDatabaseSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
@@ -28,7 +33,7 @@ import ca.tech.sense.it.smart.indoor.parking.system.utility.ParkingInterface;
 public class ParkingLocationManager {
     private final DatabaseReference databaseReference;
     private final DatabaseReference ownerReference;
-    private static final String COLLECTION_LOCATION_OWNER = "parkingLocationIds";
+
 
     public ParkingLocationManager() {
         databaseReference = FirebaseDatabaseSingleton.getInstance().getReference("parkingLocations");
