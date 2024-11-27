@@ -457,6 +457,9 @@
     <string name="failed_to_update_phone_number">Failed to update phone number</string>
     <string name="swipe_to_navigate">Swipe to navigate</string>
     <string name="create_account">Create Account</string>
+    <string name="accept">Accept</string>
+    <string name="decline">Decline</string>
+    <string name="to_continue_please_scroll_down_review_and_accept_our_terms_and_conditions">To continue, please scroll down, review, and accept our Terms and Conditions.</string>
 
 
 </resources>

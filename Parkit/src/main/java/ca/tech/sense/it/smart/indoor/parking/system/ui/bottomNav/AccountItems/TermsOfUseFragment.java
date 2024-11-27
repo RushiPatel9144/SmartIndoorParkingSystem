@@ -1,5 +1,7 @@
 package ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems;
 
+import static ca.tech.sense.it.smart.indoor.parking.system.utility.AppConstants.COLLECTION_LEGAL;
+
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -54,7 +56,7 @@ public class TermsOfUseFragment extends Fragment {
     }
 
     private void fetchTermsOfUse() {
-        db.collection("legal").document("terms_of_use")
+        db.collection(COLLECTION_LEGAL).document("terms_of_use")
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {

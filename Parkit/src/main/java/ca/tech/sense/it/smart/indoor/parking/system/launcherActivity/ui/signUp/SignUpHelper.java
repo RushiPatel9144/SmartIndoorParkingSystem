@@ -17,6 +17,7 @@ import java.util.Objects;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.launcherUtililty.FirestoreHelper;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.launcherUtililty.InputValidatorHelper;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.launcherUtililty.ToastHelper;
+import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui.TermsConditionsBottomSheet;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui.login.LoginActivity;
 
 public class SignUpHelper {
@@ -160,4 +161,5 @@ public class SignUpHelper {
             FirestoreHelper.saveUserToFirestore(activity, userID, fName, lName, email, phoneNumber);
         }
     }
+
 }
