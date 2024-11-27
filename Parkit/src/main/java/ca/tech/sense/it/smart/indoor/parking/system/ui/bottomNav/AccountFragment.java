@@ -6,8 +6,6 @@
 package ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav;
 
 
-import static ca.tech.sense.it.smart.indoor.parking.system.utility.AppConstants.KEY_PROFILE_PICTURE_URI;
-import static ca.tech.sense.it.smart.indoor.parking.system.utility.AppConstants.PREFS_NAME;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;

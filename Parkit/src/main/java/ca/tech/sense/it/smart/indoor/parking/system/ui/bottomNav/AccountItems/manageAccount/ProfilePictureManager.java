@@ -62,10 +62,12 @@ public class ProfilePictureManager {
     }
 
     private void saveProfilePictureLocally(String photoUrl) {
-        SharedPreferences sharedPreferences = fragment.requireActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(KEY_PROFILE_PICTURE_URI, photoUrl);
-        editor.apply();
+        if (fragment.isAdded()) {
+            SharedPreferences sharedPreferences = fragment.requireActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString(KEY_PROFILE_PICTURE_URI, photoUrl);
+            editor.apply();
+        }
     }
 
     public void uploadProfilePicture(Uri imageUri) {
@@ -131,7 +133,7 @@ public class ProfilePictureManager {
                 DocumentSnapshot document = task.getResult();
                 if (document.exists()) {
                     String profilePictureUrl = document.getString(FIELD);
-                    if (profilePictureUrl != null) {
+                    if (profilePictureUrl != null && fragment.isAdded()) {
                         saveProfilePictureLocally(profilePictureUrl);
                         Glide.with(fragment.requireContext())
                                 .load(profilePictureUrl)
