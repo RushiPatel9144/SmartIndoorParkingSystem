@@ -39,7 +39,7 @@ public class SessionManager {
     private User currentUser;
     private Owner currentOwner;
 
-    public SessionManager(Context context) {
+    private SessionManager(Context context) {
         sharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
         editor = sharedPreferences.edit();
 
