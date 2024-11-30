@@ -51,7 +51,10 @@ public class SessionManager {
     // Singleton instance
     public static synchronized SessionManager getInstance(Context context) {
         if (instance == null) {
-            instance = new SessionManager(context);
+            Log.d("SessionManager", "Creating new instance of SessionManager");
+            instance = new SessionManager(context.getApplicationContext());
+        } else {
+            Log.d("SessionManager", "Returning existing instance of SessionManager");
         }
         return instance;
     }
@@ -77,6 +80,7 @@ public class SessionManager {
 
         editor.putBoolean(KEY_REMEMBER_ME, rememberMe);
         editor.apply();
+
     }
 
     // Check if the user is logged in by checking if token exists

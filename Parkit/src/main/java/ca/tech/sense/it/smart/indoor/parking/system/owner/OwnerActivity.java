@@ -20,6 +20,7 @@ import ca.tech.sense.it.smart.indoor.parking.system.manager.favoriteManager.Frag
 import ca.tech.sense.it.smart.indoor.parking.system.manager.preferenceManager.PreferenceManager;
 import ca.tech.sense.it.smart.indoor.parking.system.manager.sessionManager.SessionManager;
 
+import ca.tech.sense.it.smart.indoor.parking.system.model.owner.Owner;
 import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.transactions.TransactionsFragment;
 
 import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.location.LocationsFragment;
@@ -57,9 +58,9 @@ public class OwnerActivity extends AppCompatActivity implements NavigationBarVie
 
             // You can now use 'user' or 'owner' data for your UI
             if (user != null) {
-                // Use user data
+                Owner currentOwner = sessionManager.getCurrentOwner();
             } else if (owner != null) {
-                // Use owner data
+
             }
 
         });

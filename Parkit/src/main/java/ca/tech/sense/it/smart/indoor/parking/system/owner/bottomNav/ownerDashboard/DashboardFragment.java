@@ -30,9 +30,8 @@ import java.util.Calendar;
 public class DashboardFragment extends Fragment {
     private static final String ARG_CONTAINER_VIEW_ID = "containerViewId";
     private int containerViewId;
-    private Owner currentOwner;
-    private SessionManager sessionManager;
     private Map<Integer, DashboardSection> sectionMap;
+    SessionManager sessionManager;
     private String userName; // Replace with the actual user name
 
     public DashboardFragment() {
@@ -52,22 +51,37 @@ public class DashboardFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             containerViewId = getArguments().getInt(ARG_CONTAINER_VIEW_ID);
-        }
 
+
+        }
+        sessionManager = SessionManager.getInstance(this.getContext());
         // Initialize the section mapping
         sectionMap = new HashMap<>();
         sectionMap.put(R.id.cardLocations, DashboardSection.LOCATIONS);
         sectionMap.put(R.id.cardTransactions, DashboardSection.TRANSACTIONS);
         sectionMap.put(R.id.cardActiveParkingLot, DashboardSection.ACTIVE_PARKING);
+
+
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_dashboard, container, false);
 
-        // Add the greeting with the user's name
-        TextView greetingTextView = view.findViewById(R.id.dashboardGreetingTextView);
-        greetingTextView.setText(getGreetingMessageWithUserName());
+        // Fetch session data when the activity is created
+
+        sessionManager.fetchSessionData((user, owner) -> {
+
+            if (owner != null) {
+                userName = sessionManager.getCurrentOwner().getFirstName();
+                Log.d("DashboardFragment", "User Name: " + userName);
+            }
+            // Add the greeting with the user's name
+            TextView greetingTextView = view.findViewById(R.id.dashboardGreetingTextView);
+            greetingTextView.setText(getGreetingMessageWithUserName());
+        });
+
+
 
         setupClickListeners(view);
         return view;
@@ -124,10 +138,6 @@ public class DashboardFragment extends Fragment {
 
     // Function to generate greeting with the user's name and different colors
     private SpannableString getGreetingMessageWithUserName() {
-        sessionManager=SessionManager.getInstance(requireContext());
-        currentOwner = sessionManager.getCurrentOwner();
-        userName = currentOwner.getFirstName();
-        Log.d("DashboardFragment", "User Name: " + userName);
         String greetingMessage = getGreetingMessage() + ", " + userName;
         SpannableString spannableString = new SpannableString(greetingMessage);
 
