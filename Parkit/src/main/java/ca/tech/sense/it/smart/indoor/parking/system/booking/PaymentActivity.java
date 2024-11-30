@@ -218,9 +218,7 @@ public class PaymentActivity extends AppCompatActivity {
     private void onPaymentSheetResult(PaymentSheetResult paymentSheetResult) {
         if (paymentSheetResult instanceof PaymentSheetResult.Completed) {
             // Confirm the booking
-            new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                confirmBooking();
-            }, 2000); // 2-second delay
+            new Handler(Looper.getMainLooper()).postDelayed(this::confirmBooking, 2000); // 2-second delay
         } else if (paymentSheetResult instanceof PaymentSheetResult.Failed) {
             showToast("Payment Failed: " + ((PaymentSheetResult.Failed) paymentSheetResult).getError());
             finish();
@@ -240,7 +238,7 @@ public class PaymentActivity extends AppCompatActivity {
         String selectedTimeSlot = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date(booking.getStartTime())) + " - " +
                 new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date(booking.getEndTime()));
         String selectedDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date(booking.getStartTime()));
-        Transaction transaction = new Transaction(transactionId, booking.getTitle(), booking.getPrice(), DateTimeUtils.getCurrentDateTime(),false);
+        Transaction transaction = new Transaction(transactionId, booking.getTitle(), booking.getPrice(), booking.getCurrencySymbol(), DateTimeUtils.getCurrentDateTime(),false);
         try {
             transactionManager.storeTransaction(ownerId,transaction);
             bookingManager.getBookingService().confirmBooking(

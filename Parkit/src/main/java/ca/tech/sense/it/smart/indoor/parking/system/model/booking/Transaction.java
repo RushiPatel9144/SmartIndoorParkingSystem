@@ -6,6 +6,7 @@ public class Transaction {
     private String transactionId;
     private String parkingAddress;
     private double price;
+    private String currencySymbol;
     private String paymentTime;
     private boolean isRefunded; // Indicates if a refund has been issued
 
@@ -14,10 +15,11 @@ public class Transaction {
     }
 
     // Constructor
-    public Transaction(String transactionId, String parkingAddress, double price, String paymentTime, boolean isRefunded) {
+    public Transaction(String transactionId, String parkingAddress, double price, String currencySymbol, String paymentTime, boolean isRefunded) {
         this.transactionId = transactionId;
         this.parkingAddress = parkingAddress;
         this.price = price;
+        this.currencySymbol = currencySymbol;
         this.paymentTime = paymentTime;
         this.isRefunded = isRefunded;
     }
@@ -25,6 +27,10 @@ public class Transaction {
     // Getters and Setters
     public String getTransactionId() {
         return transactionId;
+    }
+
+    public String getCurrencySymbol() {
+        return currencySymbol;
     }
 
     public void setTransactionId(String transactionId) {

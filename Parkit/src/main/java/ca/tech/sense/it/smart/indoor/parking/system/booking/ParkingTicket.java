@@ -68,7 +68,7 @@ public class ParkingTicket extends AppCompatActivity {
 
                         // Format parking time and price
                         String parkingTime = formatParkingTime(startTime, endTime);
-                        String formattedPrice = "$" + price;
+                        String formattedPrice = String.format(Locale.getDefault(), "%s %.2f", booking.getCurrencySymbol(), price);
 
                         // Simulate some processing or delay
                         new Handler(Looper.getMainLooper()).postDelayed(() -> {

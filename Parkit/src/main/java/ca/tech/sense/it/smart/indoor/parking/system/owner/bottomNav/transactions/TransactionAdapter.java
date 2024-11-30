@@ -1,12 +1,15 @@
 package ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.transactions;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
+import java.util.Locale;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.model.booking.Transaction;
@@ -20,7 +23,6 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
     }
 
 
-
     @NonNull
     @Override
     public TransactionViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -31,9 +33,17 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull TransactionViewHolder holder, int position) {
+        String sign = "+";
         Transaction transaction = transactions.get(position);
         holder.parkingAddressTextView.setText(transaction.getParkingAddress());
-        holder.priceTextView.setText(String.format("%s", transaction.getPrice()));
+        Context context = holder.itemView.getContext();
+        if (!transaction.isRefunded()){
+            sign = "+";
+        } else {
+            sign = "-";
+            holder.priceTextView.setTextColor(ContextCompat.getColor(context, R.color.red));
+        }
+        holder.priceTextView.setText(String.format(Locale.getDefault(), "%s %s %.2f", sign , transaction.getCurrencySymbol(), transaction.getPrice()));
         holder.paymentTimeTextView.setText( transaction.getPaymentTime());
     }
 
@@ -43,7 +53,9 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
     }
 
     public static class TransactionViewHolder extends RecyclerView.ViewHolder {
-        TextView parkingAddressTextView, priceTextView, paymentTimeTextView;
+        TextView parkingAddressTextView;
+        TextView priceTextView;
+        TextView paymentTimeTextView;
 
         public TransactionViewHolder(@NonNull View itemView) {
             super(itemView);
