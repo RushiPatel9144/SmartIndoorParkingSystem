@@ -174,7 +174,6 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
         }
     }
 
-    // Method to set up slot spinner data
     private void setupSlotSpinnerData(Map<String, ParkingSlot> slots, String locationId, String selectedDate, String selectedHour, BookingManager bookingManager) {
         if (slots == null || slots.isEmpty() || slotSpinner == null) {
             return; // Exit the method if any critical component is null
@@ -184,7 +183,9 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
         for (Map.Entry<String, ParkingSlot> entry : slots.entrySet()) {
             ParkingSlot slot = entry.getValue();
             if (slot != null && slot.getId() != null) {
-                slotNames.add(slot.getId());
+                // Sanitize slot ID before adding it to the list
+                String sanitizedSlotId = sanitizeSlotId(slot.getId());
+                slotNames.add(sanitizedSlotId);
             } else {
                 // Log or handle null values for debugging
                 Log.e("setupSlotSpinnerData", "Null slot or slot ID encountered in slots map.");
@@ -198,6 +199,12 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
             slotSpinner.setAdapter(adapter);
         }
     }
+
+    // Add the sanitizeSlotId method here
+    private String sanitizeSlotId(String slotId) {
+        return slotId.replaceAll("[.#$\\[\\]]", "_"); // Replace invalid characters with '_'
+    }
+
 
     // Method to set up time slots based on the selected date
     private void setupTimeSlots(String selectedDate) {

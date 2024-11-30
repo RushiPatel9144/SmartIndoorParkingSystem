@@ -13,14 +13,23 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.model.booking.Booking;
 
 public class ParkingTicket extends AppCompatActivity {
 
     private TextView addressTitle;
     private TextView addressText;
+    private TextView parkingTimeTitle;
+    private TextView parkingTimeText;
+    private TextView priceTitle;
+    private TextView priceText;
     private ProgressBar progressBar;
-    private String address;
+    private String address;  // This should hold the address value
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,30 +41,49 @@ public class ParkingTicket extends AppCompatActivity {
         Button getDirectionButton = findViewById(R.id.getDirectionButton);
         addressTitle = findViewById(R.id.addressTitle);
         addressText = findViewById(R.id.addressText);
+        parkingTimeTitle = findViewById(R.id.parkingTimeTitle);
+        parkingTimeText = findViewById(R.id.parkingTimeText);
+        priceTitle = findViewById(R.id.priceTitle);
+        priceText = findViewById(R.id.priceText);
         progressBar = findViewById(R.id.progressBar);
 
         // Get data from the intent
         Intent intent = getIntent();
         if (intent != null) {
             try {
-                String passkey = intent.getStringExtra("passkey");
-                address = intent.getStringExtra("address");
+                // Retrieve the Booking object from the intent
+                Booking booking = (Booking) intent.getSerializableExtra("booking");
 
-                // Check if passkey is not null and address is provided
-                if (!TextUtils.isEmpty(passkey)) {
-                    referenceNumberTextView.setText(passkey);
-                    progressBar.setVisibility(View.VISIBLE);
+                if (booking != null) {
+                    String passkey = booking.getPassKey(); // Get the passkey from the Booking object
+                    address = booking.getLocation(); // Assign the address to the class-level variable
+                    long startTime = booking.getStartTime(); // Get the start time
+                    long endTime = booking.getEndTime(); // Get the end time
+                    double price = booking.getPrice(); // Get the price
 
-                    new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                        if (!TextUtils.isEmpty(address)) {
-                            updateUIWithBookingDetails(address);
-                        } else {
-                            showToast("Address not provided");
-                        }
-                        progressBar.setVisibility(View.GONE);
-                    }, 2000);
+                    // Check if passkey is not null
+                    if (!TextUtils.isEmpty(passkey)) {
+                        referenceNumberTextView.setText(passkey);
+                        progressBar.setVisibility(View.VISIBLE);
+
+                        // Format parking time and price
+                        String parkingTime = formatParkingTime(startTime, endTime);
+                        String formattedPrice = "$" + price;
+
+                        // Simulate some processing or delay
+                        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                            if (!TextUtils.isEmpty(address)) {
+                                updateUIWithBookingDetails(address, parkingTime, formattedPrice); // Update UI with address, time, and price
+                            } else {
+                                showToast("Address not provided");
+                            }
+                            progressBar.setVisibility(View.GONE);
+                        }, 2000);
+                    } else {
+                        showToast("Passkey is missing in booking details");
+                    }
                 } else {
-                    showToast("Passkey is missing");
+                    showToast("Booking details are missing in intent");
                 }
             } catch (Exception e) {
                 showToast("An error occurred: " + e.getMessage());
@@ -69,18 +97,30 @@ public class ParkingTicket extends AppCompatActivity {
         getDirectionButton.setOnClickListener(v -> openMap());
     }
 
-    private void updateUIWithBookingDetails(String address) {
+    private void updateUIWithBookingDetails(String address, String parkingTime, String price) {
         addressTitle.setText("Parking Address");
         addressText.setText(address);
+        parkingTimeTitle.setText("Parking Time");
+        parkingTimeText.setText(parkingTime);
+        priceTitle.setText("Price");
+        priceText.setText(price);
 
         if (TextUtils.isEmpty(address)) {
             showToast("Failed to fetch location details");
         }
     }
 
+    private String formatParkingTime(long startTime, long endTime) {
+        // You can use SimpleDateFormat to format the time
+        SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a", Locale.getDefault());
+        String start = sdf.format(new Date(startTime));
+        String end = sdf.format(new Date(endTime));
+        return start + " - " + end;
+    }
+
     private void openMap() {
         try {
-            if (address != null) {
+            if (address != null && !address.isEmpty()) {  // Ensure the address is not null or empty
                 String destination = "geo:0,0?q=" + Uri.encode(address);
                 Uri gmmIntentUri = Uri.parse(destination);
                 Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
