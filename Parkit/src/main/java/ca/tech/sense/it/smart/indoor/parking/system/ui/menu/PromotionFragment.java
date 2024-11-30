@@ -1,9 +1,5 @@
-/*Name: Kunal Dhiman, StudentID: N01540952,  section number: RCB
-  Name: Raghav Sharma, StudentID: N01537255,  section number: RCB
-  Name: NisargKumar Pareshbhai Joshi, StudentID: N01545986,  section number: RCB
-  Name: Rushi Manojkumar Patel, StudentID: N01539144, section number: RCB
- */
 package ca.tech.sense.it.smart.indoor.parking.system.ui.menu;
+
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -19,11 +15,13 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,7 +35,6 @@ public class PromotionFragment extends BaseNetworkFragment {
     private RecyclerView recyclerView;
     private PromotionAdapter adapter;
     private final List<Promotion> promotionList = new ArrayList<>();
-
 
     // Views for "No Promotions" message
     private ImageView imgNoPromotions;
@@ -64,15 +61,22 @@ public class PromotionFragment extends BaseNetworkFragment {
         // Save hardcoded promotions to Firebase (if they don't exist already)
         PromotionHelper.saveHardcodedPromotionsToFirebase();
 
+        // Copy promotions to each user's promotions node
+        PromotionHelper.copyPromotionsToUsers();
+
+        // Sync promotions with users
+        PromotionHelper.syncPromotionsWithUsers();
+
         fetchPromotions();
 
         return view;
     }
 
-    private void fetchPromotions() {
+    public void fetchPromotions() {
         DatabaseReference promotionsRef;
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid(); // Get the current user's UID
 
-        promotionsRef = FirebaseDatabase.getInstance().getReference("Promotions");
+        promotionsRef = FirebaseDatabase.getInstance().getReference("users").child(uid).child("promotions");
 
         promotionsRef.addValueEventListener(new ValueEventListener() {
             @SuppressLint("NotifyDataSetChanged")
@@ -81,7 +85,8 @@ public class PromotionFragment extends BaseNetworkFragment {
                 promotionList.clear();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Promotion promotion = snapshot.getValue(Promotion.class);
-                    if (promotion != null) {
+                    // Only add promotions that are not used (used == false)
+                    if (promotion != null && !promotion.isUsed()) {
                         promotionList.add(promotion);
                     }
                 }

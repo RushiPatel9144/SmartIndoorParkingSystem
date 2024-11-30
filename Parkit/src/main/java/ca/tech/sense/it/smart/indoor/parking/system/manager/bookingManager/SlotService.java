@@ -1,7 +1,10 @@
 package ca.tech.sense.it.smart.indoor.parking.system.manager.bookingManager;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -18,6 +21,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
+import ca.tech.sense.it.smart.indoor.parking.system.model.Promotion;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.BookingUtils;
 
 public class SlotService {
@@ -57,10 +61,11 @@ public class SlotService {
     }
 
     public void checkSlotAvailability(String locationId, String slot, String selectedDate, String time, Consumer<String> onStatusChecked, Consumer<Exception> onFailure) {
+        String sanitizedSlot = sanitizeFirebasePath(slot);
         DatabaseReference slotRef = firebaseDatabase.getReference("parkingLocations")
                 .child(locationId)
                 .child("slots")
-                .child(slot)
+                .child(sanitizedSlot)
                 .child("hourlyStatus")
                 .child(selectedDate + " " + time);
 
@@ -80,10 +85,11 @@ public class SlotService {
 
     public void updateHourlyStatus(String locationId, String slot, String date, String hour, String status, Runnable onSuccess, Consumer<Exception> onFailure) {
         executorService.submit(() -> {
+            String sanitizedSlot = sanitizeFirebasePath(slot);
             DatabaseReference slotRef = firebaseDatabase.getReference("parkingLocations")
                     .child(locationId)
                     .child("slots")
-                    .child(slot)
+                    .child(sanitizedSlot)
                     .child("hourlyStatus")
                     .child(date + " " + hour);
 
@@ -92,8 +98,44 @@ public class SlotService {
             statusUpdate.put("status", status);
 
             slotRef.updateChildren(statusUpdate)
-                    .addOnSuccessListener(aVoid -> onSuccess.run())
+                    .addOnSuccessListener(aVoid -> {
+                        if ("occupied".equals(status)) {
+                            markPromoCodeAsUsedForUser(locationId, sanitizedSlot);
+                        }
+                        onSuccess.run();
+                    })
                     .addOnFailureListener(onFailure::accept);
+        });
+    }
+
+    private void markPromoCodeAsUsedForUser(String locationId, String slot) {
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        DatabaseReference userPromotionsRef = firebaseDatabase.getReference("users").child(uid).child("promotions");
+
+        userPromotionsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Promotion promotion = snapshot.getValue(Promotion.class);
+                    if (promotion != null && !promotion.isUsed()) {
+                        promotion.setUsed(true);
+                        userPromotionsRef.child(promotion.getId()).setValue(promotion)
+                                .addOnSuccessListener(aVoid -> {
+                                    // Log success
+                                    Log.d("SlotService", "Promo code marked as used for user: " + uid);
+                                })
+                                .addOnFailureListener(e -> {
+                                    // Log failure
+                                    Log.e("SlotService", "Failed to mark promo code as used for user: " + uid, e);
+                                });
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e("SlotService", "Failed to mark promo code as used for user: " + uid, databaseError.toException());
+            }
         });
     }
 
@@ -107,10 +149,11 @@ public class SlotService {
         String startDateTime = sdf.format(new Date(startTime));
         String endDateTime = sdf.format(new Date(endTime));
 
+        String sanitizedSlot = sanitizeFirebasePath(slot);
         DatabaseReference slotRef = firebaseDatabase.getReference("parkingLocations")
                 .child(locationId)
                 .child("slots")
-                .child(slot)
+                .child(sanitizedSlot)
                 .child("hourlyStatus");
 
         Map<String, Object> statusUpdate = new HashMap<>();
@@ -120,5 +163,13 @@ public class SlotService {
         slotRef.updateChildren(statusUpdate)
                 .addOnSuccessListener(aVoid -> onSuccess.run())
                 .addOnFailureListener(onFailure::accept);
+    }
+
+    private String sanitizeFirebasePath(String path) {
+        return path.replace(".", "")
+                .replace("#", "")
+                .replace("$", "")
+                .replace("[", "")
+                .replace("]", "");
     }
 }
