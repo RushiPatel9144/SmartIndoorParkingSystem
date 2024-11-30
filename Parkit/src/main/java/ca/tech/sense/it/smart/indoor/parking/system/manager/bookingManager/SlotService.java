@@ -80,10 +80,13 @@ public class SlotService {
 
     public void updateHourlyStatus(String locationId, String slot, String date, String hour, String status, Runnable onSuccess, Consumer<Exception> onFailure) {
         executorService.submit(() -> {
+            // Sanitize the slot ID to remove invalid characters
+            String sanitizedSlot = sanitizeSlotId(slot);
+
             DatabaseReference slotRef = firebaseDatabase.getReference("parkingLocations")
                     .child(locationId)
                     .child("slots")
-                    .child(slot)
+                    .child(sanitizedSlot)  // Use sanitized slot ID
                     .child("hourlyStatus")
                     .child(date + " " + hour);
 
@@ -96,6 +99,12 @@ public class SlotService {
                     .addOnFailureListener(onFailure::accept);
         });
     }
+
+    // Helper method to sanitize slot IDs
+    private String sanitizeSlotId(String slotId) {
+        return slotId.replaceAll("[.#$\\[\\]]", "_"); // Replace invalid characters with '_'
+    }
+
 
     public void scheduleStatusUpdate(String locationId, String slot, String date, String hour, Runnable onSuccess, Consumer<Exception> onFailure) {
         long delay = BookingUtils.calculateDelay(date + " " + hour);

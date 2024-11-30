@@ -86,7 +86,6 @@
     <string name="user_data_not_found">No user data</string>
     <string name="fetch_data_failed">Updating user info failed</string>
     <string name="_1_phone_number">+1 Phone number</string>
-    <string name="confirm">Confirm</string>
     <string name="dialog_title">Dialog Title</string>
     <string name="a_password_reset_link_will_be_sent_to">"A password reset link will be sent to: "</string>
     <string name="reset_password">Reset Password</string>
@@ -410,7 +409,7 @@
     <string name="update_price">Update Price</string>
     <string name="success_icon">Success Icon</string>
     <string name="email_confirmation_sent">An email confirmation has been sent.</string>
-    <string name="qr_code">QR Code</string>
+    <string name="confirm">QR Code</string>
     <string name="reference_number">Reference Number</string>
     <string name="loading_address">Loading address...</string>
     <string name="get_direction">Get Directions</string>
