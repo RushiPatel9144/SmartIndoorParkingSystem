@@ -9,10 +9,10 @@ import java.io.Serializable;
 
 public class Booking implements Serializable {
     private String id;
-   // private String title;
+    private String title;
     private long startTime;
     private long endTime;
-    //private String location;
+    private String location;
     private String postalCode;
     private double price;
     private String currencyCode;

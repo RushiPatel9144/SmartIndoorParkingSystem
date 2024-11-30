@@ -44,7 +44,9 @@ import ca.tech.sense.it.smart.indoor.parking.system.manager.bookingManager.Booki
 import ca.tech.sense.it.smart.indoor.parking.system.manager.bookingManager.TransactionManager;
 import ca.tech.sense.it.smart.indoor.parking.system.model.Promotion;
 import ca.tech.sense.it.smart.indoor.parking.system.model.booking.Booking;
+import ca.tech.sense.it.smart.indoor.parking.system.model.booking.Transaction;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
+import ca.tech.sense.it.smart.indoor.parking.system.utility.DateTimeUtils;
 
 public class PaymentActivity extends AppCompatActivity {
 
@@ -65,11 +67,11 @@ public class PaymentActivity extends AppCompatActivity {
     private Button confirmButton;
     private Button cancelButton;
     private PaymentSheet paymentSheet;
-    private String currency = "CAD";
     private double total;
     private String transactionId;
-
     private TransactionManager transactionManager ;
+    private String ownerId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,6 +79,7 @@ public class PaymentActivity extends AppCompatActivity {
         initializeUIElements();
 
         Intent intent = getIntent();
+        ownerId = getIntent().getStringExtra("ownerId");
         if (intent != null && intent.hasExtra("booking")) {
             booking = (Booking) intent.getSerializableExtra("booking");
             if (booking != null) {
@@ -164,7 +167,8 @@ public class PaymentActivity extends AppCompatActivity {
         String url = "https://parkit-cd4c2ec26f90.herokuapp.com/create-payment-intent";
 
         double totalAmount = total * 100;
-        currency = booking.getCurrencyCode();
+        booking.setPrice(total);
+        String currency = booking.getCurrencyCode();
 
         JSONObject jsonRequest = new JSONObject();
         try {
@@ -216,7 +220,6 @@ public class PaymentActivity extends AppCompatActivity {
             // Confirm the booking
             new Handler(Looper.getMainLooper()).postDelayed(() -> {
                 confirmBooking();
-                transactionManager.storeTransaction();
             }, 2000); // 2-second delay
         } else if (paymentSheetResult instanceof PaymentSheetResult.Failed) {
             showToast("Payment Failed: " + ((PaymentSheetResult.Failed) paymentSheetResult).getError());
@@ -237,11 +240,12 @@ public class PaymentActivity extends AppCompatActivity {
         String selectedTimeSlot = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date(booking.getStartTime())) + " - " +
                 new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date(booking.getEndTime()));
         String selectedDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date(booking.getStartTime()));
-
+        Transaction transaction = new Transaction(transactionId, booking.getTitle(), booking.getPrice(), DateTimeUtils.getCurrentDateTime(),false);
         try {
+            transactionManager.storeTransaction(ownerId,transaction);
             bookingManager.getBookingService().confirmBooking(
                     transactionId,
-                    selectedTimeSlot,              // Valid time slot
+                    selectedTimeSlot,
                     selectedDate,
                     booking,
                     () -> {

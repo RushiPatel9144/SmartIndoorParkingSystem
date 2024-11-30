@@ -25,7 +25,7 @@
 
             <!-- Parking Address -->
             <TextView
-                android:id="@+id/parkingAddress"
+                android:id="@+id/parkingAddressTextView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -37,7 +37,7 @@
 
             <!-- Transaction Amount -->
             <TextView
-                android:id="@+id/transactionAmount"
+                android:id="@+id/priceTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="+$200"
@@ -51,7 +51,7 @@
 
         <!-- Date and Time -->
         <TextView
-            android:id="@+id/bookingDateTime"
+            android:id="@+id/paymentTimeTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif"

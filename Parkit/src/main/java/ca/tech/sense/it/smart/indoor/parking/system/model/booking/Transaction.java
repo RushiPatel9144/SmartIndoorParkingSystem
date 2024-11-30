@@ -9,6 +9,10 @@ public class Transaction {
     private String paymentTime;
     private boolean isRefunded; // Indicates if a refund has been issued
 
+    public Transaction() {
+        // This constructor is required for Firebase to deserialize the object
+    }
+
     // Constructor
     public Transaction(String transactionId, String parkingAddress, double price, String paymentTime, boolean isRefunded) {
         this.transactionId = transactionId;
