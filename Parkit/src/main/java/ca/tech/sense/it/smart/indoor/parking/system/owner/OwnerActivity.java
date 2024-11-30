@@ -40,7 +40,6 @@ public class OwnerActivity extends AppCompatActivity implements NavigationBarVie
     private final AccountFragment accountFragment = AccountFragment.newInstance(R.id.fragment_container_owner);
     private FragmentManagerHelper fragmentManagerHelper;
     private PreferenceManager preferenceManager;
-    SessionManager sessionManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

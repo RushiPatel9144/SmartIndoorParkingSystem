@@ -6,8 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/bg"
-    tools:context=".YourFragment"
-    android:visibility="gone">
+    tools:context=".YourFragment">
 
     <LinearLayout
         android:layout_marginTop="25dp"
