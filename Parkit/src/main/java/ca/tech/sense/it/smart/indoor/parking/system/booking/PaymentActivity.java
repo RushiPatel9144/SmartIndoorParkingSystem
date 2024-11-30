@@ -38,6 +38,7 @@ import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.currency.CurrencyManager;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseDatabaseSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.manager.bookingManager.BookingManager;
@@ -167,7 +168,7 @@ public class PaymentActivity extends AppCompatActivity {
         String url = "https://parkit-cd4c2ec26f90.herokuapp.com/create-payment-intent";
 
         double totalAmount = total * 100;
-        booking.setPrice(total);
+        booking.setPrice(CurrencyManager.getInstance().convertToCAD(total, booking.getCurrencyCode()));
         String currency = booking.getCurrencyCode();
 
         JSONObject jsonRequest = new JSONObject();

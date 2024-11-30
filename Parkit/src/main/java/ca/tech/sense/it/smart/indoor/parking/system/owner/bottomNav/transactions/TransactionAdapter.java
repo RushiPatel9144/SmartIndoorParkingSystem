@@ -43,7 +43,7 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
             sign = "-";
             holder.priceTextView.setTextColor(ContextCompat.getColor(context, R.color.red));
         }
-        holder.priceTextView.setText(String.format(Locale.getDefault(), "%s %s %.2f", sign , transaction.getCurrencySymbol(), transaction.getPrice()));
+        holder.priceTextView.setText(String.format(Locale.getDefault(), "%s CAD$ %.2f", sign , transaction.getPrice()));
         holder.paymentTimeTextView.setText( transaction.getPaymentTime());
     }
 

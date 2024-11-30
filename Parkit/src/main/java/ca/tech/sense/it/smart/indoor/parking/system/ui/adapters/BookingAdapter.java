@@ -119,7 +119,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingV
             bookingAddress.setText(booking.getLocation());
             bookingSlot.setText(booking.getSlotNumber());
             bookingTime.setText(formatTime(booking.getStartTime(), booking.getEndTime()));
-            bookingPrice.setText(String.format(Locale.getDefault(), "Price: %s %.2f", booking.getCurrencySymbol(), booking.getPrice()));
+            bookingPrice.setText(String.format(Locale.getDefault(), "Price: $ %.2f", booking.getPrice()));
             bookingPassKey.setText(booking.getPassKey());
         }
 

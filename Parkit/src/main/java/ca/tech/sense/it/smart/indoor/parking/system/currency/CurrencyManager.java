@@ -84,4 +84,16 @@ public class CurrencyManager {
         }
         return amountInCAD;
     }
+
+    public double convertToCAD(double amountInTargetCurrency, String targetCurrencyCode) {
+        Currency targetCurrency = currencies.get(targetCurrencyCode);
+        if (targetCurrency != null) {
+            double exchangeRate = targetCurrency.getExchangeRateToBase();
+            if (exchangeRate > 0.00) {
+                return amountInTargetCurrency / exchangeRate;
+            }
+        }
+        return amountInTargetCurrency;
+    }
+
 }
