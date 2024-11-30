@@ -79,7 +79,7 @@ public class OwnerActivity extends AppCompatActivity implements NavigationBarVie
 
         if (item.getItemId() == R.id.navigation_dashboard) {
             loadFragments(dashboardFragment, "dashboardFragment");
-            toolbarTitle = getString(R.string.dashboard);
+            toolbarTitle = getString(R.string.park_it);
         } else if (item.getItemId() == R.id.navigation_transactions) {
             loadFragments(transactionsFragment,  "transactionsFragment");
             toolbarTitle = getString(R.string.transactions);
