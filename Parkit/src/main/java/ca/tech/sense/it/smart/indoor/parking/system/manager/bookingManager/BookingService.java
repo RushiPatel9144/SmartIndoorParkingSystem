@@ -39,18 +39,18 @@ public class BookingService {
         this.slotService = slotService;
     }
 
-    public void confirmBooking(String transactionId, String locationId, String slot, String timing, String selectedDate, String address, Runnable onSuccess, Consumer<Exception> onFailure) {
+    public void confirmBooking(String transactionId, String timing, String selectedDate, Booking booking, Runnable onSuccess, Consumer<Exception> onFailure) {
         new Handler(Looper.getMainLooper()).postDelayed(() -> executorService.submit(() -> {
             String userId = Objects.requireNonNull(firebaseAuth.getCurrentUser()).getUid();
             String[] times = timing.split(" - ");
             long startTime = BookingUtils.convertToMillis(selectedDate + " " + times[0]);
             long endTime = BookingUtils.convertToMillis(selectedDate + " " + times[1]);
 
-            slotService.checkSlotAvailability(locationId, slot, selectedDate, times[0], status -> {
+            slotService.checkSlotAvailability(booking.getLocationId(), booking.getSlotNumber(), selectedDate, times[0], status -> {
                 if ("occupied".equals(status)) {
                     notifyUserSlotOccupied(onFailure);
                 } else {
-                    fetchPriceAndConfirmBooking(transactionId, locationId, slot, selectedDate, times, startTime, endTime, address, userId, onSuccess, onFailure);
+                    fetchPriceAndConfirmBooking(transactionId, selectedDate, times, startTime, endTime, userId, booking, onSuccess, onFailure);
                 }
             }, onFailure);
         }), 2000); // 2 seconds delay
@@ -63,8 +63,8 @@ public class BookingService {
         onFailure.accept(new Exception("Selected slot is already occupied."));
     }
 
-    private void fetchPriceAndConfirmBooking(String transactionId, String locationId, String slot, String selectedDate, String[] times, long startTime, long endTime, String address, String userId, Runnable onSuccess, Consumer<Exception> onFailure) {
-        DatabaseReference priceRef = firebaseDatabase.getReference("parkingLocations").child(locationId).child("price");
+    private void fetchPriceAndConfirmBooking(String transactionId, String selectedDate, String[] times, long startTime, long endTime, String userId,Booking details, Runnable onSuccess, Consumer<Exception> onFailure) {
+        DatabaseReference priceRef = firebaseDatabase.getReference("parkingLocations").child(details.getLocationId()).child("price");
         priceRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -80,23 +80,23 @@ public class BookingService {
                     String passKey = BookingUtils.generatePassKey(); // Generate the pass key
 
                     Booking booking = new Booking(
-                            "Park It", // Use "Park It" as title
+                            details.getTitle(),
                             startTime,
                             endTime,
-                            address,
+                            details.getLocation(),
                             null,
                             totalPrice, // Use total price instead of just price
                             null,
                             null,
-                            slot,
+                            details.getSlotNumber(),
                             passKey,
-                            locationId, // Add the locationId to the booking
+                            details.getLocationId(), // Add the locationId to the booking
                             transactionId
                     );
 
-                    saveBooking(userId, booking, locationId, slot, selectedDate, times, onSuccess, onFailure);
+                    saveBooking(userId, booking, details.getLocationId(), details.getSlotNumber(), selectedDate, times, onSuccess, onFailure);
                 } else {
-                    onFailure.accept(new Exception("Price not found for location: " + locationId));
+                    onFailure.accept(new Exception("Price not found for location: " + details.getLocationId()));
                 }
             }
 
@@ -122,7 +122,6 @@ public class BookingService {
                         slotService.scheduleStatusUpdate(locationId, slot, selectedDate, times[1], onSuccess, onFailure);
                         // Show toast message
                         Toast.makeText(context, "Booking confirmed!", Toast.LENGTH_SHORT).show();
-
                         // Pass the booking details, including the pass key, to the ParkingTicketActivity
                         Intent intent = new Intent(context, ParkingTicket.class);
                         intent.putExtra("booking", booking); // Pass the entire booking object

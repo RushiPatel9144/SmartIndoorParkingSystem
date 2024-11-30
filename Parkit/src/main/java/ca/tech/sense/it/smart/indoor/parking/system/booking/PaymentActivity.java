@@ -41,8 +41,10 @@ import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseDatabaseSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.manager.bookingManager.BookingManager;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.bookingManager.TransactionManager;
 import ca.tech.sense.it.smart.indoor.parking.system.model.Promotion;
 import ca.tech.sense.it.smart.indoor.parking.system.model.booking.Booking;
+import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
 
 public class PaymentActivity extends AppCompatActivity {
 
@@ -67,6 +69,7 @@ public class PaymentActivity extends AppCompatActivity {
     private double total;
     private String transactionId;
 
+    private TransactionManager transactionManager ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,7 +91,7 @@ public class PaymentActivity extends AppCompatActivity {
         FirebaseAuth firebaseAuth = FirebaseAuthSingleton.getInstance();
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         Context context = this;
-
+        transactionManager = new TransactionManager(firebaseDatabase);
         bookingManager = new BookingManager(executorService, firebaseDatabase, firebaseAuth, context);
 
         PaymentConfiguration.init(
@@ -210,9 +213,10 @@ public class PaymentActivity extends AppCompatActivity {
 
     private void onPaymentSheetResult(PaymentSheetResult paymentSheetResult) {
         if (paymentSheetResult instanceof PaymentSheetResult.Completed) {
-            // Use Handler with Looper.getMainLooper() for a delay
+            // Confirm the booking
             new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                confirmBooking(); // Confirm the booking
+                confirmBooking();
+                transactionManager.storeTransaction();
             }, 2000); // 2-second delay
         } else if (paymentSheetResult instanceof PaymentSheetResult.Failed) {
             showToast("Payment Failed: " + ((PaymentSheetResult.Failed) paymentSheetResult).getError());
@@ -237,11 +241,9 @@ public class PaymentActivity extends AppCompatActivity {
         try {
             bookingManager.getBookingService().confirmBooking(
                     transactionId,
-                    booking.getLocationId(),        // Pass location ID
-                    booking.getSlotNumber(),       // Pass slot number
                     selectedTimeSlot,              // Valid time slot
-                    selectedDate,                  // Valid date
-                    booking.getLocation(),         // Location
+                    selectedDate,
+                    booking,
                     () -> {
                         showToast(getString(R.string.booking_confirmed));
 
