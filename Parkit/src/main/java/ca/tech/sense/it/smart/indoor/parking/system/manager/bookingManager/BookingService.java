@@ -1,6 +1,7 @@
 package ca.tech.sense.it.smart.indoor.parking.system.manager.bookingManager;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 import android.widget.Toast;
@@ -18,6 +19,7 @@ import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 
+import ca.tech.sense.it.smart.indoor.parking.system.booking.ParkingTicket;
 import ca.tech.sense.it.smart.indoor.parking.system.model.booking.Booking;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.BookingUtils;
 
@@ -120,6 +122,11 @@ public class BookingService {
                         slotService.scheduleStatusUpdate(locationId, slot, selectedDate, times[1], onSuccess, onFailure);
                         // Show toast message
                         Toast.makeText(context, "Booking confirmed!", Toast.LENGTH_SHORT).show();
+
+                        // Pass the booking details, including the pass key, to the ParkingTicketActivity
+                        Intent intent = new Intent(context, ParkingTicket.class);
+                        intent.putExtra("booking", booking); // Pass the entire booking object
+                        context.startActivity(intent);
                     }, onFailure))
                     .addOnFailureListener(onFailure::accept);
         } else {

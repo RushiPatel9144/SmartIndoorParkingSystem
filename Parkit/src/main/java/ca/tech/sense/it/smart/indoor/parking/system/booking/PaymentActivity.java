@@ -213,7 +213,6 @@ public class PaymentActivity extends AppCompatActivity {
             // Use Handler with Looper.getMainLooper() for a delay
             new Handler(Looper.getMainLooper()).postDelayed(() -> {
                 confirmBooking(); // Confirm the booking
-                openParkingTicketActivity(); // Pass data to ParkingTicket
             }, 2000); // 2-second delay
         } else if (paymentSheetResult instanceof PaymentSheetResult.Failed) {
             showToast("Payment Failed: " + ((PaymentSheetResult.Failed) paymentSheetResult).getError());
@@ -295,20 +294,6 @@ public class PaymentActivity extends AppCompatActivity {
         // Update the TextViews with the formatted date and time
         dateTextView.setText(MessageFormat.format("Date: {0}", formattedDate));
         timeTextView.setText(MessageFormat.format("Time: {0} - {1}", formattedStartTime, formattedEndTime));
-    }
-
-
-
-    private void openParkingTicketActivity() {
-        Intent intent = new Intent(this, ParkingTicket.class);
-
-        if (booking != null) {
-            intent.putExtra("address", booking.getLocation()); // Pass address
-            intent.putExtra("passkey", booking.getPassKey());  // Pass reference key
-        }
-
-        startActivity(intent);
-        finish();
     }
 
     private void applyPromoCode(String promoCode) {

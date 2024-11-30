@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.model.booking.Booking;
 
 public class ParkingTicket extends AppCompatActivity {
 
@@ -38,24 +39,32 @@ public class ParkingTicket extends AppCompatActivity {
         Intent intent = getIntent();
         if (intent != null) {
             try {
-                String passkey = intent.getStringExtra("passkey");
-                address = intent.getStringExtra("address");
+                // Retrieve the Booking object from the intent
+                Booking booking = (Booking) intent.getSerializableExtra("booking");
 
-                // Check if passkey is not null and address is provided
-                if (!TextUtils.isEmpty(passkey)) {
-                    referenceNumberTextView.setText(passkey);
-                    progressBar.setVisibility(View.VISIBLE);
+                if (booking != null) {
+                    String passkey = booking.getPassKey(); // Get the passkey from the Booking object
+                    String address = booking.getLocation(); // Get the address from the Booking object
 
-                    new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                        if (!TextUtils.isEmpty(address)) {
-                            updateUIWithBookingDetails(address);
-                        } else {
-                            showToast("Address not provided");
-                        }
-                        progressBar.setVisibility(View.GONE);
-                    }, 2000);
+                    // Check if passkey is not null
+                    if (!TextUtils.isEmpty(passkey)) {
+                        referenceNumberTextView.setText(passkey);
+                        progressBar.setVisibility(View.VISIBLE);
+
+                        // Simulate some processing or delay
+                        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                            if (!TextUtils.isEmpty(address)) {
+                                updateUIWithBookingDetails(address); // Update UI with address details
+                            } else {
+                                showToast("Address not provided");
+                            }
+                            progressBar.setVisibility(View.GONE);
+                        }, 2000);
+                    } else {
+                        showToast("Passkey is missing in booking details");
+                    }
                 } else {
-                    showToast("Passkey is missing");
+                    showToast("Booking details are missing in intent");
                 }
             } catch (Exception e) {
                 showToast("An error occurred: " + e.getMessage());
@@ -64,6 +73,7 @@ public class ParkingTicket extends AppCompatActivity {
         } else {
             showToast("Intent data is missing");
         }
+
 
         cancelButton.setOnClickListener(v -> finish());
         getDirectionButton.setOnClickListener(v -> openMap());
