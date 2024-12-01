@@ -11,6 +11,8 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -191,4 +193,31 @@ public class ParkingLocationManager {
                     showToast(context, context.getString(R.string.error_updating_price));
                 });
     }
+
+    public static Task<String> fetchOwnerIdByLocationId(String locationId) {
+        TaskCompletionSource<String> taskCompletionSource = new TaskCompletionSource<>();
+        DatabaseReference databaseReference = FirebaseDatabaseSingleton.getInstance().getReference("parkingLocations");
+        databaseReference.child(locationId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    String ownerId = snapshot.child("ownerId").getValue(String.class);
+                    if (ownerId != null) {
+                        taskCompletionSource.setResult(ownerId);
+                    } else {
+                        taskCompletionSource.setException(new Exception("Owner ID not found for locationId: " + locationId));
+                    }
+                } else {
+                    taskCompletionSource.setException(new Exception("Location ID not found: " + locationId));
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                taskCompletionSource.setException(new Exception("Error fetching data: " + error.getMessage()));
+            }
+        });
+
+        return taskCompletionSource.getTask();
+    }
+
 }

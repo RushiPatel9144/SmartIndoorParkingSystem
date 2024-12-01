@@ -101,7 +101,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingV
                     .setPositiveButton("Yes", (dialog, which) -> {
                         int position = getBindingAdapterPosition();
                         if (position != RecyclerView.NO_POSITION && position < bookingList.size()) {
-                            cancelBookingViewModel.cancelBooking(booking.getTransactionId(), booking.getId(), () -> {
+                            cancelBookingViewModel.cancelBooking(booking, () -> {
                                 bookingList.remove(position);
                                 notifyItemRemoved(position);
                                 notifyItemRangeChanged(position, bookingList.size());
