@@ -8,6 +8,7 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import ca.tech.sense.it.smart.indoor.parking.system.manager.parkingManager.ParkingLocationManager;
@@ -18,13 +19,15 @@ public class SwipeToDeleteCallback extends ItemTouchHelper.SimpleCallback {
     private final LocationAdapter adapter;
     private final String ownerId;
     private final ParkingLocationManager parkingManager;
+    private Fragment fragment;
 
     // Constructor
-    public SwipeToDeleteCallback(LocationAdapter adapter, String ownerId, ParkingLocationManager parkingManager) {
+    public SwipeToDeleteCallback(Fragment fragment, LocationAdapter adapter, String ownerId, ParkingLocationManager parkingManager) {
         super(0, ItemTouchHelper.LEFT); // Enable left swipe
         this.adapter = adapter;
         this.ownerId = ownerId;
         this.parkingManager = parkingManager;
+        this.fragment = fragment;
     }
 
     @Override
@@ -39,24 +42,30 @@ public class SwipeToDeleteCallback extends ItemTouchHelper.SimpleCallback {
     public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
         String locationId;
         int position = viewHolder.getBindingAdapterPosition();
+
         if (position != RecyclerView.NO_POSITION) {
             LocationAdapter.LocationViewHolder locationViewHolder = (LocationAdapter.LocationViewHolder) viewHolder;
             locationId = locationViewHolder.getLocationId();
+
             DialogUtil.showTimedConfirmationDialog(
-                    viewHolder.itemView.getContext(),
+                    fragment,
                     "Confirm Deletion",
                     "Are you sure you want to delete this location?",
-                    15000,
-                    1000,
+                    15000,  // 15 seconds
+                    1000,   // Update every 1 second
                     () -> {
+                        // Perform the deletion action
                         parkingManager.deleteParkingLocation(
                                 viewHolder.itemView.getContext(),
                                 ownerId,
                                 locationId
                         );
+                        // Remove item from the adapter
                         adapter.removeItem(position);
                     },
-                    adapter::notifyDataSetChanged
+                    () ->
+                        // If cancelled, refresh the specific item
+                        adapter.notifyItemChanged(position)
             );
         }
     }

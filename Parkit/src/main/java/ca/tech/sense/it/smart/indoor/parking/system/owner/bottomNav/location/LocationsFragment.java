@@ -85,7 +85,7 @@ public class LocationsFragment extends BaseNetworkFragment {
         locationsRecyclerView.setAdapter(adapter);
 
         // Add swipe-to-delete functionality
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteCallback(adapter, oAuth.getUid(), parkingLocationManager));
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteCallback(this, adapter, oAuth.getUid(), parkingLocationManager));
         itemTouchHelper.attachToRecyclerView(locationsRecyclerView);
 
         swipeRefreshLayout.setOnRefreshListener(this::loadParkingLocations);
