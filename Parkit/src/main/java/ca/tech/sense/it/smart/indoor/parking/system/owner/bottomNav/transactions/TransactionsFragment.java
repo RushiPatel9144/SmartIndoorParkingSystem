@@ -77,7 +77,7 @@ public class TransactionsFragment extends Fragment {
 
                 // Calculate the total price and update the toolbar
                 double totalPrice = calculateTotalPrice();
-                updateTextview(totalPrice);
+                updateTextview(ownerId, totalPrice);
             }
         }, exception -> {});
     }
@@ -92,7 +92,8 @@ public class TransactionsFragment extends Fragment {
     }
 
     @SuppressLint("DefaultLocale")
-    private void updateTextview(Double price){
+    private void updateTextview(String ownerId, Double price){
+        new TransactionManager(firebaseDatabase).updateOwnerTotalIncome(ownerId, price);
         incomeTextView.setText(String.format("$ %.2f",price));
     }
 

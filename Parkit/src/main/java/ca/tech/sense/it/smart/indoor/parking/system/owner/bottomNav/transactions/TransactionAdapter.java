@@ -39,6 +39,7 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
         Context context = holder.itemView.getContext();
         if (!transaction.isRefunded()){
             sign = "+";
+            holder.priceTextView.setTextColor(ContextCompat.getColor(context, R.color.holo_green_dark));
         } else {
             sign = "-";
             holder.priceTextView.setTextColor(ContextCompat.getColor(context, R.color.red));

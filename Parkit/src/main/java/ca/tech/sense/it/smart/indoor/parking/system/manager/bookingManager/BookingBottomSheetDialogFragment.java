@@ -194,7 +194,7 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
         }
 
         // Only set the adapter if slotNames is not empty
-        if (!slotNames.isEmpty()) {
+        if (!slotNames.isEmpty() && isAdded()) {
             SlotAdapter adapter = new SlotAdapter(requireContext(), android.R.layout.simple_spinner_item, slotNames, locationId, selectedDate, selectedHour, bookingManager);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             slotSpinner.setAdapter(adapter);
