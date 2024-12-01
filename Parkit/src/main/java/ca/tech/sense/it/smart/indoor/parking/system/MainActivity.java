@@ -4,9 +4,11 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
@@ -104,6 +106,9 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
 
     private void initUIComponents() {
         toolbar = findViewById(R.id.toolbar);
+        toolbar.setLogo(R.drawable.logo);
+        toolbar.setTitle("  " + getString(R.string.park_it));
+        toolbar.setElevation(10); // Adds elevation for a shadow effect
         setSupportActionBar(toolbar);
         bottomNavigationView = findViewById(R.id.bottom_navigation);
     }
@@ -150,22 +155,23 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int itemId = item.getItemId();
-
+        String toolbarTitle = "";
         if (itemId == R.id.navigation_home) {
             loadFragments(homeFragment, "HomeFragment");
-            toolbar.setTitle(R.string.home);
+            toolbarTitle = getString(R.string.home);
         } else if (itemId == R.id.navigation_park) {
             loadFragments(parkFragment, "ParkFragment");
-            toolbar.setTitle(R.string.park);
+            toolbarTitle = getString(R.string.park);
         } else if (itemId == R.id.navigation_activity) {
             loadFragments(activityFragment, "ActivityFragment");
-            toolbar.setTitle(R.string.activity);
+            toolbarTitle = getString(R.string.activity);
         } else if (itemId == R.id.navigation_account) {
             loadFragments(accountFragment, "AccountFragment");
-            toolbar.setTitle(R.string.my_account);
+            toolbarTitle = getString(R.string.my_account);
         } else {
             return false;
         }
+        toolbar.setTitle("  "+ toolbarTitle);
         return true;
     }
 

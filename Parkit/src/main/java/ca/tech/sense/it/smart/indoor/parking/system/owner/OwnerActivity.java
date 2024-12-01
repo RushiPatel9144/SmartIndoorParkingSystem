@@ -50,6 +50,8 @@ public class OwnerActivity extends AppCompatActivity implements NavigationBarVie
         // Initialize UI components
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation_owner);
         setSupportActionBar(findViewById(R.id.toolbar_owner));
+        Objects.requireNonNull(getSupportActionBar()).setLogo(R.drawable.logo);
+        Objects.requireNonNull(getSupportActionBar()).setElevation(10);
 
         handleBackButtonPress();
         // Fetch session data when the activity is created
@@ -93,7 +95,7 @@ public class OwnerActivity extends AppCompatActivity implements NavigationBarVie
         }else {
             return false;
         }
-        Objects.requireNonNull(getSupportActionBar()).setTitle(toolbarTitle);  // Update toolbar title
+        Objects.requireNonNull(getSupportActionBar()).setTitle("  "+toolbarTitle);  // Update toolbar title
         return true;
     }
 
