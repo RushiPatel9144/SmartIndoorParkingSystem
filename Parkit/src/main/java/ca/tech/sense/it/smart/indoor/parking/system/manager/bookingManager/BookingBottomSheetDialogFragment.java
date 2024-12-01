@@ -71,7 +71,7 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
     private FirebaseAuth firebaseAuth;
     private final ParkingLocationManager parkingLocationManager = new ParkingLocationManager();
     private ExecutorService executorService;
-
+    private String ownerId;
     private ParkingLocation location; // Define the ParkingLocation variable
     // Constructor with dependency injection
     public BookingBottomSheetDialogFragment(ExecutorService executorService, String locationId, BookingManager bookingManager, Context context) {
@@ -141,6 +141,7 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
             public void onFetchSuccess(ParkingLocation fetchedLocation) {
                 if (fetchedLocation != null) {
                     location = fetchedLocation; // Assign the fetched location to the variable
+                    ownerId = location.getOwnerId();
                     titleTextView.setText(location.getName());
                     addressText.setText(location.getAddress());
                     postalCodeText.setText(location.getPostalCode());
@@ -312,6 +313,7 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
                         // Create an Intent to start PaymentActivity and pass the booking data
                         Intent intent = new Intent(requireContext(), PaymentActivity.class);
                         intent.putExtra("booking", booking); // Pass the Booking object
+                        intent.putExtra("ownerId", ownerId);
                         startActivity(intent);
                         dismiss();
                     }

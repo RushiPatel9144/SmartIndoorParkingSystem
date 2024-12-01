@@ -32,18 +32,23 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
+import ca.tech.sense.it.smart.indoor.parking.system.manager.parkingManager.ParkingLocationManager;
 import ca.tech.sense.it.smart.indoor.parking.system.model.booking.Booking;
+import ca.tech.sense.it.smart.indoor.parking.system.model.booking.Transaction;
+import ca.tech.sense.it.smart.indoor.parking.system.utility.DateTimeUtils;
 
 public class UserService {
 
     private final ExecutorService executorService;
     private final FirebaseDatabase firebaseDatabase;
     private final FirebaseAuth firebaseAuth;
+    private TransactionManager transactionManager;
 
     public UserService(ExecutorService executorService, FirebaseDatabase firebaseDatabase, FirebaseAuth firebaseAuth) {
         this.executorService = executorService;
         this.firebaseDatabase = firebaseDatabase;
         this.firebaseAuth = firebaseAuth;
+
     }
 
     public void saveLocationToFavorites(String locationId, String address, String postalCode, String name, Runnable onSuccess, Consumer<Exception> onFailure) {
@@ -103,9 +108,35 @@ public class UserService {
                 });
     }
 
-    public void cancelBookingAndRequestRefund(String userId, String bookingId, String transactionId, Runnable onSuccess, Consumer<Exception> onFailure) {
-        cancelBooking(userId, bookingId, () -> requestRefund(transactionId, onSuccess, onFailure), onFailure);
+    public void processOwnerData(String locationId, Booking booking) {
+        ParkingLocationManager.fetchOwnerIdByLocationId(locationId)
+                .addOnSuccessListener(ownerId -> transactionUpdate(ownerId, booking))
+                .addOnFailureListener(e -> {
+                    // Handle the error
+                });
     }
+
+    private void transactionUpdate(String ownerId, Booking booking) {
+        transactionManager = new TransactionManager(firebaseDatabase);
+        transactionManager.storeTransaction(ownerId, new Transaction(
+                booking.getTransactionId(),
+                booking.getTitle(),
+                booking.getPrice(),
+                booking.getCurrencySymbol(),
+                DateTimeUtils.getCurrentDateTime(),
+                true
+        ));
+    }
+
+    public void cancelBookingAndRequestRefund(String userId, Booking booking, Runnable onSuccess, Consumer<Exception> onFailure) {
+        transactionManager = new TransactionManager(firebaseDatabase);
+       cancelBooking(userId, booking.getId(), () -> {
+            requestRefund(booking.getTransactionId(), onSuccess, onFailure);
+            processOwnerData(booking.getLocationId(), booking);
+
+        }, onFailure);
+    }
+
 
     public void cancelBooking(String userId, String bookingId, Runnable onSuccess, Consumer<Exception> onFailure) {
         if (bookingId == null) {

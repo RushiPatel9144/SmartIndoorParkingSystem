@@ -38,11 +38,16 @@ import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.currency.CurrencyManager;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseDatabaseSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.manager.bookingManager.BookingManager;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.bookingManager.TransactionManager;
 import ca.tech.sense.it.smart.indoor.parking.system.model.Promotion;
 import ca.tech.sense.it.smart.indoor.parking.system.model.booking.Booking;
+import ca.tech.sense.it.smart.indoor.parking.system.model.booking.Transaction;
+import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
+import ca.tech.sense.it.smart.indoor.parking.system.utility.DateTimeUtils;
 
 public class PaymentActivity extends AppCompatActivity {
 
@@ -63,9 +68,11 @@ public class PaymentActivity extends AppCompatActivity {
     private Button confirmButton;
     private Button cancelButton;
     private PaymentSheet paymentSheet;
-    private String currency = "CAD";
     private double total;
     private String transactionId;
+    private TransactionManager transactionManager ;
+    private String ownerId;
+    private double subtotal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +81,7 @@ public class PaymentActivity extends AppCompatActivity {
         initializeUIElements();
 
         Intent intent = getIntent();
+        ownerId = getIntent().getStringExtra("ownerId");
         if (intent != null && intent.hasExtra("booking")) {
             booking = (Booking) intent.getSerializableExtra("booking");
             if (booking != null) {
@@ -88,7 +96,7 @@ public class PaymentActivity extends AppCompatActivity {
         FirebaseAuth firebaseAuth = FirebaseAuthSingleton.getInstance();
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         Context context = this;
-
+        transactionManager = new TransactionManager(firebaseDatabase);
         bookingManager = new BookingManager(executorService, firebaseDatabase, firebaseAuth, context);
 
         PaymentConfiguration.init(
@@ -131,7 +139,7 @@ public class PaymentActivity extends AppCompatActivity {
     private void calculateTotalBreakdown() {
         if (booking != null) {
             String currencySymbol = booking.getCurrencySymbol();
-            double subtotal = booking.getPrice();
+            subtotal = booking.getPrice();
             double gstHst = subtotal * 0.13;
             double platformFee = subtotal * 0.10;
             total = subtotal + gstHst + platformFee;
@@ -161,7 +169,8 @@ public class PaymentActivity extends AppCompatActivity {
         String url = "https://parkit-cd4c2ec26f90.herokuapp.com/create-payment-intent";
 
         double totalAmount = total * 100;
-        currency = booking.getCurrencyCode();
+        booking.setPrice(CurrencyManager.getInstance().convertToCAD(total, booking.getCurrencyCode()));
+        String currency = booking.getCurrencyCode();
 
         JSONObject jsonRequest = new JSONObject();
         try {
@@ -210,10 +219,8 @@ public class PaymentActivity extends AppCompatActivity {
 
     private void onPaymentSheetResult(PaymentSheetResult paymentSheetResult) {
         if (paymentSheetResult instanceof PaymentSheetResult.Completed) {
-            // Use Handler with Looper.getMainLooper() for a delay
-            new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                confirmBooking(); // Confirm the booking
-            }, 2000); // 2-second delay
+            // Confirm the booking
+            new Handler(Looper.getMainLooper()).postDelayed(this::confirmBooking, 2000); // 2-second delay
         } else if (paymentSheetResult instanceof PaymentSheetResult.Failed) {
             showToast("Payment Failed: " + ((PaymentSheetResult.Failed) paymentSheetResult).getError());
             finish();
@@ -233,15 +240,14 @@ public class PaymentActivity extends AppCompatActivity {
         String selectedTimeSlot = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date(booking.getStartTime())) + " - " +
                 new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date(booking.getEndTime()));
         String selectedDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date(booking.getStartTime()));
-
+        Transaction transaction = new Transaction(transactionId, booking.getTitle(),CurrencyManager.getInstance().convertToCAD(subtotal, booking.getCurrencyCode()), booking.getCurrencySymbol(), DateTimeUtils.getCurrentDateTime(),false);
         try {
+            transactionManager.storeTransaction(ownerId,transaction);
             bookingManager.getBookingService().confirmBooking(
                     transactionId,
-                    booking.getLocationId(),        // Pass location ID
-                    booking.getSlotNumber(),       // Pass slot number
-                    selectedTimeSlot,              // Valid time slot
-                    selectedDate,                  // Valid date
-                    booking.getLocation(),         // Location
+                    selectedTimeSlot,
+                    selectedDate,
+                    booking,
                     () -> {
                         showToast(getString(R.string.booking_confirmed));
 

@@ -13,7 +13,7 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor">@color/theme</item>
         <!-- Set translucent status bar -->
-        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentStatus">false</item>
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
@@ -21,15 +21,10 @@
     </style>
 
     <style name="OwnerTheme" parent="Theme.Material3.DayNight.NoActionBar">
-
         <item name="android:statusBarColor">@color/white</item>
-
-
     </style>
 
     <style name="Toolbar.TitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
-        <item name="android:textSize">28sp</item>
-        <item name="android:textStyle">bold</item>
         <item name="android:textAppearance">@font/poppins_medium</item>
     </style>
 

@@ -68,14 +68,13 @@ public class Park extends BaseNetworkFragment implements OnMapReadyCallback {
 
     private static final String TAG = "ParkFragment";
     private GoogleMap mMap;
-    private ParkingLocationManager parkingLocationManager = new ParkingLocationManager();
+    private ParkingLocationManager parkingLocationManager ;
     private ExecutorService executorService;
     private ActivityResultLauncher<String> requestPermissionLauncher;
     private FusedLocationProviderClient fusedLocationClient;
     private ScheduledExecutorService scheduledExecutorService;
     private boolean ratesFetched = false;
     private ProgressBar progressBar;
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -92,6 +91,7 @@ public class Park extends BaseNetworkFragment implements OnMapReadyCallback {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_park, container, false);
+        parkingLocationManager = new ParkingLocationManager();
         progressBar = view.findViewById(R.id.progressBar);
         return view;
     }
@@ -199,6 +199,9 @@ public class Park extends BaseNetworkFragment implements OnMapReadyCallback {
                 if (isAdded() && getView() != null) {
                     requireActivity().runOnUiThread(() -> {
                         if (locations != null) {
+                            // Clear old markers before adding new ones
+                            mMap.clear();
+
                             for (Map.Entry<String, ParkingLocation> entry : locations.entrySet()) {
                                 ParkingLocation location = entry.getValue();
                                 if (isValidParkingLocation(location)) {
@@ -210,23 +213,29 @@ public class Park extends BaseNetworkFragment implements OnMapReadyCallback {
                                     );
                                     assert marker != null;
                                     marker.setTag(location.getId());
-                                    if (progressBar != null) {
-                                        progressBar.setVisibility(View.GONE);
-                                    }
                                 }
                             }
+                        }
+
+                        // Hide progress bar after updating the map
+                        if (progressBar != null) {
+                            progressBar.setVisibility(View.GONE);
                         }
                     });
                 }
             }
+
             @Override
             public void onFetchFailure(Exception e) {
+                if (progressBar != null) {
+                    progressBar.setVisibility(View.GONE);
+                }
                 Log.e(TAG, getString(R.string.error_fetching_parking_locations), e);
                 Toast.makeText(requireContext(), Toast.LENGTH_SHORT, R.string.failed_to_load_parking_locations).show();
             }
         });
-
     }
+
 
     private boolean isValidParkingLocation(ParkingLocation location) {
         return location.getLatitude() >= -90 && location.getLatitude() <= 90 &&
@@ -328,4 +337,13 @@ public class Park extends BaseNetworkFragment implements OnMapReadyCallback {
             }
         });
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (executorService != null && !executorService.isShutdown()) {
+            executorService.shutdown();
+        }
+    }
+
 }
