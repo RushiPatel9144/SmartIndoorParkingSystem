@@ -50,7 +50,7 @@ public class RateUsViewModel extends ViewModel {
         // Introduce a delay of 5 seconds
         new Handler().postDelayed(() -> {
             // Fetch user or owner information from SessionManager
-            SessionManager sessionManager = new SessionManager(context);
+            SessionManager sessionManager = SessionManager.getInstance(context);
             sessionManager.fetchSessionData((user, owner) -> {
                 if (user != null || owner != null) {
                     // Retrieve the relevant user or owner details

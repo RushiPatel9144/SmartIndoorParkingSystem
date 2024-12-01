@@ -69,15 +69,12 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
 
         // Fetch session data when the activity is created
         SessionManager sessionManager = SessionManager.getInstance(this);
-        sessionManager.fetchSessionData(new SessionManager.OnSessionDataFetchedCallback() {
-            @Override
-            public void onSessionDataFetched(User user, Owner owner) {
-                // You can now use 'user' or 'owner' data for your UI
-                if (user != null) {
-                    // Use user data
-                } else if (owner != null) {
-                    // Use owner data
-                }
+        sessionManager.fetchSessionData((user, owner) -> {
+            // You can now use 'user' or 'owner' data for your UI
+            if (user != null) {
+                // Use user data
+            } else if (owner != null) {
+                // Use owner data
             }
         });
 

@@ -84,7 +84,7 @@ public class LoginActivity extends BaseActivity {
         login_password_layout = findViewById(R.id.login_password_layout);
         login_email_layout = findViewById(R.id.login_email_layout);
 
-        sessionManager = new SessionManager(this);  // Initialize session manager
+        sessionManager = SessionManager.getInstance(this);  // Initialize session manager
 
         AuthRepository authRepository = new AuthRepository();  // Initialize repository for authentication
         LoginViewModelFactory factory = new LoginViewModelFactory(authRepository);  // Create ViewModel factory

@@ -20,6 +20,7 @@ import ca.tech.sense.it.smart.indoor.parking.system.manager.favoriteManager.Frag
 import ca.tech.sense.it.smart.indoor.parking.system.manager.preferenceManager.PreferenceManager;
 import ca.tech.sense.it.smart.indoor.parking.system.manager.sessionManager.SessionManager;
 
+import ca.tech.sense.it.smart.indoor.parking.system.model.owner.Owner;
 import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.transactions.TransactionsFragment;
 
 import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.location.LocationsFragment;
@@ -40,7 +41,6 @@ public class OwnerActivity extends AppCompatActivity implements NavigationBarVie
     private final AccountFragment accountFragment = AccountFragment.newInstance(R.id.fragment_container_owner);
     private FragmentManagerHelper fragmentManagerHelper;
     private PreferenceManager preferenceManager;
-    SessionManager sessionManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,9 +58,9 @@ public class OwnerActivity extends AppCompatActivity implements NavigationBarVie
 
             // You can now use 'user' or 'owner' data for your UI
             if (user != null) {
-                // Use user data
+                Owner currentOwner = sessionManager.getCurrentOwner();
             } else if (owner != null) {
-                // Use owner data
+
             }
 
         });
@@ -80,7 +80,7 @@ public class OwnerActivity extends AppCompatActivity implements NavigationBarVie
 
         if (item.getItemId() == R.id.navigation_dashboard) {
             loadFragments(dashboardFragment, "dashboardFragment");
-            toolbarTitle = getString(R.string.dashboard);
+            toolbarTitle = getString(R.string.park_it);
         } else if (item.getItemId() == R.id.navigation_transactions) {
             loadFragments(transactionsFragment,  "transactionsFragment");
             toolbarTitle = getString(R.string.transactions);

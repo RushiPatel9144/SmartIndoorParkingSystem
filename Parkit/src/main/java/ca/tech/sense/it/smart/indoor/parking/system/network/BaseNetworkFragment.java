@@ -55,7 +55,7 @@ public class BaseNetworkFragment extends Fragment implements NetworkManager.Netw
                 .getSupportFragmentManager()
                 .beginTransaction();
 
-        SessionManager sessionManager = new SessionManager(requireContext());
+        SessionManager sessionManager = SessionManager.getInstance(requireContext());
         String userType = sessionManager.getUserType();
         if (Objects.equals(userType, "owner")){
             fragmentContainerId = R.id.fragment_container_owner;
