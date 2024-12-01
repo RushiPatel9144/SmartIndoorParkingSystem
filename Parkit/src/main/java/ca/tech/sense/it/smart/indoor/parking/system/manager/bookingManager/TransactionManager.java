@@ -129,7 +129,7 @@ public class TransactionManager {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
-                    Double totalIncome = snapshot.getValue(Double.class);
+                    String totalIncome = String.valueOf(snapshot.getValue(String.class));
                     callback.onSuccess(totalIncome);
                 } else {
                     callback.onFailure("No income data found for owner ID: " + ownerId);
@@ -146,7 +146,7 @@ public class TransactionManager {
      * Callback interface to handle the success and failure of income retrieval.
      */
     public interface FetchIncomeCallback {
-        void onSuccess(Double totalIncome);  // Callback for successful retrieval
+        void onSuccess(String totalIncome);  // Callback for successful retrieval
         void onFailure(String errorMessage); // Callback for failure or no data found
     }
 

@@ -2,41 +2,57 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:padding="16dp"
-    android:background="@color/bg">
+    android:background="@color/bg"
+    android:theme="@style/LocationFragment">
 
-    <!-- Header Section for Total Income -->
-    <LinearLayout
-        android:layout_width="382dp"
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:padding="16dp">
+        app:cardCornerRadius="16dp"
+        android:padding="16dp"
+        app:cardBackgroundColor="#2A2A2A"
+        android:layout_marginBottom="16dp">
 
-        <!-- Title -->
-        <TextView
-            android:id="@+id/transactionTitle"
-            android:layout_width="wrap_content"
+        <!-- Header Section for Total Income -->
+        <LinearLayout
+            android:layout_width="382dp"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:fontFamily="sans-serif-medium"
-            android:gravity="center"
-            android:text="Total Income:"
-            android:textSize="18sp" />
+            android:gravity="start"
+            android:orientation="vertical"
+            android:padding="16dp">
 
-        <!-- Income Value -->
-        <TextView
-            android:id="@+id/income"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:fontFamily="sans-serif-medium"
-            android:gravity="center"
-            android:text="0.00"
-            android:textSize="24sp" /> <!-- Default value, will be updated dynamically -->
+            <!-- Title -->
+            <TextView
+                android:id="@+id/transactionTitle"
+                android:textColor="#9E9E9E"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:fontFamily="sans-serif-medium"
 
-    </LinearLayout>
+                android:text="Total Income"
+                android:textSize="18sp" />
+
+            <!-- Income Value -->
+            <TextView
+                android:id="@+id/income"
+                android:textColor="@color/white"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:fontFamily="sans-serif-medium"
+
+                android:text="0.00"
+                android:textStyle="bold"
+                android:textSize="32sp" /> <!-- Default value, will be updated dynamically -->
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+
 
     <!-- Placeholder for No Transactions -->
     <TextView

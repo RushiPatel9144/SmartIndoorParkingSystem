@@ -156,6 +156,8 @@ public class AccountFragment extends Fragment {
                         sessionManager.logout();
                         SharedPreferences rateUsSharedPreferences = requireContext().getSharedPreferences("RateUsPrefs", Context.MODE_PRIVATE);
                         rateUsSharedPreferences.edit().clear().apply();
+                        SharedPreferences accountSharedPreferences = requireContext().getSharedPreferences("AccountPrefs", Context.MODE_PRIVATE);
+                        accountSharedPreferences.edit().clear().apply();
 
                         if (googleAuthClient.isSingedIn()){
                             CoroutineHelper.Companion.signOutWithGoogle(requireContext(), googleAuthClient, () -> {});

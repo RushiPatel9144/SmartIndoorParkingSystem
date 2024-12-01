@@ -72,6 +72,7 @@
                                     android:layout_marginEnd="4dp"
                                     android:text="$"/>
                                 <TextView
+                                    android:id="@+id/dashboard_earnings_value"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:textColor="@color/white"
@@ -150,8 +151,10 @@
                             android:layout_gravity="center_horizontal |bottom"/>
                     </androidx.cardview.widget.CardView>
 
+
+
                     <androidx.cardview.widget.CardView
-                        android:id="@+id/cardEditSpot"
+                        android:id="@+id/cardHelp"
                         android:layout_width="100dp"
                         android:layout_height="100dp"
                         android:layout_margin="8dp"
@@ -164,45 +167,11 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:padding="5dp"
-                            android:text="Reserved"
+                            android:text="Help"
                             android:layout_gravity="center_horizontal |bottom"/>
                     </androidx.cardview.widget.CardView>
 
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/cardAddLot"
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
-                        android:layout_margin="8dp"
-                        app:cardCornerRadius="8dp"
-                        android:gravity="center"
-                        app:cardBackgroundColor="@color/bg"
-                        android:padding="16dp">
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:padding="5dp"
-                            android:text="Add Lot"
-                            android:layout_gravity="center_horizontal |bottom"/>
-                    </androidx.cardview.widget.CardView>
-
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/cardRevenue"
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
-                        android:layout_margin="8dp"
-                        app:cardCornerRadius="8dp"
-                        android:gravity="center"
-                        app:cardBackgroundColor="@color/bg"
-                        android:padding="16dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:padding="5dp"
-                            android:text="Revenue"
-                            android:layout_gravity="center_horizontal |bottom"/>
-                    </androidx.cardview.widget.CardView>
 
                     <androidx.cardview.widget.CardView
                         android:id="@+id/cardNotification"
@@ -238,7 +207,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Revenue Trends"
+                    android:text="Revenue Trends(Coming soon)"
                     android:gravity="start"
                     android:paddingTop="16dp"/>
 
@@ -251,6 +220,7 @@
                     android:gravity="end"
                     android:paddingEnd="16dp"
                     android:paddingTop="16dp"
+                    android:visibility="gone"
                     android:layout_weight="1"/>
 
             </LinearLayout>
@@ -259,20 +229,23 @@
 
 
             <!-- LineChart -->
+
+            <!-- Notifications Section -->
             <com.github.mikephil.charting.charts.LineChart
                 android:id="@+id/revenueChart"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:layout_marginBottom="16dp" />
 
-            <!-- Notifications Section -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Parking Lot History"
-                android:paddingTop="16dp" />
+                android:paddingTop="16dp"
+                android:visibility="gone"/>
 
             <androidx.recyclerview.widget.RecyclerView
+                android:visibility="gone"
                 android:id="@+id/activeparkingRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
