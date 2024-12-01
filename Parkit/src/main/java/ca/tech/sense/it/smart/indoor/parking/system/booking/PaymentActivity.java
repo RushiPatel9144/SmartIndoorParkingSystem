@@ -72,6 +72,7 @@ public class PaymentActivity extends AppCompatActivity {
     private String transactionId;
     private TransactionManager transactionManager ;
     private String ownerId;
+    private double subtotal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -138,7 +139,7 @@ public class PaymentActivity extends AppCompatActivity {
     private void calculateTotalBreakdown() {
         if (booking != null) {
             String currencySymbol = booking.getCurrencySymbol();
-            double subtotal = booking.getPrice();
+            subtotal = booking.getPrice();
             double gstHst = subtotal * 0.13;
             double platformFee = subtotal * 0.10;
             total = subtotal + gstHst + platformFee;
@@ -239,7 +240,7 @@ public class PaymentActivity extends AppCompatActivity {
         String selectedTimeSlot = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date(booking.getStartTime())) + " - " +
                 new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date(booking.getEndTime()));
         String selectedDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date(booking.getStartTime()));
-        Transaction transaction = new Transaction(transactionId, booking.getTitle(), booking.getPrice(), booking.getCurrencySymbol(), DateTimeUtils.getCurrentDateTime(),false);
+        Transaction transaction = new Transaction(transactionId, booking.getTitle(), subtotal , booking.getCurrencySymbol(), DateTimeUtils.getCurrentDateTime(),false);
         try {
             transactionManager.storeTransaction(ownerId,transaction);
             bookingManager.getBookingService().confirmBooking(

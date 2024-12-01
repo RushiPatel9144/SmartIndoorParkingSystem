@@ -2,24 +2,22 @@ package ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.transaction
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
+
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
+
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseDatabaseSingleton;
@@ -33,6 +31,7 @@ public class TransactionsFragment extends Fragment {
     private List<Transaction> transactionList = new ArrayList<>();
     private FirebaseDatabase firebaseDatabase;
     private FirebaseAuth mAuth;
+    private TextView incomeTextView;
 
     public TransactionsFragment() {
         // Required empty public constructor
@@ -50,7 +49,7 @@ public class TransactionsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_transactions, container, false);
-
+        incomeTextView = rootView.findViewById(R.id.income);
         // Set up RecyclerView
         transactionsRecyclerView = rootView.findViewById(R.id.transactionRecyclerView);
         transactionsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -75,7 +74,27 @@ public class TransactionsFragment extends Fragment {
                 transactionList.clear();
                 transactionList.addAll(transactions);
                 transactionAdapter.notifyDataSetChanged();
+
+                // Calculate the total price and update the toolbar
+                double totalPrice = calculateTotalPrice();
+                updateTextview(totalPrice);
             }
         }, exception -> {});
     }
+    private double calculateTotalPrice() {
+        double totalPrice = 0.0;
+        for (Transaction transaction : transactionList) {
+            if (transaction.isRefunded()){
+                totalPrice -= transaction.getPrice();
+            } else totalPrice += transaction.getPrice();
+        }
+        return totalPrice;
+    }
+
+    @SuppressLint("DefaultLocale")
+    private void updateTextview(Double price){
+        incomeTextView.setText(String.format("$ %.2f",price));
+    }
+
 }
+
