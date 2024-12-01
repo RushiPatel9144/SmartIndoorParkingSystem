@@ -240,7 +240,7 @@ public class PaymentActivity extends AppCompatActivity {
         String selectedTimeSlot = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date(booking.getStartTime())) + " - " +
                 new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date(booking.getEndTime()));
         String selectedDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date(booking.getStartTime()));
-        Transaction transaction = new Transaction(transactionId, booking.getTitle(), subtotal , booking.getCurrencySymbol(), DateTimeUtils.getCurrentDateTime(),false);
+        Transaction transaction = new Transaction(transactionId, booking.getTitle(),CurrencyManager.getInstance().convertToCAD(subtotal, booking.getCurrencyCode()), booking.getCurrencySymbol(), DateTimeUtils.getCurrentDateTime(),false);
         try {
             transactionManager.storeTransaction(ownerId,transaction);
             bookingManager.getBookingService().confirmBooking(

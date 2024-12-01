@@ -84,7 +84,8 @@ public class ParkingLocationManager {
     }
 
     public void fetchAllParkingLocations(final ParkingInterface.FetchLocationsCallback callback) {
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.keepSynced(false);
+        databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Map<String, ParkingLocation> locations = new HashMap<>();
@@ -109,7 +110,7 @@ public class ParkingLocationManager {
     public void fetchParkingLocation(Context context, ExecutorService executorService, String locationId, ParkingInterface.FetchLocationCallback callback) {
         executorService.submit(() -> {
             DatabaseReference locationRef = databaseReference.child(locationId);
-            locationRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            locationRef.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     ParkingLocation location = snapshot.getValue(ParkingLocation.class);
@@ -149,7 +150,7 @@ public class ParkingLocationManager {
 
     public void fetchParkingLocationsByOwnerId(String ownerId, ParkingInterface.ParkingLocationFetchCallback callback) {
         DatabaseReference db = ownerReference.child(ownerId).child(COLLECTION_LOCATION_OWNER);
-        db.addListenerForSingleValueEvent(new ValueEventListener() {
+        db.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 List<ParkingLocation> fetchedLocations = new ArrayList<>();
