@@ -68,7 +68,7 @@ public class Park extends BaseNetworkFragment implements OnMapReadyCallback {
 
     private static final String TAG = "ParkFragment";
     private GoogleMap mMap;
-    private ParkingLocationManager parkingLocationManager ;
+    private ParkingLocationManager parkingLocationManager = new ParkingLocationManager();;
     private ExecutorService executorService;
     private ActivityResultLauncher<String> requestPermissionLauncher;
     private FusedLocationProviderClient fusedLocationClient;
@@ -91,7 +91,6 @@ public class Park extends BaseNetworkFragment implements OnMapReadyCallback {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_park, container, false);
-        parkingLocationManager = new ParkingLocationManager();
         progressBar = view.findViewById(R.id.progressBar);
         return view;
     }

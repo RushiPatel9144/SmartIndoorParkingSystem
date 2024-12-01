@@ -221,6 +221,7 @@ public class PaymentActivity extends AppCompatActivity {
         if (paymentSheetResult instanceof PaymentSheetResult.Completed) {
             // Confirm the booking
             new Handler(Looper.getMainLooper()).postDelayed(this::confirmBooking, 2000); // 2-second delay
+            finish();
         } else if (paymentSheetResult instanceof PaymentSheetResult.Failed) {
             showToast("Payment Failed: " + ((PaymentSheetResult.Failed) paymentSheetResult).getError());
             finish();
@@ -254,7 +255,7 @@ public class PaymentActivity extends AppCompatActivity {
                         // Validate and mark the promo code as used after booking confirmation
                         String promoCode = promoCodeEditText.getText().toString().trim();
                         if (!promoCode.isEmpty()) {
-                            DatabaseReference promotionsRef = FirebaseDatabase.getInstance().getReference("Promotions");
+                            DatabaseReference promotionsRef = FirebaseDatabaseSingleton.getInstance().getReference("Promotions");
                             promotionsRef.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

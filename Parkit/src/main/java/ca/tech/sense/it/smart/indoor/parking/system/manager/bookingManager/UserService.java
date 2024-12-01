@@ -109,7 +109,7 @@ public class UserService {
     }
 
     public void processOwnerData(String locationId, Booking booking) {
-        ParkingLocationManager.fetchOwnerIdByLocationId(locationId)
+       transactionManager.fetchOwnerIdByLocationId(locationId)
                 .addOnSuccessListener(ownerId -> transactionUpdate(ownerId, booking))
                 .addOnFailureListener(e -> {
                     // Handle the error

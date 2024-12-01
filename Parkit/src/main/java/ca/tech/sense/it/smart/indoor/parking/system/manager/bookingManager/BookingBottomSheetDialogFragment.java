@@ -163,15 +163,17 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
 
     // Method to convert currency
     private void displayConvertedPrice(double priceInCad) {
-        CurrencyPreferenceManager currencyPreferenceManager = new CurrencyPreferenceManager(requireContext());
-        String selectedCurrencyCode = currencyPreferenceManager.getSelectedCurrency();
-        selectedCurrency = CurrencyManager.getInstance().getCurrency(selectedCurrencyCode);
+        if (isAdded()) {
+            CurrencyPreferenceManager currencyPreferenceManager = new CurrencyPreferenceManager(requireContext());
+            String selectedCurrencyCode = currencyPreferenceManager.getSelectedCurrency();
+            selectedCurrency = CurrencyManager.getInstance().getCurrency(selectedCurrencyCode);
 
-        if (selectedCurrency != null) {
-            convertedPrice = CurrencyManager.getInstance().convertFromCAD(priceInCad, selectedCurrencyCode);
-            priceTextView.setText(String.format(Locale.getDefault(), "Price: %s %.2f", selectedCurrency.getSymbol(), convertedPrice));
-        } else {
-            priceTextView.setText(String.format(Locale.getDefault(), "Price: %s %.2f", "CAD$", priceInCad));
+            if (selectedCurrency != null) {
+                convertedPrice = CurrencyManager.getInstance().convertFromCAD(priceInCad, selectedCurrencyCode);
+                priceTextView.setText(String.format(Locale.getDefault(), "Price: %s %.2f", selectedCurrency.getSymbol(), convertedPrice));
+            } else {
+                priceTextView.setText(String.format(Locale.getDefault(), "Price: %s %.2f", "CAD$", priceInCad));
+            }
         }
     }
 
