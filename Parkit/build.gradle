@@ -109,6 +109,6 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
     testImplementation 'org.robolectric:robolectric:4.10'
 
-
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'  // Ensure you're using the correct version
 
 }

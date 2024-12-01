@@ -1,6 +1,5 @@
 package ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.ownerDashboard;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
@@ -9,41 +8,28 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Calendar;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.manager.sessionManager.SessionManager;
 import ca.tech.sense.it.smart.indoor.parking.system.model.owner.Owner;
-import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.location.LocationsFragment;
-import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.transactions.TransactionsFragment;
-
-import java.util.Calendar;
 
 public class DashboardFragment extends Fragment {
     private static final String ARG_CONTAINER_VIEW_ID = "containerViewId";
     private int containerViewId;
-    private Map<Integer, DashboardSection> sectionMap;
-    SessionManager sessionManager;
-    private String userName; // Replace with the actual user name
+    private SessionManager sessionManager;
+    private String userName; // Owner name will be stored here
 
     public DashboardFragment() {
         // Required empty public constructor
-    }
-
-    public static DashboardFragment newInstance(int containerViewId) {
-        DashboardFragment fragment = new DashboardFragment();
-        Bundle args = new Bundle();
-        args.putInt(ARG_CONTAINER_VIEW_ID, containerViewId);
-        fragment.setArguments(args);
-        return fragment;
     }
 
     @Override
@@ -52,75 +38,42 @@ public class DashboardFragment extends Fragment {
         if (getArguments() != null) {
             containerViewId = getArguments().getInt(ARG_CONTAINER_VIEW_ID);
 
+            // Fetch session data when the activity is created
 
         }
-        sessionManager = SessionManager.getInstance(this.getContext());
-        // Initialize the section mapping
-        sectionMap = new HashMap<>();
-        sectionMap.put(R.id.cardLocations, DashboardSection.LOCATIONS);
-        sectionMap.put(R.id.cardTransactions, DashboardSection.TRANSACTIONS);
-        sectionMap.put(R.id.cardActiveParkingLot, DashboardSection.ACTIVE_PARKING);
-
-
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_dashboard, container, false);
-
-        // Fetch session data when the activity is created
-
+        sessionManager = SessionManager.getInstance(requireContext());
         sessionManager.fetchSessionData((user, owner) -> {
+            if (user != null) {
+                // Use user data if needed
+            } else if (owner != null) {
+                Owner currentOwner = sessionManager.getCurrentOwner();
+                Log.d("DashboardFragment", "Owner Name: " + currentOwner.getFirstName());
+                userName = currentOwner.getFirstName(); // Store owner's first name
 
-            if (owner != null) {
-                userName = sessionManager.getCurrentOwner().getFirstName();
-                Log.d("DashboardFragment", "User Name: " + userName);
+                // Add the greeting with the owner's name
+                TextView greetingTextView = view.findViewById(R.id.dashboardGreetingTextView);
+                greetingTextView.setText(getGreetingMessageWithUserName());
             }
-            // Add the greeting with the user's name
-            TextView greetingTextView = view.findViewById(R.id.dashboardGreetingTextView);
-            greetingTextView.setText(getGreetingMessageWithUserName());
+        });
+
+        // SwipeRefreshLayout for refreshing the content
+        SwipeRefreshLayout swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            // Logic for refreshing data goes here
+            Toast.makeText(getContext(), "Refreshing dashboard...", Toast.LENGTH_SHORT).show();
+            swipeRefreshLayout.setRefreshing(false); // Stop refreshing
         });
 
 
 
-        setupClickListeners(view);
         return view;
     }
 
-    private void setupClickListeners(View view) {
-        for (Map.Entry<Integer, DashboardSection> entry : sectionMap.entrySet()) {
-            int layoutId = entry.getKey();
-            DashboardSection section = entry.getValue();
-            setSectionClickListener(view, layoutId, section);
-        }
-    }
-
-    private void setSectionClickListener(View view, int layoutId, DashboardSection section) {
-        CardView card = view.findViewById(layoutId);
-        card.setOnClickListener(v -> handleSectionSelection(section));
-    }
-
-    private void handleSectionSelection(DashboardSection section) {
-        switch (section) {
-            case LOCATIONS:
-                openFragment(new LocationsFragment());
-                break;
-            case TRANSACTIONS:
-                openFragment(new TransactionsFragment());
-                break;
-            case ACTIVE_PARKING:
-//                openFragment(new ActiveParkingFragment()); // Uncomment this line once ActiveParkingFragment is created
-                break;
-        }
-    }
-
-    private void openFragment(Fragment fragment) {
-        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(containerViewId, fragment, getTag());
-        fragmentTransaction.addToBackStack(getTag());
-        fragmentTransaction.commit();
-    }
 
     // Function to generate greeting based on the time of the day
     private String getGreetingMessage() {
@@ -136,12 +89,12 @@ public class DashboardFragment extends Fragment {
         }
     }
 
-    // Function to generate greeting with the user's name and different colors
+    // Function to generate greeting with the owner's name and different colors
     private SpannableString getGreetingMessageWithUserName() {
         String greetingMessage = getGreetingMessage() + ", " + userName;
         SpannableString spannableString = new SpannableString(greetingMessage);
 
-        // Change color of the user's name (after the comma)
+        // Change color of the owner's name (after the comma)
         int startIndex = greetingMessage.indexOf(",") + 2; // Skip the comma and space
         int endIndex = greetingMessage.length();
         spannableString.setSpan(
@@ -152,11 +105,5 @@ public class DashboardFragment extends Fragment {
         );
 
         return spannableString;
-    }
-
-    private enum DashboardSection {
-        LOCATIONS,
-        TRANSACTIONS,
-        ACTIVE_PARKING
     }
 }
