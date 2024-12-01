@@ -4,6 +4,14 @@
     <selectionStates>
       <SelectionState runConfigName="Parkit">
         <option name="selectionMode" value="DROPDOWN" />
+        <DropdownSelection timestamp="2024-12-01T01:02:56.661433500Z">
+          <Target type="DEFAULT_BOOT">
+            <handle>
+              <DeviceId pluginId="PhysicalDevice" identifier="serial=55a14967" />
+            </handle>
+          </Target>
+        </DropdownSelection>
+        <DialogSelection />
       </SelectionState>
     </selectionStates>
   </component>

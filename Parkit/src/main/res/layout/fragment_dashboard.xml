@@ -30,39 +30,94 @@
                     android:id="@+id/dashboardGreetingTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="2sp"
+                    android:textSize="28sp"
                     android:layout_marginBottom="16dp" />
-
-                <!-- Quick Actions Section -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="12sp"
-                    android:textColor="#424242"
-                    android:text="Current Earnings"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="32sp"
-                        android:textStyle="bold"
-                        android:layout_marginEnd="4dp"
-                        android:text="$"/>
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="32sp"
-                        android:textStyle="bold"
-                        android:text="1200.00"/>
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="8dp"
+                    android:layout_gravity="center">
 
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:cardBackgroundColor="#2A2A2A"
+                        app:cardCornerRadius="22dp"
+                        >
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            android:padding="14dp">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textSize="12sp"
+                                android:textColor="#9E9E9E"
+                                android:text="Current Earnings"/>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/colorAccent"
+                                    android:textSize="32sp"
+                                    android:textStyle="bold"
+                                    android:layout_marginEnd="4dp"
+                                    android:text="$"/>
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/white"
+                                    android:textSize="32sp"
+                                    android:textStyle="bold"
+                                    android:text="1200.00"/>
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center">
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/dashboard_edit_profile_button"
+                                    android:layout_width="150dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginHorizontal="5dp"
+                                    android:backgroundTint="#454545"
+                                    android:text="Edit Profile"
+                                    app:cornerRadius="6dp"
+                                    android:textAllCaps="false"
+                                    android:textSize="12dp"
+                                    android:elevation="5dp"/>
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/dashboard_transactions_button"
+                                    android:layout_width="150dp"
+                                    android:layout_height="match_parent"
+                                    android:text="Transactions"
+                                    android:textSize="12dp"
+                                    app:cornerRadius="6dp"
+                                    android:elevation="5dp"
+                                    android:textAllCaps="false"
+                                    android:backgroundTint="#454545"
+                                    android:layout_marginHorizontal="5dp"/>
+
+                            </LinearLayout>
+                        </LinearLayout>
+
+
+
+                    </androidx.cardview.widget.CardView>
+                    <!-- Quick Actions Section -->
                 </LinearLayout>
-
-
-
-
             </LinearLayout>
 
             <!-- Horizontal Scrolling Section (Revenue, Active Lots, etc.) -->
@@ -96,6 +151,42 @@
                     </androidx.cardview.widget.CardView>
 
                     <androidx.cardview.widget.CardView
+                        android:id="@+id/cardEditSpot"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:layout_margin="8dp"
+                        app:cardCornerRadius="8dp"
+                        android:gravity="center"
+                        app:cardBackgroundColor="@color/bg"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="5dp"
+                            android:text="Reserved"
+                            android:layout_gravity="center_horizontal |bottom"/>
+                    </androidx.cardview.widget.CardView>
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/cardAddLot"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:layout_margin="8dp"
+                        app:cardCornerRadius="8dp"
+                        android:gravity="center"
+                        app:cardBackgroundColor="@color/bg"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="5dp"
+                            android:text="Add Lot"
+                            android:layout_gravity="center_horizontal |bottom"/>
+                    </androidx.cardview.widget.CardView>
+
+                    <androidx.cardview.widget.CardView
                         android:id="@+id/cardRevenue"
                         android:layout_width="100dp"
                         android:layout_height="100dp"
@@ -113,6 +204,23 @@
                             android:layout_gravity="center_horizontal |bottom"/>
                     </androidx.cardview.widget.CardView>
 
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/cardNotification"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:layout_margin="8dp"
+                        app:cardCornerRadius="8dp"
+                        android:gravity="center"
+                        app:cardBackgroundColor="@color/bg"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="5dp"
+                            android:text="Notifications"
+                            android:layout_gravity="center_horizontal |bottom"/>
+                    </androidx.cardview.widget.CardView>
                     <!-- Add more cards here -->
 
                 </LinearLayout>
@@ -121,12 +229,34 @@
 
             </HorizontalScrollView>
 
-            <!-- Analytics Section -->
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Revenue Trends"
-                android:paddingTop="16dp" />
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Revenue Trends"
+                    android:gravity="start"
+                    android:paddingTop="16dp"/>
+
+                <TextView
+                    android:id="@+id/dashboard_switch_view_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Switch View"
+                    android:textColor="@color/colorAccent"
+                    android:gravity="end"
+                    android:paddingEnd="16dp"
+                    android:paddingTop="16dp"
+                    android:layout_weight="1"/>
+
+            </LinearLayout>
+
+
+
 
             <!-- LineChart -->
             <com.github.mikephil.charting.charts.LineChart
@@ -139,7 +269,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Parking History"
+                android:text="Parking Lot History"
                 android:paddingTop="16dp" />
 
             <androidx.recyclerview.widget.RecyclerView

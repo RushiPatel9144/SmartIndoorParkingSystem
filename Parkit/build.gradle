@@ -110,5 +110,6 @@ dependencies {
     testImplementation 'org.robolectric:robolectric:4.10'
 
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'  // Ensure you're using the correct version
+    implementation 'de.hdodenhof:circleimageview:3.1.0'
 
 }

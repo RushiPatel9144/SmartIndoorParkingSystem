@@ -12,21 +12,33 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.manager.sessionManager.SessionManager;
 import ca.tech.sense.it.smart.indoor.parking.system.model.owner.Owner;
+import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.ownerDashboard.parkingHistory.ParkingHistoryAdapter;
+import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.ownerDashboard.parkingHistory.ParkingHistoryModel;
 
 public class DashboardFragment extends Fragment {
     private static final String ARG_CONTAINER_VIEW_ID = "containerViewId";
     private int containerViewId;
     private SessionManager sessionManager;
     private String userName; // Owner name will be stored here
+
+    private RecyclerView recyclerView;
+    private ParkingHistoryAdapter parkingHistoryAdapter;
+    private List<ParkingHistoryModel> parkingHistoryList;
+    private FirebaseFirestore db;
 
     public DashboardFragment() {
         // Required empty public constructor
@@ -37,15 +49,14 @@ public class DashboardFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             containerViewId = getArguments().getInt(ARG_CONTAINER_VIEW_ID);
-
-            // Fetch session data when the activity is created
-
         }
-    }
 
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_dashboard, container, false);
+        // Initialize Firestore
+        db = FirebaseFirestore.getInstance();
+        parkingHistoryList = new ArrayList<>();
+        parkingHistoryAdapter = new ParkingHistoryAdapter(getContext(), parkingHistoryList);
+
+        // Fetch session data when the activity is created
         sessionManager = SessionManager.getInstance(requireContext());
         sessionManager.fetchSessionData((user, owner) -> {
             if (user != null) {
@@ -56,10 +67,20 @@ public class DashboardFragment extends Fragment {
                 userName = currentOwner.getFirstName(); // Store owner's first name
 
                 // Add the greeting with the owner's name
-                TextView greetingTextView = view.findViewById(R.id.dashboardGreetingTextView);
+                TextView greetingTextView = getView().findViewById(R.id.dashboardGreetingTextView);
                 greetingTextView.setText(getGreetingMessageWithUserName());
             }
         });
+    }
+
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_dashboard, container, false);
+
+        // Set up RecyclerView
+        recyclerView = view.findViewById(R.id.activeparkingRecyclerView); // Ensure the ID matches your RecyclerView
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setAdapter(parkingHistoryAdapter);
 
         // SwipeRefreshLayout for refreshing the content
         SwipeRefreshLayout swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
@@ -69,11 +90,36 @@ public class DashboardFragment extends Fragment {
             swipeRefreshLayout.setRefreshing(false); // Stop refreshing
         });
 
-
+        // Fetch parking history data from Firestore
+        fetchParkingHistoryData();
 
         return view;
     }
 
+    private void fetchParkingHistoryData() {
+        db.collection("ParkingHistory")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            // Extract data from the document
+                            String locationName = document.getString("locationName");
+                            String slotName = document.getString("slotName");
+                            String paymentAmount = document.getString("paymentAmount");
+                            String usageTime = document.getString("usageTime");
+                            String userProfilePicUrl = document.getString("userProfilePicUrl");
+
+                            // Create ParkingHistory object
+                            ParkingHistoryModel history = new ParkingHistoryModel(locationName, slotName, paymentAmount, usageTime, userProfilePicUrl);
+                            parkingHistoryList.add(history);
+                        }
+                        // Notify the adapter that the data has changed
+                        parkingHistoryAdapter.notifyDataSetChanged();
+                    } else {
+                        Log.d("DashboardFragment", "Error getting documents: ", task.getException());
+                    }
+                });
+    }
 
     // Function to generate greeting based on the time of the day
     private String getGreetingMessage() {
