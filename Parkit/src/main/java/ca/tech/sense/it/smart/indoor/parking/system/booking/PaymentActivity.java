@@ -46,7 +46,6 @@ import ca.tech.sense.it.smart.indoor.parking.system.manager.bookingManager.Trans
 import ca.tech.sense.it.smart.indoor.parking.system.model.Promotion;
 import ca.tech.sense.it.smart.indoor.parking.system.model.booking.Booking;
 import ca.tech.sense.it.smart.indoor.parking.system.model.booking.Transaction;
-import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.DateTimeUtils;
 
 public class PaymentActivity extends AppCompatActivity {
@@ -73,6 +72,7 @@ public class PaymentActivity extends AppCompatActivity {
     private TransactionManager transactionManager ;
     private String ownerId;
     private double subtotal;
+    FirebaseAuth firebaseAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,7 +93,7 @@ public class PaymentActivity extends AppCompatActivity {
         }
 
         FirebaseDatabase firebaseDatabase = FirebaseDatabaseSingleton.getInstance();
-        FirebaseAuth firebaseAuth = FirebaseAuthSingleton.getInstance();
+        firebaseAuth = FirebaseAuthSingleton.getInstance();
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         Context context = this;
         transactionManager = new TransactionManager(firebaseDatabase);
@@ -143,7 +143,7 @@ public class PaymentActivity extends AppCompatActivity {
             double gstHst = subtotal * 0.13;
             double platformFee = subtotal * 0.10;
             total = subtotal + gstHst + platformFee;
-
+            booking.setTotalPrice(CurrencyManager.getInstance().convertToCAD(total, booking.getCurrencyCode()));
             subtotalTextView.setText(String.format(Locale.getDefault(), "%s %.2f",currencySymbol, subtotal));
             gstHstTextView.setText(String.format(Locale.getDefault(), "%s %.2f",currencySymbol, gstHst));
             platformFeeTextView.setText(String.format(Locale.getDefault(), "%s %.2f",currencySymbol, platformFee));
@@ -167,9 +167,7 @@ public class PaymentActivity extends AppCompatActivity {
     private void fetchClientSecret(double price, Booking booking) {
         OkHttpClient client = new OkHttpClient();
         String url = "https://parkit-cd4c2ec26f90.herokuapp.com/create-payment-intent";
-
         double totalAmount = price * 100;
-        booking.setTotalPrice(CurrencyManager.getInstance().convertToCAD(price, booking.getCurrencyCode()));
         String currency = booking.getCurrencyCode();
 
         JSONObject jsonRequest = new JSONObject();
@@ -355,7 +353,6 @@ public class PaymentActivity extends AppCompatActivity {
                         double gstHst = newSubtotal * 0.13;
                         double platformFee = newSubtotal * 0.10;
                         total = newSubtotal + gstHst + platformFee;
-
                         subtotalTextView.setText(String.format(Locale.getDefault(), "%s %.2f", booking.getCurrencySymbol(), newSubtotal));
                         gstHstTextView.setText(String.format(Locale.getDefault(), "%s %.2f", booking.getCurrencySymbol(), gstHst));
                         platformFeeTextView.setText(String.format(Locale.getDefault(), "%s %.2f", booking.getCurrencySymbol(), platformFee));

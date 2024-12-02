@@ -27,7 +27,8 @@ public class Booking implements Serializable {
     public Booking() {}
 
     // Add a constructor that includes the locationId
-    public Booking(String title, long startTime, long endTime, String location,String postalCode, double totalPrice, double price, String currencyCode, String currencySymbol, String slotNumber, String passKey, String locationId,  String transactionId) {
+    public Booking(String id, String title, long startTime, long endTime, String location,String postalCode, double totalPrice, double price, String currencyCode, String currencySymbol, String slotNumber, String passKey, String locationId,  String transactionId) {
+        this.id = id;
         this.title = title;
         this.startTime = startTime;
         this.endTime = endTime;

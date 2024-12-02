@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
@@ -58,12 +59,13 @@ public class BookingService {
     private void fetchPriceAndConfirmBooking(String transactionId, String selectedDate, String[] times, long startTime, long endTime, String userId, Booking details, Runnable onSuccess, Consumer<Exception> onFailure) {
         // Create the booking object using the provided details and total price
         Booking booking = new Booking(
+                null,
                 details.getTitle(),
                 startTime,
                 endTime,
                 details.getLocation(),
                 null,
-                0,
+                details.getTotalPrice(),
                 details.getPrice(),
                 details.getCurrencyCode(),
                 details.getCurrencySymbol(),
@@ -86,6 +88,7 @@ public class BookingService {
                 .push();
 
         String bookingId = databaseRef.getKey();
+        booking.setId(bookingId);
         if (bookingId != null) {
             booking.setId(bookingId); // Set the booking ID
             databaseRef.setValue(booking)
@@ -103,4 +106,19 @@ public class BookingService {
             onFailure.accept(new Exception("Failed to generate booking ID"));
         }
     }
+
+    public void updateTotalPrice(String userId, String bookingId, double totalPrice) {
+        DatabaseReference databaseRef = firebaseDatabase
+                .getReference("users")
+                .child(userId)
+                .child("bookings")
+                .child(bookingId)
+                .child("totalPrice");
+
+        // Update the totalPrice with the new value
+        databaseRef.setValue(totalPrice)
+                .addOnSuccessListener(aVoid -> Log.d("BookingUpdate", "Total price updated successfully."))
+                .addOnFailureListener(e -> Log.e("BookingUpdate", "Failed to update total price.", e));
+    }
+
 }
