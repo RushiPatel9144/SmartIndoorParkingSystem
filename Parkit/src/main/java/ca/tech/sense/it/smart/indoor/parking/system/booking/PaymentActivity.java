@@ -169,7 +169,7 @@ public class PaymentActivity extends AppCompatActivity {
         String url = "https://parkit-cd4c2ec26f90.herokuapp.com/create-payment-intent";
 
         double totalAmount = price * 100;
-        booking.setPrice(CurrencyManager.getInstance().convertToCAD(price, booking.getCurrencyCode()));
+        booking.setTotalPrice(CurrencyManager.getInstance().convertToCAD(price, booking.getCurrencyCode()));
         String currency = booking.getCurrencyCode();
 
         JSONObject jsonRequest = new JSONObject();
@@ -265,8 +265,8 @@ public class PaymentActivity extends AppCompatActivity {
     }
 
     private Transaction createTransaction() {
-        double convertedSubtotal = CurrencyManager.getInstance().convertToCAD(subtotal, booking.getCurrencyCode());
-        return new Transaction(transactionId, booking.getTitle(), convertedSubtotal, booking.getCurrencySymbol(), DateTimeUtils.getCurrentDateTime(), false);
+        double convertedPrice = CurrencyManager.getInstance().convertToCAD(booking.getPrice(), booking.getCurrencyCode());
+        return new Transaction(transactionId, booking.getTitle(), convertedPrice, booking.getCurrencySymbol(), DateTimeUtils.getCurrentDateTime(), false);
     }
 
     private void confirmBookingInService(String transactionId, String selectedTimeSlot, String selectedDate) {

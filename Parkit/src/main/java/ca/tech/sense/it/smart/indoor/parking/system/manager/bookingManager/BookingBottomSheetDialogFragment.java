@@ -303,6 +303,7 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
                                 BookingUtils.convertToMillis(selectedDate + " " + selectedTimeSlot.split(" - ")[1]),
                                 addressText.getText().toString(),
                                 postalCodeText.getText().toString(),
+                                0,
                                 convertedPrice,
                                 selectedCurrency.getCode(),
                                 selectedCurrency.getSymbol(),

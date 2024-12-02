@@ -63,6 +63,7 @@ public class BookingService {
                 endTime,
                 details.getLocation(),
                 null,
+                0,
                 details.getPrice(),
                 details.getCurrencyCode(),
                 details.getCurrencySymbol(),

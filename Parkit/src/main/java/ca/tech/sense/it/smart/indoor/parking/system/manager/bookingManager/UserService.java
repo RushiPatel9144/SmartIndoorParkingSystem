@@ -129,7 +129,7 @@ public class UserService {
 
     public void cancelBookingAndRequestRefund(String userId, Booking booking, Runnable onSuccess, Consumer<Exception> onFailure) {
         transactionManager = new TransactionManager(firebaseDatabase);
-       cancelBooking(userId, booking.getId(), () -> requestRefund(booking.getTransactionId(), refundId -> {
+       cancelBooking(userId, booking.getId(), () -> requestRefund(booking, refundId -> {
            processOwnerData(booking.getLocationId(), booking, refundId);
             onSuccess.run();
         }, onFailure), onFailure);
@@ -167,13 +167,14 @@ public class UserService {
         });
     }
 
-    private void requestRefund(String transactionId, Consumer<String> onSuccess, Consumer<Exception> onFailure) {
+    private void requestRefund(Booking booking, Consumer<String> onSuccess, Consumer<Exception> onFailure) {
         OkHttpClient client = new OkHttpClient();
         String url = "https://parkit-cd4c2ec26f90.herokuapp.com/refund-payment";
 
         JSONObject jsonRequest = new JSONObject();
         try {
-            jsonRequest.put("transactionId", transactionId);
+            jsonRequest.put("transactionId", booking.getTransactionId());
+            jsonRequest.put("amount", booking.getPrice());
         } catch (JSONException e) {
             onFailure.accept(e);
             return;
