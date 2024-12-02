@@ -9,6 +9,7 @@ import android.widget.ProgressBar;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.Objects;
@@ -16,6 +17,7 @@ import java.util.Objects;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.launcherUtililty.FirestoreHelper;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.launcherUtililty.InputValidatorHelper;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.launcherUtililty.ToastHelper;
+import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui.TermsConditionsBottomSheet;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui.login.LoginActivity;
 
 public class SignUpHelper {
@@ -40,9 +42,9 @@ public class SignUpHelper {
      * @param editTextPassword  The password input field.
      * @param scrollView        The parent scroll view containing the input fields.
      */
-    public static void scrollViewChangeBasedOnUi(Boolean hasFocus, EditText editTextPassword, View scrollView) {
+    public static void scrollViewChangeBasedOnUi(Boolean hasFocus, EditText editTextPassword,EditText editTextConfirmPassword, View scrollView) {
         if (!hasFocus) {
-            scrollView.scrollTo(0, editTextPassword.getBottom());
+            scrollView.scrollTo(0, editTextConfirmPassword.getBottom());
         }
     }
 
@@ -73,7 +75,13 @@ public class SignUpHelper {
             CheckBox checkBox,
             String userType,
             FirebaseAuth mAuth,
-            AppCompatActivity activity
+            AppCompatActivity activity,
+            TextInputLayout signup_email_layout,
+            TextInputLayout signup_password_layout,
+            TextInputLayout signup_confirm_password_layout,
+            TextInputLayout signup_phone_layout,
+            TextInputLayout signup_firstname_layout,
+            TextInputLayout signup_lastname_layout
     ) {
         progressBar.setVisibility(View.VISIBLE);
 
@@ -87,9 +95,8 @@ public class SignUpHelper {
 
         // Validate user input; if invalid, stop further processing
         if (!InputValidatorHelper.validateInputSignUp(
-                activity, firstName, lastName, editTextEmail,
-                phone, editTextPassword, editTextConfirmPassword,
-                checkBox, fName, lName, email, password, confirmPassword, phoneNumber
+                activity,checkBox,fName, lName, email, password, confirmPassword, phoneNumber, signup_email_layout,signup_password_layout,signup_confirm_password_layout,signup_phone_layout,signup_firstname_layout,signup_lastname_layout
+
         )) {
             progressBar.setVisibility(View.GONE);
             return;
@@ -154,4 +161,5 @@ public class SignUpHelper {
             FirestoreHelper.saveUserToFirestore(activity, userID, fName, lName, email, phoneNumber);
         }
     }
+
 }

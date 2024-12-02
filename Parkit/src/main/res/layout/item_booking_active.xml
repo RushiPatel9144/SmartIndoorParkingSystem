@@ -5,8 +5,7 @@
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
     app:cardCornerRadius="12dp"
-    app:cardElevation="6dp"
-    app:cardBackgroundColor="#EFF4F1"> <!-- Light green background -->
+    app:cardElevation="6dp"> <!-- Light green background -->
 
     <RelativeLayout
         android:layout_width="match_parent"

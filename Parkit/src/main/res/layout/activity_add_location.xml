@@ -4,7 +4,8 @@
     android:layout_height="match_parent"
     android:fillViewport="true"
     android:background="@color/bg"
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="true"
+    android:theme="@style/LocationFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -19,8 +20,8 @@
             android:layout_height="wrap_content"
             android:text="@string/add_new_parking_location"
             android:textSize="22sp"
-            android:textColor="#4A4A4A"
-            android:paddingBottom="12dp"
+            android:textColor="@color/colorAccent"
+            android:paddingBottom="3dp"
             android:textStyle="bold"
             android:fontFamily="sans-serif-medium" />
 
@@ -152,18 +153,20 @@
                 android:backgroundTint="@color/gray"
                 android:paddingVertical="12dp"
                 android:layout_marginEnd="8dp"
-                android:textSize="16sp" />
+                android:textAllCaps="false"
+                android:textSize="14sp" />
 
             <Button
                 android:id="@+id/confirmButton"
                 android:layout_width="0dp"
+                android:textAllCaps="false"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:backgroundTint="@color/theme"
                 android:paddingVertical="12dp"
                 android:layout_marginStart="8dp"
                 android:text="@string/add_location"
-                android:textSize="16sp" />
+                android:textSize="14sp" />
         </LinearLayout>
 
     </LinearLayout>

@@ -1,60 +1,70 @@
 package ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems.manageAccount;
 
-import static ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems.manageAccount.ManageAccountFireBaseHelper.showSnackbar;
-
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.ImageDecoder;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.canhub.cropper.CropImageActivity;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
-
+import java.io.IOException;
+import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirestoreSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.manager.sessionManager.SessionManager;
-import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems.HelpFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.AuthUtils;
-import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
-import ca.tech.sense.it.smart.indoor.parking.system.utility.UserCheckHelper;
+import ca.tech.sense.it.smart.indoor.parking.system.utility.ImageCropActivity;
 
 public class ManageAccountFragment extends Fragment {
 
-    // Declare UI elements
+    private static final String COLLECTION_USER = "users";
+    private static final String COLLECTION_OWNER = "owners";
+    private String collection = COLLECTION_USER;
     private ImageView profilePicture;
-    private TextView nameTextView, contactDetailsTextView, phoneNumberTextView;
-    private LinearLayout manageProfilePicture, managePassword, manageEmail, managePhoneNumber;
-    private FrameLayout progressFrame;
-    private SwipeRefreshLayout swipeRefreshLayout;
+    private TextView nameTextView;
+    private TextView contactDetailsTextView;
+    private TextView phoneNumberTextView;
+    private LinearLayout manageProfilePicture;
+    private LinearLayout managePassword;
+    private LinearLayout manageEmail;
+    private LinearLayout managePhoneNumber;
+    private LinearLayout manageName;
+    private View rootView;
     private FirebaseFirestore db;
+    private SwipeRefreshLayout swipeRefreshLayout;
     private FirebaseUser currentUser;
-    private String collection = "users"; // Default collection
+    private ProfileEditManager profileEditManager;
+    private ProfilePictureManager profilePictureManager;
+    private FirebaseAuth mAuth;
 
-    // Executor for scheduling tasks
+    // Executor service to schedule tasks
     private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
 
-    // Activity Result Launchers for image selection and cropping
+    // Activity result launchers for image selection and cropping
     private final ActivityResultLauncher<Intent> imagePickerLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
@@ -74,8 +84,9 @@ public class ManageAccountFragment extends Fragment {
                     String croppedImageUriString = result.getData().getStringExtra(getString(R.string.croppedimageuri));
                     if (croppedImageUriString != null) {
                         Uri croppedImageUri = Uri.parse(croppedImageUriString);
-                        ManageAccountHelper.loadCroppedImage(croppedImageUri,requireContext(), profilePicture);
-                        ManageAccountFireBaseHelper.saveProfilePicture(croppedImageUri, currentUser, requireView(), db, collection, profilePicture, requireContext());
+                        loadCroppedImage(croppedImageUri);
+                        profilePictureManager.saveProfilePicture(croppedImageUri, profilePicture);
+                        profilePictureManager.uploadProfilePicture(croppedImageUri); // Upload new profile picture to Firebase
                     }
                 }
             }
@@ -85,41 +96,43 @@ public class ManageAccountFragment extends Fragment {
             new ActivityResultContracts.RequestPermission(),
             isGranted -> {
                 if (Boolean.TRUE.equals(isGranted)) {
-                    ManageAccountHelper.openGallery(imagePickerLauncher);
+                    openGallery();
                 } else {
-                    showSnackbar(R.string.permission_denied_to_read_external_storage,requireView()
-                    );
+                    showSnackbar(R.string.permission_denied_to_read_external_storage);
                 }
             });
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_manage_account, container, false);
+        rootView = inflater.inflate(R.layout.fragment_manage_account, container, false);
+
+        // Initialize UI components and Firebase instances
         bindViews(rootView);
-        FirebaseAuth mAuth = FirebaseAuthSingleton.getInstance();
+        mAuth = FirebaseAuthSingleton.getInstance();
         currentUser = mAuth.getCurrentUser();
         db = FirestoreSingleton.getInstance();
 
-        SessionManager sessionManager = new SessionManager(requireContext());
-        // Fetch session data (if not already fetched)
-        sessionManager.fetchSessionData((user, owner) -> {});
+        // Check user type (Owner/User) and initialize manager classes
         checkUserType();
-        scheduleCheckUserType();
-        swipeRefreshLayout.setOnRefreshListener(this::scheduleCheckUserType);
+        initializeManagers();
+
+        // Fetch user details and set profile picture
+        scheduleUserDetailsFetch();
+        swipeRefreshLayout.setOnRefreshListener(this::scheduleUserDetailsFetch);
+
         return rootView;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        // Setup action buttons
         setupProfilePictureButton();
-        setupPasswordResetButton();
-        setupManageEmailButton();
-        setupManagePhoneNumberButton();
+        setupEditButtons();
     }
 
-    // === Helper Methods ===
-
+    // Bind UI components
     private void bindViews(View view) {
         profilePicture = view.findViewById(R.id.profileImageView);
         nameTextView = view.findViewById(R.id.nameEdit);
@@ -129,110 +142,101 @@ public class ManageAccountFragment extends Fragment {
         managePassword = view.findViewById(R.id.managePassword);
         manageEmail = view.findViewById(R.id.manageEmail);
         managePhoneNumber = view.findViewById(R.id.managePhoneNumber);
-        progressFrame = view.findViewById(R.id.progressFrame);
         swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
+        manageName = view.findViewById(R.id.manageName);
     }
 
+    // Setup profile picture update button
     private void setupProfilePictureButton() {
         manageProfilePicture.setOnClickListener(v -> {
-            if (ManageAccountHelper.isPermissionGranted(requireContext())) {
-                ManageAccountHelper.openGallery(imagePickerLauncher);
+            if (isPermissionGranted()) {
+                openGallery();
             } else {
-                ManageAccountHelper.requestStoragePermission(requestPermissionLauncher);
+                requestStoragePermission();
             }
         });
     }
 
-    private void setupPasswordResetButton() {
-        managePassword.setOnClickListener(v -> AuthUtils.showResetPasswordDialog(requireContext(), FirebaseAuth.getInstance()));
+    // Check if storage permission is granted
+    private boolean isPermissionGranted() {
+        return ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED;
     }
 
-    private void setupManageEmailButton() {
-        manageEmail.setOnClickListener(v -> DialogUtil.showMessageDialog(
-                requireContext(),
-                getString(R.string.email_update_unavailable),
-                getString(R.string.changing_your_email_address_is_currently_not_permitted_please_reach_out_to_our_support_team_for_further_assistance),
-                getString(R.string.help),
-                new DialogUtil.DialogCallback() {
-                    @Override
-                    public void onConfirm() {
-                        getParentFragmentManager().beginTransaction()
-                                .replace(R.id.flFragment, new HelpFragment())
-                                .addToBackStack(null)
-                                .commit();
-                    }
-                    @Override
-                    public void onCancel() { /* Do nothing */ }
-                }
-        ));
-    }
-
-    private void setupManagePhoneNumberButton() {
-        managePhoneNumber.setOnClickListener(v -> DialogUtil.showInputDialog(
-                requireContext(),
-                getString(R.string.set_phone_number),
-                "+1XXXXXXXXXX",
-                new DialogUtil.InputDialogCallback() {
-                    @Override
-                    public void onConfirm(String inputText) {
-                        if (inputText != null && inputText.trim().length() >= 12) {
-                            ManageAccountFireBaseHelper.updatePhoneNumberInFirestore(inputText.trim(), currentUser, db, collection, phoneNumberTextView, requireView());
-                        } else {
-                            showSnackbar(R.string.invalid_phone_number,requireView());
-                        }
-                    }
-                    @Override
-                    public void onCancel() { /* Do nothing */ }
-                }
-        ));
-    }
-
-    // === Firebase and Storage Operations ===
-    private void checkUserType() {
-        if (currentUser != null) {
-            UserCheckHelper userCheckHelper = new UserCheckHelper();
-            userCheckHelper.checkUserType(currentUser.getUid(), getContext(), new UserCheckHelper.UserTypeCallback() {
-                @Override
-                public void onUserTypeDetermined(UserCheckHelper.UserType userType) {
-                    collection = (userType == UserCheckHelper.UserType.OWNER) ? "owners" : "users";
-                }
-                @Override
-                public void onError() {
-                    Toast.makeText(getContext(), R.string.an_error_occurred, Toast.LENGTH_SHORT).show();
-                }
-            });
+    // Request storage permission
+    private void requestStoragePermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requestPermissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES);
         } else {
-            Toast.makeText(getContext(), R.string.no_user_is_logged_in, Toast.LENGTH_SHORT).show();
+            requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE);
         }
     }
 
-    private void scheduleCheckUserType() {
+    // Open image gallery to select an image
+    private void openGallery() {
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType(getString(R.string.image1));
+        imagePickerLauncher.launch(intent);
+    }
+
+    // Crop the selected image
+    private void cropImage(Uri imageUri) {
+        Intent intent = new Intent(getActivity(), ImageCropActivity.class);
+        intent.putExtra(getString(R.string.imageuri), imageUri);
+        imageCropLauncher.launch(intent);
+    }
+
+    // Load the cropped image into the profile picture view
+    private void loadCroppedImage(Uri imageUri) {
+        try {
+            Bitmap bitmap;
+            ImageDecoder.Source source = ImageDecoder.createSource(requireActivity().getContentResolver(), imageUri);
+            bitmap = ImageDecoder.decodeBitmap(source);
+            profilePicture.setImageBitmap(bitmap);
+        } catch (IOException e) {
+            e.printStackTrace();
+            profilePicture.setImageResource(R.mipmap.ic_launcher);
+        }
+    }
+
+    // Initialize ProfileEditManager and ProfilePictureManager
+    private void initializeManagers() {
+        profileEditManager = new ProfileEditManager(this, db, collection, currentUser.getUid());
+        profilePictureManager = new ProfilePictureManager(this, db, collection, mAuth);
+    }
+
+    // Fetch user details from Firestore after a brief delay
+    private void scheduleUserDetailsFetch() {
         swipeRefreshLayout.setRefreshing(true);
         scheduledExecutorService.schedule(() -> {
-            if (currentUser != null) {
-                SessionManager sessionManager = new SessionManager(requireContext());
-                sessionManager.fetchSessionData((user, owner) -> {
-                            if (user != null) {
-                                nameTextView.setText(String.format("%s %s", user.getFirstName(), user.getLastName()));
-                                contactDetailsTextView.setText(user.getEmail());
-                                phoneNumberTextView.setText(user.getPhone());
-                            }
-                            if (owner != null) {
-                                nameTextView.setText(String.format("%s %s", owner.getFirstName(), owner.getLastName()));
-                                contactDetailsTextView.setText(owner.getEmail());
-                                phoneNumberTextView.setText(owner.getPhone());
-                            }
-                        });
-                ManageAccountFireBaseHelper.loadProfilePicture(currentUser, db, collection, profilePicture, requireView(), requireContext());
-                swipeRefreshLayout.setRefreshing(false);
-            } swipeRefreshLayout.setRefreshing(false);
-        }, 3, TimeUnit.SECONDS);
+            profileEditManager.fetchUserDetailsFromFirestore(mAuth, contactDetailsTextView, nameTextView, phoneNumberTextView);
+            profilePictureManager.loadProfilePicture(profilePicture);
+            requireActivity().runOnUiThread(() -> swipeRefreshLayout.setRefreshing(false));
+        }, 2, TimeUnit.SECONDS);
     }
 
-    private void cropImage(Uri uri) {
-        Intent cropIntent = new Intent(requireContext(), CropImageActivity.class);  // Adjust as per your crop activity
-        cropIntent.putExtra("imageUri", uri.toString());
-        imageCropLauncher.launch(cropIntent);
+    // Setup buttons for managing profile information (password, email, phone number)
+    private void setupEditButtons() {
+        managePassword.setOnClickListener(v -> AuthUtils.showResetPasswordDialog(requireContext(), FirebaseAuth.getInstance()));
+        manageEmail.setOnClickListener(view -> profileEditManager.manageEmail());
+        managePhoneNumber.setOnClickListener(view -> profileEditManager.managePhoneNumber());
+        manageName.setOnClickListener(view -> profileEditManager.manageName());
+    }
+
+    // Check the user type (Owner/User) and update collection reference accordingly
+    private void checkUserType() {
+        SessionManager sessionManager = SessionManager.getInstance(requireContext());
+        if (Objects.equals(sessionManager.getUserType(), "owner")) {
+            collection = COLLECTION_OWNER;
+        } else {
+            collection = COLLECTION_USER;
+        }
+    }
+
+    // Show a Snackbar message
+    private void showSnackbar(int messageResId) {
+        if (isAdded() && getView() != null) {
+            Snackbar.make(rootView, messageResId, BaseTransientBottomBar.LENGTH_SHORT).show();
+        }
     }
 }
-

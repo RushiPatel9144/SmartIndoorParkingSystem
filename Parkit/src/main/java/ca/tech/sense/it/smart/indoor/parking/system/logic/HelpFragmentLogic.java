@@ -1,7 +1,7 @@
 package ca.tech.sense.it.smart.indoor.parking.system.logic;
 
-import static ca.tech.sense.it.smart.indoor.parking.system.utility.Constants.USER_TYPE_OWNER;
-import static ca.tech.sense.it.smart.indoor.parking.system.utility.Constants.USER_TYPE_USER;
+import static ca.tech.sense.it.smart.indoor.parking.system.utility.AppConstants.USER_TYPE_OWNER;
+import static ca.tech.sense.it.smart.indoor.parking.system.utility.AppConstants.USER_TYPE_USER;
 
 import android.content.Context;
 import android.os.Handler;
@@ -49,10 +49,7 @@ public class HelpFragmentLogic {
         this.db = FirebaseFirestore.getInstance();
         this.auth = FirebaseAuth.getInstance();
     }
-
-
-
-
+    
     public void fetchUserData() {
         SessionManager sessionManager = SessionManager.getInstance(context);
         String userType = sessionManager.getUserType();

@@ -1,29 +1,31 @@
 package ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui.login;
 
+import static ca.tech.sense.it.smart.indoor.parking.system.utility.AppConstants.USER_TYPE_OWNER;
+
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.checkbox.MaterialCheckBox;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.Objects;
 
-import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.launcherUtililty.ToastHelper;
-import ca.tech.sense.it.smart.indoor.parking.system.viewModel.LoginViewModelFactory;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
-import ca.tech.sense.it.smart.indoor.parking.system.repository.AuthRepository;
+import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.launcherUtililty.ToastHelper;
 import ca.tech.sense.it.smart.indoor.parking.system.manager.sessionManager.SessionManager;
+import ca.tech.sense.it.smart.indoor.parking.system.network.BaseActivity;
+import ca.tech.sense.it.smart.indoor.parking.system.repository.AuthRepository;
+import ca.tech.sense.it.smart.indoor.parking.system.viewModel.LoginViewModelFactory;
 
-import static ca.tech.sense.it.smart.indoor.parking.system.utility.Constants.USER_TYPE_OWNER;
-
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends BaseActivity {
 
     // UI Elements
     private EditText editTextEmail, editTextPassword;
@@ -31,6 +33,8 @@ public class LoginActivity extends AppCompatActivity {
     private TextView textViewSignUp, forgotPasswordTextView, titleTV;
     private ProgressBar progressBar;
     private MaterialCheckBox rememberMeCheckBox;
+    private TextInputLayout login_password_layout,login_email_layout;
+    private ImageView login_back_button;
 
     // Components
     private LoginViewModel loginViewModel;
@@ -75,8 +79,12 @@ public class LoginActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.login_progressBar);
         rememberMeCheckBox = findViewById(R.id.remember_me_checkbox);
         titleTV = findViewById(R.id.titleTV);
+        login_back_button = findViewById(R.id.login_back_button);
 
-        sessionManager = new SessionManager(this);  // Initialize session manager
+        login_password_layout = findViewById(R.id.login_password_layout);
+        login_email_layout = findViewById(R.id.login_email_layout);
+
+        sessionManager = SessionManager.getInstance(this);  // Initialize session manager
 
         AuthRepository authRepository = new AuthRepository();  // Initialize repository for authentication
         LoginViewModelFactory factory = new LoginViewModelFactory(authRepository);  // Create ViewModel factory
@@ -109,7 +117,8 @@ public class LoginActivity extends AppCompatActivity {
      * </p>
      */
     private void setupListeners() {
-        buttonLogin.setOnClickListener(v -> LoginHelper.handleLogin(editTextEmail, editTextPassword, progressBar, loginViewModel, userType)); // Login button click handler
+        login_back_button.setOnClickListener(v -> LoginHelper.navigateToFirst(this));
+        buttonLogin.setOnClickListener(v -> LoginHelper.handleLogin(editTextEmail, editTextPassword, progressBar, loginViewModel, userType,login_email_layout,login_password_layout)); // Login button click handler
         textViewSignUp.setOnClickListener(v -> LoginHelper.navigateToSignUp(this, userType));  // Sign-up text click handler
         googleButton.setOnClickListener(v -> loginViewModel.signInWithGoogle(this,sessionManager, rememberMeCheckBox));  // Google sign-in button click handler
         forgotPasswordTextView.setOnClickListener(v ->  LoginHelper.showForgotPasswordDialog(this, loginViewModel, userType));  // Forgot password text click handler

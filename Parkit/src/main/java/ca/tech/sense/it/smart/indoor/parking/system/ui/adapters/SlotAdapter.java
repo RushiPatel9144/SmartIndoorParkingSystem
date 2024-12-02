@@ -28,18 +28,25 @@ public class SlotAdapter extends ArrayAdapter<String> {
         this.selectedHour = selectedHour;
         this.bookingManager = bookingManager;
 
-        // Initialize slotStatusMap with the status of each slot
         for (String slot : objects) {
-            bookingManager.getSlotService().checkSlotAvailability(locationId, slot, selectedDate, selectedHour, status -> {
-                slotStatusMap.put(slot, status);
-                Log.d("SlotAdapter", "Slot: " + slot + ", Status: " + status); // Add logging
+            // Sanitize the slot ID before using it
+            String sanitizedSlot = sanitizeSlotId(slot);
+
+            bookingManager.getSlotService().checkSlotAvailability(locationId, sanitizedSlot, selectedDate, selectedHour, status -> {
+                slotStatusMap.put(sanitizedSlot, status); // Use sanitized slot ID
+                Log.d("SlotAdapter", "Slot: " + sanitizedSlot + ", Status: " + status); // Add logging
                 notifyDataSetChanged(); // Refresh the adapter when status is updated
             }, error -> {
-                slotStatusMap.put(slot, "unknown");
-                Log.e("SlotAdapter", "Error checking slot availability for slot: " + slot, error); // Add logging
+                slotStatusMap.put(sanitizedSlot, "unknown"); // Use sanitized slot ID
+                Log.e("SlotAdapter", "Error checking slot availability for slot: " + sanitizedSlot, error); // Add logging
                 notifyDataSetChanged(); // Refresh the adapter on error
             });
         }
+    }
+
+    // Add the sanitizeSlotId method here
+    private String sanitizeSlotId(String slotId) {
+        return slotId.replaceAll("[.#$\\[\\]]", "_"); // Replace invalid characters with '_'
     }
 
     @Override

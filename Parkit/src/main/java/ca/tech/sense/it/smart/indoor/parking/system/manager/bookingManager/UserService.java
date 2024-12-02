@@ -1,11 +1,7 @@
 package ca.tech.sense.it.smart.indoor.parking.system.manager.bookingManager;
 
-import static ca.tech.sense.it.smart.indoor.parking.system.network.NetworkManager.showToast;
-
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
-
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -31,19 +27,25 @@ import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
-
 import ca.tech.sense.it.smart.indoor.parking.system.model.booking.Booking;
+import ca.tech.sense.it.smart.indoor.parking.system.model.booking.Transaction;
+import ca.tech.sense.it.smart.indoor.parking.system.utility.DateTimeUtils;
 
 public class UserService {
 
     private final ExecutorService executorService;
     private final FirebaseDatabase firebaseDatabase;
     private final FirebaseAuth firebaseAuth;
+    private TransactionManager transactionManager;
+    private static final String COLLECTION = "users";
+    private static final String PATH = "bookings";
+
 
     public UserService(ExecutorService executorService, FirebaseDatabase firebaseDatabase, FirebaseAuth firebaseAuth) {
         this.executorService = executorService;
         this.firebaseDatabase = firebaseDatabase;
         this.firebaseAuth = firebaseAuth;
+
     }
 
     public void saveLocationToFavorites(String locationId, String address, String postalCode, String name, Runnable onSuccess, Consumer<Exception> onFailure) {
@@ -56,14 +58,14 @@ public class UserService {
             locationData.put("postalCode", postalCode);
             locationData.put("name", name); // Add name to the data
 
-            DatabaseReference databaseRef = firebaseDatabase.getReference("users").child(userId).child("saved_locations").child(locationId);
+            DatabaseReference databaseRef = firebaseDatabase.getReference(COLLECTION).child(userId).child("saved_locations").child(locationId);
 
             databaseRef.setValue(locationData).addOnSuccessListener(aVoid -> onSuccess.run()).addOnFailureListener(onFailure::accept);
         });
     }
 
     public void clearAllBookingHistory(String userId, Consumer<List<Booking>> onSuccess, Consumer<Exception> onFailure) {
-        DatabaseReference bookingsRef = firebaseDatabase.getReference("users").child(userId).child("bookings");
+        DatabaseReference bookingsRef = firebaseDatabase.getReference(COLLECTION).child(userId).child(PATH);
         bookingsRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -86,26 +88,49 @@ public class UserService {
 
 
     public void expirePassKey(String userId, String bookingId) {
-        DatabaseReference bookingRef = firebaseDatabase.getReference("users")
+        DatabaseReference bookingRef = firebaseDatabase.getReference(COLLECTION)
                 .child(userId)
-                .child("bookings")
+                .child(PATH)
                 .child(bookingId)
                 .child("passKey");
 
         bookingRef.setValue(null) // Remove the pass key
-                .addOnSuccessListener(aVoid -> {
-                    // Pass key expired successfully
-                    // Toast.makeText(context, "Pass key expired.", Toast.LENGTH_SHORT).show();
-                })
+                .addOnSuccessListener(aVoid -> { // Pass key expired successfully
+                    })
+                .addOnFailureListener(e ->
+                    // Handle the error
+                    Toast.makeText(null, "Failed to expire pass key: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+    }
+
+    public void processOwnerData(String locationId, Booking booking) {
+       transactionManager.fetchOwnerIdByLocationId(locationId)
+                .addOnSuccessListener(ownerId -> transactionUpdate(ownerId, booking))
                 .addOnFailureListener(e -> {
                     // Handle the error
-                    Toast.makeText(null, "Failed to expire pass key: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
 
-    public void cancelBookingAndRequestRefund(String userId, String bookingId, String transactionId, Runnable onSuccess, Consumer<Exception> onFailure) {
-        cancelBooking(userId, bookingId, () -> requestRefund(transactionId, onSuccess, onFailure), onFailure);
+    private void transactionUpdate(String ownerId, Booking booking) {
+        transactionManager = new TransactionManager(firebaseDatabase);
+        transactionManager.storeTransaction(ownerId, new Transaction(
+                booking.getTransactionId(),
+                booking.getTitle(),
+                booking.getPrice(),
+                booking.getCurrencySymbol(),
+                DateTimeUtils.getCurrentDateTime(),
+                true
+        ));
     }
+
+    public void cancelBookingAndRequestRefund(String userId, Booking booking, Runnable onSuccess, Consumer<Exception> onFailure) {
+        transactionManager = new TransactionManager(firebaseDatabase);
+       cancelBooking(userId, booking.getId(), () -> {
+            requestRefund(booking.getTransactionId(), onSuccess, onFailure);
+            processOwnerData(booking.getLocationId(), booking);
+
+        }, onFailure);
+    }
+
 
     public void cancelBooking(String userId, String bookingId, Runnable onSuccess, Consumer<Exception> onFailure) {
         if (bookingId == null) {
@@ -113,7 +138,7 @@ public class UserService {
             return;
         }
 
-        DatabaseReference bookingRef = firebaseDatabase.getReference("users").child(userId).child("bookings").child(bookingId);
+        DatabaseReference bookingRef = firebaseDatabase.getReference(COLLECTION).child(userId).child(PATH).child(bookingId);
         bookingRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -131,7 +156,6 @@ public class UserService {
                     onFailure.accept(new Exception("Booking not found"));
                 }
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 onFailure.accept(error.toException());
@@ -157,16 +181,14 @@ public class UserService {
                 .url(url)
                 .post(body)
                 .build();
-
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Request request, IOException e) {
                 new android.os.Handler(android.os.Looper.getMainLooper())
                         .post(() -> onFailure.accept(new Exception("Failed to connect to server for refund")));
             }
-
             @Override
-            public void onResponse(Response response) throws IOException {
+            public void onResponse(Response response) {
                 if (response.isSuccessful()) {
                     new android.os.Handler(android.os.Looper.getMainLooper())
                             .post(onSuccess);
@@ -178,21 +200,15 @@ public class UserService {
         });
     }
 
-
     public void clearBookingHistory(String userId, String bookingId, Runnable onSuccess, Consumer<Exception> onFailure) {
         if (bookingId == null) {
             onFailure.accept(new Exception("Booking ID is null"));
             return;
         }
-
-        DatabaseReference bookingRef = firebaseDatabase.getReference("users").child(userId).child("bookings").child(bookingId);
+        DatabaseReference bookingRef = firebaseDatabase.getReference(COLLECTION).child(userId).child(PATH).child(bookingId);
         bookingRef.removeValue()
                 .addOnSuccessListener(aVoid -> onSuccess.run())
                 .addOnFailureListener(onFailure::accept);
     }
-
-
-
-
 }
 

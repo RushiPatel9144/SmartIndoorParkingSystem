@@ -25,10 +25,6 @@ public class AuthRepository {
         return firebaseAuth.signInWithEmailAndPassword(email, password);
     }
 
-    public Task<AuthResult> loginWithToken(String token) {
-        return firebaseAuth.signInWithCustomToken(token);
-    }
-
     public Task<DocumentSnapshot> checkOwner(String userId) {
         return firestore.collection("owners").document(userId).get();
     }

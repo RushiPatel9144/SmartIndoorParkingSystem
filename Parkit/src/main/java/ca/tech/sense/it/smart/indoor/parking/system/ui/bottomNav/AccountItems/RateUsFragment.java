@@ -12,28 +12,29 @@ import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
-
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.network.BaseNetworkFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.viewModel.RateUsViewModel;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.RateUsViewModelFactory;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
 
-public class RateUsFragment extends Fragment implements RateUsViewModel.FeedbackSubmissionCallback {
+public class RateUsFragment extends BaseNetworkFragment implements RateUsViewModel.FeedbackSubmissionCallback {
 
     RatingBar ratingBar;
     EditText feedbackComment;
     Button submitFeedbackButton;
-    TextView optionParkingSpot, optionSecureTransaction, optionUserInterface, optionRealTime;
+    TextView optionParkingSpot;
+    TextView optionSecureTransaction;
+    TextView optionUserInterface;
+    TextView optionRealTime;
     ProgressBar progressBar;
-    List<String> selectedOptions;
+    List<String> selectedOptions = new ArrayList<>();
     RateUsViewModel rateUsViewModel;
 
     public RateUsFragment() {
@@ -43,36 +44,18 @@ public class RateUsFragment extends Fragment implements RateUsViewModel.Feedback
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        selectedOptions = new ArrayList<>();
-        RateUsViewModelFactory factory = new RateUsViewModelFactory(requireContext());
-        rateUsViewModel = new ViewModelProvider(this, factory).get(RateUsViewModel.class);
+        rateUsViewModel = new ViewModelProvider(this, new RateUsViewModelFactory(requireContext())).get(RateUsViewModel.class);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_rate_us, container, false);
-
-        // Initialize UI components
         initializeUIComponents(view);
-
-        // Check if the user can submit feedback
-        long lastSubmissionTime = rateUsViewModel.getLastSubmissionTime();
-        long currentTime = System.currentTimeMillis();
-        if (currentTime - lastSubmissionTime < rateUsViewModel.getTwentyFourHours()) {
-            long remainingTime = rateUsViewModel.getTwentyFourHours() - (currentTime - lastSubmissionTime);
-            startTimer(remainingTime);
-            submitFeedbackButton.setEnabled(false);
-            submitFeedbackButton.setBackgroundColor(ContextCompat.getColor(getContext(), android.R.color.darker_gray));
-        }
-
-        // Set up click listener for feedback submission
-        setupSubmitButtonClickListener();
-
+        configureSubmitButton();
+        checkLastSubmissionTime();
         return view;
     }
 
-    // Initializes UI components by linking them to the XML layout elements.
     private void initializeUIComponents(View view) {
         ratingBar = view.findViewById(R.id.rating_bar);
         feedbackComment = view.findViewById(R.id.feedback_comment);
@@ -83,123 +66,131 @@ public class RateUsFragment extends Fragment implements RateUsViewModel.Feedback
         optionRealTime = view.findViewById(R.id.option_real_time);
         progressBar = view.findViewById(R.id.progress_bar);
 
-        // Set up option click listeners
+        setupOptionClickListeners();
+    }
+
+    private void setupOptionClickListeners() {
         setOptionClickListener(optionParkingSpot, getString(R.string.parking_spot_easily_found));
         setOptionClickListener(optionSecureTransaction, getString(R.string.secure_transaction));
         setOptionClickListener(optionUserInterface, getString(R.string.user_friendly_interface));
         setOptionClickListener(optionRealTime, getString(R.string.real_time_features));
     }
 
-    private void setupSubmitButtonClickListener() {
-        submitFeedbackButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Get rating value
-                float rating = ratingBar.getRating();
-                // Get feedback comment
-                String comment = feedbackComment.getText().toString();
+    private void setOptionClickListener(TextView optionView, String optionText) {
+        optionView.setOnClickListener(v -> toggleOptionSelection(optionView, optionText));
+    }
 
-                // Check if required fields are filled
-                if (rating == 0) {
-                    Toast.makeText(getContext(), "Please provide a rating.", Toast.LENGTH_SHORT).show();
-                    return;
-                }
+    private void toggleOptionSelection(TextView optionView, String optionText) {
+        boolean isSelected = selectedOptions.contains(optionText);
+        if (isSelected) {
+            selectedOptions.remove(optionText);
+            updateOptionBackground(optionView, false);
+        } else {
+            selectedOptions.add(optionText);
+            updateOptionBackground(optionView, true);
+        }
+    }
 
-                // Get device model
-                String deviceModel = Build.MODEL;
-                String manufacturer = Build.MANUFACTURER;
-                String fullDeviceInfo = manufacturer + " " + deviceModel;
+    private void updateOptionBackground(TextView optionView, boolean isSelected) {
+        optionView.setBackgroundResource(isSelected ? R.drawable.box_background_selected : R.drawable.box_background);
+    }
 
-                // Submit feedback
-                rateUsViewModel.submitFeedback(rating, comment, selectedOptions, fullDeviceInfo, getContext(), RateUsFragment.this, () -> {
-                    // Clear the inputs after submission
-                    ratingBar.setRating(0);
-                    feedbackComment.setText("");
-                    clearSelectedOptions();
-                    // Show confirmation dialog
-                    DialogUtil.showConfirmationDialog(getActivity(), "Confirmation", getString(R.string.feedback_submitted_successfully), getString(R.string.ok), new DialogUtil.ConfirmDialogCallback() {
-                        @Override
-                        public void onConfirm() {
-                            // Dialog will be dismissed automatically
-                        }
-                    });
-                    // Disable the submit button and start the timer
-                    submitFeedbackButton.setEnabled(false);
-                    submitFeedbackButton.setBackgroundColor(ContextCompat.getColor(getContext(), android.R.color.darker_gray));
-                    startTimer(rateUsViewModel.getTwentyFourHours());
-                }, () -> {
-                    Toast.makeText(getContext(), getString(R.string.error_submitting_feedback), Toast.LENGTH_SHORT).show();
-                });
+    private void configureSubmitButton() {
+        submitFeedbackButton.setOnClickListener(v -> {
+            if (validateInput()) {
+                submitFeedback();
             }
         });
     }
 
+    private boolean validateInput() {
+        if (ratingBar.getRating() == 0) {
+            Toast.makeText(getContext(), R.string.provide_rating_message, Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return true;
+    }
+
+    private void submitFeedback() {
+        float rating = ratingBar.getRating();
+        String comment = feedbackComment.getText().toString();
+        String deviceInfo = Build.MANUFACTURER + " " + Build.MODEL;
+
+        rateUsViewModel.submitFeedback(rating, comment, selectedOptions, deviceInfo, getContext(), this, this::onFeedbackSubmitted, this::onFeedbackError);
+    }
+
+    private void onFeedbackSubmitted() {
+        clearInputFields();
+        DialogUtil.showConfirmationDialog(getActivity(), getString(R.string.confirmation_title), getString(R.string.feedback_submitted_successfully), getString(R.string.ok), null);
+        startCooldownTimer(rateUsViewModel.getTwentyFourHours());
+    }
+
+    private void onFeedbackError() {
+        Toast.makeText(getContext(), R.string.error_submitting_feedback, Toast.LENGTH_SHORT).show();
+    }
+
+    private void clearInputFields() {
+        ratingBar.setRating(0);
+        feedbackComment.setText("");
+        clearSelectedOptions();
+    }
+
+    private void clearSelectedOptions() {
+        selectedOptions.clear();
+        updateOptionBackground(optionParkingSpot, false);
+        updateOptionBackground(optionSecureTransaction, false);
+        updateOptionBackground(optionUserInterface, false);
+        updateOptionBackground(optionRealTime, false);
+    }
+
+    private void checkLastSubmissionTime() {
+        long lastSubmissionTime = rateUsViewModel.getLastSubmissionTime();
+        long currentTime = System.currentTimeMillis();
+        long remainingTime = rateUsViewModel.getTwentyFourHours() - (currentTime - lastSubmissionTime);
+
+        if (remainingTime > 0) {
+            startCooldownTimer(remainingTime);
+        }
+    }
+
+    private void startCooldownTimer(long duration) {
+        submitFeedbackButton.setEnabled(false);
+        submitFeedbackButton.setBackgroundColor(ContextCompat.getColor(requireContext(), android.R.color.darker_gray));
+        new CountDownTimer(duration, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                submitFeedbackButton.setText(formatTime(millisUntilFinished));
+            }
+
+            @Override
+            public void onFinish() {
+                enableSubmitButton();
+            }
+        }.start();
+    }
+
+    private void enableSubmitButton() {
+        submitFeedbackButton.setEnabled(true);
+        submitFeedbackButton.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.theme));
+        submitFeedbackButton.setText(R.string.submit_feedback);
+    }
+
+    private String formatTime(long millis) {
+        long hours = TimeUnit.MILLISECONDS.toHours(millis);
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(millis) % 60;
+        long seconds = TimeUnit.MILLISECONDS.toSeconds(millis) % 60;
+        return String.format(Locale.getDefault(), "%02d:%02d:%02d", hours, minutes, seconds);
+    }
 
     @Override
     public void showProgressBar() {
         progressBar.setVisibility(View.VISIBLE);
         submitFeedbackButton.setVisibility(View.GONE);
-
-        // Hide progress bar after 5 seconds
-        new CountDownTimer(5000, 1000) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-                // No action needed on tick
-            }
-
-            @Override
-            public void onFinish() {
-                progressBar.setVisibility(View.GONE);
-                submitFeedbackButton.setVisibility(View.VISIBLE);
-            }
-        }.start();
     }
 
     @Override
     public void hideProgressBar() {
         progressBar.setVisibility(View.GONE);
         submitFeedbackButton.setVisibility(View.VISIBLE);
-    }
-
-    private void setOptionClickListener(TextView optionView, String optionText) {
-        optionView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (selectedOptions.contains(optionText)) {
-                    selectedOptions.remove(optionText);
-                    optionView.setBackgroundResource(R.drawable.box_background);
-                } else {
-                    selectedOptions.add(optionText);
-                    optionView.setBackgroundResource(R.drawable.box_background_selected);
-                }
-            }
-        });
-    }
-
-    private void clearSelectedOptions() {
-        selectedOptions.clear();
-        optionParkingSpot.setBackgroundResource(R.drawable.box_background);
-        optionSecureTransaction.setBackgroundResource(R.drawable.box_background);
-        optionUserInterface.setBackgroundResource(R.drawable.box_background);
-        optionRealTime.setBackgroundResource(R.drawable.box_background);
-    }
-
-    private void startTimer(long duration) {
-        new CountDownTimer(duration, 1000) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-                long hours = TimeUnit.MILLISECONDS.toHours(millisUntilFinished);
-                long minutes = TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished) % 60;
-                long seconds = TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) % 60;
-                submitFeedbackButton.setText(String.format("%02d:%02d:%02d", hours, minutes, seconds));
-            }
-
-            @Override
-            public void onFinish() {
-                submitFeedbackButton.setEnabled(true);
-                submitFeedbackButton.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.theme));
-                submitFeedbackButton.setText(R.string.submit_feedback);
-            }
-        }.start();
     }
 }

@@ -7,10 +7,11 @@
     import androidx.credentials.CustomCredential
     import androidx.credentials.GetCredentialRequest
     import androidx.credentials.GetCredentialResponse
+    import ca.tech.sense.it.smart.indoor.parking.system.R
     import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSingleton
     import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirestoreSingleton
     import ca.tech.sense.it.smart.indoor.parking.system.model.user.User
-    import ca.tech.sense.it.smart.indoor.parking.system.utility.Constants.APP_CLIENT_ID
+    import ca.tech.sense.it.smart.indoor.parking.system.utility.AppConstants.APP_CLIENT_ID
     import com.google.android.libraries.identity.googleid.GetGoogleIdOption
     import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
     import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
@@ -30,7 +31,7 @@
 
         fun isSingedIn(): Boolean {
             if (firebaseAuth.currentUser != null) {
-                println(tag + "already signed in")
+                println(tag + context.getString(R.string.already_signed_in))
                 return true
             }
 

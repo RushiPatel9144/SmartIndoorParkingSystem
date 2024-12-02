@@ -14,18 +14,22 @@ public class RateUs {
     private String userName;
     private String userEmail;
     private String userPhone;
+    private String userType;
     private List<String> selectedOptions;
 
     public RateUs() {
     }
 
-    public RateUs(float rating, String comment, String deviceModel, String userName, String userEmail, String userPhone, List<String> selectedOptions) {
+
+
+    public RateUs(float rating, String comment, String deviceModel, String userName, String userEmail, String userPhone, String userType, List<String> selectedOptions) {
         this.rating = rating;
         this.comment = comment;
         this.deviceModel = deviceModel;
         this.userName = userName;
         this.userEmail = userEmail;
         this.userPhone = userPhone;
+        this.userType = userType;
         this.selectedOptions = selectedOptions;
     }
 
@@ -84,5 +88,12 @@ public class RateUs {
 
     public void setSelectedOptions(List<String> selectedOptions) {
         this.selectedOptions = selectedOptions;
+    }
+    public String getUserType() {
+        return userType;
+    }
+
+    public void setUserType(String userType) {
+        this.userType = userType;
     }
 }

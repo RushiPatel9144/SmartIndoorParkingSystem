@@ -2,14 +2,11 @@ package ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.onBoarding
 
 import android.os.Bundle;
 import android.widget.ProgressBar;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 
 public class OnboardingActivity extends AppCompatActivity {
@@ -17,7 +14,6 @@ public class OnboardingActivity extends AppCompatActivity {
     private ViewPager2 viewPager;
     private ProgressBar progressBar;
     private List<Fragment> fragmentList;
-    private static final int TOTAL_PAGES = 3; // Number of onboarding screens
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,9 +78,21 @@ public class OnboardingActivity extends AppCompatActivity {
      * Configures the ViewPager2 with an adapter and attaches the fragment list.
      */
     private void setupViewPager() {
+        if (fragmentList == null || fragmentList.isEmpty()) {
+            throw new IllegalStateException("Fragment list is empty. Please add fragments before setting up the ViewPager.");
+        }
         OnBoardingViewPagerAdapter adapter = new OnBoardingViewPagerAdapter(this, fragmentList);
         viewPager.setAdapter(adapter);
     }
+
+    public ViewPager2 getViewPager() {
+        return viewPager;
+    }
+
+    public List<Fragment> getFragmentList() {
+        return fragmentList;
+    }
+
 
     /**
      * Sets up a listener for ViewPager2 to update the progress bar as pages are swiped.
@@ -95,17 +103,12 @@ public class OnboardingActivity extends AppCompatActivity {
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                 super.onPageScrolled(position, positionOffset, positionOffsetPixels);
 
-                // Dynamically update progress based on current page and swipe position
-                int progress = (int) (((float) position + positionOffset) / (TOTAL_PAGES - 1) * 100);
-                progressBar.setProgress(progress);
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                super.onPageSelected(position);
-
                 // Set progress to 100% on the last page
-                if (position == TOTAL_PAGES - 1) {
+                if (position == 0 ) {
+                    progressBar.setProgress(33);
+                } else if (position == 1) {
+                    progressBar.setProgress(66);
+                } else if (position == 2) {
                     progressBar.setProgress(100);
                 }
             }

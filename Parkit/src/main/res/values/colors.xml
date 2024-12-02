@@ -12,6 +12,7 @@
     <color name="light_theme">#DBEBDF</color>
     <color name="icon_color">#FFFFFF</color>
     <color name="icon_text">#5d2213</color>
+    <color name="holo_green_dark">#388E3C</color>
     <color name="colorPrimaryLight">#6200EE</color>
     <color name="colorPrimaryDark">#BB86FC</color>
     <color name="colorPrimaryDarkMode">#3700B3</color>

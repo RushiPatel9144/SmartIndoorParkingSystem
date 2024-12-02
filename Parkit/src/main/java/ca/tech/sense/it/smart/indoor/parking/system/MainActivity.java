@@ -8,7 +8,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.Toast;
-
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
@@ -27,8 +26,6 @@ import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui.FirstAct
 import ca.tech.sense.it.smart.indoor.parking.system.manager.notificationManager.NotificationManagerHelper;
 import ca.tech.sense.it.smart.indoor.parking.system.manager.sessionManager.SessionManager;
 import ca.tech.sense.it.smart.indoor.parking.system.manager.themeManager.ThemeManager;
-import ca.tech.sense.it.smart.indoor.parking.system.model.owner.Owner;
-import ca.tech.sense.it.smart.indoor.parking.system.model.user.User;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.Activity;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.Home;
@@ -39,23 +36,20 @@ import ca.tech.sense.it.smart.indoor.parking.system.utility.NotificationHelper;
 
 public class MainActivity extends MenuHandler implements NavigationBarView.OnItemSelectedListener {
 
-    private static final String TAG = "MainActivity";
-
     private BottomNavigationView bottomNavigationView;
     private Toolbar toolbar;
-    private FirebaseAuth firebaseAuth;
+
     private final Home homeFragment = new Home();
     private final Park parkFragment = new Park();
     private final Activity activityFragment = new Activity();
     private final AccountFragment accountFragment = AccountFragment.newInstance(R.id.flFragment);
-    private static final String PREFS_NAME = "MyAppPreferences";
     private static final int NOTIFICATION_PERMISSION_CODE = 100;
-    private ThemeManager themeManager;
     private NotificationManagerHelper notificationManagerHelper;
 
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        ThemeManager themeManager;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -69,15 +63,12 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
 
         // Fetch session data when the activity is created
         SessionManager sessionManager = SessionManager.getInstance(this);
-        sessionManager.fetchSessionData(new SessionManager.OnSessionDataFetchedCallback() {
-            @Override
-            public void onSessionDataFetched(User user, Owner owner) {
-                // You can now use 'user' or 'owner' data for your UI
-                if (user != null) {
-                    // Use user data
-                } else if (owner != null) {
-                    // Use owner data
-                }
+        sessionManager.fetchSessionData((user, owner) -> {
+            // You can now use 'user' or 'owner' data for your UI
+            if (user != null) {
+                // Use user data
+            } else if (owner != null) {
+                // Use owner data
             }
         });
 
@@ -97,6 +88,7 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
     }
 
     private void initFirebaseAuth() {
+        FirebaseAuth firebaseAuth;
         firebaseAuth = FirebaseAuth.getInstance();
         FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
 
@@ -107,6 +99,9 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
 
     private void initUIComponents() {
         toolbar = findViewById(R.id.toolbar);
+        toolbar.setLogo(R.drawable.logo);
+        toolbar.setTitle("  " + getString(R.string.park_it));
+        toolbar.setElevation(10); // Adds elevation for a shadow effect
         setSupportActionBar(toolbar);
         bottomNavigationView = findViewById(R.id.bottom_navigation);
     }
@@ -153,22 +148,23 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int itemId = item.getItemId();
-
+        String toolbarTitle = "";
         if (itemId == R.id.navigation_home) {
             loadFragments(homeFragment, "HomeFragment");
-            toolbar.setTitle(R.string.home);
+            toolbarTitle = getString(R.string.home);
         } else if (itemId == R.id.navigation_park) {
             loadFragments(parkFragment, "ParkFragment");
-            toolbar.setTitle(R.string.park);
+            toolbarTitle = getString(R.string.park);
         } else if (itemId == R.id.navigation_activity) {
             loadFragments(activityFragment, "ActivityFragment");
-            toolbar.setTitle(R.string.activity);
+            toolbarTitle = getString(R.string.activity);
         } else if (itemId == R.id.navigation_account) {
             loadFragments(accountFragment, "AccountFragment");
-            toolbar.setTitle(R.string.my_account);
+            toolbarTitle = getString(R.string.my_account);
         } else {
             return false;
         }
+        toolbar.setTitle("  "+ toolbarTitle);
         return true;
     }
 

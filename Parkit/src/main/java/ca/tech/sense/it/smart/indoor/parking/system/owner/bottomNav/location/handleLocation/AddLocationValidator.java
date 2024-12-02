@@ -54,10 +54,7 @@ public class AddLocationValidator {
     }
 
     public static boolean isLocationAddressValid(String locationAddress) {
-        if (locationAddress == null || locationAddress.trim().isEmpty()) {
-            return false;
-        }
-        return true;
+        return locationAddress != null && !locationAddress.trim().isEmpty();
     }
 
     public static double validatePrice(Context context, String input) {

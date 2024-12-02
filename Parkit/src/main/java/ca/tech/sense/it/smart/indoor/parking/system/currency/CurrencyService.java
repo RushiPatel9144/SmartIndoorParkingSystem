@@ -1,5 +1,6 @@
 package ca.tech.sense.it.smart.indoor.parking.system.currency;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.google.gson.JsonObject;
@@ -9,48 +10,54 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+
+import ca.tech.sense.it.smart.indoor.parking.system.R;
 
 public class CurrencyService {
     private static final String API_URL = "https://v6.exchangerate-api.com/v6/9ed4766f7af09bae390fba86/latest/";
+    private static final String TAG = "CurrencyService";
 
     public interface Callback {
         void onSuccess(Map<String, Double> exchangeRates);
         void onError(String error);
     }
 
-    public static void fetchLiveRates(String baseCurrency, Callback callback) {
-        OkHttpClient client = new OkHttpClient();
-        Request request = new Request.Builder()
-                .url(API_URL + baseCurrency)
-                .build();
+    public static void fetchLiveRates(Context context, String baseCurrency, Callback callback) {
+        if (context != null) {
+            OkHttpClient client = new OkHttpClient();
+            Request request = new Request.Builder()
+                    .url(API_URL + baseCurrency)
+                    .build();
 
-        client.newCall(request).enqueue(new com.squareup.okhttp.Callback() {
-            @Override
-            public void onFailure(Request request, IOException e) {
-                Log.e("CurrencyService", "Network request failed: " + e.getMessage());
-                callback.onError("Network error: Unable to fetch exchange rates. Please try again later.");
-            }
-
-            @Override
-            public void onResponse(Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    String jsonResponse = response.body().string();
-                    Map<String, Double> rates = parseRates(jsonResponse);
-                    if (rates != null) {
-                        callback.onSuccess(rates);
-                    } else {
-                        Log.e("CurrencyService", "Failed to parse exchange rates.");
-                        callback.onError("Error parsing exchange rates.");
+            try {
+                client.newCall(request).enqueue(new com.squareup.okhttp.Callback() {
+                    @Override
+                    public void onFailure(Request request, IOException e) {
+                        Log.e(TAG, context.getString(R.string.network_request_failed) + e.getMessage());
+                        callback.onError(context.getString(R.string.network_error_unable_to_fetch_exchange_rates_please_try_again_later));
                     }
-                } else {
-                    Log.e("CurrencyService", "API response error: " + response.message());
-                    callback.onError("API error: " + response.message());
-                }
-            }
 
-        });
+                    @Override
+                    public void onResponse(Response response) throws IOException {
+                        if (response.isSuccessful()) {
+                            String jsonResponse = response.body().string();
+                            Map<String, Double> rates = parseRates(jsonResponse);
+                            callback.onSuccess(rates);
+                        } else {
+                            Log.e(TAG, context.getString(R.string.api_response_error) + response.message());
+                            callback.onError(context.getString(R.string.api_error) + response.message());
+                        }
+                    }
+                });
+            } catch (Exception e) {
+                Log.e(TAG, context.getString(R.string.request_failed) + e.getMessage());
+                callback.onError(context.getString(R.string.network_error_unable_to_fetch_exchange_rates_please_try_again_later));
+            }
+        }
     }
 
     private static Map<String, Double> parseRates(String jsonResponse) {
@@ -64,8 +71,8 @@ public class CurrencyService {
             }
             return rates;
         } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+            Log.e(TAG, Objects.requireNonNull(e.getMessage()));
+            return Collections.emptyMap();
         }
     }
 }

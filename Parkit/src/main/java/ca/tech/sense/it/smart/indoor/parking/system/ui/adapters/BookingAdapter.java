@@ -101,7 +101,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingV
                     .setPositiveButton("Yes", (dialog, which) -> {
                         int position = getBindingAdapterPosition();
                         if (position != RecyclerView.NO_POSITION && position < bookingList.size()) {
-                            cancelBookingViewModel.cancelBooking(booking.getTransactionId(), booking.getId(), () -> {
+                            cancelBookingViewModel.cancelBooking(booking, () -> {
                                 bookingList.remove(position);
                                 notifyItemRemoved(position);
                                 notifyItemRangeChanged(position, bookingList.size());
@@ -119,7 +119,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingV
             bookingAddress.setText(booking.getLocation());
             bookingSlot.setText(booking.getSlotNumber());
             bookingTime.setText(formatTime(booking.getStartTime(), booking.getEndTime()));
-            bookingPrice.setText(String.format(Locale.getDefault(), "Price: $%.2f", booking.getPrice()));
+            bookingPrice.setText(String.format(Locale.getDefault(), "Price: $ %.2f", booking.getPrice()));
             bookingPassKey.setText(booking.getPassKey());
         }
 

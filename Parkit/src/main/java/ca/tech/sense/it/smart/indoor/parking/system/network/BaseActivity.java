@@ -2,7 +2,6 @@ package ca.tech.sense.it.smart.indoor.parking.system.network;
 
 import android.content.Intent;
 import android.os.Bundle;
-
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -32,4 +31,5 @@ public class BaseActivity extends AppCompatActivity {
             NetworkManager.getInstance().startMonitoring(this);
         }
     }
+
 }

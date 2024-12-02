@@ -1,7 +1,7 @@
 package ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui.login;
 
-import static ca.tech.sense.it.smart.indoor.parking.system.utility.Constants.USER_TYPE_OWNER;
-import static ca.tech.sense.it.smart.indoor.parking.system.utility.Constants.USER_TYPE_USER;
+import static ca.tech.sense.it.smart.indoor.parking.system.utility.AppConstants.USER_TYPE_OWNER;
+import static ca.tech.sense.it.smart.indoor.parking.system.utility.AppConstants.USER_TYPE_USER;
 
 import android.content.Context;
 import android.content.Intent;
@@ -14,15 +14,17 @@ import android.widget.ProgressBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.checkbox.MaterialCheckBox;
+import com.google.android.material.textfield.TextInputLayout;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
-import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.launcherUtililty.ToastHelper;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.launcherUtililty.InputValidatorHelper;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.launcherUtililty.NavigationHelper;
-
+import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.launcherUtililty.ToastHelper;
+import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui.FirstActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui.signUp.SignUpActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.manager.sessionManager.SessionManager;
-
+import ca.tech.sense.it.smart.indoor.parking.system.model.owner.Owner;
+import ca.tech.sense.it.smart.indoor.parking.system.model.user.User;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
 
 public class LoginHelper {
@@ -40,12 +42,12 @@ public class LoginHelper {
      * @param loginViewModel   The ViewModel responsible for managing login logic.
      * @param userType         The type of user ("user" or "owner").
      */
-    public static void handleLogin(EditText editTextEmail, EditText editTextPassword, ProgressBar progressBar, LoginViewModel loginViewModel, String userType) {
+    public static void handleLogin(EditText editTextEmail, EditText editTextPassword, ProgressBar progressBar, LoginViewModel loginViewModel, String userType, TextInputLayout login_email_layout, TextInputLayout login_password_layout) {
         String email = editTextEmail.getText().toString().trim();
         String password = editTextPassword.getText().toString().trim();
 
         // Validate the input and proceed with login if valid
-        if (InputValidatorHelper.validateInputLogin(editTextEmail, editTextPassword)) {
+        if (InputValidatorHelper.validateInputLogin(editTextEmail, editTextPassword,login_email_layout,login_password_layout)) {
             progressBar.setVisibility(View.VISIBLE);  // Show progress bar while logging in
             loginViewModel.login(email, password, userType);  // Trigger login in ViewModel
         }
@@ -110,5 +112,11 @@ public class LoginHelper {
                         // Do nothing if the user cancels the dialog
                     }
                 });
+    }
+
+    public static void navigateToFirst(LoginActivity loginActivity) {
+        Intent intent = new Intent(loginActivity, FirstActivity.class);
+        loginActivity.startActivity(intent);
+        loginActivity.finish();
     }
 }

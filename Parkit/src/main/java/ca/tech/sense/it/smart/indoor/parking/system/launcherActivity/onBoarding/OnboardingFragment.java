@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -34,6 +35,7 @@ public class OnboardingFragment extends Fragment {
     private String description;
     private int imageResId;
     private boolean isLastPage;
+
 
     public OnboardingFragment() {
         // Default constructor
@@ -90,18 +92,35 @@ public class OnboardingFragment extends Fragment {
      * @param view The root view of the fragment.
      */
     private void initializeViews(View view) {
+        LinearLayout swipeLayout;
         TextView titleTextView = view.findViewById(R.id.onBoard_titleTextView);
         TextView descriptionTextView = view.findViewById(R.id.onBoard_descriptionTextView);
         ImageView imageView = view.findViewById(R.id.onBoard_imageView);
         Button getStartedButton = view.findViewById(R.id.onBoard_getStartedButton);
 
+        swipeLayout = view.findViewById(R.id.onBoard_swipe);
         // Set the content for the fragment
         titleTextView.setText(title);
         descriptionTextView.setText(description);
         imageView.setImageResource(imageResId);
 
         // Configure the "Get Started" button for the last page
-        configureGetStartedButton(getStartedButton);
+        configureGetStartedButton(getStartedButton,swipeLayout);
+        swipeLayout.setOnClickListener(v -> navigateToNextFragment());
+    }
+
+    private void navigateToNextFragment() {
+
+        if (getActivity() instanceof OnboardingActivity) {
+            OnboardingActivity activity = (OnboardingActivity) getActivity();
+            int currentItem = activity.getViewPager().getCurrentItem();
+            int totalItems = activity.getFragmentList().size();
+
+            if (currentItem < totalItems - 1) {
+                // Navigate to the next page
+                activity.getViewPager().setCurrentItem(currentItem + 1, true);
+            }
+        }
     }
 
     /**
@@ -109,14 +128,18 @@ public class OnboardingFragment extends Fragment {
      *
      * @param getStartedButton The button to be configured.
      */
-    private void configureGetStartedButton(Button getStartedButton) {
+    private void configureGetStartedButton(Button getStartedButton,LinearLayout swipeLayout) {
         if (isLastPage) {
+            swipeLayout.setVisibility(View.GONE);
             getStartedButton.setVisibility(View.VISIBLE);
             getStartedButton.setOnClickListener(v -> completeOnboarding());
         } else {
             getStartedButton.setVisibility(View.GONE);
+            swipeLayout.setVisibility(View.VISIBLE);
         }
     }
+
+
 
     /**
      * Marks onboarding as complete and navigates to the first activity.

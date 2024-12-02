@@ -10,6 +10,11 @@ public class FirebaseDatabaseSingleton {
     // Bill Pugh Singleton: the instance is created when the inner class is loaded
     private static class FirebaseDatabaseHolder {
         private static final FirebaseDatabase instance = FirebaseDatabase.getInstance();
+
+        static {
+            // Enable offline persistence as soon as FirebaseDatabase instance is created
+            instance.setPersistenceEnabled(true);
+        }
     }
 
     // Method to get the FirebaseDatabase instance
@@ -17,4 +22,3 @@ public class FirebaseDatabaseSingleton {
         return FirebaseDatabaseHolder.instance;
     }
 }
-

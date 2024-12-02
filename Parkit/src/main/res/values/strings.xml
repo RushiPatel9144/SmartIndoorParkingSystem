@@ -86,7 +86,6 @@
     <string name="user_data_not_found">No user data</string>
     <string name="fetch_data_failed">Updating user info failed</string>
     <string name="_1_phone_number">+1 Phone number</string>
-    <string name="confirm">Confirm</string>
     <string name="dialog_title">Dialog Title</string>
     <string name="a_password_reset_link_will_be_sent_to">"A password reset link will be sent to: "</string>
     <string name="reset_password">Reset Password</string>
@@ -392,6 +391,7 @@
     <string name="invalid_battery_level">Invalid battery level</string>
     <string name="battery_level_range_error">Battery level must be between 0 and 100</string>
     <string name="sensor">sensor_</string>
+    <string name="promo_code">Promo Code:</string>
     <string name="manage_slots">Manage Slots</string>
     <string name="change_price">Change Price</string>
     <string name="delete">Delete</string>
@@ -407,16 +407,88 @@
     <string name="price_update_canceled">Price update canceled.</string>
     <string name="input_price_in_cad">Input Price in CAD</string>
     <string name="update_price">Update Price</string>
-
     <string name="success_icon">Success Icon</string>
     <string name="email_confirmation_sent">An email confirmation has been sent.</string>
-    <string name="qr_code">QR Code</string>
+    <string name="confirm">Confirm</string>
     <string name="reference_number">Reference Number</string>
     <string name="loading_address">Loading address...</string>
     <string name="get_direction">Get Directions</string>
     <string name="close">Close</string>
     <string name="parking_ticket">Parking Ticket</string>
     <string name="no_transactions_yet">No Transactions Yet</string>
+    <string name="error_updating_profile_photo">Error updating profile photo</string>
+    <string name="error_uploading_photo">Error Uploading Photo</string>
 
 
+    <!-- strings.xml -->
+    <string name="user_responsibilities_content">
+    Users must provide accurate information, maintain the confidentiality of their account, and comply with all applicable laws and regulations.
+</string>
+
+    <string name="limitations_of_liability_content">
+    The app is provided "as is" without warranties. We are not liable for any direct, indirect, incidental, or consequential damages arising from the use of the app.
+</string>
+
+    <string name="acceptable_use_policies_content">
+    Users must not misuse the app, including but not limited to engaging in fraudulent activities, violating intellectual property rights, or interfering with the app\'s operation.
+</string>
+
+    <string name="dispute_resolution_content">
+    Any disputes arising from the use of the app will be resolved through binding arbitration in accordance with the rules of the American Arbitration Association.
+</string>
+
+    <string name="amendments_to_terms_content">
+    We may update these terms periodically. Users will be notified of any significant changes, and continued use of the app signifies acceptance of the updated terms.
+</string>
+
+    <string name="termination_content">
+    We reserve the right to terminate or suspend user accounts for violations of these terms or any other policies.
+</string>
+
+    <string name="governing_law_content">
+    These terms are governed by the laws of the jurisdiction in which the app is operated.
+</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="set_display_name">Update Display Name</string>
+    <string name="invalid_name">Invalid Name</string>
+    <string name="profile_name_updated">Profile Name Updated</string>
+    <string name="enter_display_name_at_least_3_characters">Enter Display Name (At least 3 characters)</string>
+    <string name="failed_to_update_phone_number">Failed to update phone number</string>
+    <string name="swipe_to_navigate">Swipe to navigate</string>
+    <string name="create_account">Create Account</string>
+    <string name="accept">Accept</string>
+    <string name="decline">Decline</string>
+    <string name="to_continue_please_scroll_down_review_and_accept_our_terms_and_conditions">To continue, please scroll down, review, and accept our Terms and Conditions.</string>
+
+    <string name="error_intent_missing">Intent data is missing</string>
+    <string name="error_booking_missing">Booking details are missing in intent</string>
+    <string name="error_invalid_booking_data">Invalid booking data</string>
+    <string name="error_passkey_missing">Passkey is missing in booking details</string>
+    <string name="error_address_missing">Address not provided</string>
+    <string name="error_address_missing_for_directions">Address is missing for directions</string>
+    <string name="error_google_maps_not_installed">Google Maps is not installed</string>
+    <string name="error_generic">An error occurred: %1$s</string>
+    <string name="parking_time">Parking Time</string>
+    <string name="price">Price</string>
+    <string name="network_error_unable_to_fetch_exchange_rates_please_try_again_later">Network error: Unable to fetch exchange rates. Please try again later.</string>
+    <string name="network_request_failed">"Network request failed: "</string>
+    <string name="failed_to_parse_exchange_rates">Failed to parse exchange rates.</string>
+    <string name="error_parsing_exchange_rates">Error parsing exchange rates.</string>
+    <string name="api_response_error">"API response error: "</string>
+    <string name="api_error">"API error: "</string>
+    <string name="request_failed">"Request failed: "</string>
+    <string name="sign_in_successful">Sign-in successful</string>
+    <string name="no_credentials_available_please_try_another_sign_in_method">No credentials available. Please try another sign-in method.</string>
+    <string name="sign_out_successful">Sign-out successful</string>
+    <string name="google_sign_out_failed">Google Sign-out failed</string>
+    <string name="already_signed_in">already signed in</string>
+    <string name="failed_to_check_user_data">Failed to check user data.</string>
+    <string name="failed_to_save_user_data">Failed to save user data.</string>
+    <string name="failed_to_check_owner_data">Failed to check owner data.</string>
+    <string name="failed_to_save_owner_data">Failed to save owner data.</string>
+    <string name="auth_error_message">Auth error</string>
+    <string name="default_content">Content is not available at the moment.</string>
+    <string name="provide_rating_message">Provide Rating Please</string>
+    <string name="confirmation_title">Confirmation</string>
+    <string name="no_currencies_available">No currencies available</string>
 </resources>

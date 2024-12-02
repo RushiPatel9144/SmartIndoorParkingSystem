@@ -10,11 +10,8 @@ import java.util.Objects;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.NotificationHelper;
-
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.os.Build;
-
 import androidx.core.app.NotificationCompat;
 
 public class NotificationManagerHelper {
@@ -33,14 +30,12 @@ public class NotificationManagerHelper {
     }
 
     private void createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = context.getString(R.string.channel_name);
-            String description = context.getString(R.string.channel_description);
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
-            channel.setDescription(description);
-            notificationManager.createNotificationChannel(channel);
-        }
+        CharSequence name = context.getString(R.string.channel_name);
+        String description = context.getString(R.string.channel_description);
+        int importance = NotificationManager.IMPORTANCE_DEFAULT;
+        NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+        channel.setDescription(description);
+        notificationManager.createNotificationChannel(channel);
     }
 
     public void enableNotifications() {
@@ -60,7 +55,7 @@ public class NotificationManagerHelper {
     public void sendWelcomeBackNotification() {
         long lastSentTimestamp = sharedPreferences.getLong("welcome_notification_timestamp", 0);
         long currentTime = System.currentTimeMillis();
-        long cooldown = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+        long cooldown = 24L * 60 * 60 * 1000; // 24 hours in milliseconds
 
         FirebaseUser currentUser = firebaseAuth.getCurrentUser();
         if (currentUser != null && (currentTime - lastSentTimestamp > cooldown)) {

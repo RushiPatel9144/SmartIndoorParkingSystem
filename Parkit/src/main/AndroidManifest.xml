@@ -44,6 +44,7 @@
             android:exported="false" />
         <activity
             android:name=".owner.OwnerActivity"
+            android:theme="@style/Base.Theme.SmartIndoorParkingSystem"
             android:exported="false" />
         <activity
             android:name=".launcherActivity.ui.FirstActivity"

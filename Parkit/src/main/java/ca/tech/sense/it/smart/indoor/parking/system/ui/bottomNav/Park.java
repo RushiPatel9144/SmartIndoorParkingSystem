@@ -26,7 +26,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -58,10 +57,11 @@ import ca.tech.sense.it.smart.indoor.parking.system.currency.CurrencyService;
 import ca.tech.sense.it.smart.indoor.parking.system.manager.parkingManager.ParkingLocationManager;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
 
+import ca.tech.sense.it.smart.indoor.parking.system.network.BaseNetworkFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.AutocompleteSearchHelper;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.ParkingInterface;
 
-public class Park extends Fragment implements OnMapReadyCallback {
+public class Park extends BaseNetworkFragment implements OnMapReadyCallback {
 
     private static final String TAG = "ParkFragment";
     private GoogleMap mMap;
@@ -72,7 +72,6 @@ public class Park extends Fragment implements OnMapReadyCallback {
     private ScheduledExecutorService scheduledExecutorService;
     private boolean ratesFetched = false;
     private ProgressBar progressBar;
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -87,7 +86,7 @@ public class Park extends Fragment implements OnMapReadyCallback {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_park, container, false);
         progressBar = view.findViewById(R.id.progressBar);
         return view;
@@ -99,12 +98,13 @@ public class Park extends Fragment implements OnMapReadyCallback {
         if (progressBar != null) {
             progressBar.setVisibility(View.VISIBLE);
         }
-        scheduledExecutorService.schedule(() ->
-            requireActivity().runOnUiThread(() -> {
-                initializeMap();
-                initializeAutocomplete();
-            }), 1, TimeUnit.SECONDS);
-
+        if (getView() != null) {
+            scheduledExecutorService.schedule(() ->
+                    requireActivity().runOnUiThread(() -> {
+                        initializeMap();
+                        initializeAutocomplete();
+                    }), 1, TimeUnit.SECONDS);
+        }
         // Check if there is a locationId passed from the FavoritesFragment
         if (getActivity() != null && getActivity().getIntent() != null) {
             String locationId = getActivity().getIntent().getStringExtra("locationId");
@@ -116,46 +116,51 @@ public class Park extends Fragment implements OnMapReadyCallback {
 
 
     private void initializeMap() {
-        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
-        if (mapFragment != null) {
-            mapFragment.getMapAsync(this);
+        if (getView() != null) {
+            SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+            if (mapFragment != null) {
+                mapFragment.getMapAsync(this);
+            }
         }
     }
 
     private void initializeAutocomplete() {
-        AutocompleteSearchHelper.initializeAutocompleteSearch(
-                (AutocompleteSupportFragment) getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment),
-                requireContext(),
-                new AutocompleteSearchHelper.PlaceSelectionCallback() {
-                    @Override
-                    public void onPlaceSelected(Place place) {
-                        executorService.execute(() -> handlePlaceSelected(place));
-                    }
+        if (getView() != null) {
+            AutocompleteSearchHelper.initializeAutocompleteSearch(
+                    (AutocompleteSupportFragment) getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment),
+                    requireContext(),
+                    new AutocompleteSearchHelper.PlaceSelectionCallback() {
+                        @Override
+                        public void onPlaceSelected(Place place) {
+                            executorService.execute(() -> handlePlaceSelected(place));
+                        }
 
-                    @Override
-                    public void onError(String errorMessage) {
-                        Log.d(TAG, getString(R.string.error) + errorMessage);
+                        @Override
+                        public void onError(String errorMessage) {
+                            Log.d(TAG, getString(R.string.error) + errorMessage);
+                        }
                     }
-                }
-        );
+            );
+        }
     }
 
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
-        mMap = googleMap;
+        if (getView() != null) {
+            mMap = googleMap;
 
-        setupMapUI();
-        ImageButton myLocationButton = requireView().findViewById(R.id.my_location_button);
-        myLocationButton.setOnClickListener(v -> checkLocationPermissionAndEnableMyLocation());
-        // Asynchronous task to add parking spots
-        executorService.execute(this::addParkingSpotsToMap);
+            setupMapUI();
+            ImageButton myLocationButton = requireView().findViewById(R.id.my_location_button);
+            myLocationButton.setOnClickListener(v -> checkLocationPermissionAndEnableMyLocation());
+            // Asynchronous task to add parking spots
+            executorService.execute(this::addParkingSpotsToMap);
 
-        // Default camera position
-        LatLng torontoCenter = new LatLng(43.65107, -79.347015); // Toronto coordinates
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(torontoCenter, 10));
-        setupMapListeners();
+            // Default camera position
+            LatLng torontoCenter = new LatLng(43.65107, -79.347015); // Toronto coordinates
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(torontoCenter, 10));
+            setupMapListeners();
+        }
     }
-
     private void setupMapUI() {
         mMap.getUiSettings().setZoomControlsEnabled(true);
         mMap.getUiSettings().setMyLocationButtonEnabled(false);
@@ -187,35 +192,46 @@ public class Park extends Fragment implements OnMapReadyCallback {
         parkingLocationManager.fetchAllParkingLocations(new ParkingInterface.FetchLocationsCallback() {
             @Override
             public void onFetchSuccess(Map<String, ParkingLocation> locations) {
-                requireActivity().runOnUiThread(() -> {
-                    if (locations != null) {
-                        for (Map.Entry<String, ParkingLocation> entry : locations.entrySet()) {
-                            ParkingLocation location = entry.getValue();
-                            if (isValidParkingLocation(location)) {
-                                LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                                Marker marker = mMap.addMarker(new MarkerOptions()
-                                        .position(latLng)
-                                        .title(location.getName())
-                                        .icon(bitmapDescriptorFromVector(requireContext(), R.mipmap.ic_parking))
-                                );
-                                assert marker != null;
-                                marker.setTag(location.getId());
-                                if (progressBar != null) {
-                                    progressBar.setVisibility(View.GONE);
+                if (isAdded() && getView() != null) {
+                    requireActivity().runOnUiThread(() -> {
+                        if (locations != null) {
+                            // Clear old markers before adding new ones
+                            mMap.clear();
+
+                            for (Map.Entry<String, ParkingLocation> entry : locations.entrySet()) {
+                                ParkingLocation location = entry.getValue();
+                                if (isValidParkingLocation(location)) {
+                                    LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                                    Marker marker = mMap.addMarker(new MarkerOptions()
+                                            .position(latLng)
+                                            .title(location.getName())
+                                            .icon(bitmapDescriptorFromVector(requireContext(), R.mipmap.ic_parking))
+                                    );
+                                    assert marker != null;
+                                    marker.setTag(location.getId());
                                 }
                             }
                         }
-                    }
-                });
+
+                        // Hide progress bar after updating the map
+                        if (progressBar != null) {
+                            progressBar.setVisibility(View.GONE);
+                        }
+                    });
+                }
             }
 
             @Override
             public void onFetchFailure(Exception e) {
+                if (progressBar != null) {
+                    progressBar.setVisibility(View.GONE);
+                }
                 Log.e(TAG, getString(R.string.error_fetching_parking_locations), e);
                 Toast.makeText(requireContext(), Toast.LENGTH_SHORT, R.string.failed_to_load_parking_locations).show();
             }
         });
     }
+
 
     private boolean isValidParkingLocation(ParkingLocation location) {
         return location.getLatitude() >= -90 && location.getLatitude() <= 90 &&
@@ -304,7 +320,7 @@ public class Park extends Fragment implements OnMapReadyCallback {
         );
     }
     private void fetchExchangeRates() {
-        CurrencyManager.getInstance().fetchAndUpdateRates(new CurrencyService.Callback() {
+        CurrencyManager.getInstance().fetchAndUpdateRates(requireContext(), new CurrencyService.Callback() {
             @Override
             public void onSuccess(Map<String, Double> exchangeRates) {
                 Log.d("Currency", "Exchange rates fetched successfully.");
@@ -317,4 +333,13 @@ public class Park extends Fragment implements OnMapReadyCallback {
             }
         });
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (executorService != null && !executorService.isShutdown()) {
+            executorService.shutdown();
+        }
+    }
+
 }

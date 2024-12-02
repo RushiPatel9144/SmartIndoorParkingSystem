@@ -12,12 +12,10 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -25,6 +23,7 @@ import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.manager.parkingManager.ParkingLocationManager;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
+import ca.tech.sense.it.smart.indoor.parking.system.network.BaseNetworkFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.location.handleLocation.AddLocationActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.location.handleLocation.LocationAdapter;
 import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.location.handleLocation.SwipeToDeleteCallback;
@@ -34,12 +33,11 @@ import ca.tech.sense.it.smart.indoor.parking.system.utility.ParkingInterface;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 
-public class LocationsFragment extends Fragment {
-
+public class LocationsFragment extends BaseNetworkFragment {
 
     private RecyclerView locationsRecyclerView;
     private LinearLayout emptyStateLayout;
-    private static LocationAdapter adapter;
+    private LocationAdapter adapter;
     private List<ParkingLocation> parkingLocations;
     private FirebaseAuth oAuth;
     private FloatingActionButton addButton;
@@ -84,7 +82,7 @@ public class LocationsFragment extends Fragment {
         locationsRecyclerView.setAdapter(adapter);
 
         // Add swipe-to-delete functionality
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteCallback(adapter, oAuth.getUid(), parkingLocationManager));
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteCallback(this, adapter, oAuth.getUid(), parkingLocationManager));
         itemTouchHelper.attachToRecyclerView(locationsRecyclerView);
 
         swipeRefreshLayout.setOnRefreshListener(this::loadParkingLocations);

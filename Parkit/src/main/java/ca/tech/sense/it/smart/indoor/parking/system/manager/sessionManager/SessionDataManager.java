@@ -23,7 +23,7 @@ public class SessionDataManager {
     private String userType; // "user" or "owner"
 
     // Private constructor to prevent direct instantiation
-    private SessionDataManager() {
+    public SessionDataManager() {
         mAuth = FirebaseAuthSingleton.getInstance();
         db = FirestoreSingleton.getInstance();
     }

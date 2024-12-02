@@ -11,10 +11,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -30,10 +28,8 @@ import com.squareup.okhttp.Response;
 import com.stripe.android.PaymentConfiguration;
 import com.stripe.android.paymentsheet.PaymentSheet;
 import com.stripe.android.paymentsheet.PaymentSheetResult;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
@@ -41,13 +37,17 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.currency.CurrencyManager;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseDatabaseSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.manager.bookingManager.BookingManager;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.bookingManager.TransactionManager;
 import ca.tech.sense.it.smart.indoor.parking.system.model.Promotion;
 import ca.tech.sense.it.smart.indoor.parking.system.model.booking.Booking;
+import ca.tech.sense.it.smart.indoor.parking.system.model.booking.Transaction;
+import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
+import ca.tech.sense.it.smart.indoor.parking.system.utility.DateTimeUtils;
 
 public class PaymentActivity extends AppCompatActivity {
 
@@ -68,9 +68,11 @@ public class PaymentActivity extends AppCompatActivity {
     private Button confirmButton;
     private Button cancelButton;
     private PaymentSheet paymentSheet;
-    private String currency = "CAD";
     private double total;
     private String transactionId;
+    private TransactionManager transactionManager ;
+    private String ownerId;
+    private double subtotal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +81,7 @@ public class PaymentActivity extends AppCompatActivity {
         initializeUIElements();
 
         Intent intent = getIntent();
+        ownerId = getIntent().getStringExtra("ownerId");
         if (intent != null && intent.hasExtra("booking")) {
             booking = (Booking) intent.getSerializableExtra("booking");
             if (booking != null) {
@@ -93,7 +96,7 @@ public class PaymentActivity extends AppCompatActivity {
         FirebaseAuth firebaseAuth = FirebaseAuthSingleton.getInstance();
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         Context context = this;
-
+        transactionManager = new TransactionManager(firebaseDatabase);
         bookingManager = new BookingManager(executorService, firebaseDatabase, firebaseAuth, context);
 
         PaymentConfiguration.init(
@@ -136,7 +139,7 @@ public class PaymentActivity extends AppCompatActivity {
     private void calculateTotalBreakdown() {
         if (booking != null) {
             String currencySymbol = booking.getCurrencySymbol();
-            double subtotal = booking.getPrice();
+            subtotal = booking.getPrice();
             double gstHst = subtotal * 0.13;
             double platformFee = subtotal * 0.10;
             total = subtotal + gstHst + platformFee;
@@ -157,16 +160,17 @@ public class PaymentActivity extends AppCompatActivity {
                 showToast("Please enter a promo code.");
             }
         });
-        confirmButton.setOnClickListener(v -> fetchClientSecret());
+        confirmButton.setOnClickListener(v -> fetchClientSecret(total, booking));
         cancelButton.setOnClickListener(v -> finish());
     }
 
-    private void fetchClientSecret() {
+    private void fetchClientSecret(double price, Booking booking) {
         OkHttpClient client = new OkHttpClient();
         String url = "https://parkit-cd4c2ec26f90.herokuapp.com/create-payment-intent";
 
-        double totalAmount = total * 100;
-        currency = booking.getCurrencyCode();
+        double totalAmount = price * 100;
+        booking.setPrice(CurrencyManager.getInstance().convertToCAD(price, booking.getCurrencyCode()));
+        String currency = booking.getCurrencyCode();
 
         JSONObject jsonRequest = new JSONObject();
         try {
@@ -215,11 +219,9 @@ public class PaymentActivity extends AppCompatActivity {
 
     private void onPaymentSheetResult(PaymentSheetResult paymentSheetResult) {
         if (paymentSheetResult instanceof PaymentSheetResult.Completed) {
-            // Use Handler with Looper.getMainLooper() for a delay
-            new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                confirmBooking(); // Confirm the booking
-                openParkingTicketActivity(); // Pass data to ParkingTicket
-            }, 2000); // 2-second delay
+            // Confirm the booking
+            new Handler(Looper.getMainLooper()).postDelayed(this::confirmBooking, 2000); // 2-second delay
+            finish();
         } else if (paymentSheetResult instanceof PaymentSheetResult.Failed) {
             showToast("Payment Failed: " + ((PaymentSheetResult.Failed) paymentSheetResult).getError());
             finish();
@@ -236,50 +238,84 @@ public class PaymentActivity extends AppCompatActivity {
         }
 
         // Extract valid time slot and date
-        String selectedTimeSlot = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date(booking.getStartTime())) + " - " +
-                new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date(booking.getEndTime()));
-        String selectedDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date(booking.getStartTime()));
+        String selectedTimeSlot = formatTimeSlot(booking.getStartTime(), booking.getEndTime());
+        String selectedDate = formatDate(booking.getStartTime());
 
+        // Create a transaction object
+        Transaction transaction = createTransaction();
+
+        // Store transaction and confirm booking
         try {
-            bookingManager.getBookingService().confirmBooking(
-                    transactionId,
-                    booking.getLocationId(),        // Pass location ID
-                    booking.getSlotNumber(),       // Pass slot number
-                    selectedTimeSlot,              // Valid time slot
-                    selectedDate,                  // Valid date
-                    booking.getLocation(),         // Location
-                    () -> {
-                        showToast(getString(R.string.booking_confirmed));
-
-                        // Validate and mark the promo code as used after booking confirmation
-                        String promoCode = promoCodeEditText.getText().toString().trim();
-                        if (!promoCode.isEmpty()) {
-                            DatabaseReference promotionsRef = FirebaseDatabase.getInstance().getReference("Promotions");
-                            promotionsRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                                        Promotion promotion = snapshot.getValue(Promotion.class);
-                                        if (promotion != null && promoCode.equals(promotion.getPromoCode())) {
-                                            promotion.setUsed(true); // Mark as used only after booking
-                                            promotionsRef.child(promotion.getId()).setValue(promotion);
-                                            break;
-                                        }
-                                    }
-                                }
-
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
-                                    showToast("Failed to update promo code status.");
-                                }
-                            });
-                        }
-                    },
-                    error -> showToast("Failed to save booking: " + error.getMessage()));
+            transactionManager.storeTransaction(ownerId, transaction);
+            confirmBookingInService(transactionId, selectedTimeSlot, selectedDate);
         } catch (Exception e) {
-            // Catch unexpected exceptions
             showToast("An unexpected error occurred: " + e.getMessage());
         }
+    }
+
+    private String formatTimeSlot(long startTime, long endTime) {
+        String timeFormat = "HH:mm";
+        SimpleDateFormat timeFormatter = new SimpleDateFormat(timeFormat, Locale.getDefault());
+        return timeFormatter.format(new Date(startTime)) + " - " + timeFormatter.format(new Date(endTime));
+    }
+
+    private String formatDate(long startTime) {
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        return dateFormatter.format(new Date(startTime));
+    }
+
+    private Transaction createTransaction() {
+        double convertedSubtotal = CurrencyManager.getInstance().convertToCAD(subtotal, booking.getCurrencyCode());
+        return new Transaction(transactionId, booking.getTitle(), convertedSubtotal, booking.getCurrencySymbol(), DateTimeUtils.getCurrentDateTime(), false);
+    }
+
+    private void confirmBookingInService(String transactionId, String selectedTimeSlot, String selectedDate) {
+        bookingManager.getBookingService().confirmBooking(
+                transactionId,
+                selectedTimeSlot,
+                selectedDate,
+                booking,
+                this::onBookingConfirmed,
+                this::onBookingConfirmationError
+        );
+    }
+
+    private void onBookingConfirmed() {
+        showToast(getString(R.string.booking_confirmed));
+        handlePromoCode();
+    }
+
+    private void onBookingConfirmationError(Exception error) {
+        showToast("Failed to save booking: " + error.getMessage());
+    }
+
+    private void handlePromoCode() {
+        String promoCode = promoCodeEditText.getText().toString().trim();
+        if (promoCode.isEmpty()) return;
+
+        DatabaseReference promotionsRef = FirebaseDatabaseSingleton.getInstance().getReference("Promotions");
+        promotionsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Promotion promotion = snapshot.getValue(Promotion.class);
+                    if (promotion != null && promoCode.equals(promotion.getPromoCode())) {
+                        markPromoCodeAsUsed(promotion, promotionsRef);
+                        break;
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                showToast("Failed to update promo code status.");
+            }
+        });
+    }
+
+    private void markPromoCodeAsUsed(Promotion promotion, DatabaseReference promotionsRef) {
+        promotion.setUsed(true); // Mark as used only after booking
+        promotionsRef.child(promotion.getId()).setValue(promotion);
     }
 
     private void showToast(String message) {
@@ -300,20 +336,6 @@ public class PaymentActivity extends AppCompatActivity {
         // Update the TextViews with the formatted date and time
         dateTextView.setText(MessageFormat.format("Date: {0}", formattedDate));
         timeTextView.setText(MessageFormat.format("Time: {0} - {1}", formattedStartTime, formattedEndTime));
-    }
-
-
-
-    private void openParkingTicketActivity() {
-        Intent intent = new Intent(this, ParkingTicket.class);
-
-        if (booking != null) {
-            intent.putExtra("address", booking.getLocation()); // Pass address
-            intent.putExtra("passkey", booking.getPassKey());  // Pass reference key
-        }
-
-        startActivity(intent);
-        finish();
     }
 
     private void applyPromoCode(String promoCode) {
