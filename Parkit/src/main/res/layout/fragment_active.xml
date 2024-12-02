@@ -2,20 +2,51 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:padding="25dp"
+    android:background="#F0F0F0">
 
-    <TextView
-        android:id="@+id/no_bookings_text"
-        android:layout_width="match_parent"
+
+    <ImageView
+        android:id="@+id/parking_image"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/no_bookings_to_show"
-        android:gravity="center"
-        android:visibility="gone"
-        android:textSize="18sp"
-        android:padding="16dp" />
+        android:paddingBottom="10dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/active" />
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/no_bookings_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="You Don't Have Any Parking Sessions Right Now"
+                android:gravity="center"
+                android:visibility="gone"
+                android:textSize="25sp"
+                android:textStyle="bold"
+                android:padding="1dp" />
+
+
+            <TextView
+                android:id="@+id/park_now"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Your parking session details will show here"
+                android:textSize="18sp"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:gravity="center"
+                android:layout_gravity="center_horizontal"  />
+        </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
 </LinearLayout>

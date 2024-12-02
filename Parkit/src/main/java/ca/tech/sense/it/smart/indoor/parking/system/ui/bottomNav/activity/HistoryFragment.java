@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,6 +34,8 @@ public class HistoryFragment extends Fragment {
     private CancelBookingViewModel cancelBookingViewModel;
     private BookingAdapter bookingAdapter;
     private TextView noBookingsText;
+    private TextView noBookingsText1;
+    private ImageView noBookingsImage;
     private Button clearAllButton;
 
     @Nullable
@@ -41,6 +44,8 @@ public class HistoryFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_history, container, false);
         RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
         noBookingsText = view.findViewById(R.id.no_bookings_text);
+        noBookingsText1 = view.findViewById(R.id.no_bookings_text1);
+        noBookingsImage = view.findViewById(R.id.no_bookings_image);
         clearAllButton = view.findViewById(R.id.clear_all_button);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         cancelBookingViewModel = new ViewModelProvider(requireActivity()).get(CancelBookingViewModel.class);
@@ -51,10 +56,14 @@ public class HistoryFragment extends Fragment {
         bookingViewModel.getHistoryBookings().observe(getViewLifecycleOwner(), bookings -> {
             if (bookings.isEmpty()) {
                 noBookingsText.setVisibility(View.VISIBLE);
+                noBookingsText1.setVisibility(View.VISIBLE);
+                noBookingsImage.setVisibility(View.VISIBLE);
                 recyclerView.setVisibility(View.GONE);
                 clearAllButton.setVisibility(View.GONE);
             } else {
                 noBookingsText.setVisibility(View.GONE);
+                noBookingsText1.setVisibility(View.GONE);
+                noBookingsImage.setVisibility(View.GONE);
                 recyclerView.setVisibility(View.VISIBLE);
                 clearAllButton.setVisibility(View.VISIBLE);
                 bookingAdapter.updateBookings(bookings);
@@ -84,8 +93,3 @@ public class HistoryFragment extends Fragment {
                 .show();
     }
 }
-
-
-
-
-

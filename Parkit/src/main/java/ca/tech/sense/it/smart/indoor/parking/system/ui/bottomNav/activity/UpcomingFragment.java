@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -26,12 +27,13 @@ import ca.tech.sense.it.smart.indoor.parking.system.network.BaseNetworkFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.network.NoNetworkFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.adapters.BookingAdapter;
 import ca.tech.sense.it.smart.indoor.parking.system.viewModel.CancelBookingViewModel;
-
 public class UpcomingFragment extends BaseNetworkFragment {
     private BookingViewModel bookingViewModel;
     private CancelBookingViewModel cancelBookingViewModel;
     private BookingAdapter bookingAdapter;
     private TextView noBookingsText;
+    private TextView noBookingsText1;
+    private ImageView noBookingsImage;
 
     @Nullable
     @Override
@@ -39,6 +41,8 @@ public class UpcomingFragment extends BaseNetworkFragment {
         View view = inflater.inflate(R.layout.fragment_upcoming, container, false);
         RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
         noBookingsText = view.findViewById(R.id.no_bookings_text);
+        noBookingsText1 = view.findViewById(R.id.no_bookings_text1);
+        noBookingsImage = view.findViewById(R.id.no_bookings_image);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         cancelBookingViewModel = new ViewModelProvider(requireActivity()).get(CancelBookingViewModel.class);
         bookingViewModel = new ViewModelProvider(requireActivity()).get(BookingViewModel.class);
@@ -48,9 +52,13 @@ public class UpcomingFragment extends BaseNetworkFragment {
         bookingViewModel.getUpcomingBookings().observe(getViewLifecycleOwner(), bookings -> {
             if (bookings.isEmpty()) {
                 noBookingsText.setVisibility(View.VISIBLE);
+                noBookingsText1.setVisibility(View.VISIBLE);
+                noBookingsImage.setVisibility(View.VISIBLE);
                 recyclerView.setVisibility(View.GONE);
             } else {
                 noBookingsText.setVisibility(View.GONE);
+                noBookingsText1.setVisibility(View.GONE);
+                noBookingsImage.setVisibility(View.GONE);
                 recyclerView.setVisibility(View.VISIBLE);
                 bookingAdapter.updateBookings(bookings);
             }
