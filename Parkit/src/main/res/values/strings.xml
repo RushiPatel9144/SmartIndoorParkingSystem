@@ -491,4 +491,5 @@
     <string name="provide_rating_message">Provide Rating Please</string>
     <string name="confirmation_title">Confirmation</string>
     <string name="no_currencies_available">No currencies available</string>
+    <string name="submit_again_in">"Submit again in "</string>
 </resources>

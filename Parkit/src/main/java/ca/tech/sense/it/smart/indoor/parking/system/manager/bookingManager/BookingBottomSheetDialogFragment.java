@@ -29,10 +29,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.booking.PaymentActivity;
+import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.manager.favoriteManager.FavoritesManager;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.adapters.SlotAdapter;
 import ca.tech.sense.it.smart.indoor.parking.system.currency.Currency;
@@ -93,7 +95,7 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
         initializeUIElements(view);
 
         // Initialize Firebase Auth
-        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseAuth = FirebaseAuthSingleton.getInstance();
 
         // Set up the slot spinner
         setupProceedToPaymentButton();
@@ -298,11 +300,13 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
                     } else {
                         // Create a Booking object with the selected details
                         Booking booking = new Booking(
+                                null,
                                 titleTextView.getText().toString(),
                                 BookingUtils.convertToMillis(selectedDate + " " + selectedTimeSlot.split(" - ")[0]),
                                 BookingUtils.convertToMillis(selectedDate + " " + selectedTimeSlot.split(" - ")[1]),
                                 addressText.getText().toString(),
                                 postalCodeText.getText().toString(),
+                                0,
                                 convertedPrice,
                                 selectedCurrency.getCode(),
                                 selectedCurrency.getSymbol(),
@@ -319,9 +323,7 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
                         startActivity(intent);
                         dismiss();
                     }
-                }, error -> {
-                    Toast.makeText(requireContext(), R.string.error_checking_slot_availability, Toast.LENGTH_SHORT).show();
-                });
+                }, error -> Toast.makeText(requireContext(), R.string.error_checking_slot_availability, Toast.LENGTH_SHORT).show());
             } else {
                 Toast.makeText(requireContext(), R.string.please_select_a_slot_date_and_time, Toast.LENGTH_SHORT).show();
             }

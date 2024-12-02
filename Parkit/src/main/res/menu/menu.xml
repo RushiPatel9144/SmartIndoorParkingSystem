@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:theme="@style/MenuItemTextColor"
+   >
 
     <item
         android:id="@+id/notification"
@@ -8,7 +10,7 @@
         android:orderInCategory="1"
         android:title="@string/notification"
         app:iconTint="@color/colorAccent"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
     <item
         android:id="@+id/favorites"
         android:icon="@drawable/baseline_favorite_24"
@@ -22,12 +24,12 @@
         android:icon="@drawable/baseline_local_offer_24"
         android:title="@string/promotions"
         app:iconTint="@color/colorAccent"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/support"
         android:orderInCategory="4"
         app:iconTint="@color/colorAccent"
         android:icon="@drawable/baseline_contact_support_24"
         android:title="@string/support"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="never" />
 </menu>

@@ -13,7 +13,11 @@ import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.BiConsumer;
@@ -60,7 +64,6 @@ public class TransactionsFragment extends Fragment {
 
         String ownerId = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
         retrieveTransactions(ownerId);
-
         return rootView;
     }
 
@@ -73,6 +76,8 @@ public class TransactionsFragment extends Fragment {
                 // Success callback: update the transaction list and notify the adapter
                 transactionList.clear();
                 transactionList.addAll(transactions);
+                // Sort transactions by time
+                sortTransactionsByTime();
                 transactionAdapter.notifyDataSetChanged();
 
                 // Calculate the total price and update the toolbar
@@ -81,6 +86,16 @@ public class TransactionsFragment extends Fragment {
             }
         }, exception -> {});
     }
+
+    private void sortTransactionsByTime() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"); // Adjust to your format
+        transactionList.sort((t1, t2) -> {
+            LocalDateTime time1 = LocalDateTime.parse(t1.getPaymentTime(), formatter);
+            LocalDateTime time2 = LocalDateTime.parse(t2.getPaymentTime(), formatter);
+            return time2.compareTo(time1);
+        });
+    }
+
     private double calculateTotalPrice() {
         double totalPrice = 0.0;
         for (Transaction transaction : transactionList) {

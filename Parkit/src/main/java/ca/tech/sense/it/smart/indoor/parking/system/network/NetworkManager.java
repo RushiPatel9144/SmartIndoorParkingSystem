@@ -4,12 +4,21 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
-import ca.tech.sense.it.smart.indoor.parking.system.R;
+
 import java.net.InetAddress;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import ca.tech.sense.it.smart.indoor.parking.system.R;
 
 public class NetworkManager {
+
+    private static final String TAG = "NetworkManager";
 
     private static NetworkManager instance;
     private ConnectivityManager.NetworkCallback networkCallback;
@@ -26,29 +35,41 @@ public class NetworkManager {
         return instance;
     }
 
-    // Register a listener for network changes (for fragments or activities)
     public void setNetworkListener(NetworkListener listener) {
         this.networkListener = listener;
     }
 
-    // Start monitoring the network state
     public void startMonitoring(Context context) {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (cm != null) {
             networkCallback = new ConnectivityManager.NetworkCallback() {
                 @Override
                 public void onAvailable(@NonNull Network network) {
-                    handleNetworkAvailability(context, network);
+                    Log.d(TAG, "Network is available");
+                    checkInternetAccessAsync(hasInternet -> {
+                        if (hasInternet) {
+                            handleNetworkAvailability(context);
+                        } else {
+                            handleNetworkLoss(context);
+                        }
+                    });
                 }
 
                 @Override
                 public void onLost(@NonNull Network network) {
+                    Log.d(TAG, "Network is lost");
                     handleNetworkLoss(context);
                 }
 
                 @Override
                 public void onCapabilitiesChanged(@NonNull Network network, @NonNull NetworkCapabilities networkCapabilities) {
-                    handleNetworkCapabilitiesChange(context, networkCapabilities);
+                    if (networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)) {
+                        Log.d(TAG, "Network capabilities changed: Internet capability available");
+                        handleNetworkAvailability(context);
+                    } else {
+                        Log.d(TAG, "Network capabilities changed: Internet capability lost");
+                        handleNetworkLoss(context);
+                    }
                 }
             };
 
@@ -56,25 +77,20 @@ public class NetworkManager {
         }
     }
 
-    // Stop monitoring when not needed
     public void stopMonitoring(Context context) {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (cm != null && networkCallback != null) {
             cm.unregisterNetworkCallback(networkCallback);
+            networkCallback = null;
         }
     }
 
-    private void handleNetworkAvailability(Context context, Network network) {
-        if (hasInternetAccess(context, network)) {
-            if (wasNetworkLost) {
-                showToastOnce(context, context.getString(R.string.network_is_available));
-                wasNetworkLost = false;
-            }
-            notifyNetworkAvailable();
-        } else {
-            showToastOnce(context, context.getString(R.string.no_internet_connection));
-            notifyNetworkLost();
+    private void handleNetworkAvailability(Context context) {
+        if (wasNetworkLost) {
+            showToastOnce(context, context.getString(R.string.network_is_available));
+            wasNetworkLost = false;
         }
+        notifyNetworkAvailable();
     }
 
     private void handleNetworkLoss(Context context) {
@@ -83,19 +99,6 @@ public class NetworkManager {
             wasNetworkLost = true;
         }
         notifyNetworkLost();
-    }
-
-    private void handleNetworkCapabilitiesChange(Context context, NetworkCapabilities networkCapabilities) {
-        if (networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)) {
-            if (wasNetworkLost) {
-                showToastOnce(context, context.getString(R.string.network_is_available));
-                wasNetworkLost = false;
-            }
-            notifyNetworkAvailable();
-        } else {
-            showToastOnce(context, context.getString(R.string.no_internet_connection));
-            notifyNetworkLost();
-        }
     }
 
     private void notifyNetworkAvailable() {
@@ -110,33 +113,42 @@ public class NetworkManager {
         }
     }
 
-    private boolean hasInternetAccess(Context context, Network network) {
-        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkCapabilities capabilities = cm.getNetworkCapabilities(network);
-        if (capabilities != null && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)) {
-            try {
-                InetAddress address = InetAddress.getByName("google.com"); // Perform DNS lookup
-                return address.isReachable(2000); //Check if the host is reachable within a timeout
-            } catch (Exception e) {
-                return false;
+    private void checkInternetAccessAsync(InternetCheckCallback callback) {
+        final int retryCount = 6;
+        final int retryDelay = 3000;
+        final ExecutorService executor = Executors.newSingleThreadExecutor();
+
+        executor.execute(() -> {
+            boolean isConnected = false;
+            for (int attempt = 1; attempt <= retryCount; attempt++) {
+                try {
+                    // Check if google.com is reachable
+                    isConnected = InetAddress.getByName("google.com").isReachable(5000);
+                    // If successful, break early
+                    if (isConnected) break;
+                    // Wait before retrying
+                    Thread.sleep(retryDelay);
+                } catch (Exception e) {
+                    Log.e("InternetCheck", "Error during connectivity check: " + e.getMessage());
+                }
             }
-        }
-        return false;
+            final boolean finalStatus = isConnected;
+            new Handler(Looper.getMainLooper()).post(() -> callback.onResult(finalStatus));
+        });
     }
 
-    // Ensure only one toast for the current state
+
     private void showToastOnce(Context context, String message) {
         if (!message.equals(lastToastMessage)) {
-            showToast(context, message);
+            new Handler(Looper.getMainLooper()).post(() -> Toast.makeText(context, message, Toast.LENGTH_SHORT).show());
             lastToastMessage = message;
         }
     }
 
-    public static void showToast(Context context, String message) {
-        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+    public interface InternetCheckCallback {
+        void onResult(boolean hasInternet);
     }
 
-    // Define the listener interface for fragments or activities to implement
     public interface NetworkListener {
         void onNetworkAvailable();
         void onNetworkLost();

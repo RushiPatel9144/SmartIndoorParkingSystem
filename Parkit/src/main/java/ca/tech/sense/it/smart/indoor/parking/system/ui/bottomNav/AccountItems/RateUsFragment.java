@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -93,6 +94,7 @@ public class RateUsFragment extends BaseNetworkFragment implements RateUsViewMod
 
     private void updateOptionBackground(TextView optionView, boolean isSelected) {
         optionView.setBackgroundResource(isSelected ? R.drawable.box_background_selected : R.drawable.box_background);
+        optionView.setTextColor(isSelected ? ContextCompat.getColor(requireContext(), R.color.white): ContextCompat.getColor(requireContext(), R.color.black));
     }
 
     private void configureSubmitButton() {
@@ -159,7 +161,7 @@ public class RateUsFragment extends BaseNetworkFragment implements RateUsViewMod
         new CountDownTimer(duration, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
-                submitFeedbackButton.setText(formatTime(millisUntilFinished));
+                submitFeedbackButton.setText(MessageFormat.format("{0}{1}", getString(R.string.submit_again_in), formatTime(millisUntilFinished)));
             }
 
             @Override

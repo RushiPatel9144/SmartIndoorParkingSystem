@@ -70,7 +70,7 @@ public class ParkingSlotManager {
 
     // Fetch slots of a specific parking location
     public void fetchSlotsForLocation(String locationId, final ParkingInterface.FetchSlotsCallback callback) {
-        databaseReference.child(locationId).child(PATH_SLOTS).addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.child(locationId).child(PATH_SLOTS).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Map<String, ParkingSlot> slots = new HashMap<>();

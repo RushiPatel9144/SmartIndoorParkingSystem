@@ -49,7 +49,7 @@ public class HistoryFragment extends Fragment {
         clearAllButton = view.findViewById(R.id.clear_all_button);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         cancelBookingViewModel = new ViewModelProvider(requireActivity()).get(CancelBookingViewModel.class);
-        bookingAdapter = new BookingAdapter(new ArrayList<>(), cancelBookingViewModel, bookingViewModel, R.layout.item_booking_history);
+        bookingAdapter = new BookingAdapter(view, new ArrayList<>(), cancelBookingViewModel, bookingViewModel, R.layout.item_booking_history);
         recyclerView.setAdapter(bookingAdapter);
 
         bookingViewModel = new ViewModelProvider(requireActivity()).get(BookingViewModel.class);
