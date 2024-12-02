@@ -63,7 +63,7 @@ public class TransactionManager {
                 .child(ownerId)
                 .child("transactions");
 
-        transactionsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        transactionsRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 List<Transaction> transactions = new ArrayList<>();

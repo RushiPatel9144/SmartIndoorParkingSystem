@@ -116,7 +116,8 @@ public class NetworkManager {
         if (capabilities != null && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)) {
             try {
                 InetAddress address = InetAddress.getByName("google.com"); // Perform DNS lookup
-                return address.isReachable(2000); //Check if the host is reachable within a timeout
+                showToastOnce(context, String.valueOf(address));
+                return address.isReachable(5000); //Check if the host is reachable within a timeout
             } catch (Exception e) {
                 return false;
             }

@@ -102,18 +102,23 @@ public class UserService {
                     Toast.makeText(null, "Failed to expire pass key: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
-    public void processOwnerData(String locationId, Booking booking) {
+    public void processOwnerData(String locationId, Booking booking, String refundId) {
+        if (transactionManager == null) {
+            transactionManager = new TransactionManager(firebaseDatabase);
+        }
        transactionManager.fetchOwnerIdByLocationId(locationId)
-                .addOnSuccessListener(ownerId -> transactionUpdate(ownerId, booking))
+                .addOnSuccessListener(ownerId -> transactionUpdate(ownerId, booking, refundId))
                 .addOnFailureListener(e -> {
                     // Handle the error
                 });
     }
 
-    private void transactionUpdate(String ownerId, Booking booking) {
-        transactionManager = new TransactionManager(firebaseDatabase);
+    private void transactionUpdate(String ownerId, Booking booking, String refundId) {
+        if (transactionManager == null) {
+            transactionManager = new TransactionManager(firebaseDatabase);
+        }
         transactionManager.storeTransaction(ownerId, new Transaction(
-                booking.getTransactionId(),
+                refundId,
                 booking.getTitle(),
                 booking.getPrice(),
                 booking.getCurrencySymbol(),
@@ -124,11 +129,10 @@ public class UserService {
 
     public void cancelBookingAndRequestRefund(String userId, Booking booking, Runnable onSuccess, Consumer<Exception> onFailure) {
         transactionManager = new TransactionManager(firebaseDatabase);
-       cancelBooking(userId, booking.getId(), () -> {
-            requestRefund(booking.getTransactionId(), onSuccess, onFailure);
-            processOwnerData(booking.getLocationId(), booking);
-
-        }, onFailure);
+       cancelBooking(userId, booking.getId(), () -> requestRefund(booking.getTransactionId(), refundId -> {
+           processOwnerData(booking.getLocationId(), booking, refundId);
+            onSuccess.run();
+        }, onFailure), onFailure);
     }
 
 
@@ -163,7 +167,7 @@ public class UserService {
         });
     }
 
-    private void requestRefund(String transactionId, Runnable onSuccess, Consumer<Exception> onFailure) {
+    private void requestRefund(String transactionId, Consumer<String> onSuccess, Consumer<Exception> onFailure) {
         OkHttpClient client = new OkHttpClient();
         String url = "https://parkit-cd4c2ec26f90.herokuapp.com/refund-payment";
 
@@ -190,8 +194,22 @@ public class UserService {
             @Override
             public void onResponse(Response response) {
                 if (response.isSuccessful()) {
-                    new android.os.Handler(android.os.Looper.getMainLooper())
-                            .post(onSuccess);
+                    try {
+                        String responseBody = response.body().string();
+                        JSONObject responseJson = new JSONObject(responseBody);
+                        String refundId = responseJson.optString("refundId");
+                        if (!refundId.isEmpty()) {
+                            final String finalRefundId = refundId;
+                            new android.os.Handler(android.os.Looper.getMainLooper())
+                                    .post(() -> onSuccess.accept(finalRefundId));
+                        } else {
+                            new android.os.Handler(android.os.Looper.getMainLooper())
+                                    .post(() -> onFailure.accept(new Exception("Refund ID not found in response")));
+                        }
+                    } catch (Exception e) {
+                        new android.os.Handler(android.os.Looper.getMainLooper())
+                                .post(() -> onFailure.accept(new Exception("Error processing response: " + e.getMessage())));
+                    }
                 } else {
                     new android.os.Handler(android.os.Looper.getMainLooper())
                             .post(() -> onFailure.accept(new Exception("Server error: " + response.message())));
