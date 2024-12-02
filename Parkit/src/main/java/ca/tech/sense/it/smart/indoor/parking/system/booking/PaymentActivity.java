@@ -160,16 +160,16 @@ public class PaymentActivity extends AppCompatActivity {
                 showToast("Please enter a promo code.");
             }
         });
-        confirmButton.setOnClickListener(v -> fetchClientSecret());
+        confirmButton.setOnClickListener(v -> fetchClientSecret(total, booking));
         cancelButton.setOnClickListener(v -> finish());
     }
 
-    private void fetchClientSecret() {
+    private void fetchClientSecret(double price, Booking booking) {
         OkHttpClient client = new OkHttpClient();
         String url = "https://parkit-cd4c2ec26f90.herokuapp.com/create-payment-intent";
 
-        double totalAmount = total * 100;
-        booking.setPrice(CurrencyManager.getInstance().convertToCAD(total, booking.getCurrencyCode()));
+        double totalAmount = price * 100;
+        booking.setPrice(CurrencyManager.getInstance().convertToCAD(price, booking.getCurrencyCode()));
         String currency = booking.getCurrencyCode();
 
         JSONObject jsonRequest = new JSONObject();
@@ -238,49 +238,84 @@ public class PaymentActivity extends AppCompatActivity {
         }
 
         // Extract valid time slot and date
-        String selectedTimeSlot = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date(booking.getStartTime())) + " - " +
-                new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date(booking.getEndTime()));
-        String selectedDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date(booking.getStartTime()));
-        Transaction transaction = new Transaction(transactionId, booking.getTitle(),CurrencyManager.getInstance().convertToCAD(subtotal, booking.getCurrencyCode()), booking.getCurrencySymbol(), DateTimeUtils.getCurrentDateTime(),false);
+        String selectedTimeSlot = formatTimeSlot(booking.getStartTime(), booking.getEndTime());
+        String selectedDate = formatDate(booking.getStartTime());
+
+        // Create a transaction object
+        Transaction transaction = createTransaction();
+
+        // Store transaction and confirm booking
         try {
-            transactionManager.storeTransaction(ownerId,transaction);
-            bookingManager.getBookingService().confirmBooking(
-                    transactionId,
-                    selectedTimeSlot,
-                    selectedDate,
-                    booking,
-                    () -> {
-                        showToast(getString(R.string.booking_confirmed));
-
-                        // Validate and mark the promo code as used after booking confirmation
-                        String promoCode = promoCodeEditText.getText().toString().trim();
-                        if (!promoCode.isEmpty()) {
-                            DatabaseReference promotionsRef = FirebaseDatabaseSingleton.getInstance().getReference("Promotions");
-                            promotionsRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                                        Promotion promotion = snapshot.getValue(Promotion.class);
-                                        if (promotion != null && promoCode.equals(promotion.getPromoCode())) {
-                                            promotion.setUsed(true); // Mark as used only after booking
-                                            promotionsRef.child(promotion.getId()).setValue(promotion);
-                                            break;
-                                        }
-                                    }
-                                }
-
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
-                                    showToast("Failed to update promo code status.");
-                                }
-                            });
-                        }
-                    },
-                    error -> showToast("Failed to save booking: " + error.getMessage()));
+            transactionManager.storeTransaction(ownerId, transaction);
+            confirmBookingInService(transactionId, selectedTimeSlot, selectedDate);
         } catch (Exception e) {
-            // Catch unexpected exceptions
             showToast("An unexpected error occurred: " + e.getMessage());
         }
+    }
+
+    private String formatTimeSlot(long startTime, long endTime) {
+        String timeFormat = "HH:mm";
+        SimpleDateFormat timeFormatter = new SimpleDateFormat(timeFormat, Locale.getDefault());
+        return timeFormatter.format(new Date(startTime)) + " - " + timeFormatter.format(new Date(endTime));
+    }
+
+    private String formatDate(long startTime) {
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        return dateFormatter.format(new Date(startTime));
+    }
+
+    private Transaction createTransaction() {
+        double convertedSubtotal = CurrencyManager.getInstance().convertToCAD(subtotal, booking.getCurrencyCode());
+        return new Transaction(transactionId, booking.getTitle(), convertedSubtotal, booking.getCurrencySymbol(), DateTimeUtils.getCurrentDateTime(), false);
+    }
+
+    private void confirmBookingInService(String transactionId, String selectedTimeSlot, String selectedDate) {
+        bookingManager.getBookingService().confirmBooking(
+                transactionId,
+                selectedTimeSlot,
+                selectedDate,
+                booking,
+                this::onBookingConfirmed,
+                this::onBookingConfirmationError
+        );
+    }
+
+    private void onBookingConfirmed() {
+        showToast(getString(R.string.booking_confirmed));
+        handlePromoCode();
+    }
+
+    private void onBookingConfirmationError(Exception error) {
+        showToast("Failed to save booking: " + error.getMessage());
+    }
+
+    private void handlePromoCode() {
+        String promoCode = promoCodeEditText.getText().toString().trim();
+        if (promoCode.isEmpty()) return;
+
+        DatabaseReference promotionsRef = FirebaseDatabaseSingleton.getInstance().getReference("Promotions");
+        promotionsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Promotion promotion = snapshot.getValue(Promotion.class);
+                    if (promotion != null && promoCode.equals(promotion.getPromoCode())) {
+                        markPromoCodeAsUsed(promotion, promotionsRef);
+                        break;
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                showToast("Failed to update promo code status.");
+            }
+        });
+    }
+
+    private void markPromoCodeAsUsed(Promotion promotion, DatabaseReference promotionsRef) {
+        promotion.setUsed(true); // Mark as used only after booking
+        promotionsRef.child(promotion.getId()).setValue(promotion);
     }
 
     private void showToast(String message) {

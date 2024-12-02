@@ -2,14 +2,11 @@ package ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.onBoarding
 
 import android.os.Bundle;
 import android.widget.ProgressBar;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 
 public class OnboardingActivity extends AppCompatActivity {
@@ -17,7 +14,6 @@ public class OnboardingActivity extends AppCompatActivity {
     private ViewPager2 viewPager;
     private ProgressBar progressBar;
     private List<Fragment> fragmentList;
-    private static final int TOTAL_PAGES = 3; // Number of onboarding screens
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

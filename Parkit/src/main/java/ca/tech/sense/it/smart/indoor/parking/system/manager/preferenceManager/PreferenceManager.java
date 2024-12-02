@@ -33,12 +33,4 @@ public class PreferenceManager {
     public void setNotificationsEnabled(boolean isEnabled) {
         sharedPreferences.edit().putBoolean("notification_enabled", isEnabled).apply();
     }
-
-    public void saveCurrentFragment(String fragmentTag) {
-        sharedPreferences.edit().putString("currentFragment", fragmentTag).apply();
-    }
-
-    public String getCurrentFragment() {
-        return sharedPreferences.getString("currentFragment", "dashboardFragment");
-    }
 }

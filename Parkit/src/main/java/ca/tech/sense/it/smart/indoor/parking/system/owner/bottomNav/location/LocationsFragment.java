@@ -12,12 +12,10 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -37,10 +35,9 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class LocationsFragment extends BaseNetworkFragment {
 
-
     private RecyclerView locationsRecyclerView;
     private LinearLayout emptyStateLayout;
-    private static LocationAdapter adapter;
+    private LocationAdapter adapter;
     private List<ParkingLocation> parkingLocations;
     private FirebaseAuth oAuth;
     private FloatingActionButton addButton;

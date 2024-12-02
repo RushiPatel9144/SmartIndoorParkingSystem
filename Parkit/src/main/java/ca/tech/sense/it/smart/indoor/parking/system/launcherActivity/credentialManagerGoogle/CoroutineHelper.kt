@@ -3,6 +3,7 @@ package ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.credential
 import android.content.Context
 import android.widget.Toast
 import androidx.credentials.exceptions.NoCredentialException
+import ca.tech.sense.it.smart.indoor.parking.system.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -17,7 +18,7 @@ class CoroutineHelper {
             CoroutineScope(Dispatchers.Main).launch {
                 try {
                     val success = googleAuthClient.signIn()
-                    val message = if (success) "Sign-in successful" else "Google Sign-in failed"
+                    val message = if (success) context.getString(R.string.sign_in_successful) else context.getString(R.string.google_sign_in_failed)
                     Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                     if (success) run {
                         onSuccess.run()
@@ -25,7 +26,7 @@ class CoroutineHelper {
                 } catch (e: NoCredentialException) {
                     Toast.makeText(
                         context,
-                        "No credentials available. Please try another sign-in method.",
+                        context.getString(R.string.no_credentials_available_please_try_another_sign_in_method),
                         Toast.LENGTH_SHORT
                     ).show()
                 } catch (e: Exception) {
@@ -46,7 +47,8 @@ class CoroutineHelper {
         ) { CoroutineScope(Dispatchers.Main).launch {
             try {
                 val success = googleAuthClient.signOut()
-                val message = if (success) { "Sign-out successful" } else "Google Sign-out failed"
+                val message = if (success) {
+                    context.getString(R.string.sign_out_successful) } else context.getString(R.string.google_sign_out_failed)
                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                 if (success) run {
                     onSuccess.run()

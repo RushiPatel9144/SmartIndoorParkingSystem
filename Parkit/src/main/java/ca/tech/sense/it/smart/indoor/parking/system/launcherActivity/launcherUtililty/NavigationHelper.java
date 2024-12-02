@@ -15,6 +15,8 @@ import ca.tech.sense.it.smart.indoor.parking.system.owner.OwnerActivity;
 
 public class NavigationHelper {
 
+    private NavigationHelper(){}
+
     public static void navigateToMainActivity(AppCompatActivity activity) {
         Intent intent = new Intent(activity, MainActivity.class);
         activity.startActivity(intent);
@@ -38,7 +40,6 @@ public class NavigationHelper {
      * Called from FirstActivity to navigate to the appropriate activity based on the user type for auto login.
      @param userType: String representing the user type.
      @param context: Context of the calling activity.
-     @description: Navigates to the appropriate activity based on the user type.
      **/
     public static void navigateBasedOnUserType(String userType, Context context) {
         switch (userType) {

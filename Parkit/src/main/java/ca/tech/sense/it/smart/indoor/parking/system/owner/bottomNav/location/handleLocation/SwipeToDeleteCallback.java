@@ -19,7 +19,7 @@ public class SwipeToDeleteCallback extends ItemTouchHelper.SimpleCallback {
     private final LocationAdapter adapter;
     private final String ownerId;
     private final ParkingLocationManager parkingManager;
-    private Fragment fragment;
+    private final Fragment fragment;
 
     // Constructor
     public SwipeToDeleteCallback(Fragment fragment, LocationAdapter adapter, String ownerId, ParkingLocationManager parkingManager) {
@@ -90,9 +90,9 @@ public class SwipeToDeleteCallback extends ItemTouchHelper.SimpleCallback {
 
         RectF background = new RectF(
                 itemView.getRight()+ dX,
-                itemView.getTop() + 32,
+                itemView.getTop() + 32f,
                 itemView.getRight() ,
-                itemView.getBottom() -32
+                itemView.getBottom() - 32f
         );
         c.drawRect(background, backgroundPaint);
 
@@ -112,11 +112,4 @@ public class SwipeToDeleteCallback extends ItemTouchHelper.SimpleCallback {
         super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
     }
 
-    @Override
-    public void onChildDrawOver(@NonNull Canvas c, @NonNull RecyclerView recyclerView,
-                                @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY,
-                                int actionState, boolean isCurrentlyActive) {
-        // Reset the background when swipe is canceled
-        super.onChildDrawOver(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
-    }
 }

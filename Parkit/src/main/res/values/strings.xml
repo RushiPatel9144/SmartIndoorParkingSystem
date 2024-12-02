@@ -460,5 +460,35 @@
     <string name="decline">Decline</string>
     <string name="to_continue_please_scroll_down_review_and_accept_our_terms_and_conditions">To continue, please scroll down, review, and accept our Terms and Conditions.</string>
 
-
+    <string name="error_intent_missing">Intent data is missing</string>
+    <string name="error_booking_missing">Booking details are missing in intent</string>
+    <string name="error_invalid_booking_data">Invalid booking data</string>
+    <string name="error_passkey_missing">Passkey is missing in booking details</string>
+    <string name="error_address_missing">Address not provided</string>
+    <string name="error_address_missing_for_directions">Address is missing for directions</string>
+    <string name="error_google_maps_not_installed">Google Maps is not installed</string>
+    <string name="error_generic">An error occurred: %1$s</string>
+    <string name="parking_time">Parking Time</string>
+    <string name="price">Price</string>
+    <string name="network_error_unable_to_fetch_exchange_rates_please_try_again_later">Network error: Unable to fetch exchange rates. Please try again later.</string>
+    <string name="network_request_failed">"Network request failed: "</string>
+    <string name="failed_to_parse_exchange_rates">Failed to parse exchange rates.</string>
+    <string name="error_parsing_exchange_rates">Error parsing exchange rates.</string>
+    <string name="api_response_error">"API response error: "</string>
+    <string name="api_error">"API error: "</string>
+    <string name="request_failed">"Request failed: "</string>
+    <string name="sign_in_successful">Sign-in successful</string>
+    <string name="no_credentials_available_please_try_another_sign_in_method">No credentials available. Please try another sign-in method.</string>
+    <string name="sign_out_successful">Sign-out successful</string>
+    <string name="google_sign_out_failed">Google Sign-out failed</string>
+    <string name="already_signed_in">already signed in</string>
+    <string name="failed_to_check_user_data">Failed to check user data.</string>
+    <string name="failed_to_save_user_data">Failed to save user data.</string>
+    <string name="failed_to_check_owner_data">Failed to check owner data.</string>
+    <string name="failed_to_save_owner_data">Failed to save owner data.</string>
+    <string name="auth_error_message">Auth error</string>
+    <string name="default_content">Content is not available at the moment.</string>
+    <string name="provide_rating_message">Provide Rating Please</string>
+    <string name="confirmation_title">Confirmation</string>
+    <string name="no_currencies_available">No currencies available</string>
 </resources>

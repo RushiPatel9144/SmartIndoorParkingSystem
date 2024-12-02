@@ -35,7 +35,7 @@ public class OnboardingFragment extends Fragment {
     private String description;
     private int imageResId;
     private boolean isLastPage;
-    private LinearLayout swipeLayout;
+
 
     public OnboardingFragment() {
         // Default constructor
@@ -92,6 +92,7 @@ public class OnboardingFragment extends Fragment {
      * @param view The root view of the fragment.
      */
     private void initializeViews(View view) {
+        LinearLayout swipeLayout;
         TextView titleTextView = view.findViewById(R.id.onBoard_titleTextView);
         TextView descriptionTextView = view.findViewById(R.id.onBoard_descriptionTextView);
         ImageView imageView = view.findViewById(R.id.onBoard_imageView);

@@ -2,8 +2,6 @@ package ca.tech.sense.it.smart.indoor.parking.system.network;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.CheckBox;
-
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 

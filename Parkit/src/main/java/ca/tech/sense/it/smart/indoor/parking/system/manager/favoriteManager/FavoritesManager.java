@@ -136,7 +136,7 @@ public class FavoritesManager {
                 if (snapshot.exists()) {
                     removeLocationFromFavorites(userFavoritesRef);
                 } else {
-                    addLocationToFavorites(userFavoritesRef);
+                    addLocationToFavorites();
                 }
             }
 
@@ -154,7 +154,7 @@ public class FavoritesManager {
         }).addOnFailureListener(error -> Toast.makeText(context, "Failed to remove location" + error.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
-    private void addLocationToFavorites(DatabaseReference userFavoritesRef) {
+    private void addLocationToFavorites() {
         String address = addressText.getText().toString();
         String postalCode = postalCodeText.getText().toString();
 

@@ -25,9 +25,7 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -60,7 +58,6 @@ import ca.tech.sense.it.smart.indoor.parking.system.manager.parkingManager.Parki
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
 
 import ca.tech.sense.it.smart.indoor.parking.system.network.BaseNetworkFragment;
-import ca.tech.sense.it.smart.indoor.parking.system.network.NoNetworkFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.AutocompleteSearchHelper;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.ParkingInterface;
 
@@ -68,7 +65,7 @@ public class Park extends BaseNetworkFragment implements OnMapReadyCallback {
 
     private static final String TAG = "ParkFragment";
     private GoogleMap mMap;
-    private ParkingLocationManager parkingLocationManager = new ParkingLocationManager();;
+    private ParkingLocationManager parkingLocationManager = new ParkingLocationManager();
     private ExecutorService executorService;
     private ActivityResultLauncher<String> requestPermissionLauncher;
     private FusedLocationProviderClient fusedLocationClient;
@@ -323,7 +320,7 @@ public class Park extends BaseNetworkFragment implements OnMapReadyCallback {
         );
     }
     private void fetchExchangeRates() {
-        CurrencyManager.getInstance().fetchAndUpdateRates(new CurrencyService.Callback() {
+        CurrencyManager.getInstance().fetchAndUpdateRates(requireContext(), new CurrencyService.Callback() {
             @Override
             public void onSuccess(Map<String, Double> exchangeRates) {
                 Log.d("Currency", "Exchange rates fetched successfully.");

@@ -38,24 +38,25 @@ import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.location.Loc
 import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.ownerDashboard.parkingHistory.ParkingHistoryAdapter;
 import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.ownerDashboard.parkingHistory.ParkingHistoryModel;
 import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.transactions.TransactionsFragment;
-import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems.HelpFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems.NotificationsFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems.manageAccount.ManageAccountFragment;
 
 public class DashboardFragment extends Fragment {
-    private static final String ARG_CONTAINER_VIEW_ID = "containerViewId";
-    private int containerViewId;
+
     private SessionManager sessionManager;
     private String userName;
     private TextView dashboardEarnings;
-    private MaterialButton editProfileButton, transactionsButton;
-    private RecyclerView recyclerView;
+    private MaterialButton editProfileButton;
+    private MaterialButton transactionsButton;
+
     private ParkingHistoryAdapter parkingHistoryAdapter;
     private List<ParkingHistoryModel> parkingHistoryList;
     private FirebaseFirestore db;
     private TransactionManager transactionManager;
-    private CardView cardNotfication,cardHelp,cardActiveLots;
+    private CardView cardNotfication;
+    private CardView cardHelp;
+    private CardView cardActiveLots;
 
     public DashboardFragment() {
         // Required empty public constructor
@@ -64,9 +65,6 @@ public class DashboardFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            containerViewId = getArguments().getInt(ARG_CONTAINER_VIEW_ID);
-        }
 
         transactionManager = new TransactionManager(FirebaseDatabaseSingleton.getInstance());
         sessionManager = SessionManager.getInstance(requireContext());
@@ -122,12 +120,12 @@ public class DashboardFragment extends Fragment {
     }
 
     private void displayOwnerGreeting() {
-        TextView greetingTextView = getView().findViewById(R.id.dashboardGreetingTextView);
+        TextView greetingTextView = requireView().findViewById(R.id.dashboardGreetingTextView);
         greetingTextView.setText(getGreetingMessageWithUserName());
     }
 
     private void fetchOwnerIncome(String ownerUid) {
-        dashboardEarnings = getView().findViewById(R.id.dashboard_earnings_value);
+        dashboardEarnings = requireView().findViewById(R.id.dashboard_earnings_value);
         transactionManager.retrieveOwnerTotalIncome(ownerUid, new TransactionManager.FetchIncomeCallback() {
             @Override
             public void onSuccess(String totalIncome) {
@@ -155,7 +153,7 @@ public class DashboardFragment extends Fragment {
         setUpRecyclerView(view);
         setUpSwipeRefresh(view);
 
-        BottomNavigationView bottomNavigationView = getActivity().findViewById(R.id.bottom_navigation_owner);
+        BottomNavigationView bottomNavigationView = requireActivity().findViewById(R.id.bottom_navigation_owner);
         editProfileButton = view.findViewById(R.id.dashboard_edit_profile_button);
         transactionsButton = view.findViewById(R.id.dashboard_transactions_button);
         cardNotfication = view.findViewById(R.id.cardNotification);
@@ -171,6 +169,7 @@ public class DashboardFragment extends Fragment {
     }
 
     private void setUpRecyclerView(View view) {
+        RecyclerView recyclerView;
         recyclerView = view.findViewById(R.id.activeparkingRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(parkingHistoryAdapter);

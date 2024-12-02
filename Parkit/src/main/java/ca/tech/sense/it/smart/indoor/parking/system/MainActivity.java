@@ -4,13 +4,10 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.widget.ImageView;
 import android.widget.Toast;
-
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
@@ -29,8 +26,6 @@ import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui.FirstAct
 import ca.tech.sense.it.smart.indoor.parking.system.manager.notificationManager.NotificationManagerHelper;
 import ca.tech.sense.it.smart.indoor.parking.system.manager.sessionManager.SessionManager;
 import ca.tech.sense.it.smart.indoor.parking.system.manager.themeManager.ThemeManager;
-import ca.tech.sense.it.smart.indoor.parking.system.model.owner.Owner;
-import ca.tech.sense.it.smart.indoor.parking.system.model.user.User;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.Activity;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.Home;
@@ -41,23 +36,20 @@ import ca.tech.sense.it.smart.indoor.parking.system.utility.NotificationHelper;
 
 public class MainActivity extends MenuHandler implements NavigationBarView.OnItemSelectedListener {
 
-    private static final String TAG = "MainActivity";
-
     private BottomNavigationView bottomNavigationView;
     private Toolbar toolbar;
-    private FirebaseAuth firebaseAuth;
+
     private final Home homeFragment = new Home();
     private final Park parkFragment = new Park();
     private final Activity activityFragment = new Activity();
     private final AccountFragment accountFragment = AccountFragment.newInstance(R.id.flFragment);
-    private static final String PREFS_NAME = "MyAppPreferences";
     private static final int NOTIFICATION_PERMISSION_CODE = 100;
-    private ThemeManager themeManager;
     private NotificationManagerHelper notificationManagerHelper;
 
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        ThemeManager themeManager;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -96,6 +88,7 @@ public class MainActivity extends MenuHandler implements NavigationBarView.OnIte
     }
 
     private void initFirebaseAuth() {
+        FirebaseAuth firebaseAuth;
         firebaseAuth = FirebaseAuth.getInstance();
         FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
 

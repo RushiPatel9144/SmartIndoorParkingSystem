@@ -1,14 +1,10 @@
 package ca.tech.sense.it.smart.indoor.parking.system.network;
 
 import android.os.Bundle;
-import android.widget.Toast;
-
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-
 import java.util.Objects;
-
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.manager.sessionManager.SessionManager;
 

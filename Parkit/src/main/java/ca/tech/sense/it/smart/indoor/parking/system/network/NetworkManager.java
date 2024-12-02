@@ -6,11 +6,7 @@ import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
-
-import com.google.android.material.snackbar.Snackbar;
-
 import ca.tech.sense.it.smart.indoor.parking.system.R;
-
 import java.net.InetAddress;
 
 public class NetworkManager {
@@ -118,10 +114,9 @@ public class NetworkManager {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkCapabilities capabilities = cm.getNetworkCapabilities(network);
         if (capabilities != null && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)) {
-            // a real network check
             try {
-                InetAddress address = InetAddress.getByName("google.com");
-                return !address.equals("");
+                InetAddress address = InetAddress.getByName("google.com"); // Perform DNS lookup
+                return address.isReachable(2000); //Check if the host is reachable within a timeout
             } catch (Exception e) {
                 return false;
             }

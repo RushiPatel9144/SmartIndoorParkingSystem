@@ -1,32 +1,21 @@
 package ca.tech.sense.it.smart.indoor.parking.system.manager.parkingManager;
 
-import static com.android.volley.VolleyLog.TAG;
 import static ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.launcherUtililty.ToastHelper.showToast;
 import static ca.tech.sense.it.smart.indoor.parking.system.utility.AppConstants.COLLECTION_LOCATION_OWNER;
-
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
-
 import androidx.annotation.NonNull;
-
-import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
-
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseDatabaseSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
@@ -35,6 +24,7 @@ import ca.tech.sense.it.smart.indoor.parking.system.utility.ParkingInterface;
 public class ParkingLocationManager {
     private final DatabaseReference databaseReference;
     private final DatabaseReference ownerReference;
+    private static final String TAG = "DatabaseError";
 
 
     public ParkingLocationManager() {
@@ -54,10 +44,10 @@ public class ParkingLocationManager {
                             .addOnSuccessListener(aVoid1 ->
                                     showToast(context, context.getString(R.string.parking_location_added_successfully)))
                             .addOnFailureListener(e ->
-                                    Log.e("DatabaseError", "Failed to add location ID to owner's collection: " + e.getMessage()));
+                                    Log.e(TAG, "Failed to add location ID to owner's collection: " + e.getMessage()));
                 })
                 .addOnFailureListener(e ->
-                        Log.e("DatabaseError", "Failed to add parking location: " + e.getMessage()));
+                        Log.e(TAG, "Failed to add parking location: " + e.getMessage()));
     }
 
     public void deleteParkingLocation(Context context, String ownerId, String locationId) {
@@ -76,11 +66,11 @@ public class ParkingLocationManager {
                             .addOnFailureListener(e -> {
                                 // Rollback: Re-add the location back to the main database
                                 locationRef.setValue(locationId)
-                                        .addOnFailureListener(e2 -> Log.e("DatabaseError", "Failed to rollback main location: " + e2.getMessage()));
+                                        .addOnFailureListener(e2 -> Log.e(TAG, "Failed to rollback main location: " + e2.getMessage()));
                                 showToast(context, context.getString(R.string.failed_to_delete_owner_parking_location));
                             }))
                 .addOnFailureListener(e -> {
-                    Log.e("DatabaseError", "Failed to delete parking location: " + e.getMessage());
+                    Log.e(TAG, "Failed to delete parking location: " + e.getMessage());
                     showToast(context, context.getString(R.string.failed_to_delete_parking_location));
                 });
     }
@@ -127,25 +117,6 @@ public class ParkingLocationManager {
                     callback.onFetchFailure(error.toException());
                 }
             });
-        });
-    }
-
-    public void fetchParkingLocationById(String id, ParkingInterface.FetchLocationCallback callback) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        DocumentReference docRef = db.collection("parkingLocations").document(id);
-
-        docRef.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                DocumentSnapshot document = task.getResult();
-                if (document.exists()) {
-                    ParkingLocation location = document.toObject(ParkingLocation.class);
-                    callback.onFetchSuccess(location);
-                } else {
-                    callback.onFetchFailure(new Exception("Document does not exist"));
-                }
-            } else {
-                callback.onFetchFailure(task.getException());
-            }
         });
     }
 

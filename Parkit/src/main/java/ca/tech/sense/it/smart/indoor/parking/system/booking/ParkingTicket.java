@@ -29,16 +29,28 @@ public class ParkingTicket extends AppCompatActivity {
     private TextView priceTitle;
     private TextView priceText;
     private ProgressBar progressBar;
-    private String address;  // This should hold the address value
+    private String address;  // Holds the address value
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_parking_ticket);
 
-        TextView referenceNumberTextView = findViewById(R.id.referenceNumberTextView);
-        Button cancelButton = findViewById(R.id.cancelButton);
-        Button getDirectionButton = findViewById(R.id.getDirectionButton);
+        initializeUIComponents();
+
+        // Get data from the intent
+        Intent intent = getIntent();
+        if (intent != null) {
+            handleBookingData(intent);
+        } else {
+            showToast(R.string.error_intent_missing);
+        }
+
+        // Set up button click listeners
+        setUpButtonListeners();
+    }
+
+    private void initializeUIComponents() {
         addressTitle = findViewById(R.id.addressTitle);
         addressText = findViewById(R.id.addressText);
         parkingTimeTitle = findViewById(R.id.parkingTimeTitle);
@@ -46,99 +58,110 @@ public class ParkingTicket extends AppCompatActivity {
         priceTitle = findViewById(R.id.priceTitle);
         priceText = findViewById(R.id.priceText);
         progressBar = findViewById(R.id.progressBar);
+    }
 
-        // Get data from the intent
-        Intent intent = getIntent();
-        if (intent != null) {
-            try {
-                // Retrieve the Booking object from the intent
-                Booking booking = (Booking) intent.getSerializableExtra("booking");
+    private void handleBookingData(Intent intent) {
+        try {
+            Booking booking;
+            booking = (Booking) intent.getSerializableExtra("booking");
 
-                if (booking != null) {
-                    String passkey = booking.getPassKey(); // Get the passkey from the Booking object
-                    address = booking.getLocation(); // Assign the address to the class-level variable
-                    long startTime = booking.getStartTime(); // Get the start time
-                    long endTime = booking.getEndTime(); // Get the end time
-                    double price = booking.getPrice(); // Get the price
-
-                    // Check if passkey is not null
-                    if (!TextUtils.isEmpty(passkey)) {
-                        referenceNumberTextView.setText(passkey);
-                        progressBar.setVisibility(View.VISIBLE);
-
-                        // Format parking time and price
-                        String parkingTime = formatParkingTime(startTime, endTime);
-                        String formattedPrice = String.format(Locale.getDefault(), "%s %.2f", booking.getCurrencySymbol(), price);
-
-                        // Simulate some processing or delay
-                        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                            if (!TextUtils.isEmpty(address)) {
-                                updateUIWithBookingDetails(address, parkingTime, formattedPrice); // Update UI with address, time, and price
-                            } else {
-                                showToast("Address not provided");
-                            }
-                            progressBar.setVisibility(View.GONE);
-                        }, 2000);
-                    } else {
-                        showToast("Passkey is missing in booking details");
-                    }
-                } else {
-                    showToast("Booking details are missing in intent");
-                }
-            } catch (Exception e) {
-                showToast("An error occurred: " + e.getMessage());
-                progressBar.setVisibility(View.GONE);
+            if (booking != null) {
+                processBookingData(booking);
+            } else {
+                showToast(R.string.error_booking_missing);
             }
-        } else {
-            showToast("Intent data is missing");
+        } catch (ClassCastException e) {
+            showToast(R.string.error_invalid_booking_data);
+            progressBar.setVisibility(View.GONE);
+        } catch (Exception e) {
+            showToast(getString(R.string.error_generic, e.getMessage()));
+            progressBar.setVisibility(View.GONE);
         }
+    }
 
-        cancelButton.setOnClickListener(v -> finish());
-        getDirectionButton.setOnClickListener(v -> openMap());
+    private void processBookingData(Booking booking) {
+        String passkey = booking.getPassKey();
+        address = booking.getLocation();
+        long startTime = booking.getStartTime();
+        long endTime = booking.getEndTime();
+        double price = booking.getPrice();
+
+        if (!TextUtils.isEmpty(passkey)) {
+            displayBookingDetails(booking, startTime, endTime, price);
+        } else {
+            showToast(R.string.error_passkey_missing);
+        }
+    }
+
+    private void displayBookingDetails(Booking booking, long startTime, long endTime, double price) {
+        TextView referenceNumberTextView = findViewById(R.id.referenceNumberTextView);
+        referenceNumberTextView.setText(booking.getPassKey());
+        progressBar.setVisibility(View.VISIBLE);
+
+        String parkingTime = formatParkingTime(startTime, endTime);
+        String formattedPrice = String.format(Locale.getDefault(), "%s %.2f", booking.getCurrencySymbol(), price);
+
+        // Simulate processing delay (e.g., network call)
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            if (!TextUtils.isEmpty(address)) {
+                updateUIWithBookingDetails(address, parkingTime, formattedPrice);
+            } else {
+                showToast(R.string.error_address_missing);
+            }
+            progressBar.setVisibility(View.GONE);
+        }, 2000);
     }
 
     private void updateUIWithBookingDetails(String address, String parkingTime, String price) {
-        addressTitle.setText("Parking Address");
+        addressTitle.setText(getString(R.string.parking_address));
         addressText.setText(address);
-        parkingTimeTitle.setText("Parking Time");
+        parkingTimeTitle.setText(getString(R.string.parking_time));
         parkingTimeText.setText(parkingTime);
-        priceTitle.setText("Price");
+        priceTitle.setText(getString(R.string.price));
         priceText.setText(price);
-
-        if (TextUtils.isEmpty(address)) {
-            showToast("Failed to fetch location details");
-        }
     }
 
     private String formatParkingTime(long startTime, long endTime) {
-        // You can use SimpleDateFormat to format the time
         SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a", Locale.getDefault());
         String start = sdf.format(new Date(startTime));
         String end = sdf.format(new Date(endTime));
         return start + " - " + end;
     }
 
+    private void setUpButtonListeners() {
+        Button cancelButton = findViewById(R.id.cancelButton);
+        Button getDirectionButton = findViewById(R.id.getDirectionButton);
+
+        cancelButton.setOnClickListener(v -> finish());
+        getDirectionButton.setOnClickListener(v -> openMap());
+    }
+
     private void openMap() {
         try {
-            if (address != null && !address.isEmpty()) {  // Ensure the address is not null or empty
+            if (address != null && !address.isEmpty()) {
                 String destination = "geo:0,0?q=" + Uri.encode(address);
                 Uri gmmIntentUri = Uri.parse(destination);
                 Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
                 mapIntent.setPackage("com.google.android.apps.maps");
+
                 if (mapIntent.resolveActivity(getPackageManager()) != null) {
                     startActivity(mapIntent);
                 } else {
-                    showToast("Google Maps is not installed");
+                    showToast(R.string.error_google_maps_not_installed);
                 }
             } else {
-                showToast("Address is missing for directions");
+                showToast(R.string.error_address_missing_for_directions);
             }
         } catch (Exception e) {
-            showToast("An error occurred while opening the map: " + e.getMessage());
+            showToast(getString(R.string.error_generic, e.getMessage()));
         }
     }
 
     private void showToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    private void showToast(int messageResId) {
+        Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show();
     }
 }

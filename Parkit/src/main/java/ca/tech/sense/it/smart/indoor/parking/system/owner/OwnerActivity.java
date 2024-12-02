@@ -16,8 +16,6 @@ import com.google.android.material.navigation.NavigationBarView;
 import java.util.Objects;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
-import ca.tech.sense.it.smart.indoor.parking.system.manager.favoriteManager.FragmentManagerHelper;
-import ca.tech.sense.it.smart.indoor.parking.system.manager.preferenceManager.PreferenceManager;
 import ca.tech.sense.it.smart.indoor.parking.system.manager.sessionManager.SessionManager;
 
 import ca.tech.sense.it.smart.indoor.parking.system.model.owner.Owner;
@@ -25,7 +23,6 @@ import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.transactions
 
 import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.location.LocationsFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.ownerDashboard.DashboardFragment;
-import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.transactions.TransactionsFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
 
@@ -33,14 +30,11 @@ import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
 public class OwnerActivity extends AppCompatActivity implements NavigationBarView.OnItemSelectedListener {
 
 
-    private static final String TAG = "OwnerMainActivity";
-
     private final DashboardFragment dashboardFragment = new DashboardFragment();
     private final LocationsFragment locationsFragment = new LocationsFragment();
     private final TransactionsFragment transactionsFragment = new TransactionsFragment();
     private final AccountFragment accountFragment = AccountFragment.newInstance(R.id.fragment_container_owner);
-    private FragmentManagerHelper fragmentManagerHelper;
-    private PreferenceManager preferenceManager;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,19 +51,16 @@ public class OwnerActivity extends AppCompatActivity implements NavigationBarVie
         // Fetch session data when the activity is created
         SessionManager sessionManager = SessionManager.getInstance(this);
         sessionManager.fetchSessionData((user, owner) -> {
-
             // You can now use 'user' or 'owner' data for your UI
             if (user != null) {
                 Owner currentOwner = sessionManager.getCurrentOwner();
             } else if (owner != null) {
 
             }
-
         });
 
         // Initialize helpers
-        fragmentManagerHelper = new FragmentManagerHelper(getSupportFragmentManager(), R.id.fragment_container_owner);
-        preferenceManager = new PreferenceManager(this);
+        getSupportFragmentManager();
 
         // Set BottomNavigationView listener
         bottomNavigationView.setOnItemSelectedListener(this);
@@ -78,7 +69,7 @@ public class OwnerActivity extends AppCompatActivity implements NavigationBarVie
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        String toolbarTitle = "";
+        String toolbarTitle;
 
         if (item.getItemId() == R.id.navigation_dashboard) {
             loadFragments(dashboardFragment, "dashboardFragment");

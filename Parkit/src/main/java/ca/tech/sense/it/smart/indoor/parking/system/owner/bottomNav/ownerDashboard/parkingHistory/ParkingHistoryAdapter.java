@@ -17,8 +17,8 @@ import ca.tech.sense.it.smart.indoor.parking.system.R;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ParkingHistoryAdapter extends RecyclerView.Adapter<ParkingHistoryAdapter.ViewHolder> {
-    private List<ParkingHistoryModel> parkingHistoryList;
-    private Context context;
+    private final List<ParkingHistoryModel> parkingHistoryList;
+    private final Context context;
 
     public ParkingHistoryAdapter(Context context, List<ParkingHistoryModel> parkingHistoryList) {
         this.context = context;
@@ -53,8 +53,11 @@ public class ParkingHistoryAdapter extends RecyclerView.Adapter<ParkingHistoryAd
         return parkingHistoryList.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView locationName, slotName, paymentAmount, usageTime;
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        TextView locationName;
+        TextView slotName;
+        TextView paymentAmount;
+        TextView usageTime;
         CircleImageView userProfilePic;
 
         public ViewHolder(View itemView) {
