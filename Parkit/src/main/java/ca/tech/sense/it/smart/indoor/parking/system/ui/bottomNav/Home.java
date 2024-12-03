@@ -14,6 +14,10 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.network.BaseNetworkFragment;
+import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems.HelpFragment;
+import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems.RateUsFragment;
+import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.activity.HistoryFragment;
+import ca.tech.sense.it.smart.indoor.parking.system.ui.menu.FavoritesFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.menu.PromotionFragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -23,10 +27,10 @@ import java.util.Calendar;
 
 public class Home extends BaseNetworkFragment {
 
-    private TextView tvGreeting, tvAdditionalMessages, tvBrowseNearby, tvFindBestParking, tvPromoHeader, tvPromoCode;
-    private ImageView imgTop, imgBrowseNearby, imgPromotions;
+    private TextView tvGreeting, tvAdditionalMessages, tvBrowseNearby, tvFindBestParking, tvPromoHeader, tvPromoDescription, tvFavoritesHeader, tvFavoritesDescription, tvHistoryHeader, tvHistoryDescription, tvRatingHeader, tvRatingDescription, tvHelpHeader, tvHelpDescription;
+    private ImageView imgTop;
     private ScrollView scrollView;
-    private Button btnViewMap, btnViewPromotions;
+    private Button btnViewMap, btnViewPromotions, btnViewFavorites, btnViewHistory, btnRateExperience, btnGetHelp;
     private FirebaseFirestore db;
     private String userName;
 
@@ -48,17 +52,27 @@ public class Home extends BaseNetworkFragment {
     }
 
     private void initializeViews(View view) {
-        tvGreeting = view.findViewById(R.id.tv_header);
+        tvGreeting = view.findViewById(R.id.tv_greeting);
         tvAdditionalMessages = view.findViewById(R.id.tv_additional_messages);
         imgTop = view.findViewById(R.id.img_top);
         tvBrowseNearby = view.findViewById(R.id.tv_browse_nearby);
-        imgBrowseNearby = view.findViewById(R.id.img_browse_nearby);
         tvFindBestParking = view.findViewById(R.id.tv_find_best_parking);
         btnViewMap = view.findViewById(R.id.btn_view_map);
         tvPromoHeader = view.findViewById(R.id.tv_promo_header);
-        imgPromotions = view.findViewById(R.id.img_promotions);
-        tvPromoCode = view.findViewById(R.id.tv_promo_code);
+        tvPromoDescription = view.findViewById(R.id.tv_promo_description);
         btnViewPromotions = view.findViewById(R.id.btn_view_promotions);
+        tvFavoritesHeader = view.findViewById(R.id.tv_favorites_header);
+        tvFavoritesDescription = view.findViewById(R.id.tv_favorites_description);
+        btnViewFavorites = view.findViewById(R.id.btn_view_favorites);
+        tvHistoryHeader = view.findViewById(R.id.tv_history_header);
+        tvHistoryDescription = view.findViewById(R.id.tv_history_description);
+        btnViewHistory = view.findViewById(R.id.btn_view_history);
+        tvRatingHeader = view.findViewById(R.id.tv_rating_header);
+        tvRatingDescription = view.findViewById(R.id.tv_rating_description);
+        btnRateExperience = view.findViewById(R.id.btn_rate_experience);
+        tvHelpHeader = view.findViewById(R.id.tv_help_header);
+        tvHelpDescription = view.findViewById(R.id.tv_help_description);
+        btnGetHelp = view.findViewById(R.id.btn_get_help);
     }
 
     private void fetchAndDisplayUserName() {
@@ -106,6 +120,10 @@ public class Home extends BaseNetworkFragment {
     private void setClickListeners() {
         btnViewMap.setOnClickListener(v -> openParkFragment());
         btnViewPromotions.setOnClickListener(v -> openPromotionFragment());
+        btnViewFavorites.setOnClickListener(v -> openFavoritesFragment());
+        btnViewHistory.setOnClickListener(v -> openHistoryFragment());
+        btnRateExperience.setOnClickListener(v -> openRatingFragment());
+        btnGetHelp.setOnClickListener(v -> openHelpFragment());
     }
 
     private void openParkFragment() {
@@ -116,6 +134,22 @@ public class Home extends BaseNetworkFragment {
         loadFragments(new PromotionFragment(), "promotion_fragment");
     }
 
+    private void openFavoritesFragment() {
+        loadFragments(new FavoritesFragment(), "favorites_fragment");
+    }
+
+    private void openHistoryFragment() {
+        loadFragments(new HistoryFragment(), "history_fragment");
+    }
+
+    private void openRatingFragment() {
+        loadFragments(new RateUsFragment(), "rating_fragment");
+    }
+
+    private void openHelpFragment() {
+        loadFragments(new HelpFragment(), "help_fragment");
+    }
+
     private void loadFragments(Fragment fragment, String tag) {
         FragmentManager fragmentManager = getParentFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
@@ -124,4 +158,3 @@ public class Home extends BaseNetworkFragment {
         transaction.commit();
     }
 }
-

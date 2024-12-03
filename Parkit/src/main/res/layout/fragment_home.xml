@@ -3,22 +3,22 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:weightSum="4"
     android:padding="16dp"
     tools:context=".HomeFragment">
 
     <!-- TextView with big font size for greeting -->
     <TextView
-        android:id="@+id/tv_header"
+        android:id="@+id/tv_greeting"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Smart Indoor Parking System"
+        android:text="Good Morning, User!"
         android:textSize="30sp"
         android:textStyle="bold"
         android:textColor="@android:color/black"
         android:gravity="center"
-        android:layout_marginBottom="16dp" />
+        android:layout_marginBottom="8dp" />
 
     <!-- TextView for additional messages -->
     <TextView
@@ -53,32 +53,25 @@
             android:orientation="vertical">
 
             <!-- Browse Nearby Spaces Section -->
-            <FrameLayout
-                android:id="@+id/browse_nearby_layout"
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp">
-
-                <ImageView
-                    android:id="@+id/img_browse_nearby"
-                    android:layout_width="match_parent"
-                    android:layout_height="150dp"
-                    android:src="@drawable/browse_nearby_image"
-                    android:contentDescription="Browse Nearby Spaces"
-                    android:scaleType="fitXY"
-                    android:alpha="0.3" />
+                android:layout_marginBottom="16dp"
+                app:cardBackgroundColor="#E5F8AB"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="4dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="8dp">
+                    android:padding="16dp">
 
                     <TextView
                         android:id="@+id/tv_browse_nearby"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="BROWSE NEARBY SPACES"
+                        android:text="Spot the Perfect Spot!"
                         android:textSize="18sp"
                         android:textStyle="bold"
                         android:textColor="@android:color/black" />
@@ -87,10 +80,11 @@
                         android:id="@+id/tv_find_best_parking"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Find the best parking option for you."
-                        android:textSize="16sp"
+                        android:layout_marginTop="4dp"
+                        android:text="Your next parking spot is just a tap away—park smarter, not harder!"
                         android:textColor="@android:color/black"
-                        android:layout_marginTop="4dp" />
+                        android:textSize="16sp"
+                        android:textStyle="italic" />
 
                     <Button
                         android:id="@+id/btn_view_map"
@@ -100,46 +94,41 @@
                         android:textColor="@android:color/white"
                         android:layout_marginTop="4dp" />
                 </LinearLayout>
-            </FrameLayout>
+            </androidx.cardview.widget.CardView>
 
             <!-- Promotions Section -->
-            <FrameLayout
-                android:id="@+id/promo_layout"
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp">
-
-                <ImageView
-                    android:id="@+id/img_promotions"
-                    android:layout_width="match_parent"
-                    android:layout_height="150dp"
-                    android:src="@drawable/promotions_image"
-                    android:contentDescription="Promotions"
-                    android:scaleType="fitXY"
-                    android:alpha="0.3" />
+                android:layout_marginBottom="16dp"
+                app:cardBackgroundColor="#E5F8AB"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="4dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="8dp">
+                    android:padding="16dp">
 
                     <TextView
                         android:id="@+id/tv_promo_header"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="You have multiple promos"
+                        android:text="Park &amp; Save Big!"
                         android:textSize="18sp"
                         android:textStyle="bold"
                         android:textColor="@android:color/black" />
 
                     <TextView
-                        android:id="@+id/tv_promo_code"
+                        android:id="@+id/tv_promo_description"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Terms apply"
-                        android:textColor="@android:color/holo_green_dark"
-                        android:layout_marginTop="4dp" />
+                        android:layout_marginTop="4dp"
+                        android:text="Why just park when you can save big? Explore promos now!"
+                        android:textColor="@android:color/black"
+                        android:textSize="16sp"
+                        android:textStyle="italic" />
 
                     <Button
                         android:id="@+id/btn_view_promotions"
@@ -149,7 +138,184 @@
                         android:textColor="@android:color/white"
                         android:layout_marginTop="4dp" />
                 </LinearLayout>
-            </FrameLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Favorites Section -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardBackgroundColor="#E5F8AB"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="4dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:id="@+id/tv_favorites_header"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Favorites at Your Fingertips!"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="@android:color/black" />
+
+                    <TextView
+                        android:id="@+id/tv_favorites_description"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Quickly access your go-to parking spots in one click."
+                        android:textColor="@android:color/black"
+                        android:textSize="16sp"
+                        android:textStyle="italic" />
+
+                    <Button
+                        android:id="@+id/btn_view_favorites"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="View Favorites"
+                        android:textColor="@android:color/white"
+                        android:layout_marginTop="4dp" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- History Section -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardBackgroundColor="#E5F8AB"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="4dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:id="@+id/tv_history_header"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Trace Your Journey!"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="@android:color/black" />
+
+                    <TextView
+                        android:id="@+id/tv_history_description"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Review your parking past to plan smarter moves in the future."
+                        android:textColor="@android:color/black"
+                        android:textSize="16sp"
+                        android:textStyle="italic" />
+
+                    <Button
+                        android:id="@+id/btn_view_history"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="View History"
+                        android:textColor="@android:color/white"
+                        android:layout_marginTop="4dp" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Rating Section -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardBackgroundColor="#E5F8AB"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="4dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:id="@+id/tv_rating_header"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="We Value Your Feedback!"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="@android:color/black" />
+
+                    <TextView
+                        android:id="@+id/tv_rating_description"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Help us improve by sharing your thoughts—it only takes a moment."
+                        android:textColor="@android:color/black"
+                        android:textSize="16sp"
+                        android:textStyle="italic" />
+
+                    <Button
+                        android:id="@+id/btn_rate_experience"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Rate Now"
+                        android:textColor="@android:color/white"
+                        android:layout_marginTop="4dp" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Help Section -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/help_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardBackgroundColor="#E5F8AB"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="4dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:id="@+id/tv_help_header"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="We’re Here for You!"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="@android:color/black" />
+
+                    <TextView
+                        android:id="@+id/tv_help_description"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Got questions? Let us guide you every step of the way."
+                        android:textColor="@android:color/black"
+                        android:textSize="16sp"
+                        android:textStyle="italic" />
+
+                    <Button
+                        android:id="@+id/btn_get_help"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Get Help"
+                        android:textColor="@android:color/white"
+                        android:layout_marginTop="4dp" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
         </LinearLayout>
     </ScrollView>
 </LinearLayout>
