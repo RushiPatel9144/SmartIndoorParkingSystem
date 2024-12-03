@@ -98,10 +98,12 @@ public class BookingService {
                             slotService.scheduleStatusUpdate(locationId, slot, selectedDate, times[1], onSuccess, onFailure);
                             // Show toast message
                             Toast.makeText(context, "Booking confirmed!", Toast.LENGTH_SHORT).show();
+
                             // Pass the booking details, including the pass key, to the ParkingTicketActivity
                             Intent intent = new Intent(context, ParkingTicket.class);
                             intent.putExtra("booking", booking); // Pass the entire booking object
                             context.startActivity(intent);
+
 
                             // Send booking confirmation notification
                             NotificationManagerHelper.sendBookingConfirmationNotification(userId, booking, selectedDate, times);

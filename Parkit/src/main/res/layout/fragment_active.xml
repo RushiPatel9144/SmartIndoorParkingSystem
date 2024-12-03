@@ -38,7 +38,8 @@
                 android:layout_height="wrap_content"
                 android:text="Your parking session details will show here"
                 android:textSize="18sp"
-                android:paddingTop="16dp"
+                android:visibility="gone"
+                android:paddingTop="8dp"
                 android:paddingBottom="16dp"
                 android:gravity="center"
                 android:layout_gravity="center_horizontal"  />

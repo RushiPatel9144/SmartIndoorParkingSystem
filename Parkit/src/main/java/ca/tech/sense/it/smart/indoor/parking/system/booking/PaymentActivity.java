@@ -1,13 +1,10 @@
 package ca.tech.sense.it.smart.indoor.parking.system.booking;
 
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -74,9 +71,9 @@ public class PaymentActivity extends AppCompatActivity {
     private String transactionId;
     private TransactionManager transactionManager ;
     private String ownerId;
-    private double subtotal;
     FirebaseAuth firebaseAuth;
 
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_payment2); // Update to your layout
@@ -84,25 +81,19 @@ public class PaymentActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         ownerId = intent.getStringExtra("ownerId"); // Safely fetch ownerId
-        if (intent != null) {
-            if (intent.hasExtra("booking")) {
-                booking = (Booking) intent.getSerializableExtra("booking");
-                if (booking != null) {
-                    setBookingDetails();
-                    calculateTotalBreakdown();
-                } else {
-                    showToast(getString(R.string.booking_data_is_missing_or_invalid));
-                    // Optionally finish the activity if booking data is critical
-                    finish();
-                }
+        if (intent.hasExtra("booking")) {
+            booking = (Booking) intent.getSerializableExtra("booking");
+            if (booking != null) {
+                setBookingDetails();
+                calculateTotalBreakdown();
             } else {
                 showToast(getString(R.string.booking_data_is_missing_or_invalid));
                 // Optionally finish the activity if booking data is critical
                 finish();
             }
         } else {
-            showToast(getString(R.string.intent_data_is_missing));
-            // Optionally finish the activity if the intent is null
+            showToast(getString(R.string.booking_data_is_missing_or_invalid));
+            // Optionally finish the activity if booking data is critical
             finish();
         }
 
@@ -153,7 +144,7 @@ public class PaymentActivity extends AppCompatActivity {
     private void calculateTotalBreakdown() {
         if (booking != null) {
             String currencySymbol = booking.getCurrencySymbol();
-            subtotal = booking.getPrice();
+            double subtotal = booking.getPrice();
             double gstHst = subtotal * 0.13;
             double platformFee = subtotal * 0.10;
             total = subtotal + gstHst + platformFee;
@@ -238,8 +229,7 @@ public class PaymentActivity extends AppCompatActivity {
             new Handler(Looper.getMainLooper()).postDelayed(() -> {
                 confirmBooking(); // Confirm the booking
                 markPromoCodeAsUsed(); // Mark the promo code as used
-                openParkingTicketActivity(); // Pass data to ParkingTicket
-            }, 2000); // 2-second delay
+                }, 2000); // 2-second delay
         } else if (paymentSheetResult instanceof PaymentSheetResult.Failed) {
             showToast("Payment Failed: " + ((PaymentSheetResult.Failed) paymentSheetResult).getError());
             finish();
@@ -279,18 +269,6 @@ public class PaymentActivity extends AppCompatActivity {
         }
     }
 
-
-    private void onBookingFailure(Exception e) {
-        showToast("Booking failed: " + e.getMessage());
-    }
-
-    private boolean isBookingValid() {
-        if (booking == null) {
-            showToast(getString(R.string.booking_data_is_missing));
-            return false;
-        }
-        return true;
-    }
 
     private String formatTimeSlot(long startTime, long endTime) {
         String timeFormat = "HH:mm";
@@ -356,26 +334,6 @@ public class PaymentActivity extends AppCompatActivity {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
-    private String getSelectedDate() {
-        return new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date(booking.getStartTime()));
-    }
-
-    private void onBookingSuccess() {
-        showToast(getString(R.string.booking_confirmed));
-        String promoCode = promoCodeEditText.getText().toString().trim();
-        if (!promoCode.isEmpty()) {
-            PromotionHelper.markPromoCodeAsUsed(promoCode, this);
-        }
-    }
-
-    private void onBookingFailure(String error) {
-        showToast("Failed to save booking: " + error);
-    }
-
-    private void handleUnexpectedError(Exception e) {
-        showToast("An unexpected error occurred: " + e.getMessage());
-    }
-
     private void updateDateAndTimeTextViews(long startTime, long endTime) {
         String startTimeFormatted = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date(startTime));
         String endTimeFormatted = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date(endTime));
@@ -383,17 +341,5 @@ public class PaymentActivity extends AppCompatActivity {
 
         timeTextView.setText(MessageFormat.format("{0} - {1}", startTimeFormatted, endTimeFormatted));
         dateTextView.setText(dateFormatted);
-    }
-
-    private void openParkingTicketActivity() {
-        Intent intent = new Intent(this, ParkingTicket.class);
-
-        if (booking != null) {
-            intent.putExtra("address", booking.getLocation()); // Pass address
-            intent.putExtra("passkey", booking.getPassKey());  // Pass reference key
-        }
-
-        startActivity(intent);
-        finish();
     }
 }
