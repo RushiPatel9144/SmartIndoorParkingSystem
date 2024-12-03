@@ -8,33 +8,44 @@
     android:padding="16dp"
     tools:context=".HomeFragment">
 
-    <!-- TextView with big font size -->
+    <!-- TextView with big font size for greeting -->
     <TextView
         android:id="@+id/tv_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Smart Indoor Parking System"
-        android:textSize="24sp"
+        android:textSize="30sp"
         android:textStyle="bold"
         android:textColor="@android:color/black"
         android:gravity="center"
         android:layout_marginBottom="16dp" />
 
-    <!-- ImageView occupying the upper 25% of the screen -->
+    <!-- TextView for additional messages -->
+    <TextView
+        android:id="@+id/tv_additional_messages"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Welcome to the Park it\nPark Smart, Live Easy!"
+        android:textSize="16sp"
+        android:textColor="@android:color/black"
+        android:gravity="center"
+        android:layout_marginBottom="16dp" />
+
+    <!-- ImageView occupying more space -->
     <ImageView
         android:id="@+id/img_top"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:src="@drawable/home_fragment"
+        android:layout_weight="1.5"
+        android:src="@drawable/green_car"
         android:contentDescription="Top Image"
         android:scaleType="fitXY" />
 
-    <!-- ScrollView occupying the bottom 75% of the screen -->
+    <!-- ScrollView occupying the bottom part of the screen -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="3">
+        android:layout_weight="2.5">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -127,7 +138,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Terms apply"
-                        android:textSize="14sp"
                         android:textColor="@android:color/holo_green_dark"
                         android:layout_marginTop="4dp" />
 
