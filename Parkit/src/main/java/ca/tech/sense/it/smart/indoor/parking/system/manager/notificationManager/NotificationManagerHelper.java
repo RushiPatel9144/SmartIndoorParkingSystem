@@ -9,6 +9,7 @@ import com.google.firebase.auth.FirebaseUser;
 import java.util.Objects;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.model.booking.Booking;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.NotificationHelper;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -16,7 +17,7 @@ import androidx.core.app.NotificationCompat;
 
 public class NotificationManagerHelper {
     private static final String CHANNEL_ID = "default";
-    private final Context context;
+    private static Context context;
     private final SharedPreferences sharedPreferences;
     private final FirebaseAuth firebaseAuth;
     private final NotificationManager notificationManager;
@@ -83,6 +84,13 @@ public class NotificationManagerHelper {
             sharedPreferences.edit().putBoolean("welcome_notification_sent", true).apply();
         }
     }
+
+    public static void sendBookingConfirmationNotification(String userId, Booking booking, String selectedDate, String[] times) {
+        String title = "Booking Confirmed";
+        String message = "Your booking at " + booking.getLocation() + " is confirmed for " + selectedDate + " from " + times[0] + " to " + times[1];
+        NotificationHelper.sendNotification(context, title, message, userId);
+    }
+
 }
 
 

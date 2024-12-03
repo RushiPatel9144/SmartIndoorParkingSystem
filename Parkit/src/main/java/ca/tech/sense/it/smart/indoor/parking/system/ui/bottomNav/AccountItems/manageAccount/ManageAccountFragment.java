@@ -226,12 +226,25 @@ public class ManageAccountFragment extends Fragment {
     // Check the user type (Owner/User) and update collection reference accordingly
     private void checkUserType() {
         SessionManager sessionManager = SessionManager.getInstance(requireContext());
-        if (Objects.equals(sessionManager.getUserType(), "owner")) {
-            collection = COLLECTION_OWNER;
+
+        if (sessionManager == null || sessionManager.getUserType() == null) {
+            // Fetch session data asynchronously if session is not initialized
+            Objects.requireNonNull(sessionManager).fetchSessionData((userType, ownerType) -> {
+                if (ownerType != null) {
+                    collection = COLLECTION_OWNER;
+                } else if (userType != null) {
+                    collection = COLLECTION_USER;
+                }
+            });
         } else {
-            collection = COLLECTION_USER;
+            if (Objects.equals(sessionManager.getUserType(), "owner")) {
+                collection = COLLECTION_OWNER;
+            } else {
+                collection = COLLECTION_USER;
+            }
         }
     }
+
 
     // Show a Snackbar message
     private void showSnackbar(int messageResId) {

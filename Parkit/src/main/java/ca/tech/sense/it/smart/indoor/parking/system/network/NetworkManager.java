@@ -92,16 +92,18 @@ public class NetworkManager {
     }
 
     private void handleNetworkAvailability(Context context) {
-        wasInternetAvailable = true;
-        showToastOnce(context, context.getString(R.string.network_is_available));
-        notifyNetworkAvailable();
+        if (!wasInternetAvailable) { // Show toast only if the network was previously unavailable
+            wasInternetAvailable = true;
+            showToastOnce(context, context.getString(R.string.network_is_available));
+            notifyNetworkAvailable();
+        }
     }
 
     private void handleNetworkLoss(Context context) {
         wasInternetAvailable = false;
-        showToastOnce(context, context.getString(R.string.no_internet_connection));
         notifyNetworkLost();
     }
+
 
     private void notifyNetworkAvailable() {
         if (networkListener != null) {
