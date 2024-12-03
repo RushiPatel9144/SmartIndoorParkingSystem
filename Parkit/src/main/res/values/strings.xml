@@ -492,4 +492,5 @@
     <string name="confirmation_title">Confirmation</string>
     <string name="no_currencies_available">No currencies available</string>
     <string name="submit_again_in">"Submit again in "</string>
+    <string name="intent_data_is_missing">Intent Data is Missing</string>
 </resources>

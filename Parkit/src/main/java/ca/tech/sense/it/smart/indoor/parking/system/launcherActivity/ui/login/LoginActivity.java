@@ -3,6 +3,7 @@ package ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui.login;
 import static ca.tech.sense.it.smart.indoor.parking.system.utility.AppConstants.USER_TYPE_OWNER;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -25,6 +26,9 @@ import ca.tech.sense.it.smart.indoor.parking.system.network.BaseActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.repository.AuthRepository;
 import ca.tech.sense.it.smart.indoor.parking.system.viewModel.LoginViewModelFactory;
 
+import androidx.test.espresso.idling.CountingIdlingResource;
+
+
 public class LoginActivity extends BaseActivity {
 
     // UI Elements
@@ -42,6 +46,9 @@ public class LoginActivity extends BaseActivity {
 
     // User Type
     private String userType;
+
+    private CountingIdlingResource idlingResource = new CountingIdlingResource("Network_Call");
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,7 +125,16 @@ public class LoginActivity extends BaseActivity {
      */
     private void setupListeners() {
         login_back_button.setOnClickListener(v -> LoginHelper.navigateToFirst(this));
-        buttonLogin.setOnClickListener(v -> LoginHelper.handleLogin(editTextEmail, editTextPassword, progressBar, loginViewModel, userType,login_email_layout,login_password_layout)); // Login button click handler
+        buttonLogin.setOnClickListener(v -> {
+            progressBar.setVisibility(View.VISIBLE); // Show the progress bar
+            idlingResource.increment(); // Increment the counter
+            new Handler().postDelayed(() -> {
+                // Simulate network call
+                LoginHelper.handleLogin(editTextEmail, editTextPassword, progressBar, loginViewModel, userType, login_email_layout, login_password_layout);
+                progressBar.setVisibility(View.GONE); // Hide the progress bar after delay
+                idlingResource.decrement(); // Decrement the counter
+            }, 2000); // 2-second delay
+        });
         textViewSignUp.setOnClickListener(v -> LoginHelper.navigateToSignUp(this, userType));  // Sign-up text click handler
         googleButton.setOnClickListener(v -> loginViewModel.signInWithGoogle(this,sessionManager, rememberMeCheckBox));  // Google sign-in button click handler
         forgotPasswordTextView.setOnClickListener(v ->  LoginHelper.showForgotPasswordDialog(this, loginViewModel, userType));  // Forgot password text click handler
