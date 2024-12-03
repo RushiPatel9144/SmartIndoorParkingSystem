@@ -78,29 +78,21 @@ public class PaymentActivityTest {
                 .perform(typeText("PROMO123"));
         onView(withId(R.id.applyPromoCodeButton))
                 .perform(click());
-        // Add assertions to verify the promo code application
     }
 
     @Test
     public void testConfirmButton() {
         onView(withId(R.id.confirmButton))
                 .perform(click());
-        // Add assertions to verify the confirmation action
     }
 
     @Test
     public void testCancelButton() {
         onView(withId(R.id.cancelButton))
                 .perform(click());
-        // Add assertions to verify the cancellation action
     }
 
     private void disableAnimations() {
-        // Disable animations on the device
-        // You can do this programmatically or manually in the device settings
-        // For example, you can use the following commands in the terminal:
-        // adb shell settings put global window_animation_scale 0
-        // adb shell settings put global transition_animation_scale 0
-        // adb shell settings put global animator_duration_scale 0
+
     }
 }

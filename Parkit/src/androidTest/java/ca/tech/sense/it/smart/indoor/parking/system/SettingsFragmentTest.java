@@ -16,11 +16,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isNotChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withSpinnerText;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.anything;
-import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
-
-import static java.util.EnumSet.allOf;
 
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems.SettingsFragment;
 
