@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:theme="@style/LocationFragment">
 
 
     <!-- Main card view for item -->
@@ -26,7 +27,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/location_name"
-                android:textSize="18sp"
+                android:textSize="22sp"
+                android:fontFamily="@font/poppins_medium"
                 android:textStyle="bold" />
 
             <TextView
@@ -56,8 +58,9 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:textAllCaps="false"
                     android:text="@string/change_price"
-                    android:textSize="14sp"
+                    android:textSize="12sp"
                     android:textColor="@android:color/white"
                     android:backgroundTint="@color/theme"
                     android:paddingVertical="8dp"
@@ -73,16 +76,17 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/manage_slots"
-                    android:textSize="14sp"
-                    android:textColor="@android:color/white"
-                    android:backgroundTint="@color/theme"
-                    android:paddingVertical="8dp"
-                    android:paddingHorizontal="16dp"
+                    android:backgroundTint="@color/bg"
+                    android:clickable="true"
                     android:elevation="4dp"
-                    android:minHeight="48dp"
                     android:focusable="true"
-                    android:clickable="true"/>
+                    android:minHeight="48dp"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="8dp"
+                    android:text="@string/manage_slots"
+                    android:textAllCaps="false"
+                    android:textColor="@color/colorAccent"
+                    android:textSize="12sp" />
 
             </LinearLayout>
         </LinearLayout>

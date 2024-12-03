@@ -4,17 +4,13 @@ import static ca.tech.sense.it.smart.indoor.parking.system.utility.AppConstants.
 import static ca.tech.sense.it.smart.indoor.parking.system.utility.AppConstants.COLLECTION_USER;
 import static ca.tech.sense.it.smart.indoor.parking.system.utility.AppConstants.USER_TYPE_OWNER;
 import static ca.tech.sense.it.smart.indoor.parking.system.utility.AppConstants.USER_TYPE_USER;
-
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.util.Log;
-
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirestoreSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.model.owner.Owner;
@@ -29,17 +25,14 @@ public class SessionManager {
     private static final String KEY_OWNER_TOKEN = "owner_authToken";
     private static final String KEY_USER_TYPE = "user_type"; // store user type
     private static final String KEY_REMEMBER_ME = "remember_me"; // store remember me status
-
     private final SharedPreferences sharedPreferences;
     private final SharedPreferences.Editor editor;
-
     private final FirebaseAuth mAuth;
     private final FirebaseFirestore db;
-
     private User currentUser;
     private Owner currentOwner;
 
-    public SessionManager(Context context) {
+    private SessionManager(Context context) {
         sharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
         editor = sharedPreferences.edit();
 
@@ -51,7 +44,10 @@ public class SessionManager {
     // Singleton instance
     public static synchronized SessionManager getInstance(Context context) {
         if (instance == null) {
-            instance = new SessionManager(context);
+            Log.d("SessionManager", "Creating new instance of SessionManager");
+            instance = new SessionManager(context.getApplicationContext());
+        } else {
+            Log.d("SessionManager", "Returning existing instance of SessionManager");
         }
         return instance;
     }
@@ -77,6 +73,7 @@ public class SessionManager {
 
         editor.putBoolean(KEY_REMEMBER_ME, rememberMe);
         editor.apply();
+
     }
 
     // Check if the user is logged in by checking if token exists
@@ -86,16 +83,6 @@ public class SessionManager {
 
     public boolean isOwnerLoggedIn() {
         return sharedPreferences.contains(KEY_OWNER_TOKEN);
-    }
-
-    // Retrieve the token based on the user type
-    public String getAuthToken() {
-        String userType = sharedPreferences.getString(KEY_USER_TYPE, null);
-        if (USER_TYPE_OWNER.equals(userType)) {
-            return sharedPreferences.getString(KEY_OWNER_TOKEN, null);
-        } else {
-            return sharedPreferences.getString(KEY_USER_TOKEN, null);
-        }
     }
 
     public User getCurrentUser() {
@@ -109,10 +96,6 @@ public class SessionManager {
     // Get the user type (owner or user)
     public  String getUserType() {
         return sharedPreferences.getString(KEY_USER_TYPE, null);
-    }
-    public void saveUserType(String userType) {
-        editor.putString(KEY_USER_TYPE, userType);
-        editor.apply();
     }
 
     // Retrieve the "Remember Me" status
@@ -173,31 +156,4 @@ public class SessionManager {
         void onSessionDataFetched(User user, Owner owner);
     }
 
-    // Save User details (including name, email, and photo URL)
-    public void saveUserData(User user) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("user_name", user.getFirstName() + " " + user.getLastName());
-        editor.putString("user_email", user.getEmail());
-        editor.putString("user_photo_url", user.getProfilePhotoUrl());
-        editor.apply();
-    }
-
-    // Update profile photo URL in SharedPreferences
-    public void updateProfilePhotoUrl(Uri photoUrl) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("user_photo_url", String.valueOf(photoUrl));
-        editor.apply();
-    }
-
-    public void printSharedPreferences(Context context) {
-        // Get SharedPreferences object
-        SharedPreferences sharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-
-        // Iterate over all the keys and print their values
-        for (String key : sharedPreferences.getAll().keySet()) {
-            // Get the value associated with the key
-            Object value = sharedPreferences.getAll().get(key);
-            Log.d("SharedPreferences", "Key: " + key + ", Value: " + value);
-        }
-    }
 }

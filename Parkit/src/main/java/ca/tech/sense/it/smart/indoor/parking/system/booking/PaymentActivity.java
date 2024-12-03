@@ -39,12 +39,17 @@ import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.currency.CurrencyManager;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseDatabaseSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.manager.bookingManager.BookingManager;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.bookingManager.TransactionManager;
 import ca.tech.sense.it.smart.indoor.parking.system.model.Promotion;
 import ca.tech.sense.it.smart.indoor.parking.system.model.booking.Booking;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.PromotionHelper;
+import ca.tech.sense.it.smart.indoor.parking.system.model.booking.Transaction;
+import ca.tech.sense.it.smart.indoor.parking.system.utility.DateTimeUtils;
+
 
 public class PaymentActivity extends AppCompatActivity {
 
@@ -65,32 +70,47 @@ public class PaymentActivity extends AppCompatActivity {
     private Button confirmButton;
     private Button cancelButton;
     private PaymentSheet paymentSheet;
-    private String currency = "CAD";
     private double total;
     private String transactionId;
+    private TransactionManager transactionManager ;
+    private String ownerId;
+    private double subtotal;
+    FirebaseAuth firebaseAuth;
 
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_payment2); // Update to your layout
         initializeUIElements();
 
         Intent intent = getIntent();
-        if (intent != null && intent.hasExtra("booking")) {
-            booking = (Booking) intent.getSerializableExtra("booking");
-            if (booking != null) {
-                setBookingDetails();
-                calculateTotalBreakdown();
+        ownerId = intent.getStringExtra("ownerId"); // Safely fetch ownerId
+        if (intent != null) {
+            if (intent.hasExtra("booking")) {
+                booking = (Booking) intent.getSerializableExtra("booking");
+                if (booking != null) {
+                    setBookingDetails();
+                    calculateTotalBreakdown();
+                } else {
+                    showToast(getString(R.string.booking_data_is_missing_or_invalid));
+                    // Optionally finish the activity if booking data is critical
+                    finish();
+                }
             } else {
                 showToast(getString(R.string.booking_data_is_missing_or_invalid));
+                // Optionally finish the activity if booking data is critical
+                finish();
             }
+        } else {
+            showToast(getString(R.string.intent_data_is_missing));
+            // Optionally finish the activity if the intent is null
+            finish();
         }
 
         FirebaseDatabase firebaseDatabase = FirebaseDatabaseSingleton.getInstance();
-        FirebaseAuth firebaseAuth = FirebaseAuthSingleton.getInstance();
+        firebaseAuth = FirebaseAuthSingleton.getInstance();
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         Context context = this;
-
+        transactionManager = new TransactionManager(firebaseDatabase);
         bookingManager = new BookingManager(executorService, firebaseDatabase, firebaseAuth, context);
 
         PaymentConfiguration.init(
@@ -133,15 +153,17 @@ public class PaymentActivity extends AppCompatActivity {
     private void calculateTotalBreakdown() {
         if (booking != null) {
             String currencySymbol = booking.getCurrencySymbol();
-            double subtotal = booking.getPrice();
+            subtotal = booking.getPrice();
             double gstHst = subtotal * 0.13;
             double platformFee = subtotal * 0.10;
             total = subtotal + gstHst + platformFee;
+          
+            booking.setTotalPrice(CurrencyManager.getInstance().convertToCAD(total, booking.getCurrencyCode()));
+            subtotalTextView.setText(String.format(Locale.getDefault(), "%s %.2f",currencySymbol, subtotal));
+            gstHstTextView.setText(String.format(Locale.getDefault(), "%s %.2f",currencySymbol, gstHst));
+            platformFeeTextView.setText(String.format(Locale.getDefault(), "%s %.2f",currencySymbol, platformFee));
+            totalTextView.setText(String.format(Locale.getDefault(), "%s %.2f",currencySymbol, total));
 
-            subtotalTextView.setText(String.format(Locale.getDefault(), "%s %.2f", currencySymbol, subtotal));
-            gstHstTextView.setText(String.format(Locale.getDefault(), "%s %.2f", currencySymbol, gstHst));
-            platformFeeTextView.setText(String.format(Locale.getDefault(), "%s %.2f", currencySymbol, platformFee));
-            totalTextView.setText(String.format(Locale.getDefault(), "%s %.2f", currencySymbol, total));
         }
     }
 
@@ -154,16 +176,15 @@ public class PaymentActivity extends AppCompatActivity {
                 showToast("Please enter a promo code.");
             }
         });
-        confirmButton.setOnClickListener(v -> fetchClientSecret());
+        confirmButton.setOnClickListener(v -> fetchClientSecret(total, booking));
         cancelButton.setOnClickListener(v -> finish());
     }
 
-    private void fetchClientSecret() {
+    private void fetchClientSecret(double price, Booking booking) {
         OkHttpClient client = new OkHttpClient();
         String url = "https://parkit-cd4c2ec26f90.herokuapp.com/create-payment-intent";
-
-        double totalAmount = total * 100;
-        currency = booking.getCurrencyCode();
+        double totalAmount = price * 100;
+        String currency = booking.getCurrencyCode();
 
         JSONObject jsonRequest = new JSONObject();
         try {
@@ -212,6 +233,7 @@ public class PaymentActivity extends AppCompatActivity {
 
     private void onPaymentSheetResult(PaymentSheetResult paymentSheetResult) {
         if (paymentSheetResult instanceof PaymentSheetResult.Completed) {
+
             // Use Handler with Looper.getMainLooper() for a delay
             new Handler(Looper.getMainLooper()).postDelayed(() -> {
                 confirmBooking(); // Confirm the booking
@@ -235,11 +257,15 @@ public class PaymentActivity extends AppCompatActivity {
         }
 
         // Extract valid time slot and date
-        String selectedTimeSlot = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date(booking.getStartTime())) + " - " +
-                new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date(booking.getEndTime()));
-        String selectedDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date(booking.getStartTime()));
+        String selectedTimeSlot = formatTimeSlot(booking.getStartTime(), booking.getEndTime());
+        String selectedDate = formatDate(booking.getStartTime());
 
+        // Create a transaction object
+        Transaction transaction = createTransaction();
+
+        // Store transaction and confirm booking
         try {
+
             bookingManager.getBookingService().confirmBooking(
                     transactionId,
                     booking.getLocationId(),        // Pass location ID
@@ -282,6 +308,76 @@ public class PaymentActivity extends AppCompatActivity {
     private String getSelectedTimeSlot() {
         return new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date(booking.getStartTime())) + " - " +
                 new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date(booking.getEndTime()));
+
+            transactionManager.storeTransaction(ownerId, transaction);
+            confirmBookingInService(transactionId, selectedTimeSlot, selectedDate);
+        } catch (Exception e) {
+            showToast("An unexpected error occurred: " + e.getMessage());
+        }
+    }
+
+    private String formatTimeSlot(long startTime, long endTime) {
+        String timeFormat = "HH:mm";
+        SimpleDateFormat timeFormatter = new SimpleDateFormat(timeFormat, Locale.getDefault());
+        return timeFormatter.format(new Date(startTime)) + " - " + timeFormatter.format(new Date(endTime));
+    }
+
+    private String formatDate(long startTime) {
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        return dateFormatter.format(new Date(startTime));
+    }
+
+    private Transaction createTransaction() {
+        double convertedPrice = CurrencyManager.getInstance().convertToCAD(booking.getPrice(), booking.getCurrencyCode());
+        return new Transaction(transactionId, booking.getTitle(), convertedPrice, booking.getCurrencySymbol(), DateTimeUtils.getCurrentDateTime(), false);
+    }
+
+    private void confirmBookingInService(String transactionId, String selectedTimeSlot, String selectedDate) {
+        bookingManager.getBookingService().confirmBooking(
+                transactionId,
+                selectedTimeSlot,
+                selectedDate,
+                booking,
+                this::onBookingConfirmed,
+                this::onBookingConfirmationError
+        );
+    }
+
+    private void onBookingConfirmed() {
+        showToast(getString(R.string.booking_confirmed));
+        handlePromoCode();
+    }
+
+    private void onBookingConfirmationError(Exception error) {
+        showToast("Failed to save booking: " + error.getMessage());
+    }
+
+    private void handlePromoCode() {
+        String promoCode = promoCodeEditText.getText().toString().trim();
+        if (promoCode.isEmpty()) return;
+
+        DatabaseReference promotionsRef = FirebaseDatabaseSingleton.getInstance().getReference("Promotions");
+        promotionsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Promotion promotion = snapshot.getValue(Promotion.class);
+                    if (promotion != null && promoCode.equals(promotion.getPromoCode())) {
+                        markPromoCodeAsUsed(promotion, promotionsRef);
+                        break;
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                showToast("Failed to update promo code status.");
+            }
+        });
+    }
+
+    private void showToast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
     private String getSelectedDate() {
@@ -311,10 +407,6 @@ public class PaymentActivity extends AppCompatActivity {
 
         timeTextView.setText(MessageFormat.format("{0} - {1}", startTimeFormatted, endTimeFormatted));
         dateTextView.setText(dateFormatted);
-    }
-
-    private void showToast(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
     private void openParkingTicketActivity() {

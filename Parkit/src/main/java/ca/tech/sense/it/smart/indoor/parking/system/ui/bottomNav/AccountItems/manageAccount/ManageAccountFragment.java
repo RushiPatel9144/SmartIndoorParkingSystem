@@ -225,7 +225,7 @@ public class ManageAccountFragment extends Fragment {
 
     // Check the user type (Owner/User) and update collection reference accordingly
     private void checkUserType() {
-        SessionManager sessionManager = new SessionManager(requireContext());
+        SessionManager sessionManager = SessionManager.getInstance(requireContext());
         if (Objects.equals(sessionManager.getUserType(), "owner")) {
             collection = COLLECTION_OWNER;
         } else {

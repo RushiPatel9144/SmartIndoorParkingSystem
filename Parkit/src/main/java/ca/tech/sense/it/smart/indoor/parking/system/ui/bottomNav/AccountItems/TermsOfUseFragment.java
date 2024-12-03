@@ -1,5 +1,7 @@
 package ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems;
 
+import static ca.tech.sense.it.smart.indoor.parking.system.utility.AppConstants.COLLECTION_LEGAL;
+
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -8,102 +10,88 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import org.json.JSONException;
-import org.json.JSONObject;
+import java.util.HashMap;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirestoreSingleton;
 
 public class TermsOfUseFragment extends Fragment {
 
     private FirebaseFirestore db;
-    private TextView tvAcceptanceOfTermsContent;
-    private TextView tvPurposeOfTheAppContent;
-    private TextView tvUserResponsibilitiesContent;
-    private TextView tvBookingAndPaymentContent;
-    private TextView tvParkingRulesContent;
-    private TextView tvAccountManagementContent;
-    private TextView tvRestrictionsContent;
-    private TextView tvModificationsToTheAppContent;
-    private TextView tvLiabilityContent;
+    private HashMap<String, TextView> termsTextViews;
+
+    // Constants for the term keys
+    private static final String ACCEPTANCE_OF_TERMS = "acceptance_of_terms";
+    private static final String PURPOSE_OF_THE_APP = "purpose_of_the_app";
+    private static final String USER_RESPONSIBILITIES = "user_responsibilities";
+    private static final String BOOKING_AND_PAYMENT = "booking_and_payment";
+    private static final String PARKING_RULES = "parking_rules";
+    private static final String ACCOUNT_MANAGEMENT = "account_management";
+    private static final String RESTRICTIONS = "restrictions";
+    private static final String MODIFICATIONS_TO_THE_APP = "modifications_to_the_app";
+    private static final String LIABILITY = "liability";
 
     public TermsOfUseFragment() {
         // Required empty public constructor
     }
-
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_terms_of_use, container, false);
 
-        // Initialize TextViews
-        tvAcceptanceOfTermsContent = view.findViewById(R.id.tvAcceptanceOfTermsContent);
-        tvPurposeOfTheAppContent = view.findViewById(R.id.tvPurposeOfTheAppContent);
-        tvUserResponsibilitiesContent = view.findViewById(R.id.tvUserResponsibilitiesContent);
-        tvBookingAndPaymentContent = view.findViewById(R.id.tvBookingAndPaymentContent);
-        tvParkingRulesContent = view.findViewById(R.id.tvParkingRulesContent);
-        tvAccountManagementContent = view.findViewById(R.id.tvAccountManagementContent);
-        tvRestrictionsContent = view.findViewById(R.id.tvRestrictionsContent);
-        tvModificationsToTheAppContent = view.findViewById(R.id.tvModificationsToTheAppContent);
-        tvLiabilityContent = view.findViewById(R.id.tvLiabilityContent);
+        // Initialize the terms' TextViews in a HashMap
+        initializeTermsTextViews(view);
 
-        db = FirebaseFirestore.getInstance();
+        db = FirestoreSingleton.getInstance();
 
         fetchTermsOfUse();
         return view;
     }
 
+    private void initializeTermsTextViews(View view) {
+        termsTextViews = new HashMap<>();
+        termsTextViews.put(ACCEPTANCE_OF_TERMS, view.findViewById(R.id.tvAcceptanceOfTermsContent));
+        termsTextViews.put(PURPOSE_OF_THE_APP, view.findViewById(R.id.tvPurposeOfTheAppContent));
+        termsTextViews.put(USER_RESPONSIBILITIES, view.findViewById(R.id.tvUserResponsibilitiesContent));
+        termsTextViews.put(BOOKING_AND_PAYMENT, view.findViewById(R.id.tvBookingAndPaymentContent));
+        termsTextViews.put(PARKING_RULES, view.findViewById(R.id.tvParkingRulesContent));
+        termsTextViews.put(ACCOUNT_MANAGEMENT, view.findViewById(R.id.tvAccountManagementContent));
+        termsTextViews.put(RESTRICTIONS, view.findViewById(R.id.tvRestrictionsContent));
+        termsTextViews.put(MODIFICATIONS_TO_THE_APP, view.findViewById(R.id.tvModificationsToTheAppContent));
+        termsTextViews.put(LIABILITY, view.findViewById(R.id.tvLiabilityContent));
+    }
+
     private void fetchTermsOfUse() {
-        db.collection("legal").document("terms_of_use")
+        db.collection(COLLECTION_LEGAL).document("terms_of_use")
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
-                        try {
-                            JSONObject jsonContent = new JSONObject();
-                            if (documentSnapshot.contains("acceptance_of_terms")) {
-                                jsonContent.put("acceptance_of_terms", documentSnapshot.getString("acceptance_of_terms"));
-                            }
-                            if (documentSnapshot.contains("purpose_of_the_app")) {
-                                jsonContent.put("purpose_of_the_app", documentSnapshot.getString("purpose_of_the_app"));
-                            }
-                            if (documentSnapshot.contains("user_responsibilities")) {
-                                jsonContent.put("user_responsibilities", documentSnapshot.getString("user_responsibilities"));
-                            }
-                            if (documentSnapshot.contains("booking_and_payment")) {
-                                jsonContent.put("booking_and_payment", documentSnapshot.getString("booking_and_payment"));
-                            }
-                            if (documentSnapshot.contains("parking_rules")) {
-                                jsonContent.put("parking_rules", documentSnapshot.getString("parking_rules"));
-                            }
-                            if (documentSnapshot.contains("account_management")) {
-                                jsonContent.put("account_management", documentSnapshot.getString("account_management"));
-                            }
-                            if (documentSnapshot.contains("restrictions")) {
-                                jsonContent.put("restrictions", documentSnapshot.getString("restrictions"));
-                            }
-                            if (documentSnapshot.contains("modifications_to_the_app")) {
-                                jsonContent.put("modifications_to_the_app", documentSnapshot.getString("modifications_to_the_app"));
-                            }
-                            if (documentSnapshot.contains("liability")) {
-                                jsonContent.put("liability", documentSnapshot.getString("liability"));
-                            }
-
-                            tvAcceptanceOfTermsContent.setText(jsonContent.optString("acceptance_of_terms", "N/A"));
-                            tvPurposeOfTheAppContent.setText(jsonContent.optString("purpose_of_the_app", "N/A"));
-                            tvUserResponsibilitiesContent.setText(jsonContent.optString("user_responsibilities", "N/A"));
-                            tvBookingAndPaymentContent.setText(jsonContent.optString("booking_and_payment", "N/A"));
-                            tvParkingRulesContent.setText(jsonContent.optString("parking_rules", "N/A"));
-                            tvAccountManagementContent.setText(jsonContent.optString("account_management", "N/A"));
-                            tvRestrictionsContent.setText(jsonContent.optString("restrictions", "N/A"));
-                            tvModificationsToTheAppContent.setText(jsonContent.optString("modifications_to_the_app", "N/A"));
-                            tvLiabilityContent.setText(jsonContent.optString("liability", "N/A"));
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+                        updateTermsContent(documentSnapshot);
                     }
                 })
                 .addOnFailureListener(e -> {
-                    // Handle the error
+                    if (getContext() != null) {
+                        Toast.makeText(getContext(), getString(R.string.default_content), Toast.LENGTH_SHORT).show();
+                    }
                 });
     }
+
+    private void updateTermsContent(@NonNull DocumentSnapshot documentSnapshot) {
+        for (String term : termsTextViews.keySet()) {
+            String content = documentSnapshot.getString(term);
+            updateTextView(term, content);
+        }
+    }
+
+    private void updateTextView(String term, String content) {
+        TextView textView = termsTextViews.get(term);
+        if (textView != null) {
+            textView.setText(content != null ? content : getString(R.string.default_content));
+        }
+    }
+
 }

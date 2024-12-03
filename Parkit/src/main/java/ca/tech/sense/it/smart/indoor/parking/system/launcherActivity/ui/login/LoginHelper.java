@@ -20,8 +20,11 @@ import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.launcherUtililty.InputValidatorHelper;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.launcherUtililty.NavigationHelper;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.launcherUtililty.ToastHelper;
+import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui.FirstActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui.signUp.SignUpActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.manager.sessionManager.SessionManager;
+import ca.tech.sense.it.smart.indoor.parking.system.model.owner.Owner;
+import ca.tech.sense.it.smart.indoor.parking.system.model.user.User;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
 
 public class LoginHelper {
@@ -109,5 +112,11 @@ public class LoginHelper {
                         // Do nothing if the user cancels the dialog
                     }
                 });
+    }
+
+    public static void navigateToFirst(LoginActivity loginActivity) {
+        Intent intent = new Intent(loginActivity, FirstActivity.class);
+        loginActivity.startActivity(intent);
+        loginActivity.finish();
     }
 }

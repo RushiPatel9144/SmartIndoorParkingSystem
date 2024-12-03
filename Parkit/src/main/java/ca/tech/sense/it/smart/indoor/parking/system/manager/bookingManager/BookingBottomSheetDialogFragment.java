@@ -29,10 +29,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.booking.PaymentActivity;
+import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.manager.favoriteManager.FavoritesManager;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.adapters.SlotAdapter;
 import ca.tech.sense.it.smart.indoor.parking.system.currency.Currency;
@@ -71,7 +73,7 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
     private FirebaseAuth firebaseAuth;
     private final ParkingLocationManager parkingLocationManager = new ParkingLocationManager();
     private ExecutorService executorService;
-
+    private String ownerId;
     private ParkingLocation location; // Define the ParkingLocation variable
     // Constructor with dependency injection
     public BookingBottomSheetDialogFragment(ExecutorService executorService, String locationId, BookingManager bookingManager, Context context) {
@@ -93,7 +95,7 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
         initializeUIElements(view);
 
         // Initialize Firebase Auth
-        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseAuth = FirebaseAuthSingleton.getInstance();
 
         // Set up the slot spinner
         setupProceedToPaymentButton();
@@ -141,6 +143,7 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
             public void onFetchSuccess(ParkingLocation fetchedLocation) {
                 if (fetchedLocation != null) {
                     location = fetchedLocation; // Assign the fetched location to the variable
+                    ownerId = location.getOwnerId();
                     titleTextView.setText(location.getName());
                     addressText.setText(location.getAddress());
                     postalCodeText.setText(location.getPostalCode());
@@ -162,19 +165,20 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
 
     // Method to convert currency
     private void displayConvertedPrice(double priceInCad) {
-        CurrencyPreferenceManager currencyPreferenceManager = new CurrencyPreferenceManager(requireContext());
-        String selectedCurrencyCode = currencyPreferenceManager.getSelectedCurrency();
-        selectedCurrency = CurrencyManager.getInstance().getCurrency(selectedCurrencyCode);
+        if (isAdded()) {
+            CurrencyPreferenceManager currencyPreferenceManager = new CurrencyPreferenceManager(requireContext());
+            String selectedCurrencyCode = currencyPreferenceManager.getSelectedCurrency();
+            selectedCurrency = CurrencyManager.getInstance().getCurrency(selectedCurrencyCode);
 
-        if (selectedCurrency != null) {
-            convertedPrice = CurrencyManager.getInstance().convertFromCAD(priceInCad, selectedCurrencyCode);
-            priceTextView.setText(String.format(Locale.getDefault(), "Price: %s %.2f", selectedCurrency.getSymbol(), convertedPrice));
-        } else {
-            priceTextView.setText(String.format(Locale.getDefault(), "Price: %s %.2f", "CAD$", priceInCad));
+            if (selectedCurrency != null) {
+                convertedPrice = CurrencyManager.getInstance().convertFromCAD(priceInCad, selectedCurrencyCode);
+                priceTextView.setText(String.format(Locale.getDefault(), "Price: %s %.2f", selectedCurrency.getSymbol(), convertedPrice));
+            } else {
+                priceTextView.setText(String.format(Locale.getDefault(), "Price: %s %.2f", "CAD$", priceInCad));
+            }
         }
     }
 
-    // Method to set up slot spinner data
     private void setupSlotSpinnerData(Map<String, ParkingSlot> slots, String locationId, String selectedDate, String selectedHour, BookingManager bookingManager) {
         if (slots == null || slots.isEmpty() || slotSpinner == null) {
             return; // Exit the method if any critical component is null
@@ -184,7 +188,9 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
         for (Map.Entry<String, ParkingSlot> entry : slots.entrySet()) {
             ParkingSlot slot = entry.getValue();
             if (slot != null && slot.getId() != null) {
-                slotNames.add(slot.getId());
+                // Sanitize slot ID before adding it to the list
+                String sanitizedSlotId = sanitizeSlotId(slot.getId());
+                slotNames.add(sanitizedSlotId);
             } else {
                 // Log or handle null values for debugging
                 Log.e("setupSlotSpinnerData", "Null slot or slot ID encountered in slots map.");
@@ -192,12 +198,18 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
         }
 
         // Only set the adapter if slotNames is not empty
-        if (!slotNames.isEmpty()) {
+        if (!slotNames.isEmpty() && isAdded()) {
             SlotAdapter adapter = new SlotAdapter(requireContext(), android.R.layout.simple_spinner_item, slotNames, locationId, selectedDate, selectedHour, bookingManager);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             slotSpinner.setAdapter(adapter);
         }
     }
+
+    // Add the sanitizeSlotId method here
+    private String sanitizeSlotId(String slotId) {
+        return slotId.replaceAll("[.#$\\[\\]]", "_"); // Replace invalid characters with '_'
+    }
+
 
     // Method to set up time slots based on the selected date
     private void setupTimeSlots(String selectedDate) {
@@ -223,7 +235,7 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 selectedHour = timeSlots.get(position).split(" - ")[0];
-                Log.d("BookingBottomSheet", "Selected Hour Changed: " + selectedHour); // Add logging
+                Log.d("BookingBottomSheet", "Selected Hour Changed: " + selectedHour);
                 // Update the slot spinner data based on the new selected hour
                 if (location != null) {
                     setupSlotSpinnerData(location.getSlots(), locationId, selectedDate, selectedHour, bookingManager);
@@ -288,11 +300,13 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
                     } else {
                         // Create a Booking object with the selected details
                         Booking booking = new Booking(
+                                null,
                                 titleTextView.getText().toString(),
                                 BookingUtils.convertToMillis(selectedDate + " " + selectedTimeSlot.split(" - ")[0]),
                                 BookingUtils.convertToMillis(selectedDate + " " + selectedTimeSlot.split(" - ")[1]),
                                 addressText.getText().toString(),
                                 postalCodeText.getText().toString(),
+                                0,
                                 convertedPrice,
                                 selectedCurrency.getCode(),
                                 selectedCurrency.getSymbol(),
@@ -305,12 +319,11 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
                         // Create an Intent to start PaymentActivity and pass the booking data
                         Intent intent = new Intent(requireContext(), PaymentActivity.class);
                         intent.putExtra("booking", booking); // Pass the Booking object
+                        intent.putExtra("ownerId", ownerId);
                         startActivity(intent);
                         dismiss();
                     }
-                }, error -> {
-                    Toast.makeText(requireContext(), R.string.error_checking_slot_availability, Toast.LENGTH_SHORT).show();
-                });
+                }, error -> Toast.makeText(requireContext(), R.string.error_checking_slot_availability, Toast.LENGTH_SHORT).show());
             } else {
                 Toast.makeText(requireContext(), R.string.please_select_a_slot_date_and_time, Toast.LENGTH_SHORT).show();
             }

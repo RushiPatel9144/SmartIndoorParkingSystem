@@ -38,26 +38,28 @@ public class SlotService {
 
     // Method to fetch the price of a parking location from Firebase
     public void fetchPrice(String locationId, Consumer<Double> onSuccess) {
-        executorService.submit(() -> {
-            DatabaseReference priceRef = firebaseDatabase.getReference("parkingLocations").child(locationId).child("price");
-            priceRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if (snapshot.exists()) {
-                        Double priceValue = snapshot.getValue(Double.class);
-                        double price = (priceValue != null) ? priceValue : 0.0;
-                        onSuccess.accept(price);
-                    } else {
+        if (executorService != null && !executorService.isShutdown()) {
+            executorService.submit(() -> {
+                DatabaseReference priceRef = firebaseDatabase.getReference("parkingLocations").child(locationId).child("price");
+                priceRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            Double priceValue = snapshot.getValue(Double.class);
+                            double price = (priceValue != null) ? priceValue : 0.0;
+                            onSuccess.accept(price);
+                        } else {
+                            onSuccess.accept(0.0);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
                         onSuccess.accept(0.0);
                     }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    onSuccess.accept(0.0);
-                }
+                });
             });
-        });
+        }
     }
 
     public void checkSlotAvailability(String locationId, String slot, String selectedDate, String time, Consumer<String> onStatusChecked, Consumer<Exception> onFailure) {
@@ -85,11 +87,13 @@ public class SlotService {
 
     public void updateHourlyStatus(String locationId, String slot, String date, String hour, String status, Runnable onSuccess, Consumer<Exception> onFailure) {
         executorService.submit(() -> {
-            String sanitizedSlot = sanitizeFirebasePath(slot);
+            // Sanitize the slot ID to remove invalid characters
+            String sanitizedSlot = sanitizeSlotId(slot);
+
             DatabaseReference slotRef = firebaseDatabase.getReference("parkingLocations")
                     .child(locationId)
                     .child("slots")
-                    .child(sanitizedSlot)
+                    .child(sanitizedSlot)  // Use sanitized slot ID
                     .child("hourlyStatus")
                     .child(date + " " + hour);
 
@@ -138,6 +142,12 @@ public class SlotService {
             }
         });
     }
+
+    // Helper method to sanitize slot IDs
+    private String sanitizeSlotId(String slotId) {
+        return slotId.replaceAll("[.#$\\[\\]]", "_"); // Replace invalid characters with '_'
+    }
+
 
     public void scheduleStatusUpdate(String locationId, String slot, String date, String hour, Runnable onSuccess, Consumer<Exception> onFailure) {
         long delay = BookingUtils.calculateDelay(date + " " + hour);

@@ -16,6 +16,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.List;
 
+import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSingleton;
+import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirestoreSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.manager.sessionManager.SessionManager;
 import ca.tech.sense.it.smart.indoor.parking.system.model.RateUs;
 
@@ -26,11 +28,11 @@ public class RateUsViewModel extends ViewModel {
     private SharedPreferences sharedPreferences;
     private static final String PREFS_NAME = "RateUsPrefs";
     private static final String LAST_SUBMISSION_TIME = "LastSubmissionTime";
-    private static final long TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+    private static final long TWENTY_FOUR_HOURS = 24L * 60 * 60 * 1000; // 24 hours in milliseconds
 
     public RateUsViewModel(Context context) {
-        db = FirebaseFirestore.getInstance();
-        auth = FirebaseAuth.getInstance();
+        db = FirestoreSingleton.getInstance();
+        auth = FirebaseAuthSingleton.getInstance();
         sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
     }
 
@@ -50,7 +52,7 @@ public class RateUsViewModel extends ViewModel {
         // Introduce a delay of 5 seconds
         new Handler().postDelayed(() -> {
             // Fetch user or owner information from SessionManager
-            SessionManager sessionManager = new SessionManager(context);
+            SessionManager sessionManager = SessionManager.getInstance(context);
             sessionManager.fetchSessionData((user, owner) -> {
                 if (user != null || owner != null) {
                     // Retrieve the relevant user or owner details

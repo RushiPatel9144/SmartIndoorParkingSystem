@@ -71,7 +71,7 @@ public class FirstActivity extends BaseActivity {
      * Initializes the session manager for managing user session data.
      */
     private void initSessionManager() {
-        sessionManager = new SessionManager(this);
+        sessionManager = SessionManager.getInstance(this);
     }
 
     /**

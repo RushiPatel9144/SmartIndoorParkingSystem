@@ -22,6 +22,7 @@ import ca.tech.sense.it.smart.indoor.parking.system.utility.ParkingInterface;
 public class ParkingSlotManager {
     private final DatabaseReference databaseReference;
     private final DatabaseReference ownerReference;
+    private static final String PATH_SLOTS = "slots";
 
     public ParkingSlotManager() {
         databaseReference = FirebaseDatabaseSingleton.getInstance().getReference("parkingLocations");
@@ -34,8 +35,8 @@ public class ParkingSlotManager {
             return;
         }
 
-        DatabaseReference slotsRef = databaseReference.child(locationId).child("slots");
-        DatabaseReference ownerSlotsRef = ownerReference.child(ownerId).child("parkingLocationIds").child(locationId).child("slots");
+        DatabaseReference slotsRef = databaseReference.child(locationId).child(PATH_SLOTS);
+        DatabaseReference ownerSlotsRef = ownerReference.child(ownerId).child("parkingLocationIds").child(locationId).child(PATH_SLOTS);
 
         String slotId = slotsRef.push().getKey();
         if (slotId == null) {
@@ -47,9 +48,7 @@ public class ParkingSlotManager {
         Task<Void> ownerDbTask = ownerSlotsRef.child(slotId).setValue(slot);
 
         Tasks.whenAll(mainDbTask, ownerDbTask)
-                .addOnSuccessListener(aVoid -> {
-                    addSensorToSlot(slotsRef.child(slotId), ownerSlotsRef.child(slotId), sensor, context);
-                })
+                .addOnSuccessListener(aVoid -> addSensorToSlot(slotsRef.child(slotId), ownerSlotsRef.child(slotId), sensor, context))
                 .addOnFailureListener(e -> {
                     showToast(context, context.getString(R.string.failed_to_save_slot_data));
                     Log.e(TAG, "Failed to save slot data: " + e.getMessage());
@@ -68,35 +67,10 @@ public class ParkingSlotManager {
                 });
     }
 
-    public void deleteSlotFromLocation(Context context, String locationId, String ownerId, String slotId) {
-        // References to the slot in both main and owner-specific databases
-        DatabaseReference slotRef = databaseReference.child(locationId).child("slots").child(slotId);
-        DatabaseReference ownerSlotRef = ownerReference.child(ownerId).child("parkingLocationIds").child(locationId).child("slots").child(slotId);
-
-        // First delete from the main database
-        slotRef.removeValue()
-                .addOnSuccessListener(aVoid ->
-                    // Proceed to delete from owner's specific reference
-                    ownerSlotRef.removeValue()
-                            .addOnSuccessListener(aVoid1 ->
-                                // Both deletions were successful
-                                showToast(context, context.getString(R.string.slot_deleted_successfully)))
-                            .addOnFailureListener(e -> {
-                                // Rollback: Re-add the slot back to the main database
-                                slotRef.setValue(slotId)
-                                        .addOnFailureListener(e2 -> Log.e("DatabaseError", "Failed to rollback main slot: " + e2.getMessage()));
-                                showToast(context, context.getString(R.string.failed_to_delete_owner_slot));
-                            }))
-                .addOnFailureListener(e -> {
-                    Log.e("DatabaseError", "Failed to delete slot: " + e.getMessage());
-                    showToast(context, context.getString(R.string.failed_to_delete_slot));
-                });
-    }
-
 
     // Fetch slots of a specific parking location
     public void fetchSlotsForLocation(String locationId, final ParkingInterface.FetchSlotsCallback callback) {
-        databaseReference.child(locationId).child("slots").addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.child(locationId).child(PATH_SLOTS).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Map<String, ParkingSlot> slots = new HashMap<>();

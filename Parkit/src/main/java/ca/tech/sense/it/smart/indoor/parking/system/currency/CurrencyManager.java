@@ -1,5 +1,7 @@
 package ca.tech.sense.it.smart.indoor.parking.system.currency;
 
+import android.content.Context;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,9 +39,9 @@ public class CurrencyManager {
         return currencies.get(code);
     }
 
-    public void fetchAndUpdateRates(CurrencyService.Callback callback) {
+    public void fetchAndUpdateRates(Context context,  CurrencyService.Callback callback) {
         // Fetch live rates and update exchange rates
-        CurrencyService.fetchLiveRates(baseCurrency, new CurrencyService.Callback() {
+        CurrencyService.fetchLiveRates(context, baseCurrency, new CurrencyService.Callback() {
             @Override
             public void onSuccess(Map<String, Double> exchangeRates) {
                 updateExchangeRates(exchangeRates);
@@ -84,4 +86,18 @@ public class CurrencyManager {
         }
         return amountInCAD;
     }
+
+    // Method to convert from selected currency to CAD
+    // using this method to store all currency in cad format on firebase
+    public double convertToCAD(double amountInTargetCurrency, String targetCurrencyCode) {
+        Currency targetCurrency = currencies.get(targetCurrencyCode);
+        if (targetCurrency != null) {
+            double exchangeRate = targetCurrency.getExchangeRateToBase();
+            if (exchangeRate > 0.00) {
+                return amountInTargetCurrency / exchangeRate;
+            }
+        }
+        return amountInTargetCurrency;
+    }
+
 }

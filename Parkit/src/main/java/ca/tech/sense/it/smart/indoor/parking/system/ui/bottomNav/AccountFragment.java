@@ -44,7 +44,7 @@ public class AccountFragment extends Fragment {
     private int containerViewId;
     SessionManager sessionManager;
     ImageView profilePic;
-    private String tag = "AccountFragment";
+    private static final String TAG = "AccountFragment";
 
     public AccountFragment() {
         // Required empty public constructor
@@ -70,7 +70,7 @@ public class AccountFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_account, container, false);
 
-        sessionManager = new SessionManager(requireContext());
+        sessionManager = SessionManager.getInstance(requireContext());
         profilePic = view.findViewById(R.id.accountFrag_ProfilePic);
 
         setupClickListeners(view);
@@ -139,8 +139,8 @@ public class AccountFragment extends Fragment {
     private void openFragment(Fragment fragment) {
         FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(containerViewId, fragment, tag);
-        fragmentTransaction.addToBackStack(tag);
+        fragmentTransaction.replace(containerViewId, fragment, TAG);
+        fragmentTransaction.addToBackStack(TAG);
         fragmentTransaction.commit();
     }
 
@@ -156,6 +156,8 @@ public class AccountFragment extends Fragment {
                         sessionManager.logout();
                         SharedPreferences rateUsSharedPreferences = requireContext().getSharedPreferences("RateUsPrefs", Context.MODE_PRIVATE);
                         rateUsSharedPreferences.edit().clear().apply();
+                        SharedPreferences accountSharedPreferences = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+                        accountSharedPreferences.edit().clear().apply();
 
                         if (googleAuthClient.isSingedIn()){
                             CoroutineHelper.Companion.signOutWithGoogle(requireContext(), googleAuthClient, () -> {});

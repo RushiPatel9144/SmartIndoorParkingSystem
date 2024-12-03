@@ -11,8 +11,8 @@ public class FirebaseDatabaseSingleton {
     private static class FirebaseDatabaseHolder {
         private static final FirebaseDatabase instance = FirebaseDatabase.getInstance();
 
-        // Static block to enable offline persistence
         static {
+            // Enable offline persistence as soon as FirebaseDatabase instance is created
             instance.setPersistenceEnabled(true);
         }
     }
@@ -22,4 +22,3 @@ public class FirebaseDatabaseSingleton {
         return FirebaseDatabaseHolder.instance;
     }
 }
-

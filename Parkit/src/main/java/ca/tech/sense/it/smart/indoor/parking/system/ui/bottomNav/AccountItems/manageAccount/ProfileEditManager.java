@@ -18,7 +18,7 @@ import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
 public class ProfileEditManager {
 
     private final FirebaseFirestore db;
-    private String collection;
+    private final String collection;
     private final String userId;
     private final Fragment fragment;
 
@@ -132,39 +132,66 @@ public class ProfileEditManager {
     }
     }
 
-    public void fetchUserDetailsFromFirestore(FirebaseAuth mAuth, TextView contactDetailsTextView, TextView  nameTextView, TextView  phoneNumberTextView) {
-        DocumentReference docRef = db.collection(collection).document(Objects.requireNonNull(mAuth.getUid()));
-        String email = Objects.requireNonNull(mAuth.getCurrentUser()).getEmail();
+    public void fetchUserDetailsFromFirestore(FirebaseAuth mAuth, TextView contactDetailsTextView, TextView nameTextView, TextView phoneNumberTextView) {
+        if (mAuth == null || mAuth.getUid() == null || mAuth.getCurrentUser() == null) {
+            showSnackbar(R.string.auth_error_message);
+            return;
+        }
+
+        setContactDetails(contactDetailsTextView, mAuth);
+        fetchDocumentData(mAuth.getUid(), nameTextView, phoneNumberTextView);
+    }
+
+    private void setContactDetails(TextView contactDetailsTextView, FirebaseAuth mAuth) {
+        String email = Objects.requireNonNull(Objects.requireNonNull(mAuth.getCurrentUser()).getEmail(), "Email must not be null");
         contactDetailsTextView.setText(email);
+    }
+
+    private void fetchDocumentData(String uid, TextView nameTextView, TextView phoneNumberTextView) {
+        DocumentReference docRef = db.collection(collection).document(uid);
 
         docRef.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                DocumentSnapshot document = task.getResult();
-                if (document.exists()) {
-                    // Fetch and set user details here (name, email, etc.)
-                    String firstName = document.getString("firstName");
-                    String lastName = document.getString("lastName");
-                    String phoneNumber = document.getString("phone");
-
-                    if (firstName != null) {
-                        nameTextView.setText(firstName);
-                    }
-                    if (lastName != null) {
-                        nameTextView.append(" " + lastName);
-                    }
-                    if (phoneNumber != null) {
-                        phoneNumberTextView.setText(phoneNumber);
-                    } else {
-                        phoneNumberTextView.setText(R.string.add_phone_number);
-                    }
-                } else {
-                    showSnackbar(R.string.user_data_not_found);
-                }
-            } else {
+            if (!task.isSuccessful()) {
                 showSnackbar(R.string.fetch_data_failed);
+                return;
             }
+
+            DocumentSnapshot document = task.getResult();
+            if (document == null || !document.exists()) {
+                showSnackbar(R.string.user_data_not_found);
+                return;
+            }
+
+            updateUserDetails(document, nameTextView, phoneNumberTextView);
         });
     }
+
+    private void updateUserDetails(DocumentSnapshot document, TextView nameTextView, TextView phoneNumberTextView) {
+        String firstName = document.getString("firstName");
+        String lastName = document.getString("lastName");
+        String phoneNumber = document.getString("phone");
+
+        updateNameTextView(nameTextView, firstName, lastName);
+        updatePhoneNumberTextView(phoneNumberTextView, phoneNumber);
+    }
+
+    private void updateNameTextView(TextView nameTextView, String firstName, String lastName) {
+        if (firstName != null) {
+            nameTextView.setText(firstName);
+        }
+        if (lastName != null) {
+            nameTextView.append(" " + lastName);
+        }
+    }
+
+    private void updatePhoneNumberTextView(TextView phoneNumberTextView, String phoneNumber) {
+        if (phoneNumber != null) {
+            phoneNumberTextView.setText(phoneNumber);
+        } else {
+            phoneNumberTextView.setText(R.string.add_phone_number);
+        }
+    }
+
 
     private void showSnackbar(int messageResId) {
         if (fragment.isAdded() && fragment.getView() != null) {

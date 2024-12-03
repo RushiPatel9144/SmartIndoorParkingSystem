@@ -1,18 +1,44 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/no_bookings_text"
+    <ImageView
+        android:id="@+id/no_bookings_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/upcoming"
+        android:visibility="gone"
+        android:layout_gravity="center"
+        android:padding="16dp" />
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/no_bookings_to_show"
-        android:gravity="center"
-        android:visibility="gone"
-        android:textSize="18sp"
-        android:padding="16dp" />
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/no_bookings_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="You Don't Have Any Upcoming Reservations"
+            android:gravity="center"
+            android:visibility="gone"
+            android:textSize="25sp"
+            android:textStyle="bold"
+            android:padding="1dp" />
+
+        <TextView
+            android:id="@+id/no_bookings_text1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Upcoming parking reservations details will show here"
+            android:textSize="18sp"
+            android:paddingTop="8dp"
+            android:paddingBottom="16dp"
+            android:gravity="center"
+            android:layout_gravity="center_horizontal" />
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"

@@ -1,66 +1,116 @@
 package ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.transactions;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
-
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.BiConsumer;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSingleton;
+import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseDatabaseSingleton;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.bookingManager.TransactionManager;
+import ca.tech.sense.it.smart.indoor.parking.system.model.booking.Transaction;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link TransactionsFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class TransactionsFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private RecyclerView transactionsRecyclerView;
+    private TransactionAdapter transactionAdapter;
+    private List<Transaction> transactionList = new ArrayList<>();
+    private FirebaseDatabase firebaseDatabase;
+    private FirebaseAuth mAuth;
+    private TextView incomeTextView;
 
     public TransactionsFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment TransactionsFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static TransactionsFragment newInstance(String param1, String param2) {
-        TransactionsFragment fragment = new TransactionsFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+        firebaseDatabase = FirebaseDatabaseSingleton.getInstance(); // Initialize Firebase database
+        mAuth = FirebaseAuthSingleton.getInstance();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_transactions, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_transactions, container, false);
+        incomeTextView = rootView.findViewById(R.id.income);
+        // Set up RecyclerView
+        transactionsRecyclerView = rootView.findViewById(R.id.transactionRecyclerView);
+        transactionsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        // Initialize the adapter
+        transactionAdapter = new TransactionAdapter(transactionList);
+        transactionsRecyclerView.setAdapter(transactionAdapter);
+
+        String ownerId = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
+        retrieveTransactions(ownerId);
+        return rootView;
     }
+
+    private void retrieveTransactions(String ownerId) {
+        // Calling the new retrieveTransactions method with BiConsumer for success and failure handling
+        new TransactionManager(firebaseDatabase).retrieveTransactions(ownerId, new BiConsumer<String, List<Transaction>>() {
+            @SuppressLint("NotifyDataSetChanged")
+            @Override
+            public void accept(String ownerId, List<Transaction> transactions) {
+                // Success callback: update the transaction list and notify the adapter
+                transactionList.clear();
+                transactionList.addAll(transactions);
+                // Sort transactions by time
+                sortTransactionsByTime();
+                transactionAdapter.notifyDataSetChanged();
+
+                // Calculate the total price and update the toolbar
+                double totalPrice = calculateTotalPrice();
+                updateTextview(ownerId, totalPrice);
+            }
+        }, exception -> {});
+    }
+
+    private void sortTransactionsByTime() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"); // Adjust to your format
+        transactionList.sort((t1, t2) -> {
+            LocalDateTime time1 = LocalDateTime.parse(t1.getPaymentTime(), formatter);
+            LocalDateTime time2 = LocalDateTime.parse(t2.getPaymentTime(), formatter);
+            return time2.compareTo(time1);
+        });
+    }
+
+    private double calculateTotalPrice() {
+        double totalPrice = 0.0;
+        for (Transaction transaction : transactionList) {
+            if (transaction.isRefunded()){
+                totalPrice -= transaction.getPrice();
+            } else totalPrice += transaction.getPrice();
+        }
+        return totalPrice;
+    }
+
+    @SuppressLint("DefaultLocale")
+    private void updateTextview(String ownerId, Double price){
+        new TransactionManager(firebaseDatabase).updateOwnerTotalIncome(ownerId, price);
+        incomeTextView.setText(String.format("$ %.2f",price));
+    }
+
 }
+
