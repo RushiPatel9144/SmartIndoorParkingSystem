@@ -3,51 +3,63 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="25dp"
+    android:padding="16dp"
     android:background="#F0F0F0">
 
-
-    <ImageView
-        android:id="@+id/parking_image"
-        android:layout_width="wrap_content"
-        android:layout_height="300dp"
-        android:visibility="gone"
-        android:layout_gravity="center"
-        android:src="@drawable/activity" />
-
+    <!-- Container for Image and Texts -->
     <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="4dp">
+
+        <!-- Parking Image -->
+        <ImageView
+            android:id="@+id/parking_image"
+            android:layout_width="200dp"
+            android:layout_height="150dp"
+            android:layout_gravity="center"
+            android:src="@drawable/activity"
+            android:visibility="gone"
+             />
+
+        <!-- No Bookings Text -->
+        <TextView
+            android:id="@+id/no_bookings_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:text="@string/you_don_t_have_any_parking_sessions_right_now"
+            android:textColor="#333333"
+            android:gravity="center"
+            android:visibility="gone"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:paddingTop="16dp" />
 
-            <TextView
-                android:id="@+id/no_bookings_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="You Don't Have Any Parking Sessions Right Now"
-                android:gravity="center"
-                android:visibility="gone"
-                android:textSize="25sp"
-                android:textStyle="bold"
-                android:padding="1dp" />
+        <!-- Parking Session Details Text -->
+        <TextView
+            android:id="@+id/park_now"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/your_parking_session_details_will_show_here"
+            android:textSize="16sp"
+            android:visibility="gone"
+            android:paddingTop="8dp"
+            android:paddingBottom="16dp"
+            android:textColor="#555555"
+            android:gravity="center"
+            android:layout_gravity="center" />
 
+        <!-- RecyclerView for dynamic content -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:clipToPadding="false" />
 
-            <TextView
-                android:id="@+id/park_now"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Your parking session details will show here"
-                android:textSize="18sp"
-                android:visibility="gone"
-                android:paddingTop="8dp"
-                android:paddingBottom="16dp"
-                android:gravity="center"
-                android:layout_gravity="center_horizontal"  />
-        </LinearLayout>
+    </LinearLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
 
 </LinearLayout>

@@ -494,4 +494,11 @@
     <string name="submit_again_in">"Submit again in "</string>
     <string name="intent_data_is_missing">Intent Data is Missing</string>
     <string name="good_morning_user">Good Morning, User!</string>
+    <string name="you_don_t_have_any_parking_sessions_right_now">You Don\'t Have Any Parking Sessions Right Now</string>
+    <string name="your_parking_session_details_will_show_here">Your parking session details will show here</string>
+    <string name="you_don_t_have_any_upcoming_reservations">You Don\'t Have Any Upcoming Reservations</string>
+    <string name="upcoming_parking_reservations_details_will_show_here">Upcoming parking reservations details will show here</string>
+    <string name="you_don_t_have_any_parking_history">You Don\'t Have Any Parking History</string>
+    <string name="history_of_parking_reservations_details_will_show_here_after_they_end">History of parking reservations details will show here after they end</string>
+    <string name="clear_all_booking_history">Clear All Booking History</string>
 </resources>

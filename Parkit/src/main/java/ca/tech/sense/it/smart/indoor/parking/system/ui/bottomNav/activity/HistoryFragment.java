@@ -45,7 +45,7 @@ public class HistoryFragment extends Fragment {
         RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
         noBookingsText = view.findViewById(R.id.no_bookings_text);
         noBookingsText1 = view.findViewById(R.id.no_bookings_text1);
-        noBookingsImage = view.findViewById(R.id.no_bookings_image);
+        noBookingsImage = view.findViewById(R.id.parking_image);
         clearAllButton = view.findViewById(R.id.clear_all_button);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         cancelBookingViewModel = new ViewModelProvider(requireActivity()).get(CancelBookingViewModel.class);
