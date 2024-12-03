@@ -47,4 +47,9 @@ public class BookingUtils {
         long currentTimeMillis = System.currentTimeMillis();
         return endTimeMillis - currentTimeMillis;
     }
+
+    public static String formatDate(long timestamp) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
+        return sdf.format(new Date(timestamp));
+    }
 }
