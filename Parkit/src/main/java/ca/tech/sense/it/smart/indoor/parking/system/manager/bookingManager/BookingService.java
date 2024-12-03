@@ -13,6 +13,7 @@ import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 import ca.tech.sense.it.smart.indoor.parking.system.booking.ParkingTicket;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.notificationManager.NotificationManagerHelper;
 import ca.tech.sense.it.smart.indoor.parking.system.model.booking.Booking;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.BookingUtils;
 
@@ -92,20 +93,27 @@ public class BookingService {
         if (bookingId != null) {
             booking.setId(bookingId); // Set the booking ID
             databaseRef.setValue(booking)
-                    .addOnSuccessListener(aVoid -> slotService.updateHourlyStatus(locationId, slot, selectedDate, times[0], "occupied", () -> {
-                        slotService.scheduleStatusUpdate(locationId, slot, selectedDate, times[1], onSuccess, onFailure);
-                        // Show toast message
-                        Toast.makeText(context, "Booking confirmed!", Toast.LENGTH_SHORT).show();
-                        // Pass the booking details, including the pass key, to the ParkingTicketActivity
-                        Intent intent = new Intent(context, ParkingTicket.class);
-                        intent.putExtra("booking", booking); // Pass the entire booking object
-                        context.startActivity(intent);
-                    }, onFailure))
+                    .addOnSuccessListener(aVoid -> {
+                        slotService.updateHourlyStatus(locationId, slot, selectedDate, times[0], "occupied", () -> {
+                            slotService.scheduleStatusUpdate(locationId, slot, selectedDate, times[1], onSuccess, onFailure);
+                            // Show toast message
+                            Toast.makeText(context, "Booking confirmed!", Toast.LENGTH_SHORT).show();
+                            // Pass the booking details, including the pass key, to the ParkingTicketActivity
+                            Intent intent = new Intent(context, ParkingTicket.class);
+                            intent.putExtra("booking", booking); // Pass the entire booking object
+                            context.startActivity(intent);
+
+                            // Send booking confirmation notification
+                            NotificationManagerHelper.sendBookingConfirmationNotification(userId, booking, selectedDate, times);
+
+                        }, onFailure);
+                    })
                     .addOnFailureListener(onFailure::accept);
         } else {
             onFailure.accept(new Exception("Failed to generate booking ID"));
         }
     }
+
 
     public void updateTotalPrice(String userId, String bookingId, double totalPrice) {
         DatabaseReference databaseRef = firebaseDatabase
