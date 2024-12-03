@@ -6,6 +6,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:padding="16dp"
+    android:background="@color/bg"
     tools:context=".HomeFragment">
 
     <!-- TextView with big font size for greeting -->
@@ -13,10 +14,9 @@
         android:id="@+id/tv_greeting"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Good Morning, User!"
-        android:textSize="30sp"
+        android:text="@string/good_morning_user"
+        android:textSize="24sp"
         android:textStyle="bold"
-        android:textColor="@android:color/black"
         android:gravity="center"
         android:layout_marginBottom="8dp" />
 
@@ -27,19 +27,26 @@
         android:layout_height="wrap_content"
         android:text="Welcome to the Park it\nPark Smart, Live Easy!"
         android:textSize="16sp"
-        android:textColor="@android:color/black"
         android:gravity="center"
         android:layout_marginBottom="16dp" />
 
     <!-- ImageView occupying more space -->
-    <ImageView
-        android:id="@+id/img_top"
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1.5"
-        android:src="@drawable/green_car"
-        android:contentDescription="Top Image"
-        android:scaleType="fitXY" />
+        android:layout_weight="1"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="4dp">
+
+        <ImageView
+            android:id="@+id/img_top"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/green_car"
+            android:contentDescription="Top Image"
+            android:scaleType="centerCrop" />
+    </androidx.cardview.widget.CardView>
+
 
     <!-- ScrollView occupying the bottom part of the screen -->
     <ScrollView
@@ -57,8 +64,7 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:cardBackgroundColor="#E5F8AB"
+                android:layout_margin="8dp"
                 app:cardCornerRadius="8dp"
                 app:cardElevation="4dp">
 
@@ -74,8 +80,7 @@
                         android:layout_height="wrap_content"
                         android:text="Spot the Perfect Spot!"
                         android:textSize="18sp"
-                        android:textStyle="bold"
-                        android:textColor="@android:color/black" />
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/tv_find_best_parking"
@@ -83,7 +88,6 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
                         android:text="Your next parking spot is just a tap away—park smarter, not harder!"
-                        android:textColor="@android:color/black"
                         android:textSize="16sp"
                         android:textStyle="italic" />
 
@@ -101,8 +105,7 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:cardBackgroundColor="#E5F8AB"
+                android:layout_margin="8dp"
                 app:cardCornerRadius="8dp"
                 app:cardElevation="4dp">
 
@@ -118,8 +121,7 @@
                         android:layout_height="wrap_content"
                         android:text="Park &amp; Save Big!"
                         android:textSize="18sp"
-                        android:textStyle="bold"
-                        android:textColor="@android:color/black" />
+                        android:textStyle="bold"/>
 
                     <TextView
                         android:id="@+id/tv_promo_description"
@@ -127,7 +129,6 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
                         android:text="Why just park when you can save big? Explore promos now!"
-                        android:textColor="@android:color/black"
                         android:textSize="16sp"
                         android:textStyle="italic" />
 
@@ -145,8 +146,7 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:cardBackgroundColor="#E5F8AB"
+                android:layout_margin="8dp"
                 app:cardCornerRadius="8dp"
                 app:cardElevation="4dp">
 
@@ -162,8 +162,7 @@
                         android:layout_height="wrap_content"
                         android:text="Favorites at Your Fingertips!"
                         android:textSize="18sp"
-                        android:textStyle="bold"
-                        android:textColor="@android:color/black" />
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/tv_favorites_description"
@@ -171,7 +170,6 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
                         android:text="Quickly access your go-to parking spots in one click."
-                        android:textColor="@android:color/black"
                         android:textSize="16sp"
                         android:textStyle="italic" />
 
@@ -189,8 +187,7 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:cardBackgroundColor="#E5F8AB"
+                android:layout_margin="8dp"
                 app:cardCornerRadius="8dp"
                 app:cardElevation="4dp">
 
@@ -206,8 +203,7 @@
                         android:layout_height="wrap_content"
                         android:text="Trace Your Journey!"
                         android:textSize="18sp"
-                        android:textStyle="bold"
-                        android:textColor="@android:color/black" />
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/tv_history_description"
@@ -215,7 +211,6 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
                         android:text="Review your parking past to plan smarter moves in the future."
-                        android:textColor="@android:color/black"
                         android:textSize="16sp"
                         android:textStyle="italic" />
 
@@ -233,8 +228,7 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:cardBackgroundColor="#E5F8AB"
+                android:layout_margin="8dp"
                 app:cardCornerRadius="8dp"
                 app:cardElevation="4dp">
 
@@ -250,8 +244,7 @@
                         android:layout_height="wrap_content"
                         android:text="We Value Your Feedback!"
                         android:textSize="18sp"
-                        android:textStyle="bold"
-                        android:textColor="@android:color/black" />
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/tv_rating_description"
@@ -259,7 +252,6 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
                         android:text="Help us improve by sharing your thoughts—it only takes a moment."
-                        android:textColor="@android:color/black"
                         android:textSize="16sp"
                         android:textStyle="italic" />
 
@@ -278,8 +270,7 @@
                 android:id="@+id/help_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:cardBackgroundColor="#E5F8AB"
+                android:layout_margin="8dp"
                 app:cardCornerRadius="8dp"
                 app:cardElevation="4dp">
 
@@ -295,8 +286,7 @@
                         android:layout_height="wrap_content"
                         android:text="We’re Here for You!"
                         android:textSize="18sp"
-                        android:textStyle="bold"
-                        android:textColor="@android:color/black" />
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/tv_help_description"
@@ -304,7 +294,6 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
                         android:text="Got questions? Let us guide you every step of the way."
-                        android:textColor="@android:color/black"
                         android:textSize="16sp"
                         android:textStyle="italic" />
 

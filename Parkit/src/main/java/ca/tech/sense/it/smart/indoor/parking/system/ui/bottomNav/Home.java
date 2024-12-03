@@ -19,6 +19,8 @@ import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems.Ra
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.activity.HistoryFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.menu.FavoritesFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.menu.PromotionFragment;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -114,11 +116,12 @@ public class Home extends BaseNetworkFragment {
     }
 
     private String getGreetingMessageWithUserName() {
-        return getGreetingMessage() + ", " + userName + "!";
+        return getGreetingMessage() + ", " + getFirstName(userName) + "!";
     }
 
     private void setClickListeners() {
-        btnViewMap.setOnClickListener(v -> openParkFragment());
+        BottomNavigationView bottomNavigationView = requireActivity().findViewById(R.id.bottom_navigation);
+        setUpPark(bottomNavigationView);
         btnViewPromotions.setOnClickListener(v -> openPromotionFragment());
         btnViewFavorites.setOnClickListener(v -> openFavoritesFragment());
         btnViewHistory.setOnClickListener(v -> openHistoryFragment());
@@ -130,6 +133,13 @@ public class Home extends BaseNetworkFragment {
         loadFragments(new Park(), "park_fragment");
     }
 
+    private void setUpPark(BottomNavigationView bottomNavigationView) {
+        btnViewMap.setOnClickListener(v -> {
+            bottomNavigationView.setSelectedItemId(R.id.navigation_park);
+            openParkFragment();
+        });
+
+    }
     private void openPromotionFragment() {
         loadFragments(new PromotionFragment(), "promotion_fragment");
     }
@@ -156,5 +166,13 @@ public class Home extends BaseNetworkFragment {
         transaction.replace(R.id.flFragment, fragment, tag);
         transaction.addToBackStack(null);
         transaction.commit();
+    }
+
+    private String getFirstName(String fullName) {
+        if (fullName == null || fullName.trim().isEmpty()) {
+            return "";
+        }
+        String[] nameParts = fullName.trim().split("\\s+");
+        return nameParts[0];
     }
 }
