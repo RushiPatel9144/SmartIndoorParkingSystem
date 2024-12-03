@@ -15,7 +15,7 @@ import androidx.fragment.app.Fragment;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 
-public class NoNetworkFragment extends Fragment implements NetworkManager.NetworkListener {
+public class NoNetworkFragment extends Fragment {
 
     @Nullable
     @Override
@@ -44,7 +44,6 @@ public class NoNetworkFragment extends Fragment implements NetworkManager.Networ
     public void onResume() {
         super.onResume();
         // Start monitoring network state when fragment is visible
-        NetworkManager.getInstance().setNetworkListener(this);
         NetworkManager.getInstance().startMonitoring(requireContext());
     }
 
@@ -53,18 +52,6 @@ public class NoNetworkFragment extends Fragment implements NetworkManager.Networ
         super.onPause();
         // Stop monitoring when fragment is no longer visible
         NetworkManager.getInstance().stopMonitoring(requireContext());
-        NetworkManager.getInstance().setNetworkListener(null);
-    }
-
-    @Override
-    public void onNetworkAvailable() {
-        // Handle network available state
-        closeFragment();
-    }
-
-    @Override
-    public void onNetworkLost() {
-        Log.d("NoNetworkFragment", "Network is lost again");
     }
 
     private void closeFragment() {

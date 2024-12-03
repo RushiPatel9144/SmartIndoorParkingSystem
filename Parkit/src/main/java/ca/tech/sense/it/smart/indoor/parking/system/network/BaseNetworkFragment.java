@@ -8,7 +8,7 @@ import java.util.Objects;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.manager.sessionManager.SessionManager;
 
-public class BaseNetworkFragment extends Fragment implements NetworkManager.NetworkListener {
+public class BaseNetworkFragment extends Fragment {
 
     private int fragmentContainerId = R.id.flFragment;
 
@@ -16,7 +16,6 @@ public class BaseNetworkFragment extends Fragment implements NetworkManager.Netw
     public void onResume() {
         super.onResume();
         NetworkManager.getInstance().startMonitoring(requireContext());
-        NetworkManager.getInstance().setNetworkListener(this);
 
         // Check network every time the fragment is resumed
         if (!NetworkUtils.isNetworkAvailable(requireContext())) {
@@ -28,7 +27,6 @@ public class BaseNetworkFragment extends Fragment implements NetworkManager.Netw
     public void onPause() {
         super.onPause();
         NetworkManager.getInstance().stopMonitoring(requireContext());
-        NetworkManager.getInstance().setNetworkListener(null);
     }
 
     @Override
@@ -64,13 +62,4 @@ public class BaseNetworkFragment extends Fragment implements NetworkManager.Netw
         }
     }
 
-    @Override
-    public void onNetworkAvailable() {
-        // network is back
-    }
-
-    @Override
-    public void onNetworkLost() {
-        requireActivity().runOnUiThread(this::openNoNetworkFragment);
-    }
 }
