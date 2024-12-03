@@ -2,6 +2,7 @@
 agp = "8.6.1"
 androidImageCropper = "2.8.0"
 androidImageCropperVersion = "4.6.0"
+androidxEspressoCore = "3.4.0"
 bcprovJdk15on = "1.70"
 circleimageview = "3.1.0"
 compiler = "4.15.1"
@@ -41,6 +42,8 @@ firebaseDatabase = "21.0.0"
 firebaseStorage = "21.0.1"
 robolectric = "4.8"
 robolectricVersion = "4.10.2"
+rules = "1.6.1"
+runner = "1.6.2"
 securityIdentityCredential = "1.0.0-alpha03"
 kotlin = "2.0.21"
 coreKtx = "1.15.0"
@@ -51,13 +54,18 @@ stripeAndroid = "21.0.0"
 testng = "6.9.6"
 core = "1.6.1"
 swiperefreshlayout = "1.1.0"
+espressoIdlingResource = "3.6.1"
+fragmentTesting = "1.8.5"
 
 [libraries]
 androidx-credentials = { module = "androidx.credentials:credentials", version.ref = "credentialsPlayServicesAuth" }
 androidx-credentials-play-services-auth = { module = "androidx.credentials:credentials-play-services-auth", version.ref = "credentialsPlayServicesAuth" }
+androidx-espresso-core-v340 = { module = "androidx.test.espresso:espresso-core", version.ref = "androidxEspressoCore" }
 androidx-espresso-core-v350 = { module = "androidx.test.espresso:espresso-core", version.ref = "espressoCoreVersion" }
 androidx-lifecycle-livedata-ktx = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "lifecycleViewmodelKtx" }
 androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtx" }
+androidx-rules = { module = "androidx.test:rules", version.ref = "rules" }
+androidx-runner = { module = "androidx.test:runner", version.ref = "runner" }
 bcprov-jdk15on = { module = "org.bouncycastle:bcprov-jdk15on", version.ref = "bcprovJdk15on" }
 circleimageview = { module = "de.hdodenhof:circleimageview", version.ref = "circleimageview" }
 compiler = { module = "com.github.bumptech.glide:compiler", version.ref = "compiler" }
@@ -106,6 +114,8 @@ vanniktech-android-image-cropper = { module = "com.vanniktech:android-image-crop
 testng = { group = "org.testng", name = "testng", version.ref = "testng" }
 androidx-core = { group = "androidx.test", name = "core", version.ref = "core" }
 androidx-swiperefreshlayout = { group = "androidx.swiperefreshlayout", name = "swiperefreshlayout", version.ref = "swiperefreshlayout" }
+androidx-espresso-idling-resource = { group = "androidx.test.espresso", name = "espresso-idling-resource", version.ref = "espressoIdlingResource" }
+androidx-fragment-testing = { group = "androidx.fragment", name = "fragment-testing", version.ref = "fragmentTesting" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

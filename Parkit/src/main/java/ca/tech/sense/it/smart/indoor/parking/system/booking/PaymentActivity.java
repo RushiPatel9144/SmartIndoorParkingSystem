@@ -74,22 +74,33 @@ public class PaymentActivity extends AppCompatActivity {
     private double subtotal;
     FirebaseAuth firebaseAuth;
 
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_payment2); // Update to your layout
         initializeUIElements();
 
         Intent intent = getIntent();
-        ownerId = getIntent().getStringExtra("ownerId");
-        if (intent != null && intent.hasExtra("booking")) {
-            booking = (Booking) intent.getSerializableExtra("booking");
-            if (booking != null) {
-                setBookingDetails();
-                calculateTotalBreakdown();
+        ownerId = intent.getStringExtra("ownerId"); // Safely fetch ownerId
+        if (intent != null) {
+            if (intent.hasExtra("booking")) {
+                booking = (Booking) intent.getSerializableExtra("booking");
+                if (booking != null) {
+                    setBookingDetails();
+                    calculateTotalBreakdown();
+                } else {
+                    showToast(getString(R.string.booking_data_is_missing_or_invalid));
+                    // Optionally finish the activity if booking data is critical
+                    finish();
+                }
             } else {
                 showToast(getString(R.string.booking_data_is_missing_or_invalid));
+                // Optionally finish the activity if booking data is critical
+                finish();
             }
+        } else {
+            showToast(getString(R.string.intent_data_is_missing));
+            // Optionally finish the activity if the intent is null
+            finish();
         }
 
         FirebaseDatabase firebaseDatabase = FirebaseDatabaseSingleton.getInstance();

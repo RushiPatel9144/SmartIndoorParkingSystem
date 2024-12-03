@@ -39,12 +39,16 @@
     <style name="Toolbar.TitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
         <item name="android:textAppearance">@font/poppins_medium</item>
     </style>
-
+    
+    <style name="CustomSpinnerStyle" parent="Widget.AppCompat.Spinner">
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:textColor">#FFFFFF</item> <!-- White text color for dark theme -->
+        <item name="android:popupBackground">#333333</item> <!-- Dark background for dropdown -->
+    </style>
     <style name="LocationFragment" parent="Base.Theme.SmartIndoorParkingSystem" >
 
         <item name="fontFamily">@font/poppins_medium</item>
     </style>
-
 
 
     <style name="Theme.SmartIndoorParkingSystem" parent="Base.Theme.SmartIndoorParkingSystem" />

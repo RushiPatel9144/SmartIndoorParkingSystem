@@ -235,7 +235,7 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 selectedHour = timeSlots.get(position).split(" - ")[0];
-                Log.d("BookingBottomSheet", "Selected Hour Changed: " + selectedHour); // Add logging
+                Log.d("BookingBottomSheet", "Selected Hour Changed: " + selectedHour);
                 // Update the slot spinner data based on the new selected hour
                 if (location != null) {
                     setupSlotSpinnerData(location.getSlots(), locationId, selectedDate, selectedHour, bookingManager);
