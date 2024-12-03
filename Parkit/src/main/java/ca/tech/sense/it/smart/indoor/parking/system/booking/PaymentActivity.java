@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -45,8 +46,10 @@ import ca.tech.sense.it.smart.indoor.parking.system.manager.bookingManager.Booki
 import ca.tech.sense.it.smart.indoor.parking.system.manager.bookingManager.TransactionManager;
 import ca.tech.sense.it.smart.indoor.parking.system.model.Promotion;
 import ca.tech.sense.it.smart.indoor.parking.system.model.booking.Booking;
+import ca.tech.sense.it.smart.indoor.parking.system.utility.PromotionHelper;
 import ca.tech.sense.it.smart.indoor.parking.system.model.booking.Transaction;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.DateTimeUtils;
+
 
 public class PaymentActivity extends AppCompatActivity {
 
@@ -117,7 +120,7 @@ public class PaymentActivity extends AppCompatActivity {
 
         paymentSheet = new PaymentSheet(this, this::onPaymentSheetResult);
         setButtonListeners();
-        setupPromoCodeEditText();
+        PromotionHelper.setupPromoCodeEditText(promoCodeEditText, this);
     }
 
     private void initializeUIElements() {
@@ -154,11 +157,13 @@ public class PaymentActivity extends AppCompatActivity {
             double gstHst = subtotal * 0.13;
             double platformFee = subtotal * 0.10;
             total = subtotal + gstHst + platformFee;
+          
             booking.setTotalPrice(CurrencyManager.getInstance().convertToCAD(total, booking.getCurrencyCode()));
             subtotalTextView.setText(String.format(Locale.getDefault(), "%s %.2f",currencySymbol, subtotal));
             gstHstTextView.setText(String.format(Locale.getDefault(), "%s %.2f",currencySymbol, gstHst));
             platformFeeTextView.setText(String.format(Locale.getDefault(), "%s %.2f",currencySymbol, platformFee));
             totalTextView.setText(String.format(Locale.getDefault(), "%s %.2f",currencySymbol, total));
+
         }
     }
 
@@ -166,7 +171,7 @@ public class PaymentActivity extends AppCompatActivity {
         applyPromoCodeButton.setOnClickListener(v -> {
             String promoCode = promoCodeEditText.getText().toString().trim();
             if (!promoCode.isEmpty()) {
-                applyPromoCode(promoCode);
+                PromotionHelper.applyPromoCode(promoCode, booking, subtotalTextView, gstHstTextView, platformFeeTextView, totalTextView, this);
             } else {
                 showToast("Please enter a promo code.");
             }
@@ -228,9 +233,13 @@ public class PaymentActivity extends AppCompatActivity {
 
     private void onPaymentSheetResult(PaymentSheetResult paymentSheetResult) {
         if (paymentSheetResult instanceof PaymentSheetResult.Completed) {
-            // Confirm the booking
-            new Handler(Looper.getMainLooper()).postDelayed(this::confirmBooking, 2000); // 2-second delay
-            finish();
+
+            // Use Handler with Looper.getMainLooper() for a delay
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                confirmBooking(); // Confirm the booking
+                markPromoCodeAsUsed(); // Mark the promo code as used
+                openParkingTicketActivity(); // Pass data to ParkingTicket
+            }, 2000); // 2-second delay
         } else if (paymentSheetResult instanceof PaymentSheetResult.Failed) {
             showToast("Payment Failed: " + ((PaymentSheetResult.Failed) paymentSheetResult).getError());
             finish();
@@ -239,6 +248,7 @@ public class PaymentActivity extends AppCompatActivity {
             finish();
         }
     }
+
 
     private void confirmBooking() {
         if (booking == null) {
@@ -255,6 +265,50 @@ public class PaymentActivity extends AppCompatActivity {
 
         // Store transaction and confirm booking
         try {
+
+            bookingManager.getBookingService().confirmBooking(
+                    transactionId,
+                    booking.getLocationId(),        // Pass location ID
+                    booking.getSlotNumber(),       // Pass slot number
+                    selectedTimeSlot,              // Valid time slot
+                    selectedDate,                  // Valid date
+                    booking.getLocation(),         // Location
+                    () -> {
+                        showToast(getString(R.string.booking_confirmed));
+
+                        // Mark the promo code as used after booking confirmation
+                        markPromoCodeAsUsed();
+                    },
+                    error -> showToast("Failed to save booking: " + error.getMessage()));
+        } catch (Exception e) {
+            handleUnexpectedError(e);
+        }
+    }
+
+    private void markPromoCodeAsUsed() {
+        String promoCode = promoCodeEditText.getText().toString().trim();
+        if (!promoCode.isEmpty()) {
+            PromotionHelper.markPromoCodeAsUsed(promoCode, this);
+        }
+    }
+
+
+    private void onBookingFailure(Exception e) {
+        showToast("Booking failed: " + e.getMessage());
+    }
+
+    private boolean isBookingValid() {
+        if (booking == null) {
+            showToast(getString(R.string.booking_data_is_missing));
+            return false;
+        }
+        return true;
+    }
+
+    private String getSelectedTimeSlot() {
+        return new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date(booking.getStartTime())) + " - " +
+                new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date(booking.getEndTime()));
+
             transactionManager.storeTransaction(ownerId, transaction);
             confirmBookingInService(transactionId, selectedTimeSlot, selectedDate);
         } catch (Exception e) {
@@ -322,81 +376,48 @@ public class PaymentActivity extends AppCompatActivity {
         });
     }
 
-    private void markPromoCodeAsUsed(Promotion promotion, DatabaseReference promotionsRef) {
-        promotion.setUsed(true); // Mark as used only after booking
-        promotionsRef.child(promotion.getId()).setValue(promotion);
-    }
-
     private void showToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
-
-    public void updateDateAndTimeTextViews(long startTimeMillis, long endTimeMillis) {
-        // Format date (without time)
-        SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
-        String formattedDate = dateFormat.format(new Date(startTimeMillis));
-
-        // Format time (without date)
-        SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a", Locale.getDefault());
-        String formattedStartTime = timeFormat.format(new Date(startTimeMillis));
-        String formattedEndTime = timeFormat.format(new Date(endTimeMillis));
-
-        // Update the TextViews with the formatted date and time
-        dateTextView.setText(MessageFormat.format("Date: {0}", formattedDate));
-        timeTextView.setText(MessageFormat.format("Time: {0} - {1}", formattedStartTime, formattedEndTime));
+    private String getSelectedDate() {
+        return new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date(booking.getStartTime()));
     }
 
-    private void applyPromoCode(String promoCode) {
-        DatabaseReference promotionsRef = FirebaseDatabase.getInstance().getReference("Promotions");
-        promotionsRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                boolean isValidPromo = false;
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    Promotion promotion = snapshot.getValue(Promotion.class);
-                    if (promotion != null && promoCode.equals(promotion.getPromoCode()) && !promotion.isUsed()) {
-                        isValidPromo = true;
-                        double discount = promotion.getDiscount();
-                        double subtotal = booking.getPrice();
-                        double discountAmount = subtotal * (discount / 100);
-                        double newSubtotal = subtotal - discountAmount;
-                        double gstHst = newSubtotal * 0.13;
-                        double platformFee = newSubtotal * 0.10;
-                        total = newSubtotal + gstHst + platformFee;
-                        subtotalTextView.setText(String.format(Locale.getDefault(), "%s %.2f", booking.getCurrencySymbol(), newSubtotal));
-                        gstHstTextView.setText(String.format(Locale.getDefault(), "%s %.2f", booking.getCurrencySymbol(), gstHst));
-                        platformFeeTextView.setText(String.format(Locale.getDefault(), "%s %.2f", booking.getCurrencySymbol(), platformFee));
-                        totalTextView.setText(String.format(Locale.getDefault(), "%s %.2f", booking.getCurrencySymbol(), total));
-
-                        showToast("Promo code applied successfully!");
-                        break;
-                    }
-                }
-                if (!isValidPromo) {
-                    showToast("Invalid or already used promo code.");
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                showToast("Failed to validate promo code.");
-            }
-        });
+    private void onBookingSuccess() {
+        showToast(getString(R.string.booking_confirmed));
+        String promoCode = promoCodeEditText.getText().toString().trim();
+        if (!promoCode.isEmpty()) {
+            PromotionHelper.markPromoCodeAsUsed(promoCode, this);
+        }
     }
 
-    private void setupPromoCodeEditText() {
-        promoCodeEditText.setOnClickListener(v -> {
-            ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-            if (clipboard != null && clipboard.hasPrimaryClip()) {
-                ClipData clip = clipboard.getPrimaryClip();
-                if (clip != null && clip.getItemCount() > 0) {
-                    CharSequence pastedText = clip.getItemAt(0).getText();
-                    promoCodeEditText.setText(pastedText);
-                    promoCodeEditText.setSelection(promoCodeEditText.getText().length()); // Move cursor to the end
-                    showToast("Promo code copied. It will be applied at the time of payment.");
-                }
-            }
-        });
+    private void onBookingFailure(String error) {
+        showToast("Failed to save booking: " + error);
+    }
+
+    private void handleUnexpectedError(Exception e) {
+        showToast("An unexpected error occurred: " + e.getMessage());
+    }
+
+    private void updateDateAndTimeTextViews(long startTime, long endTime) {
+        String startTimeFormatted = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date(startTime));
+        String endTimeFormatted = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date(endTime));
+        String dateFormatted = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date(startTime));
+
+        timeTextView.setText(MessageFormat.format("{0} - {1}", startTimeFormatted, endTimeFormatted));
+        dateTextView.setText(dateFormatted);
+    }
+
+    private void openParkingTicketActivity() {
+        Intent intent = new Intent(this, ParkingTicket.class);
+
+        if (booking != null) {
+            intent.putExtra("address", booking.getLocation()); // Pass address
+            intent.putExtra("passkey", booking.getPassKey());  // Pass reference key
+        }
+
+        startActivity(intent);
+        finish();
     }
 }

@@ -1,9 +1,5 @@
-/*Name: Kunal Dhiman, StudentID: N01540952,  section number: RCB
-  Name: Raghav Sharma, StudentID: N01537255,  section number: RCB
-  Name: NisargKumar Pareshbhai Joshi, StudentID: N01545986,  section number: RCB
-  Name: Rushi Manojkumar Patel, StudentID: N01539144, section number: RCB
- */
 package ca.tech.sense.it.smart.indoor.parking.system.ui.adapters;
+
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -17,6 +13,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -56,16 +53,19 @@ public class PromotionAdapter extends RecyclerView.Adapter<PromotionAdapter.Prom
         }
 
         holder.promoCode.setText(promotion.getPromoCode());
-
-        // Set up claim button to copy promo code without marking it as used
         holder.claimButton.setOnClickListener(view -> {
             ClipboardManager clipboard = (ClipboardManager) view.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
             ClipData clip = ClipData.newPlainText("promo_code", promotion.getPromoCode());
             clipboard.setPrimaryClip(clip);
             Toast.makeText(view.getContext(), "Promo code copied! It will be applied upon booking confirmation.", Toast.LENGTH_SHORT).show();
-        });
-    }
 
+            // Add promotion to user's promotions sub-node
+            String uid = FirebaseAuth.getInstance().getCurrentUser().getUid(); // Get the current user's UID
+            DatabaseReference userPromotionsRef = FirebaseDatabase.getInstance().getReference("users").child(uid).child("promotions");
+            userPromotionsRef.child(promotion.getId()).setValue(promotion);
+        });
+
+    }
 
     @Override
     public int getItemCount() {
