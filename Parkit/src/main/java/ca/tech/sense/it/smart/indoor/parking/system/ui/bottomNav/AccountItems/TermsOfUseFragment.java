@@ -10,8 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.HashMap;
@@ -74,9 +72,7 @@ public class TermsOfUseFragment extends Fragment {
                     }
                 })
                 .addOnFailureListener(e -> {
-                    if (getContext() != null) {
-                        Toast.makeText(getContext(), getString(R.string.default_content), Toast.LENGTH_SHORT).show();
-                    }
+                    // Log error or notify the user
                 });
     }
 

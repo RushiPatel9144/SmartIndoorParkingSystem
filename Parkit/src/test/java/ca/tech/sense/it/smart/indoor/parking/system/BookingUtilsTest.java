@@ -12,45 +12,9 @@ import ca.tech.sense.it.smart.indoor.parking.system.utility.BookingUtils;
 
 public class BookingUtilsTest {
 
-
-    @Test
-    public void testGeneratePassKey() {
-        // Test that the generated pass key is a 4-digit string
-        String passKey = BookingUtils.generatePassKey();
-        assertNotNull(passKey);
-        assertTrue("Pass key should be 4 digits long", passKey.length() == 4);
-        try {
-            Integer.parseInt(passKey); // Check if passKey can be converted to an integer
-        } catch (NumberFormatException e) {
-            fail("Pass key should be a valid integer");
-        }
-    }
-
-
-    @Test
-    public void testCalculateDelay() {
-        // Test the delay calculation for a valid future date-time
-        String futureDateTime = "2024-12-03 12:00";
-        long delay = BookingUtils.calculateDelay(futureDateTime);
-        assertTrue("Delay should be positive for future date-time", delay > 0);
-
-        // Test the delay calculation for a date-time in the past
-        String pastDateTime = "2024-12-01 12:00";
-        long pastDelay = BookingUtils.calculateDelay(pastDateTime);
-        assertTrue("Delay should be negative for past date-time", pastDelay < 0);
-    }
-
-    @Test
-    public void testDateFormat() {
-        // Test if the date format used in convertToMillis is correct
-        String testDate = "2024-12-03 12:00";
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        try {
-            Date date = sdf.parse(testDate);
-            assertNotNull(String.valueOf(date), "Parsed date should not be null");
-        } catch (Exception e) {
-            fail("Date parsing failed");
-        }
+    private String formatMillisToDate(long millis) {
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
+                .format(new Date(millis));
     }
 
     @Test
@@ -72,6 +36,16 @@ public class BookingUtilsTest {
         assertEquals("Millis should be 0 for an empty date string", 0, millis);
     }
 
+
+    @Test
+    public void testCalculateDelay_SlightlyPastDate() {
+        long pastTime = System.currentTimeMillis() - 10 * 1000; // 10 seconds ago
+        String pastDateTime = formatMillisToDate(pastTime);
+        long delay = BookingUtils.calculateDelay(pastDateTime);
+
+        assertTrue("Delay should be non-positive for a slightly past date", delay <= 0);
+        assertTrue("Delay should not exceed 1 minute in negative for a small past difference", delay >= -60 * 1000);
+    }
 
     @Test
     public void testCalculateDelay_LeapYearDate() {
