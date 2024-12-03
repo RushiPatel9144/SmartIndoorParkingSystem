@@ -157,7 +157,7 @@ public class PaymentActivity extends AppCompatActivity {
             double gstHst = subtotal * 0.13;
             double platformFee = subtotal * 0.10;
             total = subtotal + gstHst + platformFee;
-          
+
             booking.setTotalPrice(CurrencyManager.getInstance().convertToCAD(total, booking.getCurrencyCode()));
             subtotalTextView.setText(String.format(Locale.getDefault(), "%s %.2f",currencySymbol, subtotal));
             gstHstTextView.setText(String.format(Locale.getDefault(), "%s %.2f",currencySymbol, gstHst));
@@ -265,23 +265,10 @@ public class PaymentActivity extends AppCompatActivity {
 
         // Store transaction and confirm booking
         try {
-
-            bookingManager.getBookingService().confirmBooking(
-                    transactionId,
-                    booking.getLocationId(),        // Pass location ID
-                    booking.getSlotNumber(),       // Pass slot number
-                    selectedTimeSlot,              // Valid time slot
-                    selectedDate,                  // Valid date
-                    booking.getLocation(),         // Location
-                    () -> {
-                        showToast(getString(R.string.booking_confirmed));
-
-                        // Mark the promo code as used after booking confirmation
-                        markPromoCodeAsUsed();
-                    },
-                    error -> showToast("Failed to save booking: " + error.getMessage()));
+            transactionManager.storeTransaction(ownerId, transaction);
+            confirmBookingInService(transactionId, selectedTimeSlot, selectedDate);
         } catch (Exception e) {
-            handleUnexpectedError(e);
+            showToast("An unexpected error occurred: " + e.getMessage());
         }
     }
 
@@ -303,17 +290,6 @@ public class PaymentActivity extends AppCompatActivity {
             return false;
         }
         return true;
-    }
-
-    private String getSelectedTimeSlot() {
-        return new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date(booking.getStartTime())) + " - " +
-                new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date(booking.getEndTime()));
-
-            transactionManager.storeTransaction(ownerId, transaction);
-            confirmBookingInService(transactionId, selectedTimeSlot, selectedDate);
-        } catch (Exception e) {
-            showToast("An unexpected error occurred: " + e.getMessage());
-        }
     }
 
     private String formatTimeSlot(long startTime, long endTime) {
@@ -363,7 +339,7 @@ public class PaymentActivity extends AppCompatActivity {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Promotion promotion = snapshot.getValue(Promotion.class);
                     if (promotion != null && promoCode.equals(promotion.getPromoCode())) {
-                        markPromoCodeAsUsed(promotion, promotionsRef);
+                        markPromoCodeAsUsed();
                         break;
                     }
                 }
