@@ -5,9 +5,13 @@
  */
 package ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems;
 
+import static ca.tech.sense.it.smart.indoor.parking.system.utility.AppConstants.USER_TYPE_OWNER;
+import static ca.tech.sense.it.smart.indoor.parking.system.utility.AppConstants.USER_TYPE_USER;
+
 import android.annotation.SuppressLint;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +22,7 @@ import android.widget.Switch;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -31,6 +36,7 @@ import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.currency.Currency;
 import ca.tech.sense.it.smart.indoor.parking.system.currency.CurrencyManager;
 import ca.tech.sense.it.smart.indoor.parking.system.currency.CurrencyPreferenceManager;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.sessionManager.SessionManager;
 import ca.tech.sense.it.smart.indoor.parking.system.viewModel.ThemeViewModel;
 
 public class SettingsFragment extends Fragment {
@@ -45,6 +51,7 @@ public class SettingsFragment extends Fragment {
     private ThemeViewModel themeViewModel;
     private PreferenceManager preferenceManager;
     private NotificationManagerHelper notificationManagerHelper;
+    private CardView currencyCardView;
 
     public SettingsFragment() {
         // Required empty public constructor
@@ -68,7 +75,7 @@ public class SettingsFragment extends Fragment {
         observeThemeChanges();
         setupListeners();
         initializeSpinner();
-
+        fetchUserData();
         return view;
     }
 
@@ -77,6 +84,17 @@ public class SettingsFragment extends Fragment {
         switchNotifications = view.findViewById(R.id.switch_notifications);
         switchTheme = view.findViewById(R.id.switch_theme);
         spinnerCurrency = view.findViewById(R.id.spinner_currency);
+        currencyCardView = view.findViewById(R.id.currencyCardView);
+    }
+
+    public void fetchUserData() {
+        SessionManager sessionManager = SessionManager.getInstance(getContext());
+        String userType = sessionManager.getUserType();
+        if (userType.equals(USER_TYPE_OWNER)) {
+            currencyCardView.setVisibility(View.GONE);
+        } else if (userType.equals(USER_TYPE_USER)) {
+            currencyCardView.setVisibility(View.VISIBLE);
+        }
     }
 
     private void loadPreferences() {
