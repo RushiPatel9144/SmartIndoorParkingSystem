@@ -10,10 +10,10 @@
     <ImageView
         android:id="@+id/parking_image"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingBottom="10dp"
-        android:scaleType="fitCenter"
-        android:src="@drawable/active" />
+        android:layout_height="300dp"
+        android:visibility="gone"
+        android:layout_gravity="center"
+        android:src="@drawable/activity" />
 
     <LinearLayout
             android:layout_width="match_parent"
