@@ -13,7 +13,10 @@ import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
 import ca.tech.sense.it.smart.indoor.parking.system.manager.bookingManager.BookingManager;
+import ca.tech.sense.it.smart.indoor.parking.system.utility.BookingUtils;
+
 import ca.tech.sense.it.smart.indoor.parking.system.model.booking.Booking;
+import ca.tech.sense.it.smart.indoor.parking.system.utility.NotificationHelper;
 
 public class CancelBookingViewModel extends AndroidViewModel {
     private final BookingManager bookingManager;
@@ -25,7 +28,11 @@ public class CancelBookingViewModel extends AndroidViewModel {
 
     public void cancelBooking(Booking booking, Runnable onSuccess, Consumer<Exception> onFailure) {
         String userId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
-        bookingManager.getUserService().cancelBookingAndRequestRefund(userId,booking, onSuccess, onFailure);
+        bookingManager.getUserService().cancelBookingAndRequestRefund(userId, booking, () -> {
+            // Send cancellation notification
+            sendCancellationNotification(userId, booking);
+            onSuccess.run();
+        }, onFailure);
     }
 
     public void clearAllBookingHistory(Runnable onSuccess, Consumer<Exception> onFailure) {
@@ -39,6 +46,12 @@ public class CancelBookingViewModel extends AndroidViewModel {
             }
             onSuccess.run();
         }, onFailure);
+    }
+
+    public void sendCancellationNotification(String userId, Booking booking) {
+        String title = "Booking Canceled";
+        String message = "Your booking at " + booking.getLocation() + " for " + BookingUtils.formatDate(booking.getStartTime()) + " has been canceled.";
+        NotificationHelper.sendNotification(getApplication().getApplicationContext(), title, message, userId);
     }
 }
 
