@@ -27,7 +27,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.Calendar;
 
-public class Home extends BaseNetworkFragment {
+public class Home extends Fragment {
 
     private TextView tvGreeting, tvAdditionalMessages, tvBrowseNearby, tvFindBestParking, tvPromoHeader, tvPromoDescription, tvFavoritesHeader, tvFavoritesDescription, tvHistoryHeader, tvHistoryDescription, tvRatingHeader, tvRatingDescription, tvHelpHeader, tvHelpDescription;
     private ImageView imgTop;
