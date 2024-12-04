@@ -158,7 +158,7 @@ public class PaymentActivity extends AppCompatActivity {
             if (!promoCode.isEmpty()) {
                 PromotionHelper.applyPromoCode(promoCode, booking, subtotalTextView, gstHstTextView, platformFeeTextView, totalTextView, this);
             } else {
-                showToast("Please enter a promo code.");
+                showToast(getString(R.string.please_enter_a_promo_code));
             }
         });
         confirmButton.setOnClickListener(v -> fetchClientSecret(total, booking));
@@ -205,7 +205,7 @@ public class PaymentActivity extends AppCompatActivity {
                         runOnUiThread(() -> showToast(getString(R.string.failed_to_parse_server_response)));
                     }
                 } else {
-                    runOnUiThread(() -> showToast("Server error: " + response.message()));
+                    runOnUiThread(() -> showToast(getString(R.string.server_error) + response.message()));
                 }
             }
         });
@@ -229,7 +229,7 @@ public class PaymentActivity extends AppCompatActivity {
             showToast("Payment Failed: " + ((PaymentSheetResult.Failed) paymentSheetResult).getError());
             finish();
         } else if (paymentSheetResult instanceof PaymentSheetResult.Canceled) {
-            showToast("Payment Canceled");
+            showToast(String.valueOf(R.string.payment_canceled));
             finish();
         }
     }
@@ -253,7 +253,7 @@ public class PaymentActivity extends AppCompatActivity {
             transactionManager.storeTransaction(ownerId, transaction);
             confirmBookingInService(transactionId, selectedTimeSlot, selectedDate);
         } catch (Exception e) {
-            showToast("An unexpected error occurred: " + e.getMessage());
+            showToast(getString(R.string.an_unexpected_error_occurred) + e.getMessage());
         }
     }
 
@@ -298,7 +298,7 @@ public class PaymentActivity extends AppCompatActivity {
     }
 
     private void onBookingConfirmationError(Exception error) {
-        showToast("Failed to save booking: " + error.getMessage());
+        showToast(R.string.failed_to_save_booking + error.getMessage());
     }
 
     private void handlePromoCode() {
@@ -320,7 +320,7 @@ public class PaymentActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                showToast("Failed to update promo code status.");
+                showToast(String.valueOf(R.string.failed_to_update_promo_code_status));
             }
         });
     }

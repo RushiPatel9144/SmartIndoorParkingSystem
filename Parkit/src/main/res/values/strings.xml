@@ -509,6 +509,9 @@
     <string name="get_help">Get Help</string>
     <string name="check_active_location_and_slots">Check Active Location and Slots</string>
     <string name="manage_active_locations_and_slots_easily">Manage active locations and slots easily.</string>
-    <string name="manage_locations_and_slots">Manage Locations and Slots</string>
-
+    <string name="manage_locations_and_slots">Manage Locations and Slots</string>
+    <string name="please_enter_a_promo_code">Please enter a promo code\n</string>
+    <string name="server_error">Server error\n</string>
+    <string name="an_unexpected_error_occurred">An unexpected error occured</string>
+    <string name="failed_to_update_promo_code_status">Failed to update promo code status</string>
 </resources>

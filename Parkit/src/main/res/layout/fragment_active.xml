@@ -3,8 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp"
-    android:background="#F0F0F0">
+    android:padding="16dp">
 
     <!-- Container for Image and Texts -->
     <LinearLayout

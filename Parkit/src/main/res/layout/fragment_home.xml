@@ -6,7 +6,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:padding="16dp"
-    android:background="@color/bg"
     tools:context=".HomeFragment">
 
     <!-- TextView with big font size for greeting -->

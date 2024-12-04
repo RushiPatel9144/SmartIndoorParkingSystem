@@ -346,4 +346,5 @@
     <string name="no_internet_connection">NO internet connection</string>
     <string name="failed_to_delete_owner_slot">Failed to delete owner slot</string>
     <string name="failed_to_delete_slot">Failed to delete slot.</string>
+    <string name="please_enter_a_promo_code">Please enter a promo code\n</string>
 </resources>
