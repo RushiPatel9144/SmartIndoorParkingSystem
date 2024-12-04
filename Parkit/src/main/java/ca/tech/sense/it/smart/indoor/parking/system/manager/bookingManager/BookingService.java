@@ -151,8 +151,9 @@ public class BookingService {
 
     @SuppressLint("ScheduleExactAlarm")
     private void scheduleReminder(long timeInMillis, String title, String message, String userId) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            PermissionUtils.requestExactAlarmPermission(context);
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.S) {
+            // Do not schedule reminders if API level is greater than 31
+            return;
         }
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
@@ -167,5 +168,4 @@ public class BookingService {
             alarmManager.setExact(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent);
         }
     }
-
 }
