@@ -493,4 +493,25 @@
     <string name="no_currencies_available">No currencies available</string>
     <string name="submit_again_in">"Submit again in "</string>
     <string name="intent_data_is_missing">Intent Data is Missing</string>
+    <string name="good_morning_user">Good Morning, User!</string>
+    <string name="you_don_t_have_any_parking_sessions_right_now">You Don\'t Have Any Parking Sessions Right Now</string>
+    <string name="your_parking_session_details_will_show_here">Your parking session details will show here</string>
+    <string name="you_don_t_have_any_upcoming_reservations">You Don\'t Have Any Upcoming Reservations</string>
+    <string name="upcoming_parking_reservations_details_will_show_here">Upcoming parking reservations details will show here</string>
+    <string name="you_don_t_have_any_parking_history">You Don\'t Have Any Parking History</string>
+    <string name="history_of_parking_reservations_details_will_show_here_after_they_end">History of parking reservations details will show here after they end</string>
+    <string name="clear_all_booking_history">Clear All Booking History</string>
+    <string name="we_value_your_feedback">We Value Your Feedback!</string>
+    <string name="help_us_improve_by_sharing_your_thoughts_it_only_takes_a_moment">Help us improve by sharing your thoughts—it only takes a moment.</string>
+    <string name="rate_now">Rate Now</string>
+    <string name="we_re_here_for_you">We’re Here for You!</string>
+    <string name="got_questions_let_us_guide_you_every_step_of_the_way">Got questions? Let us guide you every step of the way.</string>
+    <string name="get_help">Get Help</string>
+    <string name="check_active_location_and_slots">Check Active Location and Slots</string>
+    <string name="manage_active_locations_and_slots_easily">Manage active locations and slots easily.</string>
+    <string name="manage_locations_and_slots">Manage Locations and Slots</string>
+    <string name="please_enter_a_promo_code">Please enter a promo code\n</string>
+    <string name="server_error">Server error\n</string>
+    <string name="an_unexpected_error_occurred">An unexpected error occured</string>
+    <string name="failed_to_update_promo_code_status">Failed to update promo code status</string>
 </resources>

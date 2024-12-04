@@ -17,6 +17,8 @@
         <item name="actionOverflowButtonStyle">@style/OverflowMenuStyle</item>
         <!-- Optional: Light status bar icons for a dark background -->
         <item name="android:windowLightStatusBar">true</item>
+        <!-- Background color for light theme -->
+        <item name="android:windowBackground">@color/bg</item>
 
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->

@@ -33,13 +33,16 @@ public class ActiveFragment extends BaseNetworkFragment {
     private CancelBookingViewModel cancelBookingViewModel;
     private BookingAdapter bookingAdapter;
     private TextView noBookingsText;
+    private TextView noBookingsText2;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_active, container, false);
         RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
         noBookingsText = view.findViewById(R.id.no_bookings_text);
-        ImageView parkingImage = view.findViewById(R.id.parking_image); // Add this line
+        noBookingsText2= view.findViewById(R.id.park_now);
+        ImageView parkingImage = view.findViewById(R.id.parking_image); // Add this lines
+
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         cancelBookingViewModel = new ViewModelProvider(requireActivity()).get(CancelBookingViewModel.class);
@@ -49,10 +52,12 @@ public class ActiveFragment extends BaseNetworkFragment {
         bookingViewModel = new ViewModelProvider(requireActivity()).get(BookingViewModel.class);
         bookingViewModel.getActiveBookings().observe(getViewLifecycleOwner(), bookings -> {
             if (bookings.isEmpty()) {
+                noBookingsText2.setVisibility(View.VISIBLE);
                 noBookingsText.setVisibility(View.VISIBLE);
                 parkingImage.setVisibility(View.VISIBLE); // Add this line
                 recyclerView.setVisibility(View.GONE);
             } else {
+                noBookingsText2.setVisibility(View.GONE);
                 noBookingsText.setVisibility(View.GONE);
                 parkingImage.setVisibility(View.GONE); // Add this line
                 recyclerView.setVisibility(View.VISIBLE);

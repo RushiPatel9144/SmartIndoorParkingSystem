@@ -10,10 +10,29 @@
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <item name="actionOverflowButtonStyle">@style/OverflowMenuStyle</item>
+
+        <!-- Background color for dark theme -->
+        <item name="android:windowBackground">@color/bg_dark</item>
+        <!-- Toolbar style for dark theme -->
+        <item name="toolbarStyle">@style/ToolbarStyle.Dark</item>
+    </style>
+
+    <style name="ToolbarStyle.Dark" parent="Widget.MaterialComponents.Toolbar">
+        <item name="titleTextColor">@color/colorAccent</item>
+    </style>
+
+    <style name="OverflowMenuStyle" parent="@style/Widget.AppCompat.ActionButton.Overflow">
+        <item name="android:tint">@color/theme</item>
+        <item name="android:textColor">@color/theme</item>
+    </style>
+
+    <style name="Toolbar.TitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textAppearance">@font/poppins_medium</item>
     </style>
 
     <style name="Theme.SmartIndoorParkingSystem" parent="Base.Theme.SmartIndoorParkingSystem" />
-  <!-- Base application theme. -->
+    <!-- Base application theme. -->
     <style name="Base.Base.Theme.SmartIndoorParkingSystem"
         parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your dark theme here. -->

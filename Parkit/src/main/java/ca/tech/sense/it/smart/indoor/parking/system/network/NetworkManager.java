@@ -22,9 +22,11 @@ public class NetworkManager {
 
     private static NetworkManager instance;
     private ConnectivityManager.NetworkCallback networkCallback;
-    private boolean wasNetworkLost = false;
+    private boolean wasInternetAvailable = false;
     private NetworkListener networkListener;
-    private String lastToastMessage = null; // To avoid repeated toast messages
+    private String lastToastMessage = null;
+
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     private NetworkManager() {}
 
@@ -47,9 +49,9 @@ public class NetworkManager {
                 public void onAvailable(@NonNull Network network) {
                     Log.d(TAG, "Network is available");
                     checkInternetAccessAsync(hasInternet -> {
-                        if (hasInternet) {
+                        if (hasInternet && !wasInternetAvailable) {
                             handleNetworkAvailability(context);
-                        } else {
+                        } else if (!hasInternet && wasInternetAvailable) {
                             handleNetworkLoss(context);
                         }
                     });
@@ -65,7 +67,11 @@ public class NetworkManager {
                 public void onCapabilitiesChanged(@NonNull Network network, @NonNull NetworkCapabilities networkCapabilities) {
                     if (networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)) {
                         Log.d(TAG, "Network capabilities changed: Internet capability available");
-                        handleNetworkAvailability(context);
+                        checkInternetAccessAsync(hasInternet -> {
+                            if (hasInternet && !wasInternetAvailable) {
+                                handleNetworkAvailability(context);
+                            }
+                        });
                     } else {
                         Log.d(TAG, "Network capabilities changed: Internet capability lost");
                         handleNetworkLoss(context);
@@ -86,20 +92,18 @@ public class NetworkManager {
     }
 
     private void handleNetworkAvailability(Context context) {
-        if (wasNetworkLost) {
+        if (!wasInternetAvailable) { // Show toast only if the network was previously unavailable
+            wasInternetAvailable = true;
             showToastOnce(context, context.getString(R.string.network_is_available));
-            wasNetworkLost = false;
+            notifyNetworkAvailable();
         }
-        notifyNetworkAvailable();
     }
 
     private void handleNetworkLoss(Context context) {
-        if (!wasNetworkLost) {
-            showToastOnce(context, context.getString(R.string.no_internet_connection));
-            wasNetworkLost = true;
-        }
+        wasInternetAvailable = false;
         notifyNetworkLost();
     }
+
 
     private void notifyNetworkAvailable() {
         if (networkListener != null) {
@@ -114,29 +118,16 @@ public class NetworkManager {
     }
 
     private void checkInternetAccessAsync(InternetCheckCallback callback) {
-        final int retryCount = 6;
-        final int retryDelay = 3000;
-        final ExecutorService executor = Executors.newSingleThreadExecutor();
-
         executor.execute(() -> {
-            boolean isConnected = false;
-            for (int attempt = 1; attempt <= retryCount; attempt++) {
-                try {
-                    // Check if google.com is reachable
-                    isConnected = InetAddress.getByName("google.com").isReachable(5000);
-                    // If successful, break early
-                    if (isConnected) break;
-                    // Wait before retrying
-                    Thread.sleep(retryDelay);
-                } catch (Exception e) {
-                    Log.e("InternetCheck", "Error during connectivity check: " + e.getMessage());
-                }
+            try {
+                boolean isConnected = InetAddress.getByName("google.com").isReachable(3000);
+                new Handler(Looper.getMainLooper()).post(() -> callback.onResult(isConnected));
+            } catch (Exception e) {
+                Log.e(TAG, "Error during connectivity check: " + e.getMessage());
+                new Handler(Looper.getMainLooper()).post(() -> callback.onResult(false));
             }
-            final boolean finalStatus = isConnected;
-            new Handler(Looper.getMainLooper()).post(() -> callback.onResult(finalStatus));
         });
     }
-
 
     private void showToastOnce(Context context, String message) {
         if (!message.equals(lastToastMessage)) {

@@ -4,24 +4,28 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp">
+
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_margin="4dp">
 
         <ImageView
-            android:id="@+id/no_bookings_image"
-            android:layout_width="wrap_content"
-            android:layout_height="300dp"
-            android:src="@drawable/history"
-            android:visibility="gone"
+            android:id="@+id/parking_image"
+            android:layout_width="200dp"
+            android:layout_height="150dp"
             android:layout_gravity="center"
-            android:padding="16dp" />
+            android:src="@drawable/activity"
+            android:visibility="gone"
+            />
+
         <TextView
             android:id="@+id/no_bookings_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="You Don't Have Any Parking History"
+            android:text="@string/you_don_t_have_any_parking_history"
             android:gravity="center"
             android:visibility="gone"
             android:textSize="25sp"
@@ -32,29 +36,32 @@
             android:id="@+id/no_bookings_text1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="History of parking reservations details will show here after they end"
+            android:text="@string/history_of_parking_reservations_details_will_show_here_after_they_end"
             android:textSize="18sp"
             android:paddingTop="8dp"
             android:paddingBottom="16dp"
             android:gravity="center"
+            android:visibility="gone"
             android:layout_gravity="center_horizontal" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/clear_all_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/clear_all_booking_history"
+            android:backgroundTint="@color/colorAccent"
+            android:textColor="@android:color/white"
+            android:padding="16dp"
+            android:layout_marginTop="16dp"
+            android:visibility="gone" />
+
     </LinearLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
-
-    <Button
-        android:id="@+id/clear_all_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Clear All Booking History"
-        android:backgroundTint="@color/colorAccent"
-        android:textColor="@android:color/white"
-        android:padding="16dp"
-        android:layout_marginTop="16dp"
-        android:visibility="gone" />
 
 </LinearLayout>

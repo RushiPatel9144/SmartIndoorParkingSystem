@@ -1,7 +1,9 @@
 package ca.tech.sense.it.smart.indoor.parking.system.manager.bookingManager;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -13,8 +15,15 @@ import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 import ca.tech.sense.it.smart.indoor.parking.system.booking.ParkingTicket;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.notificationManager.NotificationManagerHelper;
 import ca.tech.sense.it.smart.indoor.parking.system.model.booking.Booking;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.BookingUtils;
+import ca.tech.sense.it.smart.indoor.parking.system.utility.PermissionUtils;
+
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
 
 public class BookingService {
 
@@ -92,20 +101,31 @@ public class BookingService {
         if (bookingId != null) {
             booking.setId(bookingId); // Set the booking ID
             databaseRef.setValue(booking)
-                    .addOnSuccessListener(aVoid -> slotService.updateHourlyStatus(locationId, slot, selectedDate, times[0], "occupied", () -> {
-                        slotService.scheduleStatusUpdate(locationId, slot, selectedDate, times[1], onSuccess, onFailure);
-                        // Show toast message
-                        Toast.makeText(context, "Booking confirmed!", Toast.LENGTH_SHORT).show();
-                        // Pass the booking details, including the pass key, to the ParkingTicketActivity
-                        Intent intent = new Intent(context, ParkingTicket.class);
-                        intent.putExtra("booking", booking); // Pass the entire booking object
-                        context.startActivity(intent);
-                    }, onFailure))
+                    .addOnSuccessListener(aVoid -> {
+                        slotService.updateHourlyStatus(locationId, slot, selectedDate, times[0], "occupied", () -> {
+                            slotService.scheduleStatusUpdate(locationId, slot, selectedDate, times[1], onSuccess, onFailure);
+                            // Show toast message
+                            Toast.makeText(context, "Booking confirmed!", Toast.LENGTH_SHORT).show();
+
+                            // Pass the booking details, including the pass key, to the ParkingTicketActivity
+                            Intent intent = new Intent(context, ParkingTicket.class);
+                            intent.putExtra("booking", booking); // Pass the entire booking object
+                            context.startActivity(intent);
+
+                            // Send booking confirmation notification
+                            NotificationManagerHelper.sendBookingConfirmationNotification(userId, booking, selectedDate, times);
+
+                            // Schedule booking reminders
+                            scheduleBookingReminders(userId, booking, selectedDate, times);
+
+                        }, onFailure);
+                    })
                     .addOnFailureListener(onFailure::accept);
         } else {
             onFailure.accept(new Exception("Failed to generate booking ID"));
         }
     }
+
 
     public void updateTotalPrice(String userId, String bookingId, double totalPrice) {
         DatabaseReference databaseRef = firebaseDatabase
@@ -119,6 +139,33 @@ public class BookingService {
         databaseRef.setValue(totalPrice)
                 .addOnSuccessListener(aVoid -> Log.d("BookingUpdate", "Total price updated successfully."))
                 .addOnFailureListener(e -> Log.e("BookingUpdate", "Failed to update total price.", e));
+    }
+
+    private void scheduleBookingReminders(String userId, Booking booking, String selectedDate, String[] times) {
+        long startTime = BookingUtils.convertToMillis(selectedDate + " " + times[0]);
+        long reminderTime = startTime - 10 * 60 * 1000; // 30 minutes before
+
+        scheduleReminder(reminderTime, "Booking Reminder", "Your booking at " + booking.getLocation() + " starts in 30 minutes.", userId);
+        scheduleReminder(startTime, "Booking Reminder", "Your booking at " + booking.getLocation() + " starts now.", userId);
+    }
+
+    @SuppressLint("ScheduleExactAlarm")
+    private void scheduleReminder(long timeInMillis, String title, String message, String userId) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            PermissionUtils.requestExactAlarmPermission(context);
+        }
+
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(context, BookingReminderReceiver.class);
+        intent.putExtra("title", title);
+        intent.putExtra("message", message);
+        intent.putExtra("userId", userId);
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, (int) timeInMillis, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
+        if (alarmManager != null) {
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent);
+        }
     }
 
 }

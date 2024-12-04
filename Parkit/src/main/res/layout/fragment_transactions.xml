@@ -1,77 +1,99 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/swipeRefreshLayout"
+    android:layout_alignParentTop="true">
+
+<LinearLayout
+android:layout_width="match_parent"
+android:layout_height="match_parent"
     android:orientation="vertical"
+android:padding="16dp"
+android:theme="@style/LocationFragment">
+
+<androidx.cardview.widget.CardView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="16dp"
     android:padding="16dp"
-    android:background="@color/bg"
-    android:theme="@style/LocationFragment">
+    app:cardBackgroundColor="#2A2A2A"
+    android:layout_marginBottom="16dp">
 
-    <androidx.cardview.widget.CardView
-        android:layout_width="match_parent"
+    <!-- Header Section for Total Income -->
+    <LinearLayout
+        android:layout_width="382dp"
         android:layout_height="wrap_content"
-        app:cardCornerRadius="16dp"
-        android:padding="16dp"
-        app:cardBackgroundColor="#2A2A2A"
-        android:layout_marginBottom="16dp">
+        android:gravity="start"
+        android:orientation="vertical"
+        android:padding="16dp">
 
-        <!-- Header Section for Total Income -->
-        <LinearLayout
-            android:layout_width="382dp"
+        <!-- Title -->
+        <TextView
+            android:id="@+id/transactionTitle"
+            android:textColor="#9E9E9E"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="start"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:layout_marginBottom="8dp"
+            android:fontFamily="sans-serif-medium"
+            android:text="Total Income"
+            android:textSize="18sp" />
 
-            <!-- Title -->
-            <TextView
-                android:id="@+id/transactionTitle"
-                android:textColor="#9E9E9E"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:fontFamily="sans-serif-medium"
+        <!-- Income Value -->
+        <TextView
+            android:id="@+id/income"
+            android:textColor="@color/white"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:fontFamily="sans-serif-medium"
+            android:text="0.00"
+            android:textStyle="bold"
+            android:textSize="32sp" />
 
-                android:text="Total Income"
-                android:textSize="18sp" />
+    </LinearLayout>
+</androidx.cardview.widget.CardView>
 
-            <!-- Income Value -->
-            <TextView
-                android:id="@+id/income"
-                android:textColor="@color/white"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:fontFamily="sans-serif-medium"
+<!-- Placeholder for No Transactions -->
+<LinearLayout
+    android:id="@+id/emptyStateLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:visibility="visible">
 
-                android:text="0.00"
-                android:textStyle="bold"
-                android:textSize="32sp" /> <!-- Default value, will be updated dynamically -->
+    <!-- Image Placeholder -->
+    <ImageView
+        android:id="@+id/emptyStateImage"
+        android:layout_width="189dp"
+        android:layout_height="134dp"
+        android:src="@drawable/paycheck" />
 
-        </LinearLayout>
-    </androidx.cardview.widget.CardView>
-
-
-
-    <!-- Placeholder for No Transactions -->
+    <!-- Text Placeholder -->
     <TextView
         android:id="@+id/noTransactionsTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
         android:text="@string/no_transactions_yet"
-        android:textSize="16sp"
+        android:textSize="24sp"
         android:textColor="@color/secondaryText"
-        android:visibility="gone" />
+        android:layout_marginTop="16dp" />
 
-    <!-- RecyclerView for Transaction List -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/transactionRecyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:clipToPadding="false"
-        android:padding="8dp"
-        android:paddingBottom="8dp" />
 </LinearLayout>
+
+<!-- RecyclerView for Transaction List -->
+<androidx.recyclerview.widget.RecyclerView
+    android:id="@+id/transactionRecyclerView"
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:layout_weight="1"
+    android:clipToPadding="false"
+    android:padding="8dp"
+    android:paddingBottom="8dp"
+    android:visibility="gone"/>
+</LinearLayout>
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

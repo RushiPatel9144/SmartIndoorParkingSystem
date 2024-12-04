@@ -23,6 +23,7 @@
     <color name="gray">#808080</color>
     <color name="yellow">#FFEB3B</color>
     <color name="bg">#F4F4F4</color>
+    <color name="bg_dark">#222222</color> <!-- Dark theme background color -->
     <color name="red">#D30808</color>
     <color name="semi_transparent_black">#80000000</color>
     <color name="lightGray">#F5F5F5</color>

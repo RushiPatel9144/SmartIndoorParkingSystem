@@ -84,7 +84,7 @@ public class ParkingTicket extends AppCompatActivity {
         address = booking.getLocation();
         long startTime = booking.getStartTime();
         long endTime = booking.getEndTime();
-        double price = booking.getPrice();
+        double price = booking.getTotalPrice();
 
         if (!TextUtils.isEmpty(passkey)) {
             displayBookingDetails(booking, startTime, endTime, price);
