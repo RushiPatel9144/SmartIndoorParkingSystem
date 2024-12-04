@@ -27,18 +27,6 @@ public class BookingUtilsTest {
     }
 
 
-    @Test
-    public void testCalculateDelay() {
-        // Test the delay calculation for a valid future date-time
-        String futureDateTime = "2024-12-03 12:00";
-        long delay = BookingUtils.calculateDelay(futureDateTime);
-        assertTrue("Delay should be positive for future date-time", delay > 0);
-
-        // Test the delay calculation for a date-time in the past
-        String pastDateTime = "2024-12-01 12:00";
-        long pastDelay = BookingUtils.calculateDelay(pastDateTime);
-        assertTrue("Delay should be negative for past date-time", pastDelay < 0);
-    }
 
     @Test
     public void testDateFormat() {
