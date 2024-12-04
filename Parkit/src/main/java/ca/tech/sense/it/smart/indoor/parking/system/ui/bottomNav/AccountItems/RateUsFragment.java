@@ -28,6 +28,7 @@ import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
 public class RateUsFragment extends BaseNetworkFragment implements RateUsViewModel.FeedbackSubmissionCallback {
 
     RatingBar ratingBar;
+    private CountDownTimer countDownTimer;
     EditText feedbackComment;
     Button submitFeedbackButton;
     TextView optionParkingSpot;
@@ -156,20 +157,31 @@ public class RateUsFragment extends BaseNetworkFragment implements RateUsViewMod
     }
 
     private void startCooldownTimer(long duration) {
+        // Cancel any existing timer before starting a new one
+        if (countDownTimer != null) {
+            countDownTimer.cancel();
+        }
+
         submitFeedbackButton.setEnabled(false);
         submitFeedbackButton.setBackgroundColor(ContextCompat.getColor(requireContext(), android.R.color.darker_gray));
-        new CountDownTimer(duration, 1000) {
+
+        countDownTimer = new CountDownTimer(duration, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
-                submitFeedbackButton.setText(MessageFormat.format("{0}{1}", getString(R.string.submit_again_in), formatTime(millisUntilFinished)));
+                if (isAdded()) { // Check if the fragment is attached before accessing UI or context
+                    submitFeedbackButton.setText(MessageFormat.format("{0}{1}", getString(R.string.submit_again_in), formatTime(millisUntilFinished)));
+                }
             }
 
             @Override
             public void onFinish() {
-                enableSubmitButton();
+                if (isAdded()) { // Ensure fragment is still attached before updating UI
+                    enableSubmitButton();
+                }
             }
         }.start();
     }
+
 
     private void enableSubmitButton() {
         submitFeedbackButton.setEnabled(true);
