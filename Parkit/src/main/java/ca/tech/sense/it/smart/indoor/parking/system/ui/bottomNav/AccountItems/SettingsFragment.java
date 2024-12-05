@@ -11,7 +11,6 @@ import static ca.tech.sense.it.smart.indoor.parking.system.utility.AppConstants.
 import android.annotation.SuppressLint;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -90,12 +89,18 @@ public class SettingsFragment extends Fragment {
     public void fetchUserData() {
         SessionManager sessionManager = SessionManager.getInstance(getContext());
         String userType = sessionManager.getUserType();
-        if (userType.equals(USER_TYPE_OWNER)) {
+        if (userType != null) {
+            if (USER_TYPE_OWNER.equals(userType)) {
+                currencyCardView.setVisibility(View.GONE);
+            } else if (USER_TYPE_USER.equals(userType)) {
+                currencyCardView.setVisibility(View.VISIBLE);
+            }
+        } else {
+            // Handle the case where userType is null
             currencyCardView.setVisibility(View.GONE);
-        } else if (userType.equals(USER_TYPE_USER)) {
-            currencyCardView.setVisibility(View.VISIBLE);
         }
     }
+
 
     private void loadPreferences() {
         switchLockPortrait.setChecked(preferenceManager.isPortraitLocked());

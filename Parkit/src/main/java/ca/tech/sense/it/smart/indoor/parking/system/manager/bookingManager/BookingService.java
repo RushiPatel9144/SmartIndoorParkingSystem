@@ -18,12 +18,9 @@ import ca.tech.sense.it.smart.indoor.parking.system.booking.ParkingTicket;
 import ca.tech.sense.it.smart.indoor.parking.system.manager.notificationManager.NotificationManagerHelper;
 import ca.tech.sense.it.smart.indoor.parking.system.model.booking.Booking;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.BookingUtils;
-import ca.tech.sense.it.smart.indoor.parking.system.utility.PermissionUtils;
-
 import android.app.AlarmManager;
 import android.app.PendingIntent;
-import android.content.Context;
-import android.content.Intent;
+
 
 public class BookingService {
 

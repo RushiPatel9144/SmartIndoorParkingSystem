@@ -14,7 +14,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -24,7 +23,6 @@ import java.util.ArrayList;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.model.booking.BookingViewModel;
 import ca.tech.sense.it.smart.indoor.parking.system.network.BaseNetworkFragment;
-import ca.tech.sense.it.smart.indoor.parking.system.network.NoNetworkFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.adapters.BookingAdapter;
 import ca.tech.sense.it.smart.indoor.parking.system.viewModel.CancelBookingViewModel;
 public class UpcomingFragment extends BaseNetworkFragment {

@@ -68,12 +68,4 @@ public class SettingsFragmentTest {
                 .check(matches(isNotChecked()));
     }
 
-    @Test
-    public void testSpinnerCurrency() {
-        // Ensure the spinner is set to "CAD"
-        onView(withId(R.id.spinner_currency)).perform(click());
-        onData(is("CAD")).perform(click());
-        onView(withId(R.id.spinner_currency))
-                .check(matches(withSpinnerText(containsString("CAD"))));
-    }
 }

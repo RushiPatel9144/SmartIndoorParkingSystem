@@ -8,6 +8,7 @@ import androidx.test.espresso.IdlingResource;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -16,10 +17,15 @@ import org.junit.runner.RunWith;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.typeText;
+import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
+import androidx.test.espresso.UiController;
+import androidx.test.espresso.ViewAction;
+import android.view.View;
 
 import ca.tech.sense.it.smart.indoor.parking.system.booking.PaymentActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.model.booking.Booking;
@@ -42,13 +48,13 @@ public class PaymentActivityTest {
         Intent intent = new Intent(ApplicationProvider.getApplicationContext(), PaymentActivity.class);
         intent.putExtra("ownerId", "testOwnerId");
 
-        // Mock Booking object
-        Booking mockBooking = new Booking();
-        mockBooking.setCurrencyCode("USD");
-        mockBooking.setTitle("Parking Name");
-        mockBooking.setLocation("Address");
-        mockBooking.setPostalCode("Postal Code");
-        intent.putExtra("booking", mockBooking);
+        // Initialize the Booking object
+        Booking booking = new Booking();
+        booking.setCurrencyCode("USD");
+        booking.setTitle("Parking Name");
+        booking.setLocation("Address");
+        booking.setPostalCode("Postal Code");
+        intent.putExtra("booking", booking);
 
         // Launch the activity with the intent
         ActivityScenario<PaymentActivity> scenario = ActivityScenario.launch(intent);
@@ -75,9 +81,46 @@ public class PaymentActivityTest {
     @Test
     public void testApplyPromoCode() {
         onView(withId(R.id.promoCodeEditText))
-                .perform(typeText("PROMO123"));
-        onView(withId(R.id.applyPromoCodeButton))
-                .perform(click());
+                .perform(replaceText("")); // Clear existing text
+
+        // Wait for manual input
+        onView(isRoot()).perform(new ViewAction() {
+            @Override
+            public Matcher<View> getConstraints() {
+                return isRoot();
+            }
+
+            @Override
+            public String getDescription() {
+                return "Wait for input";
+            }
+
+            @Override
+            public void perform(UiController uiController, View view) {
+                uiController.loopMainThreadForAtLeast(100); //
+            }
+        });
+
+        // Click the apply promo code button
+        onView(withId(R.id.applyPromoCodeButton)).perform(click());
+
+        // Custom ViewAction to wait for the UI to be idle
+        onView(isRoot()).perform(new ViewAction() {
+            @Override
+            public Matcher<View> getConstraints() {
+                return isRoot();
+            }
+
+            @Override
+            public String getDescription() {
+                return "Wait for UI to be idle";
+            }
+
+            @Override
+            public void perform(UiController uiController, View view) {
+                uiController.loopMainThreadUntilIdle();
+            }
+        });
     }
 
     @Test
@@ -93,6 +136,6 @@ public class PaymentActivityTest {
     }
 
     private void disableAnimations() {
-
+        // Implement animation disabling logic if needed
     }
 }

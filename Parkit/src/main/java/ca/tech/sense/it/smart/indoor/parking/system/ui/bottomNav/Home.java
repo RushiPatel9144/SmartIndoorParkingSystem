@@ -13,7 +13,6 @@ import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
-import ca.tech.sense.it.smart.indoor.parking.system.network.BaseNetworkFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems.HelpFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems.RateUsFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.activity.HistoryFragment;

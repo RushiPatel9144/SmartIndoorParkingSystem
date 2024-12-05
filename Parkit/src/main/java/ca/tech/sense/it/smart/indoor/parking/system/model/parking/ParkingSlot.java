@@ -7,9 +7,6 @@ package ca.tech.sense.it.smart.indoor.parking.system.model.parking;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingSensor;
-
 public class ParkingSlot {
     private String id;
     private ParkingSensor sensor;
