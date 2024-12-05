@@ -18,7 +18,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withSpinnerText;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 
-import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems.SettingsFragment;
+import ca.tech.sense.it.smart.indoor.parking.system.userUi.bottomNav.AccountItems.SettingsFragment;
 
 @RunWith(AndroidJUnit4.class)
 public class SettingsFragmentTest {

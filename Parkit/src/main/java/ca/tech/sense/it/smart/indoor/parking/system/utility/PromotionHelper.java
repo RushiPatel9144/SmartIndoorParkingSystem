@@ -28,7 +28,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.model.Promotion;
 import ca.tech.sense.it.smart.indoor.parking.system.model.booking.Booking;
-import ca.tech.sense.it.smart.indoor.parking.system.ui.menu.PromotionFragment;
+import ca.tech.sense.it.smart.indoor.parking.system.userUi.menu.PromotionFragment;
 
 public class PromotionHelper {
 

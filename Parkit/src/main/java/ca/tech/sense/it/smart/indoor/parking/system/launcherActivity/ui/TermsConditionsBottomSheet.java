@@ -10,7 +10,7 @@ import androidx.fragment.app.FragmentTransaction;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.button.MaterialButton;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
-import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems.TermsOfUseFragment;
+import ca.tech.sense.it.smart.indoor.parking.system.userUi.bottomNav.AccountItems.TermsOfUseFragment;
 
 public class TermsConditionsBottomSheet extends BottomSheetDialogFragment {
 

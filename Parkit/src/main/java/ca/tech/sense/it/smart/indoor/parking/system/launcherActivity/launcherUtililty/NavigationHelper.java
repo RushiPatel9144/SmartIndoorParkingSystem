@@ -8,17 +8,17 @@ import android.content.Intent;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import ca.tech.sense.it.smart.indoor.parking.system.MainActivity;
+import ca.tech.sense.it.smart.indoor.parking.system.userUi.UserMainActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui.login.LoginActivity;
-import ca.tech.sense.it.smart.indoor.parking.system.owner.OwnerActivity;
+import ca.tech.sense.it.smart.indoor.parking.system.ownerUi.OwnerActivity;
 
 public class NavigationHelper {
 
     private NavigationHelper(){}
 
     public static void navigateToMainActivity(AppCompatActivity activity) {
-        Intent intent = new Intent(activity, MainActivity.class);
+        Intent intent = new Intent(activity, UserMainActivity.class);
         activity.startActivity(intent);
         activity.finish();
     }
