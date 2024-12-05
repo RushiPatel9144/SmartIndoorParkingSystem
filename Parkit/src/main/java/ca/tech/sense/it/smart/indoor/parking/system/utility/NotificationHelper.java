@@ -19,7 +19,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.model.Notification; // Ensure you import your model
-import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems.NotificationsFragment;
+import ca.tech.sense.it.smart.indoor.parking.system.userUi.bottomNav.AccountItems.NotificationsFragment;
 
 public class NotificationHelper {
 

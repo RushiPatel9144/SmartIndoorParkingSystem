@@ -29,10 +29,10 @@
         android:theme="@style/Base.Theme.SmartIndoorParkingSystem"
         tools:targetApi="31">
         <activity
-            android:name=".owner.bottomNav.location.handleSlot.AddSlotActivity"
+            android:name=".ownerUi.bottomNav.location.handleSlot.AddSlotActivity"
             android:exported="false" />
         <activity
-            android:name=".owner.bottomNav.location.handleLocation.AddLocationActivity"
+            android:name=".ownerUi.bottomNav.location.handleLocation.AddLocationActivity"
             android:exported="false" />
         <activity
             android:name=".launcherActivity.onBoarding.OnboardingActivity"
@@ -45,7 +45,7 @@
             android:name=".booking.ParkingTicket"
             android:exported="false" />
         <activity
-            android:name=".owner.OwnerActivity"
+            android:name=".ownerUi.OwnerActivity"
             android:theme="@style/Base.Theme.SmartIndoorParkingSystem"
             android:exported="false" />
         <activity
@@ -75,7 +75,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity"
+            android:name=".userUi.UserMainActivity"
             android:exported="true" />
 
         <receiver

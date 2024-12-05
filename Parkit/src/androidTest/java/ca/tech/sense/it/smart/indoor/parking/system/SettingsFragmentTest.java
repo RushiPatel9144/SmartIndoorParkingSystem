@@ -7,7 +7,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
@@ -15,10 +14,9 @@ import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.isNotChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withSpinnerText;
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 
-import ca.tech.sense.it.smart.indoor.parking.system.ui.bottomNav.AccountItems.SettingsFragment;
+import ca.tech.sense.it.smart.indoor.parking.system.userUi.bottomNav.AccountItems.SettingsFragment;
 
 @RunWith(AndroidJUnit4.class)
 public class SettingsFragmentTest {

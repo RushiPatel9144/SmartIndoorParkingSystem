@@ -34,7 +34,7 @@ import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.booking.PaymentActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.manager.favoriteManager.FavoritesManager;
-import ca.tech.sense.it.smart.indoor.parking.system.ui.adapters.SlotAdapter;
+import ca.tech.sense.it.smart.indoor.parking.system.userUi.adapters.SlotAdapter;
 import ca.tech.sense.it.smart.indoor.parking.system.currency.Currency;
 import ca.tech.sense.it.smart.indoor.parking.system.currency.CurrencyManager;
 import ca.tech.sense.it.smart.indoor.parking.system.currency.CurrencyPreferenceManager;

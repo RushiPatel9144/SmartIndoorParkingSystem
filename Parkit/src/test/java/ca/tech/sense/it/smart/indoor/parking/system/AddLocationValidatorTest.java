@@ -11,7 +11,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.testng.annotations.Test;
 
-import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.location.handleLocation.AddLocationValidator;
+import ca.tech.sense.it.smart.indoor.parking.system.ownerUi.bottomNav.location.handleLocation.AddLocationValidator;
 
 public class AddLocationValidatorTest {
 

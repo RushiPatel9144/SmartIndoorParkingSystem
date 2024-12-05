@@ -7,7 +7,7 @@ import org.junit.Test;
 import static org.mockito.Mockito.*;
 import static org.junit.Assert.*;
 
-import ca.tech.sense.it.smart.indoor.parking.system.owner.bottomNav.location.handleSlot.AddSlotValidator;
+import ca.tech.sense.it.smart.indoor.parking.system.ownerUi.bottomNav.location.handleSlot.AddSlotValidator;
 
 public class AddSlotValidatorTest {
 
