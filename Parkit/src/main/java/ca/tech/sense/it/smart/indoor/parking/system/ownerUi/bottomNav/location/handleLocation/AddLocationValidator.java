@@ -50,4 +50,5 @@ public class AddLocationValidator {
             return -1;
         }
     }
+
 }

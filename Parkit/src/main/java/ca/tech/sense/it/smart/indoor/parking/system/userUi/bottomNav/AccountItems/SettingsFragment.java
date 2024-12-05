@@ -89,13 +89,17 @@ public class SettingsFragment extends Fragment {
     public void fetchUserData() {
         SessionManager sessionManager = SessionManager.getInstance(getContext());
         String userType = sessionManager.getUserType();
-        if (userType.equals(USER_TYPE_OWNER)) {
+        if (userType != null) {
+            if (USER_TYPE_OWNER.equals(userType)) {
+                currencyCardView.setVisibility(View.GONE);
+            } else if (USER_TYPE_USER.equals(userType)) {
+                currencyCardView.setVisibility(View.VISIBLE);
+            }
+        } else {
+            // Handle the case where userType is null
             currencyCardView.setVisibility(View.GONE);
-        } else if (userType.equals(USER_TYPE_USER)) {
-            currencyCardView.setVisibility(View.VISIBLE);
         }
     }
-
     private void loadPreferences() {
         switchLockPortrait.setChecked(preferenceManager.isPortraitLocked());
         switchTheme.setChecked(preferenceManager.isDarkTheme());

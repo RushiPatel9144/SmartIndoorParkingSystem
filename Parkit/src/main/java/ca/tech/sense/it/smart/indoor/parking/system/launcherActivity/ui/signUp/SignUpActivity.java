@@ -19,7 +19,6 @@ import java.util.Objects;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui.TermsConditionsBottomSheet;
-import ca.tech.sense.it.smart.indoor.parking.system.network.BaseActivity;
 
 public class SignUpActivity extends AppCompatActivity implements TermsConditionsBottomSheet.TermsDialogListener {
 

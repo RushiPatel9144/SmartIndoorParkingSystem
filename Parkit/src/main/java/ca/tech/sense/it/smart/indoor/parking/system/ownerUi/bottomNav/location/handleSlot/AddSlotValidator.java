@@ -1,5 +1,4 @@
 package ca.tech.sense.it.smart.indoor.parking.system.ownerUi.bottomNav.location.handleSlot;
-
 public class AddSlotValidator {
 
     private AddSlotValidator() {

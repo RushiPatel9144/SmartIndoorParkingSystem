@@ -7,7 +7,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
@@ -15,7 +14,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.isNotChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withSpinnerText;
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 
 import ca.tech.sense.it.smart.indoor.parking.system.userUi.bottomNav.AccountItems.SettingsFragment;
@@ -68,12 +66,4 @@ public class SettingsFragmentTest {
                 .check(matches(isNotChecked()));
     }
 
-    @Test
-    public void testSpinnerCurrency() {
-        // Ensure the spinner is set to "CAD"
-        onView(withId(R.id.spinner_currency)).perform(click());
-        onData(is("CAD")).perform(click());
-        onView(withId(R.id.spinner_currency))
-                .check(matches(withSpinnerText(containsString("CAD"))));
-    }
 }

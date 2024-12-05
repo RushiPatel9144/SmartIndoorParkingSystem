@@ -153,6 +153,7 @@ public class LocationsFragment extends BaseNetworkFragment {
                     public void onConfirm(String input) {
                         if (AddLocationValidator.isPriceValid(input)) {
                             updatePrice(locationId, Double.parseDouble(input));
+
                         }
                     }
                     @Override

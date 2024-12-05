@@ -41,6 +41,7 @@ media3Exoplayer = "1.4.1"
 firebaseDatabase = "21.0.0"
 firebaseStorage = "21.0.1"
 robolectric = "4.8"
+robolectricRobolectric = "4.14.1"
 robolectricVersion = "4.10.2"
 rules = "1.6.1"
 runner = "1.6.2"
@@ -106,6 +107,7 @@ firebase-database = { group = "com.google.firebase", name = "firebase-database",
 firebase-storage = { group = "com.google.firebase", name = "firebase-storage", version.ref = "firebaseStorage" }
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 robolectric-v4102 = { module = "org.robolectric:robolectric", version.ref = "robolectricVersion" }
+robolectric-v4141 = { module = "org.robolectric:robolectric", version.ref = "robolectricRobolectric" }
 security-identity-credential = { group = "androidx.security", name = "security-identity-credential", version.ref = "securityIdentityCredential" }
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-material3-android = { group = "androidx.compose.material3", name = "material3-android", version.ref = "material3Android" }

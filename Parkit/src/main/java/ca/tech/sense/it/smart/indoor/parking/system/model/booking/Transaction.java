@@ -1,7 +1,5 @@
 package ca.tech.sense.it.smart.indoor.parking.system.model.booking;
 
-import androidx.annotation.NonNull;
-
 public class Transaction {
     private String transactionId;
     private String parkingAddress;

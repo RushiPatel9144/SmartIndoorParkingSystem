@@ -26,8 +26,6 @@ public class AddLocationActivity extends AppCompatActivity {
     private EditText editPostalCode;
     private EditText editPrice;
     private EditText editLocationAddressName;
-
-
     private double latitude;
     private double longitude;
     private String locationAddress;
@@ -52,7 +50,6 @@ public class AddLocationActivity extends AppCompatActivity {
         confirmButton = findViewById(R.id.confirmButton);
         cancelButton = findViewById(R.id.cancelButton);
         editLocationAddressName = findViewById(R.id.locationAddressName);
-
         confirmButton.setOnClickListener(v -> onConfirmButtonClicked());
         cancelButton.setOnClickListener(v -> onCancelButtonClicked());
     }
@@ -80,6 +77,7 @@ public class AddLocationActivity extends AppCompatActivity {
     }
 
     private void onConfirmButtonClicked() {
+
         // Validate location name
         if (!AddLocationValidator.isLocationNameValid(String.valueOf(editLocationName))) {
             editLocationName.setError(getString(R.string.please_enter_the_location_name));
