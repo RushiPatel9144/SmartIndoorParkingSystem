@@ -45,7 +45,6 @@ public class CurrencyManagerTest {
 
     @Test
     public void testUpdateExchangeRates() {
-        // Create mock exchange rate data
         Map<String, Double> newRates = Map.of(
                 "USD", 0.75,
                 "EUR", 0.85

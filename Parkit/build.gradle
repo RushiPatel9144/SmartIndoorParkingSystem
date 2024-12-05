@@ -45,6 +45,11 @@ android {
     kotlinOptions {
         jvmTarget = '11'
     }
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
 }
 
 
@@ -102,18 +107,15 @@ dependencies {
     androidTestImplementation libs.ext.junit
 
     // MockWebServer (for testing network calls)
-    testImplementation libs.robolectric
     implementation libs.ext.junit
     testImplementation libs.firebase.database.v2010
-    testImplementation libs.robolectric.v4102
     testImplementation libs.junit.jupiter.api
     testImplementation libs.junit.jupiter.engine
     androidTestImplementation libs.androidx.espresso.core.v340
     androidTestImplementation libs.androidx.runner
     androidTestImplementation libs.androidx.rules
-
+    testImplementation 'org.robolectric:robolectric:4.14'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
-    testImplementation 'org.robolectric:robolectric:4.10'
 
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'  // Ensure you're using the correct version
     implementation 'de.hdodenhof:circleimageview:3.1.0'
