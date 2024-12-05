@@ -100,8 +100,6 @@ public class SettingsFragment extends Fragment {
             currencyCardView.setVisibility(View.GONE);
         }
     }
-
-
     private void loadPreferences() {
         switchLockPortrait.setChecked(preferenceManager.isPortraitLocked());
         switchTheme.setChecked(preferenceManager.isDarkTheme());

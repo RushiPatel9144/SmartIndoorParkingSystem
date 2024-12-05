@@ -48,7 +48,6 @@ public class ProfileEditManager {
 
                                 // Update both first and last name in Firestore
                                 updateNameInFirestore(firstName, lastName);
-                                showSnackbar(R.string.invalid_name);
                             }
                         }
                         @Override

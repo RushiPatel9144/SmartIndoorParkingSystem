@@ -22,12 +22,10 @@ import ca.tech.sense.it.smart.indoor.parking.system.utility.AutocompleteSearchHe
 
 public class AddLocationActivity extends AppCompatActivity {
 
-    private EditText locationName;
-    private EditText postalCode;
-    private EditText price;
-    private EditText locationAddressName;
-
-
+    private EditText editLocationName;
+    private EditText editPostalCode;
+    private EditText editPrice;
+    private EditText editLocationAddressName;
     private double latitude;
     private double longitude;
     private String locationAddress;
@@ -46,13 +44,12 @@ public class AddLocationActivity extends AppCompatActivity {
     private void initializeUI() {
         Button confirmButton;
         Button cancelButton;
-        locationName = findViewById(R.id.locationName);
-        postalCode = findViewById(R.id.postal_code);
-        price = findViewById(R.id.price);
+        editLocationName= findViewById(R.id.locationName);
+        editPostalCode= findViewById(R.id.postal_code);
+        editPrice = findViewById(R.id.price);
         confirmButton = findViewById(R.id.confirmButton);
         cancelButton = findViewById(R.id.cancelButton);
-        locationAddressName = findViewById(R.id.locationAddressName);
-
+        editLocationAddressName = findViewById(R.id.locationAddressName);
         confirmButton.setOnClickListener(v -> onConfirmButtonClicked());
         cancelButton.setOnClickListener(v -> onCancelButtonClicked());
     }
@@ -67,8 +64,8 @@ public class AddLocationActivity extends AppCompatActivity {
                         latitude = Objects.requireNonNull(place.getLocation()).latitude;
                         longitude = place.getLocation().longitude;
                         locationAddress = place.getFormattedAddress();
-                        locationAddressName.setText(locationAddress);
-                        locationName.setText(place.getDisplayName());
+                        editLocationAddressName.setText(locationAddress);
+                        editLocationName.setText(place.getDisplayName());
                     }
 
                     @Override
@@ -80,28 +77,44 @@ public class AddLocationActivity extends AppCompatActivity {
     }
 
     private void onConfirmButtonClicked() {
-        if (!AddLocationValidator.isLocationNameValid(locationName, getString(R.string.please_enter_the_location_name)))
-            return;
-        if (!AddLocationValidator.isPostalCodeValid(postalCode, getString(R.string.please_enter_the_postal_code)))
-            return;
-        if (!AddLocationValidator.isPriceValid(
-                price,
-                getString(R.string.please_enter_the_price),
-                getString(R.string.invalid_price_format),
-                getString(R.string.price_must_be_a_positive_value)))
-            return;
-        if (!AddLocationValidator.isLocationAddressValid(locationAddress)) {
-            Toast.makeText(this, R.string.please_select_a_location_using_the_search_bar, Toast.LENGTH_SHORT).show();
+
+        // Validate location name
+        if (!AddLocationValidator.isLocationNameValid(String.valueOf(editLocationName))) {
+            editLocationName.setError(getString(R.string.please_enter_the_location_name));
             return;
         }
 
+        // Validate postal code
+        if (!AddLocationValidator.isPostalCodeValid(String.valueOf(editPostalCode))) {
+            editPostalCode.setError(getString((R.string.please_enter_the_postal_code)));
+            return;
+        }
+
+        // Validate price
+        if (!AddLocationValidator.isPriceValid(String.valueOf(editPrice))) {
+            editPrice.setError(getString(R.string.invalid_price_format));
+            return;
+        }
+
+        // Validate location address
+        if (!AddLocationValidator.isLocationAddressValid(locationAddress)) {
+            showValidationError(R.string.please_select_a_location_using_the_search_bar);
+            return;
+        }
+
+        // If all validations pass, proceed with adding the location to the database
         addParkingLocationToDatabase();
     }
 
+    private void showValidationError(int errorMessageResId) {
+        Toast.makeText(this, errorMessageResId, Toast.LENGTH_SHORT).show();
+    }
+
+
     private void addParkingLocationToDatabase() {
-        String locationNameStr = locationName.getText().toString().trim();
-        String postalCodeStr = postalCode.getText().toString().trim();
-        double priceValue = Double.parseDouble(price.getText().toString().trim());
+        String locationNameStr = editLocationName.getText().toString().trim();
+        String postalCodeStr = editPostalCode.getText().toString().trim();
+        double priceValue = Double.parseDouble(editPrice.getText().toString().trim());
 
         ParkingLocation newLocation = new ParkingLocation(
                 null, oAuth.getUid() ,null, postalCodeStr, locationNameStr, longitude, latitude, locationAddress, priceValue);
@@ -113,10 +126,10 @@ public class AddLocationActivity extends AppCompatActivity {
     }
 
     private void clearForm() {
-        locationName.setText("");
-        postalCode.setText("");
-        price.setText("");
-        locationAddressName.setText("");
+        editLocationName.setText("");
+        editPostalCode.setText("");
+        editPrice.setText("");
+        editLocationAddressName.setText("");
         locationAddress = null;
         latitude = 0.0;
         longitude = 0.0;

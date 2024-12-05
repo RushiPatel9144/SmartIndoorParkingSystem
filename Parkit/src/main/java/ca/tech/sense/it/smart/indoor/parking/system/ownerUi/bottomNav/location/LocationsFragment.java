@@ -1,6 +1,5 @@
 package ca.tech.sense.it.smart.indoor.parking.system.ownerUi.bottomNav.location;
 
-import static ca.tech.sense.it.smart.indoor.parking.system.ownerUi.bottomNav.location.handleLocation.AddLocationValidator.validatePrice;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
@@ -25,6 +24,7 @@ import ca.tech.sense.it.smart.indoor.parking.system.manager.parkingManager.Parki
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingLocation;
 import ca.tech.sense.it.smart.indoor.parking.system.network.BaseNetworkFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.ownerUi.bottomNav.location.handleLocation.AddLocationActivity;
+import ca.tech.sense.it.smart.indoor.parking.system.ownerUi.bottomNav.location.handleLocation.AddLocationValidator;
 import ca.tech.sense.it.smart.indoor.parking.system.ownerUi.bottomNav.location.handleLocation.LocationAdapter;
 import ca.tech.sense.it.smart.indoor.parking.system.ownerUi.bottomNav.location.handleLocation.SwipeToDeleteCallback;
 import ca.tech.sense.it.smart.indoor.parking.system.ownerUi.bottomNav.location.handleSlot.SlotListBottomSheetDialogFragment;
@@ -151,9 +151,9 @@ public class LocationsFragment extends BaseNetworkFragment {
                 new DialogUtil.InputDialogCallback() {
                     @Override
                     public void onConfirm(String input) {
-                        double price = validatePrice(requireContext(), input);
-                        if (price >= 0) {
-                            updatePrice(locationId, price);
+                        if (AddLocationValidator.isPriceValid(input)) {
+                            updatePrice(locationId, Double.parseDouble(input));
+
                         }
                     }
                     @Override

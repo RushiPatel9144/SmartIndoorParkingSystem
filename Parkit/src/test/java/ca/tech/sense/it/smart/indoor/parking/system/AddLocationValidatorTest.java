@@ -2,108 +2,60 @@ package ca.tech.sense.it.smart.indoor.parking.system;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.when;
-import android.text.Editable;
-import android.widget.EditText;
-
+import org.junit.After;
 import org.junit.Before;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.testng.annotations.Test;
-
 import ca.tech.sense.it.smart.indoor.parking.system.ownerUi.bottomNav.location.handleLocation.AddLocationValidator;
 
 public class AddLocationValidatorTest {
 
-    @Mock
-    private EditText mockEditText;
-
     @Before
-    public void setUp() {
-        MockitoAnnotations.openMocks(this);
-        when(mockEditText.getEditableText()).thenReturn(new Editable.Factory().newEditable("valid text")); // Use Editable correctly
+    public void setUp() throws Exception {
+        // executed before each test case
+    }
+
+    @After
+    public void shutdown() {
+        // executed after each test case
     }
 
 
-    // Test: isLocationAddressValid
-    @org.junit.Test
+    // Test for isLocationNameValid()
     @Test
-    public void testIsLocationAddressValid_withValidAddress() {
-        String address = "123 Main Street";
-        assertTrue(AddLocationValidator.isLocationAddressValid(address));
+    public void testIsLocationNameValid() {
+        assertTrue(AddLocationValidator.isLocationNameValid("Valid Location"));
+        assertFalse(AddLocationValidator.isLocationNameValid(""));       // Empty string
+        assertFalse(AddLocationValidator.isLocationNameValid("   "));    // String with spaces
+        assertFalse(AddLocationValidator.isLocationNameValid(null));     // Null value
     }
 
-    @org.junit.Test
+    // Test for isPostalCodeValid()
     @Test
-    public void testIsLocationAddressValid_withEmptyAddress() {
-        String address = "";
-        assertFalse(AddLocationValidator.isLocationAddressValid(address));
+    public void testIsPostalCodeValid() {
+        assertTrue(AddLocationValidator.isPostalCodeValid("12345"));
+        assertFalse(AddLocationValidator.isPostalCodeValid(""));      // Empty string
+        assertFalse(AddLocationValidator.isPostalCodeValid("   "));   // String with spaces
+        assertFalse(AddLocationValidator.isPostalCodeValid(null));    // Null value
     }
 
-    @org.junit.Test
+    // Test for isPriceValid()
     @Test
-    public void testIsLocationAddressValid_withNullAddress() {
-        String address = null;
-        assertFalse(AddLocationValidator.isLocationAddressValid(address));
+    public void testIsPriceValid() {
+        assertTrue(AddLocationValidator.isPriceValid("19.99"));
+        assertFalse(AddLocationValidator.isPriceValid(""));           // Empty string
+        assertFalse(AddLocationValidator.isPriceValid("   "));        // String with spaces
+        assertFalse(AddLocationValidator.isPriceValid("-10.00"));     // Negative price
+        assertFalse(AddLocationValidator.isPriceValid("abc"));        // Invalid format
+        assertFalse(AddLocationValidator.isPriceValid(null));         // Null value
     }
 
-
-    // Test: isLocationAddressValid with Address Containing Only Numbers
-    @org.junit.Test
+    // Test for isLocationAddressValid()
     @Test
-    public void testIsLocationAddressValid_withOnlyNumbers() {
-        String address = "1234567890"; // Numbers only
-        assertTrue(AddLocationValidator.isLocationAddressValid(address));
-    }
-
-    // Test: isLocationAddressValid with Address Having Length Exactly at Limit (if a limit exists)
-    @org.junit.Test
-    @Test
-    public void testIsLocationAddressValid_withMaxLengthAddress() {
-        String address = new String(new char[100]).replace("\0", "A");
-        assertTrue(AddLocationValidator.isLocationAddressValid(address));
-    }
-
-
-    // Test: isLocationAddressValid with Address Containing Numeric and Alphabetic Characters
-    @org.junit.Test
-    @Test
-    public void testIsLocationAddressValid_withAlphaNumericAddress() {
-        String address = "123 Main St"; // A mix of numbers and letters
-        assertTrue(AddLocationValidator.isLocationAddressValid(address));
-    }
-
-
-    // Test: isLocationAddressValid with Address Having Only a Single Character
-    @org.junit.Test
-    @Test
-    public void testIsLocationAddressValid_withSingleCharacterAddress() {
-        String address = "A"; // Single character address
-        assertTrue(AddLocationValidator.isLocationAddressValid(address));
-    }
-
-    // Test: isLocationAddressValid with Address Containing Common Punctuation
-    @org.junit.Test
-    @Test
-    public void testIsLocationAddressValid_withCommonPunctuation() {
-        String address = "123 Main St, Apt 4B"; // Address with common punctuation (comma, number, etc.)
-        assertTrue(AddLocationValidator.isLocationAddressValid(address));
-    }
-
-    // Test: isLocationAddressValid with Address Containing Special Characters
-    @org.junit.Test
-    @Test
-    public void testIsLocationAddressValid_withSpecialCharacters() {
-        String address = "123 Main St, Apt #5"; // Address with special characters like '#' and ','
-        assertTrue(AddLocationValidator.isLocationAddressValid(address));
-    }
-
-    // Test: isLocationAddressValid with Address Containing Whitespace Only
-    @org.junit.Test
-    @Test
-    public void testIsLocationAddressValid_withWhitespaceOnly() {
-        String address = "  "; // Address containing only spaces
-        assertFalse(AddLocationValidator.isLocationAddressValid(address));
+    public void testIsLocationAddressValid() {
+        assertTrue(AddLocationValidator.isLocationAddressValid("123 Street Name"));
+        assertFalse(AddLocationValidator.isLocationAddressValid(""));          // Empty string
+        assertFalse(AddLocationValidator.isLocationAddressValid("   "));       // String with spaces
+        assertFalse(AddLocationValidator.isLocationAddressValid(null));        // Null value
     }
 
 }
