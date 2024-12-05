@@ -47,25 +47,30 @@ public class AddSlotActivity extends AppCompatActivity {
     }
 
     private void handleAddSlot() {
-        if (!validateInputs()) {
+        String slotId = slotIdEditText.getText().toString().trim();
+        String batteryLevel = batteryLevelEditText.getText().toString().trim();
+
+        String validationResult = AddSlotValidator.validateSlotInfo(
+                slotId,
+                batteryLevel,
+                getString(R.string.slot_id_required),
+                getString(R.string.battery_level_required),
+                getString(R.string.invalid_battery_level),
+                getString(R.string.battery_level_range_error)
+        );
+
+        if (!validationResult.equals("true")) {
+            if (validationResult.equals(getString(R.string.slot_id_required))) {
+                slotIdEditText.setError(validationResult);
+            } else {
+                batteryLevelEditText.setError(validationResult);
+            }
             return;
         }
 
         ParkingSlot slot = createParkingSlot();
         parkingSlotManager.addSlotToLocation(locationId, FirebaseAuthSingleton.getInstance().getUid(), this, slot, slot.getSensor());
         finish();
-    }
-
-    private boolean validateInputs() {
-        if (!AddSlotValidator.isSlotIdValid(slotIdEditText, getString(R.string.slot_id_required))) {
-            return false;
-        }
-        return AddSlotValidator.isBatteryLevelValid(
-                batteryLevelEditText,
-                getString(R.string.battery_level_required),
-                getString(R.string.invalid_battery_level),
-                getString(R.string.battery_level_range_error)
-        );
     }
 
     private ParkingSlot createParkingSlot() {

@@ -1,43 +1,45 @@
 package ca.tech.sense.it.smart.indoor.parking.system.ownerUi.bottomNav.location.handleSlot;
-import android.widget.EditText;
 
 public class AddSlotValidator {
 
     private AddSlotValidator() {
-        // Prevent instantiation
     }
 
-    public static boolean isSlotIdValid(EditText slotIdField, String errorMessage) {
-        String slotId = slotIdField.getText().toString().trim();
-        if (slotId.isEmpty()) {
-            slotIdField.setError(errorMessage);
-            slotIdField.requestFocus();
-            return false;
+    public static String isSlotIdValid(String slotId, String emptyMessage) {
+        if (slotId == null || slotId.trim().isEmpty()) {
+            return emptyMessage;
         }
-        return true;
+        return "true";
     }
 
-    public static boolean isBatteryLevelValid(EditText batteryLevelField, String emptyMessage, String invalidMessage, String outOfRangeMessage) {
-        String batteryLevelStr = batteryLevelField.getText().toString().trim();
-        if (batteryLevelStr.isEmpty()) {
-            batteryLevelField.setError(emptyMessage);
-            batteryLevelField.requestFocus();
-            return false;
+    public static String isBatteryLevelValid(String batteryLevelStr, String emptyMessage, String invalidMessage, String outOfRangeMessage) {
+        if (batteryLevelStr == null || batteryLevelStr.trim().isEmpty()) {
+            return emptyMessage;
         }
 
         try {
             float batteryLevel = Float.parseFloat(batteryLevelStr);
             if (batteryLevel < 0 || batteryLevel > 100) {
-                batteryLevelField.setError(outOfRangeMessage);
-                batteryLevelField.requestFocus();
-                return false;
+                return outOfRangeMessage;
             }
         } catch (NumberFormatException e) {
-            batteryLevelField.setError(invalidMessage);
-            batteryLevelField.requestFocus();
-            return false;
+            return invalidMessage;
         }
 
-        return true;
+        return "true";
+    }
+
+    public static String validateSlotInfo(String slotId, String batteryLevelStr, String slotEmptyMessage, String batteryEmptyMessage, String batteryInvalidMessage, String batteryOutOfRangeMessage) {
+        String slotValidationResult = isSlotIdValid(slotId, slotEmptyMessage);
+        if (!slotValidationResult.equals("true")) {
+            return slotValidationResult;
+        }
+
+        String batteryValidationResult = isBatteryLevelValid(batteryLevelStr, batteryEmptyMessage, batteryInvalidMessage, batteryOutOfRangeMessage);
+        if (!batteryValidationResult.equals("true")) {
+            return batteryValidationResult;
+        }
+
+        return "true";
     }
 }

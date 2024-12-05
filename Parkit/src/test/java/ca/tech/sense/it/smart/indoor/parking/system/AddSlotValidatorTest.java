@@ -1,181 +1,42 @@
 package ca.tech.sense.it.smart.indoor.parking.system;
 
-import android.text.Editable;
-import android.widget.EditText;
-import org.junit.Before;
 import org.junit.Test;
-import static org.mockito.Mockito.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import ca.tech.sense.it.smart.indoor.parking.system.ownerUi.bottomNav.location.handleSlot.AddSlotValidator;
 
 public class AddSlotValidatorTest {
 
-    private EditText mockSlotIdField;
-    private EditText mockBatteryLevelField;
-
-    @Before
-    public void setUp() {
-        mockSlotIdField = mock(EditText.class);
-        mockBatteryLevelField = mock(EditText.class);
-    }
-
+    private static final String SLOT_EMPTY_MESSAGE = "Slot ID is required";
+    private static final String BATTERY_EMPTY_MESSAGE = "Battery level is required";
+    private static final String BATTERY_INVALID_MESSAGE = "Invalid battery level format";
+    private static final String BATTERY_OUT_OF_RANGE_MESSAGE = "Battery level must be between 0 and 100";
 
     @Test
-    public void testIsSlotIdValid_EmptySlotId() {
-        Editable mockEditable = mock(Editable.class);
-        when(mockEditable.toString()).thenReturn("");
-        when(mockSlotIdField.getText()).thenReturn(mockEditable);
-
-        boolean result = AddSlotValidator.isSlotIdValid(mockSlotIdField, "Slot ID cannot be empty");
-
-        assertFalse(result);
-        verify(mockSlotIdField).setError("Slot ID cannot be empty");
-        verify(mockSlotIdField).requestFocus();
+    public void testIsSlotIdValid() {
+        assertEquals("true", AddSlotValidator.isSlotIdValid("Slot1", SLOT_EMPTY_MESSAGE));
+        assertEquals(SLOT_EMPTY_MESSAGE, AddSlotValidator.isSlotIdValid("", SLOT_EMPTY_MESSAGE));
+        assertEquals(SLOT_EMPTY_MESSAGE, AddSlotValidator.isSlotIdValid("   ", SLOT_EMPTY_MESSAGE));
+        assertEquals(SLOT_EMPTY_MESSAGE, AddSlotValidator.isSlotIdValid(null, SLOT_EMPTY_MESSAGE));
     }
 
     @Test
-    public void testIsSlotIdValid_ValidSlotId() {
-        Editable mockEditable = mock(Editable.class);
-        when(mockEditable.toString()).thenReturn("A123");
-        when(mockSlotIdField.getText()).thenReturn(mockEditable);
-
-        boolean result = AddSlotValidator.isSlotIdValid(mockSlotIdField, "Slot ID cannot be empty");
-
-        assertTrue(result);
-        verify(mockSlotIdField, never()).setError(anyString());
-        verify(mockSlotIdField, never()).requestFocus();
+    public void testIsBatteryLevelValid() {
+        assertEquals("true", AddSlotValidator.isBatteryLevelValid("50", BATTERY_EMPTY_MESSAGE, BATTERY_INVALID_MESSAGE, BATTERY_OUT_OF_RANGE_MESSAGE));
+        assertEquals(BATTERY_EMPTY_MESSAGE, AddSlotValidator.isBatteryLevelValid("", BATTERY_EMPTY_MESSAGE, BATTERY_INVALID_MESSAGE, BATTERY_OUT_OF_RANGE_MESSAGE));
+        assertEquals(BATTERY_EMPTY_MESSAGE, AddSlotValidator.isBatteryLevelValid("   ", BATTERY_EMPTY_MESSAGE, BATTERY_INVALID_MESSAGE, BATTERY_OUT_OF_RANGE_MESSAGE));
+        assertEquals(BATTERY_EMPTY_MESSAGE, AddSlotValidator.isBatteryLevelValid(null, BATTERY_EMPTY_MESSAGE, BATTERY_INVALID_MESSAGE, BATTERY_OUT_OF_RANGE_MESSAGE));
+        assertEquals(BATTERY_OUT_OF_RANGE_MESSAGE, AddSlotValidator.isBatteryLevelValid("-10", BATTERY_EMPTY_MESSAGE, BATTERY_INVALID_MESSAGE, BATTERY_OUT_OF_RANGE_MESSAGE));
+        assertEquals(BATTERY_OUT_OF_RANGE_MESSAGE, AddSlotValidator.isBatteryLevelValid("150", BATTERY_EMPTY_MESSAGE, BATTERY_INVALID_MESSAGE, BATTERY_OUT_OF_RANGE_MESSAGE));
+        assertEquals(BATTERY_INVALID_MESSAGE, AddSlotValidator.isBatteryLevelValid("abc", BATTERY_EMPTY_MESSAGE, BATTERY_INVALID_MESSAGE, BATTERY_OUT_OF_RANGE_MESSAGE));
     }
 
     @Test
-    public void testIsSlotIdValid_WhitespaceSlotId() {
-        Editable mockEditable = mock(Editable.class);
-        when(mockEditable.toString()).thenReturn("    "); // Whitespace only
-        when(mockSlotIdField.getText()).thenReturn(mockEditable);
-
-        boolean result = AddSlotValidator.isSlotIdValid(mockSlotIdField, "Slot ID cannot be empty");
-
-        assertFalse(result);
-        verify(mockSlotIdField).setError("Slot ID cannot be empty");
-        verify(mockSlotIdField).requestFocus();
-    }
-
-    // Test cases for isBatteryLevelValid
-
-    @Test
-    public void testIsBatteryLevelValid_EmptyBatteryLevel() {
-        Editable mockEditable = mock(Editable.class);
-        when(mockEditable.toString()).thenReturn("");
-        when(mockBatteryLevelField.getText()).thenReturn(mockEditable);
-
-        boolean result = AddSlotValidator.isBatteryLevelValid(mockBatteryLevelField, "Battery level cannot be empty", "Invalid battery level", "Battery level out of range");
-
-        assertFalse(result);
-        verify(mockBatteryLevelField).setError("Battery level cannot be empty");
-        verify(mockBatteryLevelField).requestFocus();
-    }
-
-    @Test
-    public void testIsBatteryLevelValid_InvalidBatteryLevel() {
-        Editable mockEditable = mock(Editable.class);
-        when(mockEditable.toString()).thenReturn("abc");
-        when(mockBatteryLevelField.getText()).thenReturn(mockEditable);
-
-        boolean result = AddSlotValidator.isBatteryLevelValid(mockBatteryLevelField, "Battery level cannot be empty", "Invalid battery level", "Battery level out of range");
-
-        assertFalse(result);
-        verify(mockBatteryLevelField).setError("Invalid battery level");
-        verify(mockBatteryLevelField).requestFocus();
-    }
-
-    @Test
-    public void testIsBatteryLevelValid_BatteryLevelOutOfRange() {
-        Editable mockEditable = mock(Editable.class);
-        when(mockEditable.toString()).thenReturn("150");
-        when(mockBatteryLevelField.getText()).thenReturn(mockEditable);
-
-        boolean result = AddSlotValidator.isBatteryLevelValid(mockBatteryLevelField, "Battery level cannot be empty", "Invalid battery level", "Battery level out of range");
-
-        assertFalse(result);
-        verify(mockBatteryLevelField).setError("Battery level out of range");
-        verify(mockBatteryLevelField).requestFocus();
-    }
-
-    @Test
-    public void testIsBatteryLevelValid_ValidBatteryLevel() {
-        Editable mockEditable = mock(Editable.class);
-        when(mockEditable.toString()).thenReturn("75");
-        when(mockBatteryLevelField.getText()).thenReturn(mockEditable);
-
-        boolean result = AddSlotValidator.isBatteryLevelValid(mockBatteryLevelField, "Battery level cannot be empty", "Invalid battery level", "Battery level out of range");
-
-        assertTrue(result);
-        verify(mockBatteryLevelField, never()).setError(anyString());
-        verify(mockBatteryLevelField, never()).requestFocus();
-    }
-
-    @Test
-    public void testIsBatteryLevelValid_NegativeBatteryLevel() {
-        Editable mockEditable = mock(Editable.class);
-        when(mockEditable.toString()).thenReturn("-5");
-        when(mockBatteryLevelField.getText()).thenReturn(mockEditable);
-
-        boolean result = AddSlotValidator.isBatteryLevelValid(mockBatteryLevelField, "Battery level cannot be empty", "Invalid battery level", "Battery level out of range");
-
-        assertFalse(result);
-        verify(mockBatteryLevelField).setError("Battery level out of range");
-        verify(mockBatteryLevelField).requestFocus();
-    }
-
-    @Test
-    public void testIsBatteryLevelValid_ZeroBatteryLevel() {
-        Editable mockEditable = mock(Editable.class);
-        when(mockEditable.toString()).thenReturn("0");
-        when(mockBatteryLevelField.getText()).thenReturn(mockEditable);
-
-        boolean result = AddSlotValidator.isBatteryLevelValid(mockBatteryLevelField, "Battery level cannot be empty", "Invalid battery level", "Battery level out of range");
-
-        assertTrue(result);
-        verify(mockBatteryLevelField, never()).setError(anyString());
-        verify(mockBatteryLevelField, never()).requestFocus();
-    }
-
-    @Test
-    public void testIsBatteryLevelValid_MaxBatteryLevel() {
-        Editable mockEditable = mock(Editable.class);
-        when(mockEditable.toString()).thenReturn("100");
-        when(mockBatteryLevelField.getText()).thenReturn(mockEditable);
-
-        boolean result = AddSlotValidator.isBatteryLevelValid(mockBatteryLevelField, "Battery level cannot be empty", "Invalid battery level", "Battery level out of range");
-
-        assertTrue(result);
-        verify(mockBatteryLevelField, never()).setError(anyString());
-        verify(mockBatteryLevelField, never()).requestFocus();
-    }
-
-    @Test
-    public void testIsBatteryLevelValid_FloatBatteryLevel() {
-        Editable mockEditable = mock(Editable.class);
-        when(mockEditable.toString()).thenReturn("49.5");
-        when(mockBatteryLevelField.getText()).thenReturn(mockEditable);
-
-        boolean result = AddSlotValidator.isBatteryLevelValid(mockBatteryLevelField, "Battery level cannot be empty", "Invalid battery level", "Battery level out of range");
-
-        assertTrue(result);
-        verify(mockBatteryLevelField, never()).setError(anyString());
-        verify(mockBatteryLevelField, never()).requestFocus();
-    }
-
-    @Test
-    public void testIsBatteryLevelValid_BatteryLevelWithSpaces() {
-        Editable mockEditable = mock(Editable.class);
-        when(mockEditable.toString()).thenReturn(" 85 ");
-        when(mockBatteryLevelField.getText()).thenReturn(mockEditable);
-
-        boolean result = AddSlotValidator.isBatteryLevelValid(mockBatteryLevelField, "Battery level cannot be empty", "Invalid battery level", "Battery level out of range");
-
-        assertTrue(result);
-        verify(mockBatteryLevelField, never()).setError(anyString());
-        verify(mockBatteryLevelField, never()).requestFocus();
+    public void testValidateSlotInfo() {
+        assertEquals("true", AddSlotValidator.validateSlotInfo("Slot1", "50", SLOT_EMPTY_MESSAGE, BATTERY_EMPTY_MESSAGE, BATTERY_INVALID_MESSAGE, BATTERY_OUT_OF_RANGE_MESSAGE));
+        assertEquals(SLOT_EMPTY_MESSAGE, AddSlotValidator.validateSlotInfo("", "50", SLOT_EMPTY_MESSAGE, BATTERY_EMPTY_MESSAGE, BATTERY_INVALID_MESSAGE, BATTERY_OUT_OF_RANGE_MESSAGE));
+        assertEquals(BATTERY_EMPTY_MESSAGE, AddSlotValidator.validateSlotInfo("Slot1", "", SLOT_EMPTY_MESSAGE, BATTERY_EMPTY_MESSAGE, BATTERY_INVALID_MESSAGE, BATTERY_OUT_OF_RANGE_MESSAGE));
+        assertEquals(BATTERY_OUT_OF_RANGE_MESSAGE, AddSlotValidator.validateSlotInfo("Slot1", "200", SLOT_EMPTY_MESSAGE, BATTERY_EMPTY_MESSAGE, BATTERY_INVALID_MESSAGE, BATTERY_OUT_OF_RANGE_MESSAGE));
+        assertEquals(BATTERY_INVALID_MESSAGE, AddSlotValidator.validateSlotInfo("Slot1", "abc", SLOT_EMPTY_MESSAGE, BATTERY_EMPTY_MESSAGE, BATTERY_INVALID_MESSAGE, BATTERY_OUT_OF_RANGE_MESSAGE));
     }
 }
