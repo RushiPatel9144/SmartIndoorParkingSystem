@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.HashMap;
@@ -19,6 +20,7 @@ public class PrivatePolicyFragment extends Fragment {
 
     private FirebaseFirestore db;
     private final Map<String, TextView> contentTextViews = new HashMap<>();
+    private ProgressBar progressBar;
 
     public PrivatePolicyFragment() {
         // Required empty public constructor
@@ -34,6 +36,7 @@ public class PrivatePolicyFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_private_policy, container, false);
+        progressBar = view.findViewById(R.id.progressBar);
         initializeContentTextViews(view);
         fetchPrivacyPolicy();
         return view;
@@ -59,12 +62,13 @@ public class PrivatePolicyFragment extends Fragment {
      * Fetches the Privacy Policy content from Firestore and updates the UI.
      */
     private void fetchPrivacyPolicy() {
+        progressBar.setVisibility(View.VISIBLE);
         db.collection("legal").document("privacy_policy")
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
                         updateContentTextViews(documentSnapshot);
-                    }
+                    }progressBar.setVisibility(View.GONE);
                 })
                 .addOnFailureListener(e -> {
                     // Log error or notify the user
