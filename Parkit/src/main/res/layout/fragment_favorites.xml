@@ -59,8 +59,19 @@
 
         <ImageView
             android:id="@+id/imgNoFavorites"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@drawable/remove_star"
+            android:layout_gravity="center"/>
+
+        <TextView
+            android:id="@+id/tvNoFavorites"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/no_favorites" />
+            android:text="No Favorites Available"
+            android:textSize="20sp"
+            android:layout_marginTop="32dp"
+            android:textColor="@color/gray"
+            android:layout_gravity="center"/>
     </LinearLayout>
 </FrameLayout>
