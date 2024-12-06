@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
@@ -66,6 +67,8 @@ public class PaymentActivity extends AppCompatActivity {
     private Button applyPromoCodeButton;
     private Button confirmButton;
     private Button cancelButton;
+    private LinearLayout promotionLayout;
+    private TextView promotionTextView;
     private PaymentSheet paymentSheet;
     private double total;
     private String transactionId;
@@ -123,6 +126,13 @@ public class PaymentActivity extends AppCompatActivity {
         slotTextView = findViewById(R.id.slotTextView);
         timeTextView = findViewById(R.id.timeTextView);
         dateTextView = findViewById(R.id.dateTextView);
+        promotionLayout = findViewById(R.id.promotionLayout);
+        promotionTextView = findViewById(R.id.promotionTextView);
+
+        // Ensure promotionLayout and promotionTextView are not null
+        if (promotionLayout == null || promotionTextView == null) {
+            throw new NullPointerException("Promotion layout or text view is not properly initialized.");
+        }
     }
 
     private void setBookingDetails() {
@@ -156,7 +166,7 @@ public class PaymentActivity extends AppCompatActivity {
         applyPromoCodeButton.setOnClickListener(v -> {
             String promoCode = promoCodeEditText.getText().toString().trim();
             if (!promoCode.isEmpty()) {
-                PromotionHelper.applyPromoCode(promoCode, booking, subtotalTextView, gstHstTextView, platformFeeTextView, totalTextView, this);
+                PromotionHelper.applyPromoCode(promoCode, booking, subtotalTextView, gstHstTextView, platformFeeTextView, totalTextView, promotionLayout, promotionTextView, this);
             } else {
                 showToast(getString(R.string.please_enter_a_promo_code));
             }
@@ -164,6 +174,7 @@ public class PaymentActivity extends AppCompatActivity {
         confirmButton.setOnClickListener(v -> fetchClientSecret(total, booking));
         cancelButton.setOnClickListener(v -> finish());
     }
+
 
     private void fetchClientSecret(double price, Booking booking) {
         OkHttpClient client = new OkHttpClient();

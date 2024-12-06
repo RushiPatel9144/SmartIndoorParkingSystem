@@ -3,8 +3,11 @@ package ca.tech.sense.it.smart.indoor.parking.system.utility;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.graphics.Typeface;
 import android.util.Log;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -68,7 +71,7 @@ public class PromotionHelper {
 
     private static void addHardcodedPromotions(DatabaseReference promotionsRef) {
         // Promotion 1
-        Promotion newUserPromo = new Promotion(promotionsRef.push().getKey(), "New User", "Welcome to the app", 15);
+        Promotion newUserPromo = new Promotion(promotionsRef.push().getKey(), "Exclusive Welcome Deal!", "Your journey begins with a reward—15% off just for signing up!", 15);
         savePromotionToFirebase(promotionsRef, newUserPromo);
     }
 
@@ -130,7 +133,7 @@ public class PromotionHelper {
         });
     }
 
-    public static void applyPromoCode(String promoCode, Booking booking, TextView subtotalTextView, TextView gstHstTextView, TextView platformFeeTextView, TextView totalTextView, Context context) {
+    public static void applyPromoCode(String promoCode, Booking booking, TextView subtotalTextView, TextView gstHstTextView, TextView platformFeeTextView, TextView totalTextView, LinearLayout promotionLayout, TextView promotionTextView, Context context) {
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         DatabaseReference userPromotionsRef = FirebaseDatabase.getInstance().getReference("users").child(uid).child("promotions");
 
@@ -145,31 +148,35 @@ public class PromotionHelper {
                         double discount = promotion.getDiscount();
                         double subtotal = booking.getPrice();
                         double discountAmount = subtotal * (discount / 100);
-                        double newSubtotal = subtotal - discountAmount;
-                        double gstHst = newSubtotal * 0.13;
-                        double platformFee = newSubtotal * 0.10;
-                        double total = newSubtotal + gstHst + platformFee;
+                        double gstHst = subtotal * 0.13;
+                        double platformFee = subtotal * 0.10;
+                        double total = subtotal + gstHst + platformFee - discountAmount;
 
-                        subtotalTextView.setText(String.format(Locale.getDefault(), "%s %.2f", booking.getCurrencySymbol(), newSubtotal));
+                        subtotalTextView.setText(String.format(Locale.getDefault(), "%s %.2f", booking.getCurrencySymbol(), subtotal));
                         gstHstTextView.setText(String.format(Locale.getDefault(), "%s %.2f", booking.getCurrencySymbol(), gstHst));
                         platformFeeTextView.setText(String.format(Locale.getDefault(), "%s %.2f", booking.getCurrencySymbol(), platformFee));
                         totalTextView.setText(String.format(Locale.getDefault(), "%s %.2f", booking.getCurrencySymbol(), total));
+                        promotionTextView.setText(String.format(Locale.getDefault(), "-$%.2f", discountAmount));
+                        promotionLayout.setVisibility(View.VISIBLE);
 
                         Toast.makeText(context, "Promo code applied successfully!", Toast.LENGTH_SHORT).show();
                         break;
                     }
                 }
                 if (!isValidPromo) {
+                    promotionLayout.setVisibility(View.GONE);
                     Toast.makeText(context, "Invalid or already used promo code.", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
+                promotionLayout.setVisibility(View.GONE);
                 Toast.makeText(context, "Failed to validate promo code.", Toast.LENGTH_SHORT).show();
             }
         });
     }
+
 
     public static void setupPromoCodeEditText(EditText promoCodeEditText, Context context) {
         promoCodeEditText.setOnClickListener(v -> {
@@ -209,7 +216,7 @@ public class PromotionHelper {
                     }
                 }
                 if (!promoUpdated.get()) {
-                    Toast.makeText(context, "Invalid or already used promo code.", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(context, "Invalid or already used promo code.", Toast.LENGTH_SHORT).show();
                 }
             }
 
