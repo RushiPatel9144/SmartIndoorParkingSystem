@@ -1,16 +1,15 @@
-/*Name: Kunal Dhiman, StudentID: N01540952,  section number: RCB
-  Name: Raghav Sharma, StudentID: N01537255,  section number: RCB
-  Name: NisargKumar Pareshbhai Joshi, StudentID: N01545986,  section number: RCB
-  Name: Rushi Manojkumar Patel, StudentID: N01539144, section number: RCB
- */
 package ca.tech.sense.it.smart.indoor.parking.system.userUi.menu;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -38,16 +37,18 @@ import ca.tech.sense.it.smart.indoor.parking.system.userUi.bottomNav.Park;
 
 public class FavoritesFragment extends BaseNetworkFragment {
 
-    private List<Favorites> favoriteLocations; // Use List<String> to store addresses
+    private List<Favorites> favoriteLocations;
     private DatabaseReference databaseRef;
     private FavoritesAdapter adapter;
+    private LinearLayout noFavoritesLayout;
+    private RecyclerView recyclerView;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        RecyclerView recyclerView;
         View view = inflater.inflate(R.layout.fragment_favorites, container, false);
 
         recyclerView = view.findViewById(R.id.rvFavorites);
+        noFavoritesLayout = view.findViewById(R.id.noFavoritesLayout);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         // Initialize Firebase references
@@ -79,6 +80,9 @@ public class FavoritesFragment extends BaseNetworkFragment {
         // Load favorite locations from Firebase
         loadFavoriteLocations();
 
+        // Update the visibility of the no favorites layout
+        updateNoFavoritesLayout();
+
         return view;
     }
 
@@ -87,16 +91,19 @@ public class FavoritesFragment extends BaseNetworkFragment {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 addFavoriteLocation(snapshot);
+                updateNoFavoritesLayout();
             }
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 updateFavoriteLocation(snapshot);
+                updateNoFavoritesLayout();
             }
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot snapshot) {
                 removeFavoriteLocation(snapshot);
+                updateNoFavoritesLayout();
             }
 
             @Override
@@ -120,6 +127,7 @@ public class FavoritesFragment extends BaseNetworkFragment {
         if (id != null && address != null && postalCode != null && name != null) {
             favoriteLocations.add(new Favorites(id, address, name, postalCode));
             adapter.notifyItemInserted(favoriteLocations.size() - 1);
+            updateNoFavoritesLayout();
         }
     }
 
@@ -134,6 +142,7 @@ public class FavoritesFragment extends BaseNetworkFragment {
                 if (favoriteLocations.get(i).getId().equals(id)) {
                     favoriteLocations.set(i, new Favorites(id, address, name, postalCode));
                     adapter.notifyItemChanged(i);
+                    updateNoFavoritesLayout();
                     break;
                 }
             }
@@ -149,9 +158,20 @@ public class FavoritesFragment extends BaseNetworkFragment {
                     favoriteLocations.remove(i);
                     adapter.notifyItemRemoved(i);
                     adapter.notifyItemRangeChanged(i, favoriteLocations.size());
+                    updateNoFavoritesLayout();
                     break;
                 }
             }
+        }
+    }
+
+    private void updateNoFavoritesLayout() {
+        if (favoriteLocations.isEmpty()) {
+            noFavoritesLayout.setVisibility(View.VISIBLE);
+            recyclerView.setVisibility(View.GONE);
+        } else {
+            noFavoritesLayout.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.VISIBLE);
         }
     }
 }
