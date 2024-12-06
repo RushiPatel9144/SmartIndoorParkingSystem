@@ -19,13 +19,19 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
+
+import android.util.Log;
 import android.view.View;
+
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
 
 import ca.tech.sense.it.smart.indoor.parking.system.booking.PaymentActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.model.booking.Booking;
@@ -42,7 +48,7 @@ public class PaymentActivityTest {
     @Before
     public void setUp() {
         // Disable animations on the device
-        disableAnimations();
+        FirebaseApp.initializeApp(ApplicationProvider.getApplicationContext());
 
         // Create the intent and set the required extras
         Intent intent = new Intent(ApplicationProvider.getApplicationContext(), PaymentActivity.class);
@@ -124,6 +130,25 @@ public class PaymentActivityTest {
     }
 
     @Test
+    public void testUIElementsVisibility() {
+        // Verify if essential UI elements are displayed
+        onView(withId(R.id.parkingNameTextView))
+                .check(matches(isDisplayed()));
+        onView(withId(R.id.addressTextView))
+                .check(matches(isDisplayed()));
+        onView(withId(R.id.postalCodeTextView))
+                .check(matches(isDisplayed()));
+        onView(withId(R.id.promoCodeEditText))
+                .check(matches(isDisplayed()));
+        onView(withId(R.id.applyPromoCodeButton))
+                .check(matches(isDisplayed()));
+        onView(withId(R.id.confirmButton))
+                .check(matches(isDisplayed()));
+        onView(withId(R.id.cancelButton))
+                .check(matches(isDisplayed()));
+    }
+
+    @Test
     public void testConfirmButton() {
         onView(withId(R.id.confirmButton))
                 .perform(click());
@@ -133,9 +158,5 @@ public class PaymentActivityTest {
     public void testCancelButton() {
         onView(withId(R.id.cancelButton))
                 .perform(click());
-    }
-
-    private void disableAnimations() {
-        // Implement animation disabling logic if needed
     }
 }
