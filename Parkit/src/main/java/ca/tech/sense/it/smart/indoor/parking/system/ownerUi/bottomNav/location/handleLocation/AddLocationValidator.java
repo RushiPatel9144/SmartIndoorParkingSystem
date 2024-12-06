@@ -33,22 +33,4 @@ public class AddLocationValidator {
         return locationAddress != null && !locationAddress.trim().isEmpty();
     }
 
-    public static double validatePrice(String input) {
-        String priceStr = input.trim();
-
-        if (priceStr.isEmpty()) {
-            return -1;
-        }
-
-        try {
-            double price = Double.parseDouble(priceStr);
-            if (price < 0) {
-                return -1;
-            }
-            return price;
-        } catch (NumberFormatException e) {
-            return -1;
-        }
-    }
-
 }

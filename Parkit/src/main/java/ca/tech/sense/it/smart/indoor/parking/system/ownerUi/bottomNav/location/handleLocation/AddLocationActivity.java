@@ -78,27 +78,27 @@ public class AddLocationActivity extends AppCompatActivity {
 
     private void onConfirmButtonClicked() {
 
+        // Validate location address
+        if (!AddLocationValidator.isLocationAddressValid(locationAddress)) {
+            showValidationError(R.string.please_select_a_location_using_the_search_bar);
+            return;
+        }
+
         // Validate location name
-        if (!AddLocationValidator.isLocationNameValid(String.valueOf(editLocationName))) {
+        if (!AddLocationValidator.isLocationNameValid(editLocationName.getText().toString())) {
             editLocationName.setError(getString(R.string.please_enter_the_location_name));
             return;
         }
 
         // Validate postal code
-        if (!AddLocationValidator.isPostalCodeValid(String.valueOf(editPostalCode))) {
+        if (!AddLocationValidator.isPostalCodeValid(editPostalCode.getText().toString())) {
             editPostalCode.setError(getString((R.string.please_enter_the_postal_code)));
             return;
         }
 
         // Validate price
-        if (!AddLocationValidator.isPriceValid(String.valueOf(editPrice))) {
+        if (!AddLocationValidator.isPriceValid(String.valueOf(editPrice.getText().toString()))) {
             editPrice.setError(getString(R.string.invalid_price_format));
-            return;
-        }
-
-        // Validate location address
-        if (!AddLocationValidator.isLocationAddressValid(locationAddress)) {
-            showValidationError(R.string.please_select_a_location_using_the_search_bar);
             return;
         }
 
