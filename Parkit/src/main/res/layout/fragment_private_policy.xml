@@ -27,7 +27,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Data We Collect"
+                android:text="@string/data_we_collect"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:paddingTop="8dp"
@@ -43,7 +43,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="How We Use Your Data"
+                android:text="@string/how_we_use_your_data"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:paddingTop="8dp"
@@ -59,7 +59,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Data Sharing"
+                android:text="@string/data_sharing"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:paddingTop="8dp"
@@ -75,7 +75,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Security"
+                android:text="@string/security"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:paddingTop="8dp"
@@ -91,7 +91,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Cookies and Tracking"
+                android:text="@string/cookies_and_tracking"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:paddingTop="8dp"
@@ -107,7 +107,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="User Rights"
+                android:text="@string/user_rights"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:paddingTop="8dp"
@@ -123,7 +123,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Location Data"
+                android:text="@string/location_data"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:paddingTop="8dp"
@@ -139,7 +139,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Children’s Privacy"
+                android:text="@string/children_s_privacy"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:paddingTop="8dp"
@@ -155,7 +155,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Changes to the Privacy Policy"
+                android:text="@string/changes_to_the_privacy_policy"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:paddingTop="8dp"
@@ -171,7 +171,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Contact Us"
+                android:text="@string/contact_us"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:paddingTop="8dp"

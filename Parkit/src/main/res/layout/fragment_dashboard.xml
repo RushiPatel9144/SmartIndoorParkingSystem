@@ -58,7 +58,7 @@
                                 android:layout_height="wrap_content"
                                 android:textSize="12sp"
                                 android:textColor="#9E9E9E"
-                                android:text="Current Earnings"/>
+                                android:text="@string/current_earnings"/>
 
                             <LinearLayout
                                 android:layout_width="match_parent"
@@ -70,7 +70,7 @@
                                     android:textSize="32sp"
                                     android:textStyle="bold"
                                     android:layout_marginEnd="4dp"
-                                    android:text="$"/>
+                                    android:text="@string/dollarsign"/>
                                 <TextView
                                     android:id="@+id/dashboard_earnings_value"
                                     android:layout_width="wrap_content"
@@ -78,7 +78,7 @@
                                     android:textColor="@color/white"
                                     android:textSize="32sp"
                                     android:textStyle="bold"
-                                    android:text="0.00"/>
+                                    android:text="@string/_0_00"/>
 
                             </LinearLayout>
 
@@ -93,18 +93,18 @@
                                     android:layout_height="match_parent"
                                     android:layout_marginHorizontal="5dp"
                                     android:backgroundTint="#454545"
-                                    android:text="Edit Profile"
+                                    android:text="@string/edit_profile"
                                     app:cornerRadius="6dp"
                                     android:textAllCaps="false"
-                                    android:textSize="12dp"
+                                    android:textSize="12sp"
                                     android:elevation="5dp"/>
 
                                 <com.google.android.material.button.MaterialButton
                                     android:id="@+id/dashboard_transactions_button"
                                     android:layout_width="150dp"
                                     android:layout_height="match_parent"
-                                    android:text="Transactions"
-                                    android:textSize="12dp"
+                                    android:text="@string/transactions"
+                                    android:textSize="12sp"
                                     app:cornerRadius="6dp"
                                     android:elevation="5dp"
                                     android:textAllCaps="false"

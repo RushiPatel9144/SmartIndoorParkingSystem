@@ -34,7 +34,7 @@
     android:layout_marginTop="40dp"
     android:layout_marginStart="23dp"
     android:fontFamily="@font/poppins_medium"
-    android:text="Welcome Back"
+    android:text="@string/welcome_backd"
     android:textColor="@color/colorAccent"
     android:textSize="32sp"
     android:textStyle="bold"
@@ -231,7 +231,8 @@
         android:layout_height="wrap_content"
         android:text="@string/sign_up"
         android:layout_gravity="center"
-        android:fontFamily="@font/poppins_medium"/>
+        android:fontFamily="@font/poppins_medium"
+        tools:ignore="RtlSymmetry" />
 </LinearLayout>
 </LinearLayout>
 

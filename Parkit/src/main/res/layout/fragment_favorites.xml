@@ -68,7 +68,7 @@
             android:id="@+id/tvNoFavorites"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="No Favorites Available"
+            android:text="@string/no_favorites_available"
             android:textSize="20sp"
             android:layout_marginTop="32dp"
             android:textColor="@color/gray"

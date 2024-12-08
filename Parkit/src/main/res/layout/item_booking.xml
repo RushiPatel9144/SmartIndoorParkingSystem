@@ -36,7 +36,7 @@
                 android:id="@+id/address_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Address:"
+                android:text="@string/address"
                 android:textStyle="bold"
                 android:textSize="14sp"
                 android:textColor="@color/black" />
@@ -63,7 +63,7 @@
                 android:id="@+id/slot_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Slot Number:"
+                android:text="@string/slot_number"
                 android:textStyle="bold"
                 android:textSize="14sp"
                 android:textColor="@color/black" />
