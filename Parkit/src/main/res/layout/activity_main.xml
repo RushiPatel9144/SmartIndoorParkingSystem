@@ -6,6 +6,7 @@
     android:id="@+id/login"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:theme="@style/Base.Theme.SmartIndoorParkingSystem"
     tools:context=".userUi.UserMainActivity">
 
     <!-- Main Content with LinearLayout -->
@@ -20,10 +21,8 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/ic_launcher_background"
-            android:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            app:titleTextColor="@color/colorAccent" />
+            app:titleTextColor="@color/colorAccent"
+            />
 
         <!-- Fragment Container -->
         <FrameLayout

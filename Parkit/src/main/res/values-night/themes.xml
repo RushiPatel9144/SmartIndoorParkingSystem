@@ -1,41 +1,74 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.SmartIndoorParkingSystem" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/dark_theme</item>
+    <!-- Base Night Theme -->
+    <style name="Base.Theme.SmartIndoorParkingSystem.Night" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/theme</item>
         <item name="colorPrimaryVariant">@color/theme</item>
-        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorOnPrimary">@color/bg_dark</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/teal_200</item>
+        <item name="colorSecondary">@color/dark_theme</item>
         <item name="colorSecondaryVariant">@color/teal_700</item>
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <!-- Set translucent status bar -->
+        <item name="android:windowTranslucentStatus">false</item>
         <item name="actionOverflowButtonStyle">@style/OverflowMenuStyle</item>
-
-        <!-- Background color for dark theme -->
+        <!-- Optional: Light status bar icons for a dark background -->
+        <item name="android:windowLightStatusBar">true</item>
+        <!-- Background color for light theme -->
         <item name="android:windowBackground">@color/bg_dark</item>
-        <!-- Toolbar style for dark theme -->
-        <item name="toolbarStyle">@style/ToolbarStyle.Dark</item>
-    </style>
 
-    <style name="ToolbarStyle.Dark" parent="Widget.MaterialComponents.Toolbar">
-        <item name="titleTextColor">@color/colorAccent</item>
-    </style>
-
-    <style name="OverflowMenuStyle" parent="@style/Widget.AppCompat.ActionButton.Overflow">
-        <item name="android:tint">@color/theme</item>
-        <item name="android:textColor">@color/theme</item>
-    </style>
-
-    <style name="Toolbar.TitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="android:textColor">@color/bg</item>
         <item name="android:textAppearance">@font/poppins_medium</item>
+        <item name="toolbarStyle">@style/CustomToolbarStyle</item>
     </style>
 
-    <style name="Theme.SmartIndoorParkingSystem" parent="Base.Theme.SmartIndoorParkingSystem" />
-    <!-- Base application theme. -->
-    <style name="Base.Base.Theme.SmartIndoorParkingSystem"
-        parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+    <!-- Overflow menu style for Night -->
+    <style name="OverflowMenuStyle.Night" parent="@style/Widget.AppCompat.ActionButton.Overflow">
+        <item name="android:tint">#FFFFFF</item> <!-- White tint for overflow menu -->
+        <item name="android:textColor">#FFFFFF</item> <!-- White text -->
+    </style>
+
+    <!-- Menu item text color for Night -->
+    <style name="MenuItemTextColor.Night" parent="TextAppearance.AppCompat.Widget.ActionBar.Menu">
+        <item name="android:textColor">@color/bg_dark</item> <!-- White menu text -->
+    </style>
+
+    <!-- Owner theme for Night -->
+    <style name="OwnerTheme.Night" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:statusBarColor">#121212</item> <!-- Match primary dark color -->
+        <item name="android:windowBackground">#1E1E1E</item> <!-- Slightly lighter background -->
+    </style>
+
+
+
+    <style name="CustomToolbarStyle" parent="Widget.MaterialComponents.Toolbar">
+        <item name="android:textColor">#FFFFFF</item> <!-- White title text -->
+        <item name="android:backgroundTint">@color/bg_dark</item>>
+    </style>
+
+    <!-- Spinner style for Night -->
+    <style name="CustomSpinnerStyle.Night" parent="Widget.AppCompat.Spinner">
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:textColor">#FFFFFF</item> <!-- White text color for dropdown -->
+        <item name="android:popupBackground">#333333</item> <!-- Dark dropdown background -->
+    </style>
+
+    <!-- Location fragment theme for Night -->
+    <style name="LocationFragment.Night" parent="Base.Theme.SmartIndoorParkingSystem.Night">
+        <item name="fontFamily">@font/poppins_medium</item>
+    </style>
+
+    <!-- Base application theme -->
+    <style name="Theme.SmartIndoorParkingSystem.Night" parent="Base.Theme.SmartIndoorParkingSystem.Night" />
+
+    <!-- Another fallback for base -->
+    <style name="Base.Base.Theme.SmartIndoorParkingSystem.Night" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize if needed -->
     </style>
 </resources>

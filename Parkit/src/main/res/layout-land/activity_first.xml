@@ -22,68 +22,57 @@
         android:layout_height="match_parent"
         android:background="#90000000" /> <!-- 50% opaque black overlay -->
 
-    <ScrollView
+    <!-- Centered Title Text -->
+    <TextView
+        android:id="@+id/pkit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|top"
+        android:layout_marginTop="50dp"
+        android:fontFamily="@font/poppins_medium"
+        android:text="@string/parkit"
+        android:textColor="@android:color/white"
+        android:textSize="36sp"
+        android:textStyle="bold" />
+
+
+    <Button
+        android:id="@+id/firstSignInBut"
+        android:fontFamily="@font/poppins_medium"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|top"
+        android:layout_marginTop="120dp"
+        android:background="@drawable/blur_button_bg"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:paddingStart="30dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="30dp"
+        android:paddingBottom="10dp"
+        android:elevation="10dp"
+        android:text="@string/sign_in_as_user"
+        android:textSize="16sp"
+        android:textColor="@android:color/white" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center_horizontal">
+    <!-- Sign Up as Owner Button -->
+    <Button
+        android:id="@+id/firstSignInAsOwnerBut"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|top"
+        android:layout_marginLeft="25dp"
+        android:layout_marginTop="190dp"
+        android:layout_marginRight="25dp"
+        android:background="@drawable/blur_button_bg"
+        android:elevation="10dp"
+        android:fontFamily="@font/poppins_medium"
+        android:paddingStart="30dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="30dp"
+        android:paddingBottom="10dp"
+        android:text="@string/sign_in_as_owner"
+        android:textSize="16sp"
+        android:textColor="@android:color/white" />
 
-            <!-- Centered Title Text -->
-            <TextView
-                android:id="@+id/pkit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal|top"
-                android:layout_marginTop="100dp"
-                android:fontFamily="@font/poppins_medium"
-                android:text="@string/parkit"
-                android:textColor="@android:color/white"
-                android:textSize="48sp"
-                android:textStyle="bold" />
-
-            <!-- Sign In Button -->
-            <Button
-                android:id="@+id/firstSignInBut"
-                android:fontFamily="@font/poppins_medium"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal|top"
-                android:layout_marginTop="50dp"
-                android:background="@drawable/blur_button_bg"
-                android:layout_marginLeft="25dp"
-                android:layout_marginRight="25dp"
-                android:paddingStart="30dp"
-                android:paddingTop="10dp"
-                android:paddingEnd="30dp"
-                android:paddingBottom="10dp"
-                android:elevation="10dp"
-                android:text="@string/sign_in_as_user"
-                android:textSize="16sp"
-                android:textColor="@android:color/white" />
-
-            <!-- Sign Up as Owner Button -->
-            <Button
-                android:id="@+id/firstSignInAsOwnerBut"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal|top"
-                android:layout_marginLeft="25dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginRight="25dp"
-                android:background="@drawable/blur_button_bg"
-                android:elevation="10dp"
-                android:fontFamily="@font/poppins_medium"
-                android:paddingStart="30dp"
-                android:paddingTop="10dp"
-                android:paddingEnd="30dp"
-                android:paddingBottom="10dp"
-                android:text="@string/sign_in_as_owner"
-                android:textSize="16sp"
-                android:textColor="@android:color/white" />
-        </LinearLayout>
-    </ScrollView>
 </FrameLayout>
