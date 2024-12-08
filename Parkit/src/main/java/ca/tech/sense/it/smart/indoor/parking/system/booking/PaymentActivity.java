@@ -255,7 +255,6 @@ public class PaymentActivity extends AppCompatActivity {
 
     private void onPaymentSheetResult(PaymentSheetResult paymentSheetResult) {
         if (paymentSheetResult instanceof PaymentSheetResult.Completed) {
-
             // Use Handler with Looper.getMainLooper() for a delay
             new Handler(Looper.getMainLooper()).postDelayed(() -> {
                 confirmBooking(); // Confirm the booking
@@ -266,7 +265,7 @@ public class PaymentActivity extends AppCompatActivity {
             showToast("Payment Failed: " + ((PaymentSheetResult.Failed) paymentSheetResult).getError());
             finish();
         } else if (paymentSheetResult instanceof PaymentSheetResult.Canceled) {
-            showToast(String.valueOf(R.string.payment_canceled));
+            showToast(getString(R.string.payment_canceled));
             finish();
         }
     }

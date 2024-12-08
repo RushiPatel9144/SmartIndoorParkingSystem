@@ -1,15 +1,12 @@
 package ca.tech.sense.it.smart.indoor.parking.system.userUi.menu;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -24,12 +21,16 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseDatabaseSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.model.Favorites;
 import ca.tech.sense.it.smart.indoor.parking.system.network.BaseNetworkFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.userUi.adapters.FavoritesAdapter;
@@ -38,6 +39,7 @@ import ca.tech.sense.it.smart.indoor.parking.system.userUi.bottomNav.Park;
 public class FavoritesFragment extends BaseNetworkFragment {
 
     private List<Favorites> favoriteLocations;
+    private Set<String> favoriteLocationIds; // To check for duplicates more efficiently
     private DatabaseReference databaseRef;
     private FavoritesAdapter adapter;
     private LinearLayout noFavoritesLayout;
@@ -52,29 +54,18 @@ public class FavoritesFragment extends BaseNetworkFragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         // Initialize Firebase references
-        String userId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
-        databaseRef = FirebaseDatabase.getInstance().getReference("users").child(userId).child("saved_locations");
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser == null) {
+            // Handle the case where the user is not authenticated
+            return view;
+        }
+        String userId = currentUser.getUid();
+        databaseRef = FirebaseDatabaseSingleton.getInstance().getReference("users").child(userId).child("saved_locations");
 
         // Initialize the adapter
         favoriteLocations = new ArrayList<>();
-        adapter = new FavoritesAdapter(favoriteLocations, databaseRef, favorite -> {
-            // Handle item click and navigate to Park fragment
-            Park parkFragment = new Park();
-            Bundle args = new Bundle();
-            args.putString("locationId", favorite.getId());
-            parkFragment.setArguments(args);
-            FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-            transaction.replace(R.id.flFragment, parkFragment);
-            transaction.addToBackStack(null);
-            transaction.commit();
-
-            // Show BookingBottomSheetDialog after a short delay to ensure the fragment is fully attached
-            new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                if (getParentFragmentManager().findFragmentById(R.id.flFragment) instanceof Park) {
-                    ((Park) Objects.requireNonNull(getParentFragmentManager().findFragmentById(R.id.flFragment))).showBookingBottomSheet(favorite.getId());
-                }
-            }, 500);
-        });
+        favoriteLocationIds = new HashSet<>();
+        adapter = new FavoritesAdapter(requireContext(), favoriteLocations, databaseRef, this::navigateToParkFragment);
         recyclerView.setAdapter(adapter);
 
         // Load favorite locations from Firebase
@@ -102,7 +93,6 @@ public class FavoritesFragment extends BaseNetworkFragment {
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-                removeFavoriteLocation(snapshot);
                 updateNoFavoritesLayout();
             }
 
@@ -113,7 +103,9 @@ public class FavoritesFragment extends BaseNetworkFragment {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(getContext(), getString(R.string.failed_to_load_favorite_locations) + error.getMessage(), Toast.LENGTH_SHORT).show();
+                if (getContext() != null) {
+                    Toast.makeText(getContext(), getString(R.string.failed_to_load_favorite_locations) + error.getMessage(), Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
@@ -124,8 +116,9 @@ public class FavoritesFragment extends BaseNetworkFragment {
         String postalCode = snapshot.child("postalCode").getValue(String.class);
         String name = snapshot.child("name").getValue(String.class);
 
-        if (id != null && address != null && postalCode != null && name != null) {
+        if (id != null && address != null && postalCode != null && name != null && !favoriteLocationIds.contains(id)) {
             favoriteLocations.add(new Favorites(id, address, name, postalCode));
+            favoriteLocationIds.add(id); // Mark this location as added
             adapter.notifyItemInserted(favoriteLocations.size() - 1);
             updateNoFavoritesLayout();
         }
@@ -149,21 +142,6 @@ public class FavoritesFragment extends BaseNetworkFragment {
         }
     }
 
-    private void removeFavoriteLocation(DataSnapshot snapshot) {
-        String id = snapshot.child("locationId").getValue(String.class);
-
-        if (id != null) {
-            for (int i = 0; i < favoriteLocations.size(); i++) {
-                if (favoriteLocations.get(i).getId().equals(id)) {
-                    favoriteLocations.remove(i);
-                    adapter.notifyItemRemoved(i);
-                    adapter.notifyItemRangeChanged(i, favoriteLocations.size());
-                    updateNoFavoritesLayout();
-                    break;
-                }
-            }
-        }
-    }
 
     private void updateNoFavoritesLayout() {
         if (favoriteLocations.isEmpty()) {
@@ -173,5 +151,25 @@ public class FavoritesFragment extends BaseNetworkFragment {
             noFavoritesLayout.setVisibility(View.GONE);
             recyclerView.setVisibility(View.VISIBLE);
         }
+    }
+
+    private void navigateToParkFragment(Favorites favorite) {
+        Park parkFragment = new Park();
+        Bundle args = new Bundle();
+        args.putString("locationId", favorite.getId());
+        parkFragment.setArguments(args);
+
+        FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+        transaction.replace(R.id.flFragment, parkFragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
+
+        // Show BookingBottomSheetDialog after a short delay to ensure the fragment is fully attached
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            if (getParentFragmentManager().findFragmentById(R.id.flFragment) instanceof Park) {
+                ((Park) Objects.requireNonNull(getParentFragmentManager().findFragmentById(R.id.flFragment)))
+                        .showBookingBottomSheet(favorite.getId());
+            }
+        }, 500);
     }
 }

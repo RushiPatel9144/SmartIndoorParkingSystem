@@ -514,4 +514,5 @@
     <string name="server_error">Server error\n</string>
     <string name="an_unexpected_error_occurred">An unexpected error occured</string>
     <string name="failed_to_update_promo_code_status">Failed to update promo code status</string>
+    <string name="location_removed_from_favorites">Location removed from favorites</string>
 </resources>

@@ -1,10 +1,6 @@
-/*Name: Kunal Dhiman, StudentID: N01540952,  section number: RCB
-  Name: Raghav Sharma, StudentID: N01537255,  section number: RCB
-  Name: NisargKumar Pareshbhai Joshi, StudentID: N01545986,  section number: RCB
-  Name: Rushi Manojkumar Patel, StudentID: N01539144, section number: RCB
- */
 package ca.tech.sense.it.smart.indoor.parking.system.userUi.adapters;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.database.DatabaseReference;
 
+import java.text.MessageFormat;
 import java.util.List;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
@@ -24,16 +21,19 @@ import ca.tech.sense.it.smart.indoor.parking.system.model.Favorites;
 
 public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.FavoriteViewHolder> {
 
-    private List<Favorites> favoriteLocationList; // List of addresses
-    private DatabaseReference databaseRef;
-    private OnItemClickListener onItemClickListener;// List of addresses
+    private final List<Favorites> favoriteLocationList;
+    private final DatabaseReference databaseRef;
+    private final OnItemClickListener onItemClickListener;
+    private final Context context;
 
+    // Interface for handling item click events
     public interface OnItemClickListener {
         void onItemClick(Favorites favorite);
     }
 
-
-    public FavoritesAdapter(List<Favorites> favoriteLocationList, DatabaseReference databaseRef, OnItemClickListener onItemClickListener) {
+    // Constructor for adapter initialization
+    public FavoritesAdapter(Context context, List<Favorites> favoriteLocationList, DatabaseReference databaseRef, OnItemClickListener onItemClickListener) {
+        this.context = context;
         this.favoriteLocationList = favoriteLocationList;
         this.databaseRef = databaseRef;
         this.onItemClickListener = onItemClickListener;
@@ -42,36 +42,51 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
     @NonNull
     @Override
     public FavoriteViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        // Inflate the item layout and create a ViewHolder instance
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_favorites, parent, false);
         return new FavoriteViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull FavoriteViewHolder holder, int position) {
-        Favorites favorite = favoriteLocationList.get(position); // Use singular 'favorite'
-        holder.tvFavoriteTitle.setText(favorite.getName()); // Set the name as the title
-        holder.tvFavoriteAddress.setText(favorite.getAddress() + "\n" + favorite.getPostalCode());
+        // Get the favorite location item at the current position
+        Favorites favorite = favoriteLocationList.get(position);
 
+        // Set the name and address of the favorite location in the UI
+        holder.tvFavoriteTitle.setText(favorite.getName());
+        holder.tvFavoriteAddress.setText(MessageFormat.format("{0}\n{1}", favorite.getAddress(), favorite.getPostalCode()));
+
+        // Handle item click to notify the listener
         holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick(favorite));
-        holder.btnRemoveFavorite.setOnClickListener(v -> {
-            // Remove the favorite location from the database
-            databaseRef.child(favorite.getId()).removeValue().addOnSuccessListener(aVoid -> {
-                // Ensure the index is within bounds before removing the item
-                if (position >= 0 && position < favoriteLocationList.size()) {
-                    favoriteLocationList.remove(position);
-                    notifyItemRemoved(position);
-                    notifyItemRangeChanged(position, favoriteLocationList.size());
-                    Toast.makeText(holder.itemView.getContext(), "Location removed from favorites", Toast.LENGTH_SHORT).show();
-                }
-            }).addOnFailureListener(error -> {
-                Toast.makeText(holder.itemView.getContext(), "Failed to remove the location" + error.getMessage(), Toast.LENGTH_SHORT).show();
-            });
-        });
+
+        // Handle remove button click to delete the favorite location
+        holder.btnRemoveFavorite.setOnClickListener(v -> removeFavorite(holder, favorite, position));
     }
 
     @Override
     public int getItemCount() {
         return favoriteLocationList.size();
+    }
+
+    // This method is responsible for removing a favorite from the list and database
+    private void removeFavorite(FavoriteViewHolder holder, Favorites favorite, int position) {
+        databaseRef.child(favorite.getId()).removeValue()
+                .addOnSuccessListener(aVoid -> {
+                    if (position >= 0 && position < favoriteLocationList.size()) {
+                        // Remove the item from the list
+                        favoriteLocationList.remove(position);
+                        notifyItemRemoved(position);
+                        notifyItemRangeChanged(position, favoriteLocationList.size());
+                        if (context != null){
+                            showToast(holder.itemView, context.getString(R.string.location_removed_from_favorites));
+                        }
+                    }
+                })
+                .addOnFailureListener(error -> showToast(holder.itemView, "Failed to remove the location: " + error.getMessage()));
+    }
+
+    private void showToast(View view, String message) {
+        Toast.makeText(view.getContext(), message, Toast.LENGTH_SHORT).show();
     }
 
     public static class FavoriteViewHolder extends RecyclerView.ViewHolder {
