@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -88,7 +89,7 @@ public class PaymentActivity extends AppCompatActivity {
             booking = (Booking) intent.getSerializableExtra("booking");
             if (booking != null) {
                 setBookingDetails();
-                calculateTotalBreakdown();
+                calculateTotalBreakdown(0);
             } else {
                 showToast(getString(R.string.booking_data_is_missing_or_invalid));
             }
@@ -145,13 +146,15 @@ public class PaymentActivity extends AppCompatActivity {
         }
     }
 
-    private void calculateTotalBreakdown() {
+    private void calculateTotalBreakdown(double discountPercent) {
         if (booking != null) {
             String currencySymbol = booking.getCurrencySymbol();
             double subtotal = booking.getPrice();
             double gstHst = subtotal * 0.13;
-            double platformFee = subtotal * 0.10;
-            total = subtotal + gstHst + platformFee;
+            double platformFee =  subtotal * 0.10 ;
+            double discountAmount = ( discountPercent * subtotal ) / 100;
+            double totalBeforeDiscount = subtotal + gstHst + platformFee;
+            total = totalBeforeDiscount - discountAmount;
 
             booking.setTotalPrice(CurrencyManager.getInstance().convertToCAD(total, booking.getCurrencyCode()));
             subtotalTextView.setText(String.format(Locale.getDefault(), "%s %.2f",currencySymbol, subtotal));
@@ -159,14 +162,37 @@ public class PaymentActivity extends AppCompatActivity {
             platformFeeTextView.setText(String.format(Locale.getDefault(), "%s %.2f",currencySymbol, platformFee));
             totalTextView.setText(String.format(Locale.getDefault(), "%s %.2f",currencySymbol, total));
 
+            if (discountAmount > 0) {
+                promotionTextView.setText(String.format(Locale.getDefault(), "-%s %.2f", currencySymbol, discountAmount));
+                promotionLayout.setVisibility(View.VISIBLE);
+            } else {
+                promotionLayout.setVisibility(View.GONE);
+            }
         }
+    }
+
+    private void applyDiscount(double discountAmount) {
+        calculateTotalBreakdown(discountAmount);
+        Toast.makeText(getApplicationContext(), "Promo code applied successfully!", Toast.LENGTH_SHORT).show();
     }
 
     private void setButtonListeners() {
         applyPromoCodeButton.setOnClickListener(v -> {
             String promoCode = promoCodeEditText.getText().toString().trim();
             if (!promoCode.isEmpty()) {
-                PromotionHelper.applyPromoCode(promoCode, booking, subtotalTextView, gstHstTextView, platformFeeTextView, totalTextView, promotionLayout, promotionTextView, this);
+                PromotionHelper.applyPromoCode(promoCode, new PromotionHelper.PromoCallback()
+                {
+                    @Override
+                    public void onSuccess(double discountAmount) {
+                        applyDiscount(discountAmount);
+                    }
+
+                    @Override
+                    public void onFailure(String errorMessage) {
+                        promotionLayout.setVisibility(View.GONE);
+                        Toast.makeText(getApplicationContext(), errorMessage, Toast.LENGTH_SHORT).show();
+                    }
+                });
             } else {
                 showToast(getString(R.string.please_enter_a_promo_code));
             }
@@ -245,7 +271,6 @@ public class PaymentActivity extends AppCompatActivity {
         }
     }
 
-
     private void confirmBooking() {
         if (booking == null) {
             showToast(getString(R.string.booking_data_is_missing));
@@ -267,14 +292,6 @@ public class PaymentActivity extends AppCompatActivity {
             showToast(getString(R.string.an_unexpected_error_occurred) + e.getMessage());
         }
     }
-
-    private void markPromoCodeAsUsed() {
-        String promoCode = promoCodeEditText.getText().toString().trim();
-        if (!promoCode.isEmpty()) {
-            PromotionHelper.markPromoCodeAsUsed(promoCode, this);
-        }
-    }
-
 
     private String formatTimeSlot(long startTime, long endTime) {
         String timeFormat = "HH:mm";
@@ -335,6 +352,14 @@ public class PaymentActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void markPromoCodeAsUsed() {
+        String promoCode = promoCodeEditText.getText().toString().trim();
+        if (!promoCode.isEmpty()) {
+            PromotionHelper.markPromoCodeAsUsed(promoCode, this);
+        }
+    }
+
 
     private void showToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
