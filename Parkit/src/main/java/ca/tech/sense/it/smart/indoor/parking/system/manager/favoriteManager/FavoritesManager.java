@@ -6,6 +6,7 @@
 package ca.tech.sense.it.smart.indoor.parking.system.manager.favoriteManager;
 
 import android.content.Context;
+import android.util.Log;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -51,6 +52,10 @@ public class FavoritesManager {
     public void setupStarButton() {
         if (firebaseAuth.getCurrentUser() == null) {
             showUserNotAuthenticatedMessage();
+            return;
+        }
+        if (locationId == null || locationId.isEmpty()) {
+            Log.e("FavoritesManager", "locationId is null or empty");
             return;
         }
 
