@@ -45,8 +45,7 @@
                 android:fontFamily="sans-serif-medium"
                 android:textColor="@android:color/holo_green_dark"
                 android:gravity="end"
-                android:paddingStart="8dp"
-                tools:ignore="HardcodedText" />
+                android:paddingStart="8dp" />
         </LinearLayout>
 
         <TextView

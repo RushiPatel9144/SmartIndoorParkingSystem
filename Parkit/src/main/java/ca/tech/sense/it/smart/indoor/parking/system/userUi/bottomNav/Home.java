@@ -9,8 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.userUi.bottomNav.AccountItems.HelpFragment;
@@ -18,7 +16,6 @@ import ca.tech.sense.it.smart.indoor.parking.system.userUi.bottomNav.AccountItem
 import ca.tech.sense.it.smart.indoor.parking.system.userUi.bottomNav.activity.HistoryFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.userUi.menu.FavoritesFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.userUi.menu.PromotionFragment;
-
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -28,10 +25,14 @@ import java.util.Calendar;
 
 public class Home extends Fragment {
 
-    private TextView tvGreeting, tvAdditionalMessages, tvBrowseNearby, tvFindBestParking, tvPromoHeader, tvPromoDescription, tvFavoritesHeader, tvFavoritesDescription, tvHistoryHeader, tvHistoryDescription, tvRatingHeader, tvRatingDescription, tvHelpHeader, tvHelpDescription;
-    private ImageView imgTop;
-    private ScrollView scrollView;
-    private Button btnViewMap, btnViewPromotions, btnViewFavorites, btnViewHistory, btnRateExperience, btnGetHelp;
+    private TextView tvGreeting;
+    private TextView tvAdditionalMessages;
+    private Button btnViewMap;
+    private Button btnViewPromotions;
+    private Button btnViewFavorites;
+    private Button btnViewHistory;
+    private Button btnRateExperience;
+    private Button btnGetHelp;
     private FirebaseFirestore db;
     private String userName;
 
@@ -55,24 +56,11 @@ public class Home extends Fragment {
     private void initializeViews(View view) {
         tvGreeting = view.findViewById(R.id.tv_greeting);
         tvAdditionalMessages = view.findViewById(R.id.tv_additional_messages);
-        imgTop = view.findViewById(R.id.img_top);
-        tvBrowseNearby = view.findViewById(R.id.tv_browse_nearby);
-        tvFindBestParking = view.findViewById(R.id.tv_find_best_parking);
         btnViewMap = view.findViewById(R.id.btn_view_map);
-        tvPromoHeader = view.findViewById(R.id.tv_promo_header);
-        tvPromoDescription = view.findViewById(R.id.tv_promo_description);
         btnViewPromotions = view.findViewById(R.id.btn_view_promotions);
-        tvFavoritesHeader = view.findViewById(R.id.tv_favorites_header);
-        tvFavoritesDescription = view.findViewById(R.id.tv_favorites_description);
         btnViewFavorites = view.findViewById(R.id.btn_view_favorites);
-        tvHistoryHeader = view.findViewById(R.id.tv_history_header);
-        tvHistoryDescription = view.findViewById(R.id.tv_history_description);
         btnViewHistory = view.findViewById(R.id.btn_view_history);
-        tvRatingHeader = view.findViewById(R.id.tv_rating_header);
-        tvRatingDescription = view.findViewById(R.id.tv_rating_description);
         btnRateExperience = view.findViewById(R.id.btn_rate_experience);
-        tvHelpHeader = view.findViewById(R.id.tv_help_header);
-        tvHelpDescription = view.findViewById(R.id.tv_help_description);
         btnGetHelp = view.findViewById(R.id.btn_get_help);
     }
 
@@ -88,7 +76,7 @@ public class Home extends Fragment {
                     if (document.exists()) {
                         userName = document.getString("firstName");
                         tvGreeting.setText(getGreetingMessageWithUserName());
-                        tvAdditionalMessages.setText("Welcome to the Park it\nPark Smart, Live Easy!");
+                        tvAdditionalMessages.setText(getString(R.string.welcome_to_the_park_it_park_smart_live_easy));
                     } else {
                         Log.d("Home", "No such document");
                     }
@@ -104,13 +92,13 @@ public class Home extends Fragment {
     private String getGreetingMessage() {
         int currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
         if (currentHour >= 5 && currentHour < 12) {
-            return "Good Morning";
+            return getString(R.string.good_morning);
         } else if (currentHour >= 12 && currentHour < 18) {
-            return "Good Afternoon";
+            return getString(R.string.good_afternoon);
         } else if (currentHour >= 18 && currentHour < 21) {
-            return "Good Evening";
+            return getString(R.string.good_evening);
         } else {
-            return "Good Night";
+            return getString(R.string.good_night);
         }
     }
 

@@ -56,7 +56,7 @@ public class AddLocationActivity extends AppCompatActivity {
 
     private void initializeAutocomplete() {
         AutocompleteSearchHelper.initializeAutocompleteSearch(
-                (AutocompleteSupportFragment) getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment),
+                (AutocompleteSupportFragment) Objects.requireNonNull(getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment)),
                 this,
                 new AutocompleteSearchHelper.PlaceSelectionCallback() {
                     @Override

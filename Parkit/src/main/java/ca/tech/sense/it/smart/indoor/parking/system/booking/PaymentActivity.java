@@ -104,7 +104,7 @@ public class PaymentActivity extends AppCompatActivity {
 
         PaymentConfiguration.init(
                 getApplicationContext(),
-                "pk_test_51QJqGPAwqnUq4xSjJQmV0FKH27StbQRdn5jfOtsyFy3tJadwpId67LbynKlh3aonDKstIxv59LWbhFGGlwTTOTJi00QX02RzJp"
+                "pk_live_51QJqGPAwqnUq4xSjL22RjIoAN6sEXzRk5XpSYB8yli0gYIbcdZIwecv9b1QnNLrFoMN01klmMPWZNTen9mVUN57W00DqrrM2ed"
         );
 
         paymentSheet = new PaymentSheet(this, this::onPaymentSheetResult);
@@ -262,7 +262,7 @@ public class PaymentActivity extends AppCompatActivity {
                 finish();
                 }, 2000); // 2-second delay
         } else if (paymentSheetResult instanceof PaymentSheetResult.Failed) {
-            showToast("Payment Failed: " + ((PaymentSheetResult.Failed) paymentSheetResult).getError());
+            showToast(getString(R.string.payment_failed) + ((PaymentSheetResult.Failed) paymentSheetResult).getError());
             finish();
         } else if (paymentSheetResult instanceof PaymentSheetResult.Canceled) {
             showToast(getString(R.string.payment_canceled));

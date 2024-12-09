@@ -29,7 +29,7 @@
                 android:id="@+id/PromotionTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Limited Time Offer"
+                android:text="@string/limited_time_offer"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:layout_weight="1"/>
@@ -54,7 +54,6 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
             android:lineSpacingExtra="4dp"
-            android:text="Get an amazing discount on your next purchase. Don't miss out!"
             android:textSize="16sp" />
 
         <!-- Promo Code Label -->
@@ -74,7 +73,7 @@
             android:id="@+id/ClaimPromoButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Claim Promo"
+            android:text="@string/claim_promo"
             android:textColor="@android:color/white"
             android:backgroundTint="@color/colorAccent"
             android:paddingTop="12dp"

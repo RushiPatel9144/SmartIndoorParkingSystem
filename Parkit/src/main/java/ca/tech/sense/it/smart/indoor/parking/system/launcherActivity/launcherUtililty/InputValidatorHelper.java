@@ -42,7 +42,7 @@ public class InputValidatorHelper {
     }
 
     // Validates the login fields
-    public static boolean validateInputLogin(EditText emailField, EditText passwordField, TextInputLayout loginEmailLayout, TextInputLayout loginPasswordLayout) {
+    public static boolean validateInputLogin(Context context, EditText emailField, EditText passwordField, TextInputLayout loginEmailLayout, TextInputLayout loginPasswordLayout) {
         String email = emailField.getText().toString().trim();
         String password = passwordField.getText().toString().trim();
 
@@ -50,10 +50,10 @@ public class InputValidatorHelper {
 
         // Email validation
         if (TextUtils.isEmpty(email)) {
-            loginEmailLayout.setError("Please enter an email address.");
+            loginEmailLayout.setError(context.getString(R.string.please_enter_an_email_address));
             isValid = false;
         } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            loginEmailLayout.setError("Invalid email format.");
+            loginEmailLayout.setError(context.getString(R.string.invalid_email_format));
             isValid = false;
         } else {
             loginEmailLayout.setError(null); // Clear error if valid
@@ -61,10 +61,10 @@ public class InputValidatorHelper {
 
         // Password validation
         if (TextUtils.isEmpty(password)) {
-            loginPasswordLayout.setError("Please enter a password.");
+            loginPasswordLayout.setError(context.getString(R.string.please_enter_a_password));
             isValid = false;
         } else if (password.length() < 8) {
-            loginPasswordLayout.setError("Password must be at least 8 characters long.");
+            loginPasswordLayout.setError(context.getString(R.string.password_must_be_at_least_8_characters_long));
         } else {
             loginPasswordLayout.setError(null); // Clear error if valid
         }

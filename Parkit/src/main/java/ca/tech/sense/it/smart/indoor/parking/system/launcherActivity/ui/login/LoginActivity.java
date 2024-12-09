@@ -130,7 +130,7 @@ public class LoginActivity extends BaseActivity {
             idlingResource.increment(); // Increment the counter
             new Handler().postDelayed(() -> {
                 // Simulate network call
-                LoginHelper.handleLogin(editTextEmail, editTextPassword, progressBar, loginViewModel, userType, login_email_layout, login_password_layout);
+                LoginHelper.handleLogin(getApplicationContext(), editTextEmail, editTextPassword, progressBar, loginViewModel, userType, login_email_layout, login_password_layout);
                 progressBar.setVisibility(View.GONE); // Hide the progress bar after delay
                 idlingResource.decrement(); // Decrement the counter
             }, 2000); // 2-second delay

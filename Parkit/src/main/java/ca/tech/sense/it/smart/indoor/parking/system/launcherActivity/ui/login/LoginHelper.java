@@ -40,12 +40,12 @@ public class LoginHelper {
      * @param loginViewModel   The ViewModel responsible for managing login logic.
      * @param userType         The type of user ("user" or "owner").
      */
-    public static void handleLogin(EditText editTextEmail, EditText editTextPassword, ProgressBar progressBar, LoginViewModel loginViewModel, String userType, TextInputLayout login_email_layout, TextInputLayout login_password_layout) {
+    public static void handleLogin(Context context, EditText editTextEmail, EditText editTextPassword, ProgressBar progressBar, LoginViewModel loginViewModel, String userType, TextInputLayout login_email_layout, TextInputLayout login_password_layout) {
         String email = editTextEmail.getText().toString().trim();
         String password = editTextPassword.getText().toString().trim();
 
         // Validate the input and proceed with login if valid
-        if (InputValidatorHelper.validateInputLogin(editTextEmail, editTextPassword,login_email_layout,login_password_layout)) {
+        if (InputValidatorHelper.validateInputLogin(context, editTextEmail, editTextPassword,login_email_layout,login_password_layout)) {
             progressBar.setVisibility(View.VISIBLE);  // Show progress bar while logging in
             loginViewModel.login(email, password, userType);  // Trigger login in ViewModel
         }
@@ -101,7 +101,7 @@ public class LoginHelper {
                         if (TextUtils.isEmpty(inputText)) {
                             ToastHelper.showToast(context, context.getString(R.string.email_cannot_be_empty));  // Show error if email is empty
                         } else {
-                            loginViewModel.sendPasswordResetEmail(inputText, userType);  // Trigger password reset in ViewModel
+                            loginViewModel.sendPasswordResetEmail(context, inputText, userType);  // Trigger password reset in ViewModel
                         }
                     }
 

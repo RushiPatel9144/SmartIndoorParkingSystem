@@ -15,6 +15,7 @@ import com.google.firebase.auth.FirebaseUser;
 import java.util.Objects;
 
 
+import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.credentialManagerGoogle.CoroutineHelper;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.credentialManagerGoogle.GoogleAuthClient;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.launcherUtililty.NavigationHelper;
@@ -78,7 +79,7 @@ public class LoginViewModel extends ViewModel {
      * Sends a password reset email to the user if the email is registered.
      * It checks whether the email is registered as a "user" or "owner" and proceeds accordingly.
      */
-    public void sendPasswordResetEmail(String email, String userType) {
+    public void sendPasswordResetEmail(Context context, String email, String userType) {
         String collection = "user".equals(userType) ? "users" : "owners";  // Determine the collection based on user type
 
         // Check if the email is registered in the appropriate collection (users or owners)
@@ -87,17 +88,13 @@ public class LoginViewModel extends ViewModel {
                     if (isRegistered) {
                         // If email is registered, send a password reset email
                         authRepository.sendPasswordResetEmail(email)
-                                .addOnSuccessListener(aVoid -> {
-                                    resetPasswordStatus.setValue("Password reset email sent successfully.");
-                                })
-                                .addOnFailureListener(e -> {
-                                    resetPasswordStatus.setValue("Error sending password reset email: " + e.getMessage());
-                                });
+                                .addOnSuccessListener(aVoid -> resetPasswordStatus.setValue(context.getString(R.string.password_reset_email_sent_successfully)))
+                                .addOnFailureListener(e -> resetPasswordStatus.setValue(context.getString(R.string.error_sending_password_reset_email) + e.getMessage()));
                     } else {
-                        resetPasswordStatus.setValue("Error: This email is not registered as a " + userType + ".");
+                        resetPasswordStatus.setValue(context.getString(R.string.error_this_email_is_not_registered_as_a) + userType + ".");
                     }
                 })
-                .addOnFailureListener(e -> resetPasswordStatus.setValue("Error checking email: " + e.getMessage()));  // Handle error in checking email registration
+                .addOnFailureListener(e -> resetPasswordStatus.setValue(context.getString(R.string.error_checking_email) + e.getMessage()));  // Handle error in checking email registration
     }
 
     /**

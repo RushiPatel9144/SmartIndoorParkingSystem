@@ -11,6 +11,8 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
+
+import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.manager.parkingManager.ParkingLocationManager;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
 
@@ -49,8 +51,8 @@ public class SwipeToDeleteCallback extends ItemTouchHelper.SimpleCallback {
 
             DialogUtil.showTimedConfirmationDialog(
                     fragment,
-                    "Confirm Deletion",
-                    "Are you sure you want to delete this location?",
+                    fragment.requireContext().getString(R.string.confirm_deletion),
+                    fragment.requireContext().getString(R.string.are_you_sure_you_want_to_delete_this_location),
                     15000,  // 15 seconds
                     1000,   // Update every 1 second
                     () -> {
@@ -101,7 +103,7 @@ public class SwipeToDeleteCallback extends ItemTouchHelper.SimpleCallback {
         textPaint.setTextSize(50);
         textPaint.setAntiAlias(true);
 
-        String buttonText = "Delete";
+        String buttonText = fragment.getString(R.string.delete);
         float textWidth = textPaint.measureText(buttonText);
         float textHeight = textPaint.descent() - textPaint.ascent();
 

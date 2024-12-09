@@ -17,7 +17,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.text.MessageFormat;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
@@ -42,7 +44,7 @@ public class PromotionAdapter extends RecyclerView.Adapter<PromotionAdapter.Prom
         Promotion promotion = promotionList.get(position);
         holder.title.setText(promotion.getTitle());
         holder.description.setText(promotion.getDescription());
-        holder.discount.setText(String.valueOf(promotion.getDiscount()) + "%");
+        holder.discount.setText(MessageFormat.format("{0}%", promotion.getDiscount()));
 
         // Check if promo code is already generated
         if (promotion.getPromoCode() == null || promotion.getPromoCode().isEmpty()) {
@@ -57,10 +59,10 @@ public class PromotionAdapter extends RecyclerView.Adapter<PromotionAdapter.Prom
             ClipboardManager clipboard = (ClipboardManager) view.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
             ClipData clip = ClipData.newPlainText("promo_code", promotion.getPromoCode());
             clipboard.setPrimaryClip(clip);
-            Toast.makeText(view.getContext(), "Promo code copied! It will be applied upon booking confirmation.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(view.getContext(), view.getContext().getString(R.string.promo_code_copied), Toast.LENGTH_SHORT).show();
 
             // Add promotion to user's promotions sub-node
-            String uid = FirebaseAuth.getInstance().getCurrentUser().getUid(); // Get the current user's UID
+            String uid = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid(); // Get the current user's UID
             DatabaseReference userPromotionsRef = FirebaseDatabase.getInstance().getReference("users").child(uid).child("promotions");
             userPromotionsRef.child(promotion.getId()).setValue(promotion);
         });

@@ -8,6 +8,8 @@ import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import java.util.Arrays;
 
+import ca.tech.sense.it.smart.indoor.parking.system.R;
+
 public class AutocompleteSearchHelper {
 
     public interface PlaceSelectionCallback {
@@ -18,7 +20,7 @@ public class AutocompleteSearchHelper {
     // Initialize the AutocompleteSearch with a listener for place selection
     public static void initializeAutocompleteSearch(AutocompleteSupportFragment autocompleteFragment, Context context, final PlaceSelectionCallback callback) {
         autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.DISPLAY_NAME, Place.Field.LOCATION, Place.Field.FORMATTED_ADDRESS));
-        autocompleteFragment.setHint("Search for a location");
+        autocompleteFragment.setHint(context.getString(R.string.search_for_a_location));
 
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override

@@ -14,6 +14,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
+
+import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.booking.ParkingTicket;
 import ca.tech.sense.it.smart.indoor.parking.system.manager.notificationManager.NotificationManagerHelper;
 import ca.tech.sense.it.smart.indoor.parking.system.model.booking.Booking;
@@ -57,7 +59,7 @@ public class BookingService {
 
     private void notifyUserSlotOccupied(Consumer<Exception> onFailure) {
         new Handler(Looper.getMainLooper()).post(() ->
-                Toast.makeText(context, "Selected slot is already occupied. Please choose a different time slot.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, context.getString(R.string.selected_slot_is_already_occupied_please_choose_a_different_time_slot), Toast.LENGTH_SHORT).show()
         );
         onFailure.accept(new Exception("Selected slot is already occupied."));
     }
@@ -102,7 +104,7 @@ public class BookingService {
                         slotService.updateHourlyStatus(locationId, slot, selectedDate, times[0], "occupied", () -> {
                             slotService.scheduleStatusUpdate(locationId, slot, selectedDate, times[1], onSuccess, onFailure);
                             // Show toast message
-                            Toast.makeText(context, "Booking confirmed!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, context.getString(R.string.booking_confirmed), Toast.LENGTH_SHORT).show();
 
                             // Pass the booking details, including the pass key, to the ParkingTicketActivity
                             Intent intent = new Intent(context, ParkingTicket.class);
@@ -142,8 +144,8 @@ public class BookingService {
         long startTime = BookingUtils.convertToMillis(selectedDate + " " + times[0]);
         long reminderTime = startTime - 10 * 60 * 1000; // 30 minutes before
 
-        scheduleReminder(reminderTime, "Booking Reminder", "Your booking at " + booking.getLocation() + " starts in 30 minutes.", userId);
-        scheduleReminder(startTime, "Booking Reminder", "Your booking at " + booking.getLocation() + " starts now.", userId);
+        scheduleReminder(reminderTime, context.getString(R.string.booking_reminder), context.getString(R.string.your_booking_at) + booking.getLocation() + context.getString(R.string.starts_in_30_minutes), userId);
+        scheduleReminder(startTime,  context.getString(R.string.booking_reminder), context.getString(R.string.your_booking_at) + booking.getLocation() + context.getString(R.string.starts_now), userId);
     }
 
     @SuppressLint("ScheduleExactAlarm")

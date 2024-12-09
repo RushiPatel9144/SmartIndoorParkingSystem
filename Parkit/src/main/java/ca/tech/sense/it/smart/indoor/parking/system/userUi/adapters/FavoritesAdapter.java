@@ -82,7 +82,7 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
                         }
                     }
                 })
-                .addOnFailureListener(error -> showToast(holder.itemView, "Failed to remove the location: " + error.getMessage()));
+                .addOnFailureListener(error -> showToast(holder.itemView, context.getString(R.string.failed_to_remove_the_location) + error.getMessage()));
     }
 
     private void showToast(View view, String message) {

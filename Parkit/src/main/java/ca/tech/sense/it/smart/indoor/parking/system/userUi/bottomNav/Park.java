@@ -280,7 +280,7 @@ public class Park extends BaseNetworkFragment implements OnMapReadyCallback {
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15)); // Zoom level 15 is just an example
                             mMap.addMarker(new MarkerOptions().position(currentLatLng).title("You are here"));
                         } else {
-                            Toast.makeText(requireContext(), "Unable to get current location", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(requireContext(), getString(R.string.unable_to_get_current_location), Toast.LENGTH_SHORT).show();
                         }
                     });
         } else {
