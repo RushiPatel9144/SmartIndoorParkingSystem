@@ -110,7 +110,7 @@
                         android:id="@+id/parkingTimeTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Parking Time"
+                        android:text="@string/parking_time"
                         android:layout_marginTop="8dp"
                         android:textColor="@color/primaryText"
                         android:fontFamily="sans-serif-medium"
@@ -121,7 +121,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:text="Parking Time Value"
+                        android:text="@string/parking_time_value"
                         android:fontFamily="sans-serif"
                         android:textColor="@color/secondaryText"
                         android:textSize="14sp" />
@@ -130,7 +130,7 @@
                         android:id="@+id/priceTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Price"
+                        android:text="@string/price"
                         android:layout_marginTop="8dp"
                         android:fontFamily="sans-serif-medium"
                         android:textColor="@color/primaryText"
@@ -142,7 +142,7 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif"
                         android:layout_marginTop="8dp"
-                        android:text="Price Value"
+                        android:text="@string/price_value"
                         android:textColor="@color/secondaryText"
                         android:textSize="14sp" />
 

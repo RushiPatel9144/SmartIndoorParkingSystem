@@ -44,6 +44,27 @@ public class CurrencyManagerTest {
     }
 
     @Test
+    public void testConvertFromCAD_NonexistentCurrency() {
+        double amountInCAD = 100.0;
+        double convertedAmount = currencyManager.convertFromCAD(amountInCAD, "XYZ");
+
+        assertEquals(amountInCAD, convertedAmount, 0.01);  // Fallback to original amount
+    }
+
+
+    @Test
+    public void testConvertFromCAD_NegativeAmount() {
+        Currency usd = currencyManager.getCurrency("USD");
+        usd.setExchangeRateToBase(0.75);
+
+        double amountInCAD = -100.0;
+        double convertedAmount = currencyManager.convertFromCAD(amountInCAD, "USD");
+
+        assertEquals(-75.0, convertedAmount, 0.01);  // -100 CAD * 0.75 = -75 USD
+    }
+
+
+    @Test
     public void testUpdateExchangeRates() {
         Map<String, Double> newRates = Map.of(
                 "USD", 0.75,
@@ -63,5 +84,26 @@ public class CurrencyManagerTest {
         assertNotNull(eur);
         assertEquals(0.85, eur.getExchangeRateToBase(), 0.01);
     }
+
+    @Test
+    public void testConvertFromCAD_Precision() {
+        Currency usd = currencyManager.getCurrency("USD");
+        usd.setExchangeRateToBase(0.123456);
+
+        double amountInCAD = 100.0;
+        double convertedAmount = currencyManager.convertFromCAD(amountInCAD, "USD");
+
+        assertEquals(12.35, convertedAmount, 0.01);  // Rounded to 2 decimal places
+    }
+
+    // Test conversion when no exchange rate is set
+    @Test
+    public void testConvertFromCAD_NoRateSet() {
+        double amountInCAD = 100.0;
+        double convertedAmount = currencyManager.convertFromCAD(amountInCAD, "GBP");
+
+        assertEquals(amountInCAD, convertedAmount, 0.01);  // No rate means fallback to original amount
+    }
+
 
 }

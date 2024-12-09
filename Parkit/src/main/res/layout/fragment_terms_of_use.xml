@@ -6,6 +6,11 @@
     android:layout_height="match_parent"
     tools:context=".userUi.bottomNav.AccountItems.TermsOfUseFragment">
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -16,7 +21,7 @@
             android:id="@+id/tvTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Terms of Use"
+            android:text="@string/terms_of_use"
             android:textSize="24sp"
             android:textStyle="bold"
             android:paddingBottom="16dp" />
@@ -24,7 +29,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Acceptance of Terms"
+            android:text="@string/acceptance_of_terms"
             android:textSize="20sp"
             android:textStyle="bold"
             android:paddingTop="8dp"
@@ -40,7 +45,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Purpose of the App"
+            android:text="@string/purpose_of_the_app"
             android:textSize="20sp"
             android:textStyle="bold"
             android:paddingTop="8dp"
@@ -56,7 +61,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="User Responsibilities"
+            android:text="@string/user_responsibilities"
             android:textSize="20sp"
             android:textStyle="bold"
             android:paddingTop="8dp"
@@ -72,7 +77,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Booking and Payment"
+            android:text="@string/booking_and_payment"
             android:textSize="20sp"
             android:textStyle="bold"
             android:paddingTop="8dp"
@@ -88,7 +93,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Parking Rules"
+            android:text="@string/parking_rules"
             android:textSize="20sp"
             android:textStyle="bold"
             android:paddingTop="8dp"
@@ -104,7 +109,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Account Management"
+            android:text="@string/account_management"
             android:textSize="20sp"
             android:textStyle="bold"
             android:paddingTop="8dp"
@@ -120,7 +125,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Restrictions"
+            android:text="@string/restrictions"
             android:textSize="20sp"
             android:textStyle="bold"
             android:paddingTop="8dp"
@@ -136,7 +141,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Modifications to the App"
+            android:text="@string/modifications_to_the_app"
             android:textSize="20sp"
             android:textStyle="bold"
             android:paddingTop="8dp"
@@ -152,7 +157,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Liability"
+            android:text="@string/liability"
             android:textSize="20sp"
             android:textStyle="bold"
             android:paddingTop="8dp"
@@ -165,4 +170,12 @@
             android:textSize="16sp"
             android:paddingBottom="8dp" />
     </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:visibility="gone" />
+    </RelativeLayout>
 </ScrollView>

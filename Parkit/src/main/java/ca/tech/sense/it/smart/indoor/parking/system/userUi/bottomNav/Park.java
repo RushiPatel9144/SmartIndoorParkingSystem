@@ -19,14 +19,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.ProgressBar;
 import android.widget.Toast;
-
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
-
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -38,16 +35,15 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
-
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.manager.bookingManager.BookingBottomSheetDialogFragment;
@@ -65,18 +61,17 @@ public class Park extends BaseNetworkFragment implements OnMapReadyCallback {
 
     private static final String TAG = "ParkFragment";
     private GoogleMap mMap;
-    private ParkingLocationManager parkingLocationManager = new ParkingLocationManager();
+    private final ParkingLocationManager parkingLocationManager = new ParkingLocationManager();
     private ExecutorService executorService;
     private ActivityResultLauncher<String> requestPermissionLauncher;
     private FusedLocationProviderClient fusedLocationClient;
-    private ScheduledExecutorService scheduledExecutorService;
+
     private boolean ratesFetched = false;
-    private ProgressBar progressBar;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
         executorService = Executors.newFixedThreadPool(4);
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext());
         if (!ratesFetched) {
@@ -88,23 +83,20 @@ public class Park extends BaseNetworkFragment implements OnMapReadyCallback {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_park, container, false);
-        progressBar = view.findViewById(R.id.progressBar);
+        if (!Places.isInitialized()) {
+            Places.initialize(requireContext(),"AIzaSyCBb9Vk3FUhAz6Tf7ixMIk5xqu3IGlZRd0");
+        }
         return view;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (progressBar != null) {
-            progressBar.setVisibility(View.VISIBLE);
-        }
-        if (getView() != null) {
-            scheduledExecutorService.schedule(() ->
-                    requireActivity().runOnUiThread(() -> {
-                        initializeMap();
-                        initializeAutocomplete();
-                    }), 1, TimeUnit.SECONDS);
-        }
+        executorService.execute(() -> requireActivity().runOnUiThread(() -> {
+            initializeMap();
+            initializeAutocomplete();
+        }));
+
         // Check if there is a locationId passed from the FavoritesFragment
         if (getActivity() != null && getActivity().getIntent() != null) {
             String locationId = getActivity().getIntent().getStringExtra("locationId");
@@ -127,7 +119,7 @@ public class Park extends BaseNetworkFragment implements OnMapReadyCallback {
     private void initializeAutocomplete() {
         if (getView() != null) {
             AutocompleteSearchHelper.initializeAutocompleteSearch(
-                    (AutocompleteSupportFragment) getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment),
+                    (AutocompleteSupportFragment) Objects.requireNonNull(getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment)),
                     requireContext(),
                     new AutocompleteSearchHelper.PlaceSelectionCallback() {
                         @Override
@@ -146,21 +138,20 @@ public class Park extends BaseNetworkFragment implements OnMapReadyCallback {
 
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
-        if (getView() != null) {
-            mMap = googleMap;
+        mMap = googleMap;
 
-            setupMapUI();
-            ImageButton myLocationButton = requireView().findViewById(R.id.my_location_button);
-            myLocationButton.setOnClickListener(v -> checkLocationPermissionAndEnableMyLocation());
-            // Asynchronous task to add parking spots
-            executorService.execute(this::addParkingSpotsToMap);
+        setupMapUI();
+        ImageButton myLocationButton = requireView().findViewById(R.id.my_location_button);
+        myLocationButton.setOnClickListener(v -> checkLocationPermissionAndEnableMyLocation());
+        // Asynchronous task to add parking spots
+        executorService.execute(this::addParkingSpotsToMap);
 
-            // Default camera position
-            LatLng torontoCenter = new LatLng(43.65107, -79.347015); // Toronto coordinates
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(torontoCenter, 10));
-            setupMapListeners();
-        }
+        // Default camera position
+        LatLng torontoCenter = new LatLng(43.65107, -79.347015); // Toronto coordinates
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(torontoCenter, 10));
+        setupMapListeners();
     }
+
     private void setupMapUI() {
         mMap.getUiSettings().setZoomControlsEnabled(true);
         mMap.getUiSettings().setMyLocationButtonEnabled(false);
@@ -178,10 +169,8 @@ public class Park extends BaseNetworkFragment implements OnMapReadyCallback {
     private void handlePlaceSelected(Place place) {
         if (place.getLocation() != null) {
             requireActivity().runOnUiThread(() -> {
-                mMap.clear(); // Clear any existing markers
-                mMap.addMarker(new MarkerOptions().position(place.getLocation()).title(place.getDisplayName()));
-                // Add a slight delay before animating the camera
-                new Handler(Looper.getMainLooper()).postDelayed(() -> mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(place.getLocation(), 15)), 500); // 500 milliseconds delay
+                mMap.clear();
+                new Handler(Looper.getMainLooper()).postDelayed(() -> mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(place.getLocation(), 15)), 500);
                 addParkingSpotsToMap(); // Add parking spots after place selection
             });
         }
@@ -192,46 +181,38 @@ public class Park extends BaseNetworkFragment implements OnMapReadyCallback {
         parkingLocationManager.fetchAllParkingLocations(new ParkingInterface.FetchLocationsCallback() {
             @Override
             public void onFetchSuccess(Map<String, ParkingLocation> locations) {
-                if (isAdded() && getView() != null) {
-                    requireActivity().runOnUiThread(() -> {
-                        if (locations != null) {
-                            // Clear old markers before adding new ones
-                            mMap.clear();
-
-                            for (Map.Entry<String, ParkingLocation> entry : locations.entrySet()) {
-                                ParkingLocation location = entry.getValue();
-                                if (isValidParkingLocation(location)) {
-                                    LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                                    Marker marker = mMap.addMarker(new MarkerOptions()
-                                            .position(latLng)
-                                            .title(location.getName())
-                                            .icon(bitmapDescriptorFromVector(requireContext(), R.mipmap.ic_parking))
-                                    );
-                                    assert marker != null;
-                                    marker.setTag(location.getId());
-                                }
+                if (!isAdded()) {
+                    return;
+                }
+                requireActivity().runOnUiThread(() -> {
+                    if (locations != null) {
+                        for (Map.Entry<String, ParkingLocation> entry : locations.entrySet()) {
+                            ParkingLocation location = entry.getValue();
+                            if (isValidParkingLocation(location)) {
+                                LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                                Marker marker = mMap.addMarker(new MarkerOptions()
+                                        .position(latLng)
+                                        .title(location.getName())
+                                        .icon(bitmapDescriptorFromVector(requireContext(), R.mipmap.ic_parking))
+                                );
+                                assert marker != null;
+                                marker.setTag(location.getId());
                             }
                         }
-
-                        // Hide progress bar after updating the map
-                        if (progressBar != null) {
-                            progressBar.setVisibility(View.GONE);
-                        }
-                    });
-                }
+                    }
+                });
             }
 
             @Override
             public void onFetchFailure(Exception e) {
-                if (progressBar != null) {
-                    progressBar.setVisibility(View.GONE);
+                if (!isAdded()) {
+                    return;
                 }
                 Log.e(TAG, getString(R.string.error_fetching_parking_locations), e);
                 Toast.makeText(requireContext(), Toast.LENGTH_SHORT, R.string.failed_to_load_parking_locations).show();
             }
         });
     }
-
 
     private boolean isValidParkingLocation(ParkingLocation location) {
         return location.getLatitude() >= -90 && location.getLatitude() <= 90 &&

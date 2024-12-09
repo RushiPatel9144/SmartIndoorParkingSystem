@@ -18,7 +18,7 @@ public class BookingUtilsTest {
         // Test that the generated pass key is a 4-digit string
         String passKey = BookingUtils.generatePassKey();
         assertNotNull(passKey);
-        assertTrue("Pass key should be 4 digits long", passKey.length() == 4);
+        assertEquals("Pass key should be 4 digits long", 4, passKey.length());
         try {
             Integer.parseInt(passKey); // Check if passKey can be converted to an integer
         } catch (NumberFormatException e) {

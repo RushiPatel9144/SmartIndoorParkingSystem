@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -23,8 +24,10 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseDatabaseSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.model.parking.ParkingSlot;
 
@@ -36,6 +39,7 @@ public class SlotListBottomSheetDialogFragment extends BottomSheetDialogFragment
     private List<ParkingSlot> parkingSlots;
     private String locationId; // Location ID passed from the parent fragment
     private DatabaseReference databaseReference;
+    private FirebaseAuth mAuth;
     private Button addSlotButton;
 
     public static SlotListBottomSheetDialogFragment newInstance(String locationId) {
@@ -55,6 +59,7 @@ public class SlotListBottomSheetDialogFragment extends BottomSheetDialogFragment
         slotsRecyclerView = view.findViewById(R.id.slotsRecyclerView);
         progressBar = view.findViewById(R.id.progressBar);
         addSlotButton = view.findViewById(R.id.addSlotButton);
+        mAuth = FirebaseAuthSingleton.getInstance();
 
 
         // Get the location ID from the arguments passed by the parent fragment
@@ -86,8 +91,8 @@ public class SlotListBottomSheetDialogFragment extends BottomSheetDialogFragment
         slotsRecyclerView.setVisibility(View.GONE);
 
         // Reference to Firebase node containing the slots for the specific location
-        databaseReference = FirebaseDatabaseSingleton.getInstance().getReference("parkingLocations")
-                .child(locationId).child("slots");
+        databaseReference = FirebaseDatabaseSingleton.getInstance().getReference("owners").child(Objects.requireNonNull(mAuth.getUid()))
+                .child("parkingLocationIds").child(locationId).child("slots");
 
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @SuppressLint("NotifyDataSetChanged")

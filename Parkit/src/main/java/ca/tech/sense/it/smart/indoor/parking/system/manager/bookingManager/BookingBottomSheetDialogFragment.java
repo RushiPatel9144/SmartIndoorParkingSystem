@@ -104,7 +104,7 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
         fetchParkingLocationData();
 
         // Create an instance of FavoritesManager and setup the star button
-        FavoritesManager favoritesManager = new FavoritesManager(getContext(), firebaseAuth, starButton, locationId,
+        FavoritesManager favoritesManager = new FavoritesManager(requireContext(), firebaseAuth, starButton, locationId,
                 addressText, postalCodeText, bookingManager);
         favoritesManager.setupStarButton();
 

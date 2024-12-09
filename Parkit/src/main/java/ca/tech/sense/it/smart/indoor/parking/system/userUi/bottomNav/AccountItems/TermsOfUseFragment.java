@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,6 +23,7 @@ public class TermsOfUseFragment extends Fragment {
 
     private FirebaseFirestore db;
     private HashMap<String, TextView> termsTextViews;
+    private ProgressBar progressBar;
 
     // Constants for the term keys
     private static final String ACCEPTANCE_OF_TERMS = "acceptance_of_terms";
@@ -42,6 +44,8 @@ public class TermsOfUseFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_terms_of_use, container, false);
+
+        progressBar = view.findViewById(R.id.progressBar);
 
         // Initialize the terms' TextViews in a HashMap
         initializeTermsTextViews(view);
@@ -66,12 +70,13 @@ public class TermsOfUseFragment extends Fragment {
     }
 
     private void fetchTermsOfUse() {
+        progressBar.setVisibility(View.VISIBLE);
         db.collection(COLLECTION_LEGAL).document("terms_of_use")
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
                         updateTermsContent(documentSnapshot);
-                    }
+                    }progressBar.setVisibility(View.GONE);
                 })
                 .addOnFailureListener(e -> {
                     if (getContext() != null) {

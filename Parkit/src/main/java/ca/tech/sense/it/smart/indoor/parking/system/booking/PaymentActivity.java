@@ -5,8 +5,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
@@ -66,6 +68,8 @@ public class PaymentActivity extends AppCompatActivity {
     private Button applyPromoCodeButton;
     private Button confirmButton;
     private Button cancelButton;
+    private LinearLayout promotionLayout;
+    private TextView promotionTextView;
     private PaymentSheet paymentSheet;
     private double total;
     private String transactionId;
@@ -85,7 +89,7 @@ public class PaymentActivity extends AppCompatActivity {
             booking = (Booking) intent.getSerializableExtra("booking");
             if (booking != null) {
                 setBookingDetails();
-                calculateTotalBreakdown();
+                calculateTotalBreakdown(0);
             } else {
                 showToast(getString(R.string.booking_data_is_missing_or_invalid));
             }
@@ -123,6 +127,13 @@ public class PaymentActivity extends AppCompatActivity {
         slotTextView = findViewById(R.id.slotTextView);
         timeTextView = findViewById(R.id.timeTextView);
         dateTextView = findViewById(R.id.dateTextView);
+        promotionLayout = findViewById(R.id.promotionLayout);
+        promotionTextView = findViewById(R.id.promotionTextView);
+
+        // Ensure promotionLayout and promotionTextView are not null
+        if (promotionLayout == null || promotionTextView == null) {
+            throw new NullPointerException("Promotion layout or text view is not properly initialized.");
+        }
     }
 
     private void setBookingDetails() {
@@ -135,13 +146,15 @@ public class PaymentActivity extends AppCompatActivity {
         }
     }
 
-    private void calculateTotalBreakdown() {
+    private void calculateTotalBreakdown(double discountPercent) {
         if (booking != null) {
             String currencySymbol = booking.getCurrencySymbol();
             double subtotal = booking.getPrice();
             double gstHst = subtotal * 0.13;
-            double platformFee = subtotal * 0.10;
-            total = subtotal + gstHst + platformFee;
+            double platformFee =  subtotal * 0.10 ;
+            double discountAmount = ( discountPercent * subtotal ) / 100;
+            double totalBeforeDiscount = subtotal + gstHst + platformFee;
+            total = totalBeforeDiscount - discountAmount;
 
             booking.setTotalPrice(CurrencyManager.getInstance().convertToCAD(total, booking.getCurrencyCode()));
             subtotalTextView.setText(String.format(Locale.getDefault(), "%s %.2f",currencySymbol, subtotal));
@@ -149,14 +162,37 @@ public class PaymentActivity extends AppCompatActivity {
             platformFeeTextView.setText(String.format(Locale.getDefault(), "%s %.2f",currencySymbol, platformFee));
             totalTextView.setText(String.format(Locale.getDefault(), "%s %.2f",currencySymbol, total));
 
+            if (discountAmount > 0) {
+                promotionTextView.setText(String.format(Locale.getDefault(), "-%s %.2f", currencySymbol, discountAmount));
+                promotionLayout.setVisibility(View.VISIBLE);
+            } else {
+                promotionLayout.setVisibility(View.GONE);
+            }
         }
+    }
+
+    private void applyDiscount(double discountAmount) {
+        calculateTotalBreakdown(discountAmount);
+        Toast.makeText(getApplicationContext(), "Promo code applied successfully!", Toast.LENGTH_SHORT).show();
     }
 
     private void setButtonListeners() {
         applyPromoCodeButton.setOnClickListener(v -> {
             String promoCode = promoCodeEditText.getText().toString().trim();
             if (!promoCode.isEmpty()) {
-                PromotionHelper.applyPromoCode(promoCode, booking, subtotalTextView, gstHstTextView, platformFeeTextView, totalTextView, this);
+                PromotionHelper.applyPromoCode(promoCode, new PromotionHelper.PromoCallback()
+                {
+                    @Override
+                    public void onSuccess(double discountAmount) {
+                        applyDiscount(discountAmount);
+                    }
+
+                    @Override
+                    public void onFailure(String errorMessage) {
+                        promotionLayout.setVisibility(View.GONE);
+                        Toast.makeText(getApplicationContext(), errorMessage, Toast.LENGTH_SHORT).show();
+                    }
+                });
             } else {
                 showToast(getString(R.string.please_enter_a_promo_code));
             }
@@ -164,6 +200,7 @@ public class PaymentActivity extends AppCompatActivity {
         confirmButton.setOnClickListener(v -> fetchClientSecret(total, booking));
         cancelButton.setOnClickListener(v -> finish());
     }
+
 
     private void fetchClientSecret(double price, Booking booking) {
         OkHttpClient client = new OkHttpClient();
@@ -218,7 +255,6 @@ public class PaymentActivity extends AppCompatActivity {
 
     private void onPaymentSheetResult(PaymentSheetResult paymentSheetResult) {
         if (paymentSheetResult instanceof PaymentSheetResult.Completed) {
-
             // Use Handler with Looper.getMainLooper() for a delay
             new Handler(Looper.getMainLooper()).postDelayed(() -> {
                 confirmBooking(); // Confirm the booking
@@ -229,11 +265,10 @@ public class PaymentActivity extends AppCompatActivity {
             showToast("Payment Failed: " + ((PaymentSheetResult.Failed) paymentSheetResult).getError());
             finish();
         } else if (paymentSheetResult instanceof PaymentSheetResult.Canceled) {
-            showToast(String.valueOf(R.string.payment_canceled));
+            showToast(getString(R.string.payment_canceled));
             finish();
         }
     }
-
 
     private void confirmBooking() {
         if (booking == null) {
@@ -256,14 +291,6 @@ public class PaymentActivity extends AppCompatActivity {
             showToast(getString(R.string.an_unexpected_error_occurred) + e.getMessage());
         }
     }
-
-    private void markPromoCodeAsUsed() {
-        String promoCode = promoCodeEditText.getText().toString().trim();
-        if (!promoCode.isEmpty()) {
-            PromotionHelper.markPromoCodeAsUsed(promoCode, this);
-        }
-    }
-
 
     private String formatTimeSlot(long startTime, long endTime) {
         String timeFormat = "HH:mm";
@@ -324,6 +351,14 @@ public class PaymentActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void markPromoCodeAsUsed() {
+        String promoCode = promoCodeEditText.getText().toString().trim();
+        if (!promoCode.isEmpty()) {
+            PromotionHelper.markPromoCodeAsUsed(promoCode, this);
+        }
+    }
+
 
     private void showToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();

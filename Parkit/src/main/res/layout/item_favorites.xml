@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp"
+        android:padding="12dp"
         android:background="?android:attr/selectableItemBackground">
 
         <LinearLayout
@@ -43,24 +43,18 @@
             android:id="@+id/tvFavoriteAddress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="4dp"
             android:textSize="16sp"
             android:textColor="#666666"
             android:maxLines="2"
             android:ellipsize="end"/>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#E0E0E0"
-            android:layout_marginTop="12dp"/>
 
         <TextView
             android:id="@+id/tvFavoritePostalCode"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="4dp"
             android:textColor="#999999"
             android:textSize="14sp" />
 

@@ -23,6 +23,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.model.Promotion;
@@ -63,9 +64,6 @@ public class PromotionFragment extends BaseNetworkFragment {
         // Copy promotions to each user's promotions node
         PromotionHelper.copyPromotionsToUsers();
 
-        // Sync promotions with users
-        PromotionHelper.syncPromotionsWithUsers();
-
         fetchPromotions();
 
         return view;
@@ -73,7 +71,7 @@ public class PromotionFragment extends BaseNetworkFragment {
 
     public void fetchPromotions() {
         DatabaseReference promotionsRef;
-        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid(); // Get the current user's UID
+        String uid = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid(); // Get the current user's UID
 
         promotionsRef = FirebaseDatabase.getInstance().getReference("users").child(uid).child("promotions");
 
