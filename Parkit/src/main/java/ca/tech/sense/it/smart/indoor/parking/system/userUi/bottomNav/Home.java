@@ -71,7 +71,7 @@ public class Home extends Fragment {
             Log.d("Home", "Fetching user data for UID: " + uid);
 
             db.collection("users").document(uid).get().addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
+                if (task.isSuccessful() &&  isAdded()) {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
                         userName = document.getString("firstName");
@@ -90,16 +90,19 @@ public class Home extends Fragment {
     }
 
     private String getGreetingMessage() {
-        int currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
-        if (currentHour >= 5 && currentHour < 12) {
-            return getString(R.string.good_morning);
-        } else if (currentHour >= 12 && currentHour < 18) {
-            return getString(R.string.good_afternoon);
-        } else if (currentHour >= 18 && currentHour < 21) {
-            return getString(R.string.good_evening);
-        } else {
-            return getString(R.string.good_night);
+        if (isAdded()) {
+            int currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+            if (currentHour >= 5 && currentHour < 12) {
+                return getString(R.string.good_morning);
+            } else if (currentHour >= 12 && currentHour < 18) {
+                return getString(R.string.good_afternoon);
+            } else if (currentHour >= 18 && currentHour < 21) {
+                return getString(R.string.good_evening);
+            } else {
+                return getString(R.string.good_night);
+            }
         }
+        return getString(R.string.hello);
     }
 
     private String getGreetingMessageWithUserName() {

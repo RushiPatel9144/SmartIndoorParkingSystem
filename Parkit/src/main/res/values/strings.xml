@@ -604,4 +604,5 @@
     <string name="unable_to_get_current_location">Unable to get current location</string>
     <string name="claim_promo">Claim Promo</string>
     <string name="limited_time_offer">Limited Time Offer</string>
+    <string name="hello">Hello!</string>
 </resources>

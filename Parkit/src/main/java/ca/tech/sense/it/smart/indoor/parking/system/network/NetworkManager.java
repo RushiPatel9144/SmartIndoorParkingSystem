@@ -22,10 +22,7 @@ public class NetworkManager {
 
     private static NetworkManager instance;
     private ConnectivityManager.NetworkCallback networkCallback;
-    private boolean wasInternetAvailable = false;
-    private NetworkListener networkListener;
-    private String lastToastMessage = null;
-
+    private boolean wasInternetAvailable = true;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     private NetworkManager() {}
@@ -35,10 +32,6 @@ public class NetworkManager {
             instance = new NetworkManager();
         }
         return instance;
-    }
-
-    public void setNetworkListener(NetworkListener listener) {
-        this.networkListener = listener;
     }
 
     public void startMonitoring(Context context) {
@@ -51,8 +44,6 @@ public class NetworkManager {
                     checkInternetAccessAsync(hasInternet -> {
                         if (hasInternet && !wasInternetAvailable) {
                             handleNetworkAvailability(context);
-                        } else if (!hasInternet && wasInternetAvailable) {
-                            handleNetworkLoss(context);
                         }
                     });
                 }
@@ -60,26 +51,13 @@ public class NetworkManager {
                 @Override
                 public void onLost(@NonNull Network network) {
                     Log.d(TAG, "Network is lost");
-                    handleNetworkLoss(context);
-                }
-
-                @Override
-                public void onCapabilitiesChanged(@NonNull Network network, @NonNull NetworkCapabilities networkCapabilities) {
-                    if (networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)) {
-                        Log.d(TAG, "Network capabilities changed: Internet capability available");
-                        checkInternetAccessAsync(hasInternet -> {
-                            if (hasInternet && !wasInternetAvailable) {
-                                handleNetworkAvailability(context);
-                            }
-                        });
-                    } else {
-                        Log.d(TAG, "Network capabilities changed: Internet capability lost");
-                        handleNetworkLoss(context);
-                    }
+                    wasInternetAvailable = false;
                 }
             };
 
-            cm.registerNetworkCallback(new android.net.NetworkRequest.Builder().build(), networkCallback);
+            cm.registerNetworkCallback(new android.net.NetworkRequest.Builder()
+                    .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                    .build(), networkCallback);
         }
     }
 
@@ -93,27 +71,8 @@ public class NetworkManager {
 
     private void handleNetworkAvailability(Context context) {
         if (!wasInternetAvailable) { // Show toast only if the network was previously unavailable
+            showToast(context, context.getString(R.string.network_is_available));
             wasInternetAvailable = true;
-            showToastOnce(context, context.getString(R.string.network_is_available));
-            notifyNetworkAvailable();
-        }
-    }
-
-    private void handleNetworkLoss(Context context) {
-        wasInternetAvailable = false;
-        notifyNetworkLost();
-    }
-
-
-    private void notifyNetworkAvailable() {
-        if (networkListener != null) {
-            networkListener.onNetworkAvailable();
-        }
-    }
-
-    private void notifyNetworkLost() {
-        if (networkListener != null) {
-            networkListener.onNetworkLost();
         }
     }
 
@@ -129,19 +88,11 @@ public class NetworkManager {
         });
     }
 
-    private void showToastOnce(Context context, String message) {
-        if (!message.equals(lastToastMessage)) {
-            new Handler(Looper.getMainLooper()).post(() -> Toast.makeText(context, message, Toast.LENGTH_SHORT).show());
-            lastToastMessage = message;
-        }
+    private void showToast(Context context, String message) {
+        new Handler(Looper.getMainLooper()).post(() -> Toast.makeText(context, message, Toast.LENGTH_SHORT).show());
     }
 
     public interface InternetCheckCallback {
         void onResult(boolean hasInternet);
-    }
-
-    public interface NetworkListener {
-        void onNetworkAvailable();
-        void onNetworkLost();
     }
 }
