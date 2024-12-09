@@ -17,7 +17,7 @@ import androidx.core.app.NotificationCompat;
 
 public class NotificationManagerHelper {
     private static final String CHANNEL_ID = "default";
-    private static Context context;
+    private static  Context context;
     private final SharedPreferences sharedPreferences;
     private final FirebaseAuth firebaseAuth;
     private final NotificationManager notificationManager;
@@ -86,8 +86,8 @@ public class NotificationManagerHelper {
     }
 
     public static void sendBookingConfirmationNotification(String userId, Booking booking, String selectedDate, String[] times) {
-        String title = "Booking Confirmed";
-        String message = "Your booking at " + booking.getLocation() + " is confirmed for " + selectedDate + " from " + times[0] + " to " + times[1];
+        String title = context.getString(R.string.booking_confirmed);
+        String message = context.getString(R.string.your_booking_at) + booking.getLocation() + context.getString(R.string.is_confirmed_for) + selectedDate + context.getString(R.string.from) + times[0] + context.getString(R.string.to) + times[1];
         NotificationHelper.sendNotification(context, title, message, userId);
     }
 

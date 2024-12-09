@@ -64,7 +64,7 @@ public class LocationsFragment extends BaseNetworkFragment {
 
         // Set up RecyclerView
         parkingLocations = new ArrayList<>();
-        adapter = new LocationAdapter(parkingLocations, new LocationAdapter.OnItemClickListener() {
+        adapter = new LocationAdapter(requireContext(), parkingLocations, new LocationAdapter.OnItemClickListener() {
             @Override
             public void onChangePriceClick(String locationId, int position) {
                 changePrice(locationId);
@@ -134,7 +134,7 @@ public class LocationsFragment extends BaseNetworkFragment {
     }
 
     private void showError(String message) {
-        Toast.makeText(requireContext(), "Error: " + message, Toast.LENGTH_SHORT).show();
+        Toast.makeText(requireContext(), getString(R.string.error)+ message, Toast.LENGTH_SHORT).show();
     }
 
     @Override

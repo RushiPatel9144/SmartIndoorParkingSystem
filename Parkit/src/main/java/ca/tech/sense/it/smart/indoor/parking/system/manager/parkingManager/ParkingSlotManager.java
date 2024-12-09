@@ -31,7 +31,7 @@ public class ParkingSlotManager {
 
     public void addSlotToLocation(String locationId, String ownerId, Context context, ParkingSlot slot, ParkingSensor sensor) {
         if (locationId == null || ownerId == null) {
-            showToast(context, "Invalid location or owner ID");
+            showToast(context, context.getString(R.string.invalid_location_or_owner_id));
             return;
         }
 

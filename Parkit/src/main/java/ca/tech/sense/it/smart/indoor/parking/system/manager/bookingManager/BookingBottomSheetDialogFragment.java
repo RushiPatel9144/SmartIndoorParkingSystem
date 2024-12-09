@@ -343,7 +343,7 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
 
             @SuppressLint("SetTextI18n") DatePickerDialog datePickerDialog = new DatePickerDialog(context, (view, selectedYear, selectedMonth, selectedDay) -> {
                 selectedDate = String.format(Locale.getDefault(), "%04d-%02d-%02d", selectedYear, selectedMonth + 1, selectedDay);
-                selectedDateTextview.setText("Selected Date: " + selectedDate);
+                selectedDateTextview.setText(getString(R.string.selected_date) + selectedDate);
                 setupTimeSlots(selectedDate); // Update time slots based on the selected date
             }, year, month, day);
 

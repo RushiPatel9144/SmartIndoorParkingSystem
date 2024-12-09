@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,7 +52,7 @@ public class SlotAdapter extends ArrayAdapter<String> {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(int position, View convertView, @NonNull ViewGroup parent) {
         View view = super.getView(position, convertView, parent);
         TextView textView = (TextView) view.findViewById(android.R.id.text1);
         String slot = getItem(position);
@@ -67,7 +69,7 @@ public class SlotAdapter extends ArrayAdapter<String> {
     }
 
     @Override
-    public View getDropDownView(int position, View convertView, ViewGroup parent) {
+    public View getDropDownView(int position, View convertView, @NonNull ViewGroup parent) {
         View view = super.getDropDownView(position, convertView, parent);
         TextView textView = (TextView) view.findViewById(android.R.id.text1);
         String slot = getItem(position);

@@ -12,15 +12,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-
-import androidx.annotation.NonNull;
-
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-
+import java.text.MessageFormat;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.manager.sessionManager.SessionManager;
 import ca.tech.sense.it.smart.indoor.parking.system.model.Help;
@@ -31,7 +25,10 @@ import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
 public class HelpFragmentLogic {
 
     private Context context;
-    private EditText etName, etPhone, etEmail, etComment;
+    private final EditText etName;
+    private EditText etPhone;
+    private EditText etEmail;
+    private EditText etComment;
     private Button btnSubmitHelp;
     private ProgressBar progressBar;
     private FirebaseFirestore db;
@@ -56,7 +53,7 @@ public class HelpFragmentLogic {
 
         if (userType == null || (!userType.equals(USER_TYPE_USER) && !userType.equals(USER_TYPE_OWNER))) {
             Log.e(TAG, "Invalid user type: " + userType);
-            Toast.makeText(context, "Invalid user type", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, context.getString(R.string.invalid_user_type), Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -67,7 +64,7 @@ public class HelpFragmentLogic {
             populateUserData(sessionData);  // Populate UI with the session data
         } else {
             Log.e(TAG, userType + " data is missing from the session.");
-            Toast.makeText(context, userType + " data not found", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, userType + context.getString(R.string.data_not_found), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -90,7 +87,7 @@ public class HelpFragmentLogic {
 
         // Populate UI fields
         if (firstName != null && lastName != null) {
-            etName.setText(firstName + " " + lastName);
+            etName.setText(MessageFormat.format("{0} {1}", firstName, lastName));
         }
         if (phone != null) {
             etPhone.setText(phone);
@@ -109,19 +106,19 @@ public class HelpFragmentLogic {
 
         // Validations
         if (name.isEmpty()) {
-            etName.setError("Please fill the name");
+            etName.setError(context.getString(R.string.please_fill_the_name));
             etName.requestFocus();
         } else if (phone.isEmpty()) {
-            etPhone.setError("Please fill the phone number");
+            etPhone.setError(context.getString(R.string.please_fill_the_phone_number));
             etPhone.requestFocus();
         } else if (email.isEmpty()) {
-            etEmail.setError("Please fill the email address");
+            etEmail.setError(context.getString(R.string.please_fill_the_email_address));
             etEmail.requestFocus();
         } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             etEmail.setError(context.getString(R.string.please_enter_a_valid_email_address));
             etEmail.requestFocus();
         } else if (comment.isEmpty()) {
-            etComment.setError("Please describe the issue");
+            etComment.setError(context.getString(R.string.please_describe_the_issue));
             etComment.requestFocus();
         } else {
             // Show progress bar and hide submit button
@@ -129,46 +126,34 @@ public class HelpFragmentLogic {
             btnSubmitHelp.setVisibility(View.GONE);
 
             // Simulate delay of 5 seconds
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    // Create a new Help object
-                    Help help = new Help(name, phone, email, comment);
+            new Handler().postDelayed(() -> {
+                // Create a new Help object
+                Help help = new Help(name, phone, email, comment);
 
-                    // Add the Help object to the 'help' collection
-                    db.collection("help").add(help)
-                            .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                                @Override
-                                public void onSuccess(DocumentReference documentReference) {
-                                    // Clear the fields
-                                    etName.setText("");
-                                    etPhone.setText("");
-                                    etEmail.setText("");
-                                    etComment.setText("");
+                // Add the Help object to the 'help' collection
+                db.collection("help").add(help)
+                        .addOnSuccessListener(documentReference -> {
+                            // Clear the fields
+                            etName.setText("");
+                            etPhone.setText("");
+                            etEmail.setText("");
+                            etComment.setText("");
 
-                                    // Show confirmation dialog
-                                    String message = context.getString(R.string.help_request_submitted);
-                                    DialogUtil.showConfirmationDialogWithEmail(context, "Confirmation", message, email, context.getString(R.string.ok), new DialogUtil.ConfirmDialogCallback() {
-                                        @Override
-                                        public void onConfirm() {
-                                            // Dialog will be dismissed automatically
-                                        }
-                                    });
-                                }
-                            })
-                            .addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    // Show error message
-                                    String errorMessage = "Error submitting help request: " + e.getMessage();
-                                    Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show();
-                                }
+                            // Show confirmation dialog
+                            String message = context.getString(R.string.help_request_submitted);
+                            DialogUtil.showConfirmationDialogWithEmail(context, context.getString(R.string.confirmation), message, email, context.getString(R.string.ok), () -> {
+                                // Dialog will be dismissed automatically
                             });
+                        })
+                        .addOnFailureListener(e -> {
+                            // Show error message
+                            String errorMessage = context.getString(R.string.error_submitting_help_request) + e.getMessage();
+                            Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show();
+                        });
 
-                    // Hide progress bar and show submit button
-                    progressBar.setVisibility(View.GONE);
-                    btnSubmitHelp.setVisibility(View.VISIBLE);
-                }
+                // Hide progress bar and show submit button
+                progressBar.setVisibility(View.GONE);
+                btnSubmitHelp.setVisibility(View.VISIBLE);
             }, 5000); // 5 seconds delay
         }
     }

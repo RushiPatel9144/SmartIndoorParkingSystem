@@ -100,10 +100,10 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingV
         }
 
         private void showCancelConfirmationDialog(Context context, Booking booking) {
-            DialogUtil.showMessageDialog(context, "Cancel Booking",
-                    "Are you sure you want to cancel this booking? Please note that you may not receive a full refund," +
-                            " and the refund will be processed within 7 days or more, credited to the bank account used for the payment.",
-                    "Confirm", new DialogUtil.DialogCallback() {
+            DialogUtil.showMessageDialog(context, context.getString(R.string.cancel_booking),
+                    context.getString(R.string.are_you_sure_you_want_to_cancel_this_booking_please_note_that_you_may_not_receive_a_full_refund) +
+                            context.getString(R.string.and_the_refund_will_be_processed_within_7_days_or_more_credited_to_the_bank_account_used_for_the_payment),
+                    context.getString(R.string.confirm), new DialogUtil.DialogCallback() {
                         @Override
                         public void onConfirm() {
                             int position = getBindingAdapterPosition();
@@ -113,11 +113,11 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingV
                                     notifyItemRemoved(position);
                                     notifyItemRangeChanged(position, bookingList.size());
                                     if (view!= null) {
-                                        Snackbar.make(view, "Booking cancelled and refunded. The money may take a few days to reach your bank account.", BaseTransientBottomBar.LENGTH_LONG).show();
+                                        Snackbar.make(view, R.string.booking_cancelled_and_refunded_the_money_may_take_a_few_days_to_reach_your_bank_account, BaseTransientBottomBar.LENGTH_LONG).show();
                                     }
                                     // Refresh the list
                                     bookingViewModel.fetchUserBookings();
-                                }, error -> Toast.makeText(context, "Failed to cancel booking: " + error.getMessage(), Toast.LENGTH_SHORT).show());
+                                }, error -> Toast.makeText(context, context.getString(R.string.failed_to_cancel_booking) + error.getMessage(), Toast.LENGTH_SHORT).show());
                             }
                         }
                         @Override
@@ -131,7 +131,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingV
             bookingAddress.setText(booking.getLocation());
             bookingSlot.setText(booking.getSlotNumber());
             bookingTime.setText(formatTime(booking.getStartTime(), booking.getEndTime()));
-            bookingPrice.setText(String.format(Locale.getDefault(), "Price: $ %.2f", booking.getTotalPrice()));
+            bookingPrice.setText(String.format(Locale.getDefault(), "Price: " + " $ %.2f", booking.getTotalPrice()));
             bookingPassKey.setText(booking.getPassKey());
         }
 

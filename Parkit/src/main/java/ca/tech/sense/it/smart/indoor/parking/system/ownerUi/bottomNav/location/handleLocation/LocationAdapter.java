@@ -1,5 +1,7 @@
 package ca.tech.sense.it.smart.indoor.parking.system.ownerUi.bottomNav.location.handleLocation;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,9 +20,11 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
 
     private final List<ParkingLocation> locations;
     private final OnItemClickListener listener;
+    private final Context context;
 
     // Constructor
-    public LocationAdapter(List<ParkingLocation> locations, OnItemClickListener listener) {
+    public LocationAdapter(Context context, List<ParkingLocation> locations, OnItemClickListener listener) {
+        this.context = context;
         this.locations = locations;
         this.listener = listener;
     }
@@ -39,7 +43,7 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
         // Bind the data to views
         holder.locationNameTextView.setText(location.getName());
         holder.locationAddressTextView.setText(location.getAddress());
-        holder.locationPriceTextView.setText(String.format("Price: $%s", location.getPrice()));
+        holder.locationPriceTextView.setText(String.format(context.getString(R.string.price) + "%s", location.getPrice()));
 
         // Set the ParkingLocation object to ViewHolder
         holder.setParkingLocation(location);
@@ -63,6 +67,7 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
     }
 
     // Method to update the data list in the adapter
+    @SuppressLint("NotifyDataSetChanged")
     public void updateData(List<ParkingLocation> updatedLocations) {
         this.locations.clear();
         this.locations.addAll(updatedLocations);

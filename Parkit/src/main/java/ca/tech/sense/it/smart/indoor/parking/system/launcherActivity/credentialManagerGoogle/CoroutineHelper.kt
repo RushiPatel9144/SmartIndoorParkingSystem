@@ -55,7 +55,8 @@ class CoroutineHelper {
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                Toast.makeText(context, "Error during sign-out: ${e.message}", Toast.LENGTH_SHORT)
+                Toast.makeText(context,
+                    "Error during sign-out: ${e.message}", Toast.LENGTH_SHORT)
                     .show()
             }
         }

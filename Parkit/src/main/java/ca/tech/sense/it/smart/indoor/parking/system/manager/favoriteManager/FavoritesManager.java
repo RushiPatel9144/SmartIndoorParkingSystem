@@ -88,7 +88,7 @@ public class FavoritesManager {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(context, "Failed to check favorites" + error.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, context.getString(R.string.failed_to_check_favorites) + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -121,7 +121,7 @@ public class FavoritesManager {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(context, "Failed to listen for changes" + error.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, context.getString(R.string.failed_to_listen_for_changes) + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -147,7 +147,7 @@ public class FavoritesManager {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(context, "Failed to check favorites" + error.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, context.getString(R.string.failed_to_check_favorites)+ error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -155,32 +155,34 @@ public class FavoritesManager {
     private void removeLocationFromFavorites(DatabaseReference userFavoritesRef) {
         userFavoritesRef.removeValue().addOnSuccessListener(aVoid -> {
             setStarButtonToBlack();
-            Toast.makeText(context, "Location removed from favorites", Toast.LENGTH_SHORT).show();
-        }).addOnFailureListener(error -> Toast.makeText(context, "Failed to remove location" + error.getMessage(), Toast.LENGTH_SHORT).show());
+            Toast.makeText(context, context.getString(R.string.location_removed_from_favorites), Toast.LENGTH_SHORT).show();
+        }).addOnFailureListener(error -> Toast.makeText(context, context.getString(R.string.failed_to_remove_location) + error.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
     private void addLocationToFavorites() {
-        String address = addressText.getText().toString();
-        String postalCode = postalCodeText.getText().toString();
+        if (context != null) {
+            String address = addressText.getText().toString();
+            String postalCode = postalCodeText.getText().toString();
 
-        // Fetch the name from the database
-        DatabaseReference locationRef = FirebaseDatabase.getInstance().getReference("parkingLocations").child(locationId);
-        locationRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String name = snapshot.child("name").getValue(String.class);
-                if (name != null) {
-                    saveLocationToFavorites(address, postalCode, name);
-                } else {
-                    Toast.makeText(context, "Failed to fetch the name", Toast.LENGTH_SHORT).show();
+            // Fetch the name from the database
+            DatabaseReference locationRef = FirebaseDatabase.getInstance().getReference("parkingLocations").child(locationId);
+            locationRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    String name = snapshot.child("name").getValue(String.class);
+                    if (name != null) {
+                        saveLocationToFavorites(address, postalCode, name);
+                    } else {
+                        Toast.makeText(context, context.getString(R.string.failed_to_fetch_the_name), Toast.LENGTH_SHORT).show();
+                    }
                 }
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(context, "Failed to fetch the name" + error.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Toast.makeText(context, context.getString(R.string.failed_to_fetch_the_name) + error.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
 
     private void saveLocationToFavorites(String address, String postalCode, String name) {

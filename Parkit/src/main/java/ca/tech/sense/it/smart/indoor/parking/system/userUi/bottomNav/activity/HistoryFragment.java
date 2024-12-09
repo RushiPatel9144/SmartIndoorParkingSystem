@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.model.booking.BookingViewModel;
@@ -80,16 +81,14 @@ public class HistoryFragment extends Fragment {
     }
 
     private void showClearAllConfirmationDialog() {
-        new AlertDialog.Builder(getContext())
-                .setTitle("Clear All Booking History")
-                .setMessage("Are you sure you want to clear all booking history?")
-                .setPositiveButton("Yes", (dialog, which) -> {
-                    cancelBookingViewModel.clearAllBookingHistory(() -> {
-                        bookingAdapter.updateBookings(new ArrayList<>());
-                        Toast.makeText(getContext(), "All booking history cleared", Toast.LENGTH_SHORT).show();
-                    }, error -> Toast.makeText(getContext(), "Failed to clear all booking history: " + error.getMessage(), Toast.LENGTH_SHORT).show());
-                })
-                .setNegativeButton("No", null)
+        new AlertDialog.Builder(requireContext())
+                .setTitle(getString(R.string.clear_all_booking_history))
+                .setMessage(R.string.are_you_sure_you_want_to_clear_all_booking_history)
+                .setPositiveButton(getString(R.string.yes), (dialog, which) -> cancelBookingViewModel.clearAllBookingHistory(() -> {
+                    bookingAdapter.updateBookings(new ArrayList<>());
+                    Toast.makeText(requireContext(), getString(R.string.all_booking_history_cleared), Toast.LENGTH_SHORT).show();
+                }, error -> Toast.makeText(getContext(), getString(R.string.failed_to_clear_all_booking_history) + error.getMessage(), Toast.LENGTH_SHORT).show()))
+                .setNegativeButton(getString(R.string.no), null)
                 .show();
     }
 }

@@ -42,7 +42,9 @@ public class DashboardFragment extends Fragment {
     private MaterialButton transactionsButton;
     private FirebaseFirestore db;
     private TransactionManager transactionManager;
-    private Button help, feedback, location;
+    private Button help;
+    private Button feedback;
+    private Button location;
     private FragmentDashboardBinding binding;
 
     public DashboardFragment() {
@@ -126,13 +128,13 @@ public class DashboardFragment extends Fragment {
     private String generateGreetingMessage() {
         int currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
         if (currentHour >= 5 && currentHour < 12) {
-            return "Good Morning";
+            return getString(R.string.good_morning);
         } else if (currentHour >= 12 && currentHour < 18) {
-            return "Good Afternoon";
+            return getString(R.string.good_afternoon);
         } else if (currentHour >= 18 && currentHour < 21) {
-            return "Good Evening";
+            return getString(R.string.good_evening);
         } else {
-            return "Catch Some Zzzs";
+            return getString(R.string.good_night);
         }
     }
 
@@ -146,7 +148,7 @@ public class DashboardFragment extends Fragment {
     private void setUpSwipeRefresh(View view) {
         SwipeRefreshLayout swipeRefreshLayout = binding.swipeRefreshLayout;
         swipeRefreshLayout.setOnRefreshListener(() -> {
-            Toast.makeText(getContext(), "Refreshing dashboard...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), getString(R.string.refreshing_dashboard), Toast.LENGTH_SHORT).show();
             swipeRefreshLayout.setRefreshing(false);
         });
     }
