@@ -278,7 +278,6 @@
     <string name="phone_number">Phone Number</string>
     <string name="add_phone_number">Add Phone Number</string>
     <string name="change_password">Change Password</string>
-    <string name="last_changed_on_14_02_2024">Last Changed on 14-02-2024</string>
     <string name="clear_notifications">Clear Notifications</string>
     <string name="error_loading_image">Unable to Load Image! Try Again</string>
     <string name="error_crop_failed">Unable to Crop Image !\n</string>
