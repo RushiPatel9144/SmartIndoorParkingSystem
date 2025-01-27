@@ -4,10 +4,10 @@
     <selectionStates>
       <SelectionState runConfigName="Parkit">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2024-12-09T22:01:43.992184Z">
+        <DropdownSelection timestamp="2025-01-24T05:14:32.652368900Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="PhysicalDevice" identifier="serial=ede62e0" />
+              <DeviceId pluginId="PhysicalDevice" identifier="serial=55a14967" />
             </handle>
           </Target>
         </DropdownSelection>

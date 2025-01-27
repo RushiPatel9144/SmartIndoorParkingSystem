@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -19,6 +20,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
@@ -37,6 +39,8 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import ca.tech.sense.it.smart.indoor.parking.system.BuildConfig;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.currency.CurrencyManager;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSingleton;
@@ -107,9 +111,38 @@ public class PaymentActivity extends AppCompatActivity {
                 "pk_live_51QJqGPAwqnUq4xSjL22RjIoAN6sEXzRk5XpSYB8yli0gYIbcdZIwecv9b1QnNLrFoMN01klmMPWZNTen9mVUN57W00DqrrM2ed"
         );
 
+        // Fetch the Stripe public key from Firebase and initialize PaymentConfiguration
+        initializeStripeKey();
+        
         paymentSheet = new PaymentSheet(this, this::onPaymentSheetResult);
         setButtonListeners();
         PromotionHelper.setupPromoCodeEditText(promoCodeEditText, this);
+    }
+
+    private void initializeStripeKey() {
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+        firestore.collection("config").document("stripe")
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        String publicKey = documentSnapshot.getString("STRIPE_API_KEY");
+                        if (publicKey != null) {
+                            // Initialize PaymentConfiguration with the fetched public key
+                            PaymentConfiguration.init(getApplicationContext(), publicKey);
+                            Log.d("PaymentActivity", "Stripe Key Initialized: " + publicKey);
+                        } else {
+                            showToast("Stripe public key not found in Firebase.");
+                            Log.e("PaymentActivity", "Stripe public key not found in Firebase.");
+                        }
+                    } else {
+                        showToast("Stripe document not found in Firebase.");
+                        Log.e("PaymentActivity", "Stripe document not found in Firebase.");
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    showToast("Failed to fetch Stripe key: ");
+                    Log.e("PaymentActivity", "Failed to fetch Stripe key: " + e.getMessage());
+                });
     }
 
     private void initializeUIElements() {

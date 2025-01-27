@@ -2,11 +2,15 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.gms.google.services)
     alias(libs.plugins.kotlin.android)
-}
+
+    }
 
 android {
     namespace 'ca.tech.sense.it.smart.indoor.parking.system'
     compileSdk 35
+    buildFeatures {
+        buildConfig true // Enable BuildConfig generation
+    }
 
     defaultConfig {
         applicationId "ca.tech.sense.it.smart.indoor.parking.system"
@@ -15,7 +19,8 @@ android {
         targetSdk 35
         versionCode 1
         versionName "1.0"
-
+        // Add environment variables to BuildConfig
+        buildConfigField 'String', 'STRIPE_API_KEY', "\"${project.findProperty('STRIPE_API_KEY') ?: ''}\""
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
