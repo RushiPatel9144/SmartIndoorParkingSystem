@@ -5,6 +5,7 @@
     android:orientation="vertical"
     android:gravity="center"
     android:padding="24dp"
+    android:theme="@style/LocationFragment"
     android:fitsSystemWindows="true"> <!-- Add a drawable for background pattern -->
 
     <!-- Icon with increased size -->

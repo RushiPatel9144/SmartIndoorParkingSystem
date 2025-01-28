@@ -5,6 +5,7 @@
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
     app:cardCornerRadius="12dp"
+    android:theme="@style/LocationFragment"
     app:cardElevation="6dp">
 
     <LinearLayout

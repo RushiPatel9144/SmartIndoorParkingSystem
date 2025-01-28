@@ -8,6 +8,7 @@
     android:layout_gravity="center"
     android:elevation="12dp"
     android:clipToPadding="false"
+    android:theme="@style/LocationFragment"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- Title and Star Icon Row -->

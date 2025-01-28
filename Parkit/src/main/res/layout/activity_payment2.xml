@@ -3,7 +3,9 @@
     xmlns:cardview="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/tools"
     android:fillViewport="true"
+    android:theme="@style/LocationFragment"
     android:fitsSystemWindows="true">
 
     <LinearLayout
@@ -20,8 +22,7 @@
             android:text="@string/checkout"
             android:textSize="28sp"
             android:textStyle="bold"
-            android:gravity="center"
-            android:paddingBottom="24dp" />
+            android:gravity="center" />
 
         <!-- Booking Summary Card -->
         <androidx.cardview.widget.CardView
@@ -99,6 +100,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_margin="12dp"
+
             android:gravity="center_vertical">
 
             <EditText
@@ -265,6 +267,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center"
+
             android:layout_margin="16dp">
 
             <Button
@@ -273,6 +276,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/pay_now"
+                app:cornerRadius="32dp"
                 android:backgroundTint="@color/theme"
                 android:layout_marginEnd="8dp"
                 android:paddingVertical="12dp"
@@ -281,6 +285,7 @@
             <Button
                 android:id="@+id/cancelButton"
                 android:layout_width="0dp"
+                app:cornerRadius="32dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_weight="1"

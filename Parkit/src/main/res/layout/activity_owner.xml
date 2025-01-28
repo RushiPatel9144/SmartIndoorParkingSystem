@@ -6,6 +6,7 @@
     android:id="@+id/owner_activity_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:theme="@style/LocationFragment"
     tools:context=".OwnerActivity">
 
     <!-- Main Content with LinearLayout -->

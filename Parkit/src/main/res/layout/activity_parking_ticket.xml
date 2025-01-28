@@ -5,6 +5,7 @@
     android:orientation="vertical"
     android:padding="16dp"
     android:clipChildren="false"
+    android:theme="@style/LocationFragment"
     android:fitsSystemWindows="true">
 
     <!-- Title -->

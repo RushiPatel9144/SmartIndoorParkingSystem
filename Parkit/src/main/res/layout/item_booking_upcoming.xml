@@ -5,6 +5,7 @@
     android:layout_height="wrap_content"
     android:layout_margin="16dp"
     android:padding="8dp"
+    android:theme="@style/LocationFragment"
     app:cardCornerRadius="8dp"
     app:cardElevation="4dp"> <!-- Lightest green color -->
 

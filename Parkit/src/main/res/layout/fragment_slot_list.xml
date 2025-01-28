@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:theme="@style/LocationFragment"
     android:padding="16dp">
 
     <!-- Progress Bar for loading data -->
