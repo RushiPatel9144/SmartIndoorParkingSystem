@@ -18,8 +18,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import org.checkerframework.checker.units.qual.N;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -84,7 +82,7 @@ public class ParkingTicket extends AppCompatActivity {
         priceTitle = findViewById(R.id.priceTitle);
         priceText = findViewById(R.id.priceText);
         progressBar = findViewById(R.id.progressBar);
-        NFCButton = findViewById(R.id.NFCButton);
+        NFCButton = findViewById(R.id.NFCButton_ParkingTicket);
 
     }
     private void setUpButtonListeners() {
@@ -93,7 +91,7 @@ public class ParkingTicket extends AppCompatActivity {
 
         cancelButton.setOnClickListener(v -> finish());
         getDirectionButton.setOnClickListener(v -> openMap());
-        NFCButton.setOnClickListener(v -> generateNFC());
+        NFCButton.setOnClickListener(v -> navigateToNfcEmulator());
     }
 
     //1
@@ -165,54 +163,14 @@ public class ParkingTicket extends AppCompatActivity {
         return start + " - " + end;
     }
 
-
-    private String generateNFC() {
-
-        NFC_TAG = UUID.randomUUID().toString();
-
-        Log.d("NFC_TAG", "Generated NFC_TAG: " + NFC_TAG);
-
-        DatabaseReference bookingRef = firebaseDatabase
-                .getReference("users")
-                .child(Objects.requireNonNull(firebaseAuth.getCurrentUser()).getUid())
-                .child("bookings")
-                .child(bookingId); // Replace "bookingId" with the actual ID
-
-        // Add the NFC field to the existing booking
-        Map<String, Object> updates = new HashMap<>();
-        updates.put("nfcTag", NFC_TAG);
-
-        bookingRef.updateChildren(updates)
-                .addOnSuccessListener(aVoid -> {
-                    // Successfully updated the booking
-                    Toast.makeText(this, "NFC Tag added successfully!", Toast.LENGTH_SHORT).show();
-                    // Trigger NFC emulation
-                    emulateNFCTag();
-                })
-                .addOnFailureListener(e -> {
-                    // Failed to update the booking
-                    Toast.makeText(this, "Failed to add NFC Tag: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
-
-        return NFC_TAG;
+    public void navigateToNfcEmulator() {
+        Intent intent = new Intent(this, BookingConfirmationActivity.class);
+        intent.putExtra("booking", booking);
+        startActivity(intent);
     }
 
-    private void emulateNFCTag() {
-        // Start the NFC emulator service
-        if (NFC_TAG != null) {
-            Log.d("NFC_TAG", "Emulating NFC tag: " + NFC_TAG);
 
-            // Start the NFC emulation service (HostApduService)
-            Intent serviceIntent = new Intent(this, NfcEmulatorService.class);
-            Booking booking = (Booking) getIntent().getSerializableExtra("booking");
-            if (booking != null) {
-                serviceIntent.putExtra("bookingId", booking.getId());
-            }
-            startService(serviceIntent);
-        } else {
-            Log.d("NFC_TAG", "Error: No NFC tag generated!");
-        }
-    }
+
 
 
     //for map direction

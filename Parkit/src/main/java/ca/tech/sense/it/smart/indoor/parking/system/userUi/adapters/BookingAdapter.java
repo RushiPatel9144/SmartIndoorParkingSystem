@@ -5,6 +5,8 @@
  */
 package ca.tech.sense.it.smart.indoor.parking.system.userUi.adapters;
 
+import static androidx.core.content.ContentProviderCompat.requireContext;
+
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -24,7 +26,9 @@ import java.util.List;
 import java.util.Locale;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.booking.BookingConfirmationActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.booking.NfcEmulatorService;
+import ca.tech.sense.it.smart.indoor.parking.system.booking.ParkingTicket;
 import ca.tech.sense.it.smart.indoor.parking.system.model.booking.Booking;
 import ca.tech.sense.it.smart.indoor.parking.system.model.booking.BookingViewModel;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
@@ -101,16 +105,20 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingV
                     }
                 });
             }
+            if (NfcButton != null) {
+                //nfc button pressed
+                NfcButton.setOnClickListener(v -> {
+                    int position = getBindingAdapterPosition();
+                    if (position != RecyclerView.NO_POSITION) {
+                        Booking booking = bookingList.get(position);
+                        Context context = itemView.getContext();
+                        Intent intent = new Intent(context, BookingConfirmationActivity.class);
+                        intent.putExtra("booking", booking);
+                        context.startActivity(intent);
+                    }
+                });
+            }
 
-            //nfc button pressed
-            NfcButton.setOnClickListener(v -> {
-                int position = getBindingAdapterPosition();
-                if (position != RecyclerView.NO_POSITION) {
-                    Booking booking = bookingList.get(position);
-                    // Start the NFC emulation service (HostApduService)
-
-                }
-            });
 
         }
 

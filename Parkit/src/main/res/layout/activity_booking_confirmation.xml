@@ -8,14 +8,16 @@
     tools:context=".booking.BookingConfirmationActivity">
 
     <TextView
-        android:id="@+id/passKey"
+        android:id="@+id/nfc_tag_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/_0123456789"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.5"
-        tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteX="165dp" />
+        tools:ignore="MissingConstraints" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
