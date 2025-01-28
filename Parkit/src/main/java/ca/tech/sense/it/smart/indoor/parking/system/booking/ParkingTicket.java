@@ -47,6 +47,8 @@ public class ParkingTicket extends AppCompatActivity {
     private String NFC_TAG;
     private FirebaseDatabase firebaseDatabase;
     private FirebaseAuth firebaseAuth;
+    Booking booking;
+    String bookingId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +56,11 @@ public class ParkingTicket extends AppCompatActivity {
         setContentView(R.layout.activity_parking_ticket);
         firebaseDatabase = FirebaseDatabaseSingleton.getInstance();
         firebaseAuth = FirebaseAuthSingleton.getInstance();
+
+        booking = (Booking) getIntent().getSerializableExtra("booking");
+        bookingId = booking.getId(); // Assuming your Booking class has a getId() method
+
+
         initializeUIComponents();
 
         // Get data from the intent
@@ -162,8 +169,6 @@ public class ParkingTicket extends AppCompatActivity {
     private String generateNFC() {
 
         NFC_TAG = UUID.randomUUID().toString();
-        Booking booking = (Booking) getIntent().getSerializableExtra("booking");
-        String bookingId = booking.getId(); // Assuming your Booking class has a getId() method
 
         Log.d("NFC_TAG", "Generated NFC_TAG: " + NFC_TAG);
 
@@ -181,6 +186,8 @@ public class ParkingTicket extends AppCompatActivity {
                 .addOnSuccessListener(aVoid -> {
                     // Successfully updated the booking
                     Toast.makeText(this, "NFC Tag added successfully!", Toast.LENGTH_SHORT).show();
+                    // Trigger NFC emulation
+                    emulateNFCTag();
                 })
                 .addOnFailureListener(e -> {
                     // Failed to update the booking
@@ -188,9 +195,26 @@ public class ParkingTicket extends AppCompatActivity {
                 });
 
         return NFC_TAG;
-
-
     }
+
+    private void emulateNFCTag() {
+        // Start the NFC emulator service
+        if (NFC_TAG != null) {
+            Log.d("NFC_TAG", "Emulating NFC tag: " + NFC_TAG);
+
+            // Start the NFC emulation service (HostApduService)
+            Intent serviceIntent = new Intent(this, NfcEmulatorService.class);
+            Booking booking = (Booking) getIntent().getSerializableExtra("booking");
+            if (booking != null) {
+                serviceIntent.putExtra("bookingId", booking.getId());
+            }
+            startService(serviceIntent);
+        } else {
+            Log.d("NFC_TAG", "Error: No NFC tag generated!");
+        }
+    }
+
+
     //for map direction
     private void openMap() {
         try {
