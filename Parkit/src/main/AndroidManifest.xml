@@ -15,7 +15,6 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
-
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
 
     <application
@@ -28,6 +27,9 @@
         android:supportsRtl="true"
         android:theme="@style/Base.Theme.SmartIndoorParkingSystem"
         tools:targetApi="31">
+        <activity
+            android:name=".booking.BookingConfirmationActivity"
+            android:exported="false" />
         <activity
             android:name=".ownerUi.bottomNav.location.handleSlot.AddSlotActivity"
             android:exported="false" />
@@ -46,8 +48,8 @@
             android:exported="false" />
         <activity
             android:name=".ownerUi.OwnerActivity"
-            android:theme="@style/Base.Theme.SmartIndoorParkingSystem"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Base.Theme.SmartIndoorParkingSystem" />
         <activity
             android:name=".launcherActivity.ui.FirstActivity"
             android:exported="false" />
@@ -60,8 +62,8 @@
             android:theme="@style/Base.Theme.SmartIndoorParkingSystem" />
         <activity
             android:name=".launcherActivity.ui.signUp.SignUpActivity"
-            android:windowSoftInputMode="adjustResize"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".launcherActivity.ui.login.LoginActivity"
             android:exported="true" />
@@ -90,7 +92,6 @@
                 <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
             </intent-filter>
         </receiver>
-
         <receiver android:name=".manager.bookingManager.BookingReminderReceiver" />
 
         <meta-data

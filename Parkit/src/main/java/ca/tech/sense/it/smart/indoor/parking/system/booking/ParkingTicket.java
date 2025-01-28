@@ -7,17 +7,30 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import org.checkerframework.checker.units.qual.N;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSingleton;
+import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseDatabaseSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.model.booking.Booking;
 
 public class ParkingTicket extends AppCompatActivity {
@@ -28,14 +41,19 @@ public class ParkingTicket extends AppCompatActivity {
     private TextView parkingTimeText;
     private TextView priceTitle;
     private TextView priceText;
+    private TextView NFCButton;
     private ProgressBar progressBar;
     private String address;  // Holds the address value
+    private String NFC_TAG;
+    private FirebaseDatabase firebaseDatabase;
+    private FirebaseAuth firebaseAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_parking_ticket);
-
+        firebaseDatabase = FirebaseDatabaseSingleton.getInstance();
+        firebaseAuth = FirebaseAuthSingleton.getInstance();
         initializeUIComponents();
 
         // Get data from the intent
@@ -48,6 +66,7 @@ public class ParkingTicket extends AppCompatActivity {
 
         // Set up button click listeners
         setUpButtonListeners();
+
     }
 
     private void initializeUIComponents() {
@@ -58,8 +77,19 @@ public class ParkingTicket extends AppCompatActivity {
         priceTitle = findViewById(R.id.priceTitle);
         priceText = findViewById(R.id.priceText);
         progressBar = findViewById(R.id.progressBar);
+        NFCButton = findViewById(R.id.NFCButton);
+
+    }
+    private void setUpButtonListeners() {
+        Button cancelButton = findViewById(R.id.cancelButton);
+        Button getDirectionButton = findViewById(R.id.getDirectionButton);
+
+        cancelButton.setOnClickListener(v -> finish());
+        getDirectionButton.setOnClickListener(v -> openMap());
+        NFCButton.setOnClickListener(v -> generateNFC());
     }
 
+    //1
     private void handleBookingData(Intent intent) {
         try {
             Booking booking;
@@ -78,7 +108,7 @@ public class ParkingTicket extends AppCompatActivity {
             progressBar.setVisibility(View.GONE);
         }
     }
-
+    //2
     private void processBookingData(Booking booking) {
         String passkey = booking.getPassKey();
         address = booking.getLocation();
@@ -92,7 +122,7 @@ public class ParkingTicket extends AppCompatActivity {
             showToast(R.string.error_passkey_missing);
         }
     }
-
+    //3
     private void displayBookingDetails(Booking booking, long startTime, long endTime, double price) {
         TextView referenceNumberTextView = findViewById(R.id.referenceNumberTextView);
         referenceNumberTextView.setText(booking.getPassKey());
@@ -111,7 +141,7 @@ public class ParkingTicket extends AppCompatActivity {
             progressBar.setVisibility(View.GONE);
         }, 2000);
     }
-
+    //4
     private void updateUIWithBookingDetails(String address, String parkingTime, String price) {
         addressTitle.setText(getString(R.string.parking_address));
         addressText.setText(address);
@@ -120,7 +150,7 @@ public class ParkingTicket extends AppCompatActivity {
         priceTitle.setText(getString(R.string.price));
         priceText.setText(price);
     }
-
+    //4
     private String formatParkingTime(long startTime, long endTime) {
         SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a", Locale.getDefault());
         String start = sdf.format(new Date(startTime));
@@ -128,14 +158,40 @@ public class ParkingTicket extends AppCompatActivity {
         return start + " - " + end;
     }
 
-    private void setUpButtonListeners() {
-        Button cancelButton = findViewById(R.id.cancelButton);
-        Button getDirectionButton = findViewById(R.id.getDirectionButton);
 
-        cancelButton.setOnClickListener(v -> finish());
-        getDirectionButton.setOnClickListener(v -> openMap());
+    private String generateNFC() {
+
+        NFC_TAG = UUID.randomUUID().toString();
+        Booking booking = (Booking) getIntent().getSerializableExtra("booking");
+        String bookingId = booking.getId(); // Assuming your Booking class has a getId() method
+
+        Log.d("NFC_TAG", "Generated NFC_TAG: " + NFC_TAG);
+
+        DatabaseReference bookingRef = firebaseDatabase
+                .getReference("users")
+                .child(Objects.requireNonNull(firebaseAuth.getCurrentUser()).getUid())
+                .child("bookings")
+                .child(bookingId); // Replace "bookingId" with the actual ID
+
+        // Add the NFC field to the existing booking
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("nfcTag", NFC_TAG);
+
+        bookingRef.updateChildren(updates)
+                .addOnSuccessListener(aVoid -> {
+                    // Successfully updated the booking
+                    Toast.makeText(this, "NFC Tag added successfully!", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    // Failed to update the booking
+                    Toast.makeText(this, "Failed to add NFC Tag: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+
+        return NFC_TAG;
+
+
     }
-
+    //for map direction
     private void openMap() {
         try {
             if (address != null && !address.isEmpty()) {
@@ -156,7 +212,7 @@ public class ParkingTicket extends AppCompatActivity {
             showToast(getString(R.string.error_generic, e.getMessage()));
         }
     }
-
+    //toast utils
     private void showToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }

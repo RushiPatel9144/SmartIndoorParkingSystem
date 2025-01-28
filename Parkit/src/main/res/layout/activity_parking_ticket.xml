@@ -136,6 +136,8 @@
                         android:textColor="@color/primaryText"
                         android:textSize="16sp"/>
 
+
+
                     <TextView
                         android:id="@+id/priceText"
                         android:layout_width="wrap_content"
@@ -178,6 +180,16 @@
             android:backgroundTint="@color/theme"
             android:textColor="@color/white" />
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/NFCButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:text="NFC"
+            app:cornerRadius="16dp"
+            android:backgroundTint="@color/theme"
+            android:textColor="@color/white" />
         <!-- Cancel Button -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/cancelButton"

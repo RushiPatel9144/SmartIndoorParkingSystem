@@ -1,5 +1,8 @@
 package ca.tech.sense.it.smart.indoor.parking.system.booking;
 
+import static ca.tech.sense.it.smart.indoor.parking.system.utility.AppConstants.CONFIG_DOCUMENT;
+import static ca.tech.sense.it.smart.indoor.parking.system.utility.AppConstants.STRIPE_COLLECTION;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -40,7 +43,6 @@ import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import ca.tech.sense.it.smart.indoor.parking.system.BuildConfig;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.currency.CurrencyManager;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSingleton;
@@ -106,10 +108,6 @@ public class PaymentActivity extends AppCompatActivity {
         transactionManager = new TransactionManager(firebaseDatabase);
         bookingManager = new BookingManager(executorService, firebaseDatabase, firebaseAuth, context);
 
-        PaymentConfiguration.init(
-                getApplicationContext(),
-                "pk_live_51QJqGPAwqnUq4xSjL22RjIoAN6sEXzRk5XpSYB8yli0gYIbcdZIwecv9b1QnNLrFoMN01klmMPWZNTen9mVUN57W00DqrrM2ed"
-        );
 
         // Fetch the Stripe public key from Firebase and initialize PaymentConfiguration
         initializeStripeKey();
@@ -121,7 +119,7 @@ public class PaymentActivity extends AppCompatActivity {
 
     private void initializeStripeKey() {
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-        firestore.collection("config").document("stripe")
+        firestore.collection(CONFIG_DOCUMENT).document(STRIPE_COLLECTION)
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
@@ -169,6 +167,31 @@ public class PaymentActivity extends AppCompatActivity {
         }
     }
 
+    private void setButtonListeners() {
+        applyPromoCodeButton.setOnClickListener(v -> {
+            String promoCode = promoCodeEditText.getText().toString().trim();
+            if (!promoCode.isEmpty()) {
+                PromotionHelper.applyPromoCode(promoCode, new PromotionHelper.PromoCallback()
+                {
+                    @Override
+                    public void onSuccess(double discountAmount) {
+                        applyDiscount(discountAmount);
+                    }
+
+                    @Override
+                    public void onFailure(String errorMessage) {
+                        promotionLayout.setVisibility(View.GONE);
+                        Toast.makeText(getApplicationContext(), errorMessage, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            } else {
+                showToast(getString(R.string.please_enter_a_promo_code));
+            }
+        });
+        confirmButton.setOnClickListener(v -> fetchClientSecret(total, booking));
+        cancelButton.setOnClickListener(v -> finish());
+    }
+
     private void setBookingDetails() {
         if (booking != null) {
             parkingNameTextView.setText(booking.getTitle());
@@ -209,30 +232,7 @@ public class PaymentActivity extends AppCompatActivity {
         Toast.makeText(getApplicationContext(), "Promo code applied successfully!", Toast.LENGTH_SHORT).show();
     }
 
-    private void setButtonListeners() {
-        applyPromoCodeButton.setOnClickListener(v -> {
-            String promoCode = promoCodeEditText.getText().toString().trim();
-            if (!promoCode.isEmpty()) {
-                PromotionHelper.applyPromoCode(promoCode, new PromotionHelper.PromoCallback()
-                {
-                    @Override
-                    public void onSuccess(double discountAmount) {
-                        applyDiscount(discountAmount);
-                    }
 
-                    @Override
-                    public void onFailure(String errorMessage) {
-                        promotionLayout.setVisibility(View.GONE);
-                        Toast.makeText(getApplicationContext(), errorMessage, Toast.LENGTH_SHORT).show();
-                    }
-                });
-            } else {
-                showToast(getString(R.string.please_enter_a_promo_code));
-            }
-        });
-        confirmButton.setOnClickListener(v -> fetchClientSecret(total, booking));
-        cancelButton.setOnClickListener(v -> finish());
-    }
 
 
     private void fetchClientSecret(double price, Booking booking) {
@@ -354,7 +354,15 @@ public class PaymentActivity extends AppCompatActivity {
 
     private void onBookingConfirmed() {
         showToast(getString(R.string.booking_confirmed));
-        handlePromoCode();
+        
+//        handlePromoCode();
+        //navigateToConfirmationPage();
+    }
+
+    public void navigateToConfirmationPage() {
+        Intent intent = new Intent(PaymentActivity.this, BookingConfirmationActivity.class);
+        intent.putExtra("booking", booking);  // Pass booking details to the next activity
+        startActivity(intent);
     }
 
     private void onBookingConfirmationError(Exception error) {

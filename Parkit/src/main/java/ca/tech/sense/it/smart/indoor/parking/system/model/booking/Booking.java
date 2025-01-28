@@ -20,6 +20,7 @@ public class Booking implements Serializable {
     private String currencySymbol;
     private String slotNumber;
     private String passKey;
+    private String NFC_TAG;
     private String locationId; // Add this field
     private String transactionId;
 

@@ -17,6 +17,8 @@ public class AppConstants {
 
     public static final String KEY_PROFILE_PICTURE_URI = "profile_picture_uri";
     public static final String FIELD = "profilePhotoUrl";
+    public static final String CONFIG_DOCUMENT = "config";
+    public static final String STRIPE_COLLECTION = "stripe";
 
 
 
