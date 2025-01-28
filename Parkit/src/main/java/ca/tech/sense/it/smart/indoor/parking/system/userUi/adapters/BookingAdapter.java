@@ -6,6 +6,8 @@
 package ca.tech.sense.it.smart.indoor.parking.system.userUi.adapters;
 
 import android.content.Context;
+import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +24,7 @@ import java.util.List;
 import java.util.Locale;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.booking.NfcEmulatorService;
 import ca.tech.sense.it.smart.indoor.parking.system.model.booking.Booking;
 import ca.tech.sense.it.smart.indoor.parking.system.model.booking.BookingViewModel;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
@@ -87,6 +90,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingV
             bookingPrice = itemView.findViewById(R.id.booking_price);
             bookingPassKey = itemView.findViewById(R.id.booking_pass_key);
             Button cancelButton = itemView.findViewById(R.id.cancel_button);
+            Button NfcButton = itemView.findViewById(R.id.NFC_button_upcomingBooking);
 
             if (cancelButton != null) {
                 cancelButton.setOnClickListener(v -> {
@@ -97,6 +101,17 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingV
                     }
                 });
             }
+
+            //nfc button pressed
+            NfcButton.setOnClickListener(v -> {
+                int position = getBindingAdapterPosition();
+                if (position != RecyclerView.NO_POSITION) {
+                    Booking booking = bookingList.get(position);
+                    // Start the NFC emulation service (HostApduService)
+
+                }
+            });
+
         }
 
         private void showCancelConfirmationDialog(Context context, Booking booking) {

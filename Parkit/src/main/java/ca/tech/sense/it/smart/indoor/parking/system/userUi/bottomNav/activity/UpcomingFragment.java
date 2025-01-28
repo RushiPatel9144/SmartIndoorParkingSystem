@@ -37,6 +37,7 @@ public class UpcomingFragment extends BaseNetworkFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_upcoming, container, false);
+
         RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
         noBookingsText = view.findViewById(R.id.no_bookings_text);
         noBookingsText1 = view.findViewById(R.id.no_bookings_text1);
