@@ -5,6 +5,7 @@
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
     app:cardCornerRadius="12dp"
+    android:theme="@style/LocationFragment"
     app:cardElevation="6dp"> <!-- Light green background -->
 
     <RelativeLayout
@@ -22,6 +23,8 @@
             android:orientation="horizontal"
             android:gravity="center_vertical"
             android:padding="4dp">
+
+
 
             <TextView
                 android:id="@+id/booking_price"
@@ -149,6 +152,20 @@
                     android:textColor="@android:color/holo_red_dark"
                     android:paddingStart="8dp" />
             </LinearLayout>
+
+            <Button
+                android:id="@+id/NFC_button_ActiveBooking"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="NFC"
+                app:cornerRadius="32dp"
+                android:textStyle="bold"
+                android:backgroundTint="@color/theme"
+                android:textColor="@android:color/white"
+                android:paddingTop="8dp"
+                android:layout_gravity="center"
+                android:layout_margin="5dp"
+                android:elevation="4dp" />
         </LinearLayout>
     </RelativeLayout>
 </androidx.cardview.widget.CardView>

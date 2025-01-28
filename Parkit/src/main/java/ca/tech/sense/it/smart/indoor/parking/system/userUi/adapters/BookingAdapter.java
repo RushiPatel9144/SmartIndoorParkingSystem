@@ -95,6 +95,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingV
             bookingPassKey = itemView.findViewById(R.id.booking_pass_key);
             Button cancelButton = itemView.findViewById(R.id.cancel_button);
             Button NfcButton = itemView.findViewById(R.id.NFC_button_upcomingBooking);
+            Button NfcButton2 = itemView.findViewById(R.id.NFC_button_ActiveBooking);
 
             if (cancelButton != null) {
                 cancelButton.setOnClickListener(v -> {
@@ -108,6 +109,20 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingV
             if (NfcButton != null) {
                 //nfc button pressed
                 NfcButton.setOnClickListener(v -> {
+                    int position = getBindingAdapterPosition();
+                    if (position != RecyclerView.NO_POSITION) {
+                        Booking booking = bookingList.get(position);
+                        Context context = itemView.getContext();
+                        Intent intent = new Intent(context, BookingConfirmationActivity.class);
+                        intent.putExtra("booking", booking);
+                        context.startActivity(intent);
+                    }
+                });
+            }
+            //button in active booking
+            if (NfcButton2 != null) {
+                //nfc button pressed
+                NfcButton2.setOnClickListener(v -> {
                     int position = getBindingAdapterPosition();
                     if (position != RecyclerView.NO_POSITION) {
                         Booking booking = bookingList.get(position);
