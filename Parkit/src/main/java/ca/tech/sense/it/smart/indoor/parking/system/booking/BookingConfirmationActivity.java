@@ -2,7 +2,11 @@ package ca.tech.sense.it.smart.indoor.parking.system.booking;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,9 +32,13 @@ public class BookingConfirmationActivity extends AppCompatActivity {
 
     private String bookingId;
     private String NFC_TAG;
+    private int progressStatus = 0;
     private FirebaseDatabase firebaseDatabase;
     private FirebaseAuth firebaseAuth;
     private TextView nfcTagTextView;
+    private ImageView backButton;
+    private ProgressBar progressBar;
+    private Handler handler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +46,26 @@ public class BookingConfirmationActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_booking_confirmation);
         initializedUIComponents();
+        setUpOnClickListeners();
+        nfcTagTextView.setVisibility(View.GONE);
+        // Start the progress animation
+        new Thread(() -> {
+            while (progressStatus < 100) {
+                progressStatus += 1; // Increase progress
+                handler.post(() -> progressBar.setProgress(progressStatus));
+
+                try {
+                    Thread.sleep(10); // Control speed (~3 sec total)
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            // Hide ProgressBar after 3 seconds
+            handler.post(() -> progressBar.setVisibility(View.GONE));
+            handler.post(()-> nfcTagTextView.setVisibility(View.VISIBLE));
+        }).start();
+
 
         Booking booking = (Booking) getIntent().getSerializableExtra("booking");
         if (booking != null) {
@@ -50,14 +78,23 @@ public class BookingConfirmationActivity extends AppCompatActivity {
         firebaseDatabase = FirebaseDatabase.getInstance();
         firebaseAuth = FirebaseAuth.getInstance();
         nfcTagTextView = findViewById(R.id.nfc_tag_tv);
-
-
+        backButton = findViewById(R.id.nfc_screen_back_button);
+        progressBar = findViewById(R.id.nfc_progress_bar);
+        progressBar.setVisibility(View.VISIBLE);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+
     }
+
+
+    public void setUpOnClickListeners() {
+        backButton.setOnClickListener(v -> finish());
+    }
+
 
     private String generateNFC() {
 
