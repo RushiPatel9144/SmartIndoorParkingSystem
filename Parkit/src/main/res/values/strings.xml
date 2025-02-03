@@ -605,4 +605,8 @@
     <string name="claim_promo">Claim Promo</string>
     <string name="limited_time_offer">Limited Time Offer</string>
     <string name="hello">Hello!</string>
+    <string name="car_parked">Car Parked</string>
+    <string name="car_moved">Car Moved\n</string>
+    <string name="your_car_is_now_parked">Your car is Parked now</string>
+    <string name="your_car_has_moved_from_parking">Your car has moved from Parking</string>
 </resources>

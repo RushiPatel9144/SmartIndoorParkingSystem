@@ -292,11 +292,11 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
             if (selectedSlot != null && selectedTimeSlot != null && selectedDate != null) {
                 String selectedHour = selectedTimeSlot.split(" - ")[0];
 
-                bookingManager.getSlotService().checkSlotAvailability(locationId, selectedSlot, selectedDate, selectedHour, status -> {
+                bookingManager.getSlotService().checkSlotAvailability(locationId, selectedSlot, selectedDate, selectedHour, (status, carParked) -> {
                     if ("occupied".equals(status)) {
                         Toast.makeText(requireContext(), R.string.slot_already_occupied, Toast.LENGTH_SHORT).show();
                     } else {
-                        // Create a Booking object with the selected details
+                        // Proceed with booking
                         Booking booking = new Booking(
                                 null,
                                 titleTextView.getText().toString(),
@@ -309,14 +309,13 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
                                 selectedCurrency.getCode(),
                                 selectedCurrency.getSymbol(),
                                 selectedSlot,
-                                BookingUtils.generatePassKey(), // Generate the pass key
-                                locationId, // Add the locationId to the booking
+                                BookingUtils.generatePassKey(),
+                                locationId,
                                 null
                         );
 
-                        // Create an Intent to start PaymentActivity and pass the booking data
                         Intent intent = new Intent(requireContext(), PaymentActivity.class);
-                        intent.putExtra("booking", booking); // Pass the Booking object
+                        intent.putExtra("booking", booking);
                         intent.putExtra("ownerId", ownerId);
                         startActivity(intent);
                         dismiss();
