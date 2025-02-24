@@ -161,6 +161,7 @@
                 >
                 <!-- Cancel Button -->
                 <Button
+                    app:cornerRadius="30dp"
                     android:id="@+id/cancel_button"
                     android:layout_width="175dp"
                     android:layout_height="wrap_content"
@@ -178,6 +179,7 @@
                     android:layout_width="170dp"
                     android:layout_height="wrap_content"
                     android:text="NFC"
+                    app:cornerRadius="30dp"
                     android:textStyle="bold"
                     android:backgroundTint="@color/theme"
                     android:textColor="@android:color/white"

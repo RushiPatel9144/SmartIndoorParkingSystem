@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
@@ -7,20 +7,32 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".booking.BookingConfirmationActivity">
+
     <ImageView
         android:id="@+id/nfc_screen_back_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="25dp"
         android:src="@drawable/baseline_arrow_back_24"
-        android:layout_margin="25dp"/>
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/nfc_tag_tv"
-        android:layout_gravity="center |center_horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center |center_horizontal"
         android:text="@string/_0123456789"
-        android:layout_marginTop="250dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.5"
         tools:ignore="MissingConstraints" />
 
     <ProgressBar
@@ -28,11 +40,14 @@
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="270dp"
         android:layout_margin="25dp"
         android:max="100"
-        android:visibility="gone"
-        android:progressDrawable="@drawable/custom_progress" />
+        android:progressDrawable="@drawable/custom_progress"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.32"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.5" />
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

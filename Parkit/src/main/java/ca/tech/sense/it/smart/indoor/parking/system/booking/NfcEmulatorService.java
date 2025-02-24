@@ -13,6 +13,8 @@ import com.google.firebase.database.ValueEventListener;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSingleton;
 import android.nfc.cardemulation.HostApduService;
 
+import java.io.UnsupportedEncodingException;
+
 public class NfcEmulatorService extends HostApduService {
 
     private static final String TAG = "NfcEmulatorService";
@@ -74,13 +76,28 @@ public class NfcEmulatorService extends HostApduService {
 
         // If the SELECT command is received, respond with the NFC tag
         if (commandApdu != null && isSelectApdu(commandApdu)) {
-            Log.d(TAG, "SELECT command received. Responding with NFC Tag: " + NFC_TAG);
-            return NFC_TAG != null ? NFC_TAG.getBytes() : new byte[]{(byte) 0x6F, (byte) 0x00}; // Default response if no NFC tag is set
+            Log.d(TAG, "SELECT command received.");
+
+            // If NFC_TAG is not null, convert it to a byte array and respond with it
+            if (NFC_TAG != null) {
+                try {
+                    byte[] nfcTagBytes = NFC_TAG.getBytes("UTF-8");  // Convert the NFC tag to a byte array using UTF-8 encoding
+                    Log.d(TAG, "Responding with NFC Tag: " + NFC_TAG);
+                    return nfcTagBytes;
+                } catch (UnsupportedEncodingException e) {
+                    Log.e(TAG, "Error encoding NFC tag to byte array", e);
+                    return new byte[]{(byte) 0x6F, (byte) 0x00}; // Default error response
+                }
+            } else {
+                Log.d(TAG, "No NFC tag found for the specified booking.");
+                return new byte[]{(byte) 0x6F, (byte) 0x00}; // Default error response if NFC_TAG is null
+            }
         }
 
         // Default response for unknown commands
-        return new byte[] {(byte) 0x6F, (byte) 0x00};
+        return new byte[]{(byte) 0x6F, (byte) 0x00};  // Generic error response for unknown commands
     }
+
 
     private boolean isSelectApdu(byte[] commandApdu) {
         // Check if the APDU command is a SELECT command

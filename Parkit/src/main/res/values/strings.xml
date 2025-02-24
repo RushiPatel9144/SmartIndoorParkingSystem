@@ -5,6 +5,7 @@
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Park it</string>
+    <string name="servicetag_in_nfctechnical_profilexml">this is for parking NFC TAG generation</string>
     <string name="book_parking_spots_at_your_fingertips">Book Parking Spots At Your Fingertips</string>
     <string name="drawer_open">Open</string>
     <string name="drawer_close">Close</string>

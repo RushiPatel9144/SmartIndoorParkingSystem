@@ -1,86 +1,97 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<ScrollView
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:padding="16dp"
     android:clipChildren="false"
     android:theme="@style/LocationFragment"
     android:fitsSystemWindows="true">
-
-    <!-- Title -->
-    <!-- Confirmation Message -->
-    <TextView
-        android:id="@+id/bookingConfirmationText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="sans-serif-medium"
-        android:gravity="center"
-        android:text="@string/booking_confirmed"
-        android:textColor="@color/primaryText"
-        android:textSize="24sp"
-        android:layout_gravity="center"
-        android:layout_margin="16dp" />
-
-    <!-- Success Icon -->
-    <!-- Main Card -->
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardContainer"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginVertical="16dp"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
         android:padding="16dp"
-        app:cardCornerRadius="12dp"
-        app:cardElevation="1dp">
+        android:clipChildren="false"
+        android:theme="@style/LocationFragment"
+        android:fitsSystemWindows="true">
 
-        <LinearLayout
+        <!-- Title -->
+        <!-- Confirmation Message -->
+        <TextView
+            android:id="@+id/bookingConfirmationText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center"
+            android:text="@string/booking_confirmed"
+            android:textColor="@color/primaryText"
+            android:textSize="24sp"
+            android:layout_gravity="center"
+            android:layout_marginTop="16dp" />
+
+        <!-- Success Icon -->
+        <!-- Main Card -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
+            android:layout_marginVertical="16dp"
             android:padding="16dp"
-            android:orientation="vertical"
-            android:clipToPadding="false"
-            android:clipChildren="false">
+            app:cardCornerRadius="12dp"
+            app:cardElevation="1dp">
 
-            <!-- confirmation icon -->
-            <ImageView
-                android:id="@+id/confImage"
-                android:layout_width="160dp"
-                android:layout_height="160dp"
-                android:layout_marginVertical="16dp"
-                android:contentDescription="@string/confirm"
-                android:src="@drawable/verified" />
-
-            <!-- Reference Number -->
-            <TextView
-                android:id="@+id/referenceNumberLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-medium"
-                android:gravity="center"
-                android:text="@string/reference_number"
-                android:textColor="@color/primaryText"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/referenceNumberTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:fontFamily="sans-serif"
-                android:gravity="center"
-                android:text="#4563455"
-                android:textColor="@color/secondaryText"
-                android:textSize="16sp" />
-
-            <!-- Address Card -->
-            <androidx.cardview.widget.CardView
-                android:id="@+id/addressCard"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                app:cardCornerRadius="8dp"
-                app:cardElevation="4dp">
+                android:gravity="center"
+                android:padding="8dp"
+                android:orientation="vertical"
+                android:clipToPadding="false"
+                android:clipChildren="false">
+
+                <!-- confirmation icon -->
+                <ImageView
+                    android:id="@+id/confImage"
+                    android:layout_width="160dp"
+                    android:layout_height="160dp"
+                    android:layout_marginVertical="16dp"
+                    android:contentDescription="@string/confirm"
+                    android:src="@drawable/verified" />
+
+                <!-- Reference Number -->
+                <TextView
+                    android:id="@+id/referenceNumberLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-medium"
+                    android:gravity="center"
+                    android:text="@string/reference_number"
+                    android:textColor="@color/primaryText"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/referenceNumberTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:fontFamily="sans-serif"
+                    android:gravity="center"
+                    android:text="#4563455"
+                    android:textColor="@color/secondaryText"
+                    android:textSize="16sp" />
+
+                <!-- Address Card -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/addressCard"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="4dp">
+
+                </androidx.cardview.widget.CardView>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -111,19 +122,19 @@
                         android:id="@+id/parkingTimeTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/parking_time"
                         android:layout_marginTop="8dp"
-                        android:textColor="@color/primaryText"
                         android:fontFamily="sans-serif-medium"
-                        android:textSize="16sp"/>
+                        android:text="@string/parking_time"
+                        android:textColor="@color/primaryText"
+                        android:textSize="16sp" />
 
                     <TextView
                         android:id="@+id/parkingTimeText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:text="@string/parking_time_value"
                         android:fontFamily="sans-serif"
+                        android:text="@string/parking_time_value"
                         android:textColor="@color/secondaryText"
                         android:textSize="14sp" />
 
@@ -131,20 +142,19 @@
                         android:id="@+id/priceTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/price"
                         android:layout_marginTop="8dp"
                         android:fontFamily="sans-serif-medium"
+                        android:text="@string/price"
                         android:textColor="@color/primaryText"
-                        android:textSize="16sp"/>
-
+                        android:textSize="16sp" />
 
 
                     <TextView
                         android:id="@+id/priceText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="sans-serif"
                         android:layout_marginTop="8dp"
+                        android:fontFamily="sans-serif"
                         android:text="@string/price_value"
                         android:textColor="@color/secondaryText"
                         android:textSize="14sp" />
@@ -157,52 +167,62 @@
                         android:layout_gravity="center"
                         android:visibility="gone" />
                 </LinearLayout>
-            </androidx.cardview.widget.CardView>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Footer Buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <com.google.android.material.button.MaterialButton
+                android:layout_margin="8dp"
+                android:id="@+id/getDirectionButton"
+                android:layout_width="match_parent"
+                android:layout_marginEnd="8dp"
+                android:layout_weight="1"
+                android:text="@string/get_direction"
+                app:cornerRadius="30dp"
+                android:backgroundTint="@color/theme"
+                android:textColor="@color/white"
+                android:layout_height="wrap_content"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:padding="8dp">
+
+                <!-- Get Direction Button -->
+
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/NFCButton_ParkingTicket"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:text="NFC"
+                    app:cornerRadius="30dp"
+                    android:backgroundTint="@color/black"
+                    android:textColor="@color/white" />
+                <!-- Cancel Button -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/cancelButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:text="@string/close"
+                    app:cornerRadius="30dp"
+                    android:backgroundTint="@color/white"
+                    android:textColor="@color/red"
+                    app:strokeColor="@color/red"
+                    app:strokeWidth="2dp" />
+            </LinearLayout>
         </LinearLayout>
-    </androidx.cardview.widget.CardView>
 
-    <!-- Footer Buttons -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:padding="8dp">
-
-        <!-- Get Direction Button -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/getDirectionButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_weight="1"
-            android:text="@string/get_direction"
-            app:cornerRadius="16dp"
-            android:backgroundTint="@color/theme"
-            android:textColor="@color/white" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/NFCButton_ParkingTicket"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_weight="1"
-            android:text="NFC"
-            app:cornerRadius="16dp"
-            android:backgroundTint="@color/theme"
-            android:textColor="@color/white" />
-        <!-- Cancel Button -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/cancelButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_weight="1"
-            android:text="@string/close"
-            app:cornerRadius="16dp"
-            android:backgroundTint="@color/white"
-            android:textColor="@color/red"
-            app:strokeColor="@color/red"
-            app:strokeWidth="2dp" />
     </LinearLayout>
-</LinearLayout>
+
+</ScrollView>
