@@ -18,8 +18,17 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -60,6 +69,9 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
     private TextView priceTextView;
     private TextView errorTextView;
     private TextView titleTextView;
+    // New TextView for Air Quality Index
+    private TextView airQualityIndexTextView;
+
     private ImageButton selectDateButton;
     private ImageButton starButton;
     private final String locationId;
@@ -73,6 +85,7 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
     private ExecutorService executorService;
     private String ownerId;
     private ParkingLocation location; // Define the ParkingLocation variable
+
     // Constructor with dependency injection
     public BookingBottomSheetDialogFragment(ExecutorService executorService, String locationId, BookingManager bookingManager, Context context) {
         this.locationId = locationId;
@@ -89,7 +102,7 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
         // Initialize Firebase database reference
         FirebaseDatabaseSingleton.getInstance().getReference();
 
-        // Initialize UI elements
+        // Initialize UI elements (including the new AQI TextView)
         initializeUIElements(view);
 
         // Initialize Firebase Auth
@@ -102,6 +115,9 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
 
         // Fetch the parking location data when the dialog is opened
         fetchParkingLocationData();
+
+        // Fetch the air quality index from the database
+        fetchAirQualityIndex();
 
         // Create an instance of FavoritesManager and setup the star button
         FavoritesManager favoritesManager = new FavoritesManager(requireContext(), firebaseAuth, starButton, locationId,
@@ -129,14 +145,15 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
         selectedDateTextview = view.findViewById(R.id.selectedDate);
         priceTextView = view.findViewById(R.id.priceTag);
         titleTextView = view.findViewById(R.id.addressTitle);
+        // Initialize the AQI TextView (ensure the id matches the one in your XML)
+        airQualityIndexTextView = view.findViewById(R.id.airQualityIndexTextView);
     }
-
 
     // Method to fetch parking location data from Firebase
     private void fetchParkingLocationData() {
         progressBar.setVisibility(View.VISIBLE);
 
-        parkingLocationManager.fetchParkingLocation(context,executorService,locationId, new ParkingInterface.FetchLocationCallback() {
+        parkingLocationManager.fetchParkingLocation(context, executorService, locationId, new ParkingInterface.FetchLocationCallback() {
             @Override
             public void onFetchSuccess(ParkingLocation fetchedLocation) {
                 if (fetchedLocation != null) {
@@ -160,6 +177,36 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
             }
         });
     }
+
+    // New method to fetch Air Quality Index from Firebase
+    private void fetchAirQualityIndex() {
+        // Reference the top-level "airQuality" node
+        DatabaseReference airQualityRef = FirebaseDatabase.getInstance()
+                .getReference("airQuality");
+
+        airQualityRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    // Fetch the "air_quality" value (e.g., "Excellent")
+                    String airQualityValue = snapshot.child("air_quality").getValue(String.class);
+                    if (airQualityValue != null) {
+                        airQualityIndexTextView.setText("AQI: " + airQualityValue);
+                    } else {
+                        airQualityIndexTextView.setText("AQI: N/A");
+                    }
+                } else {
+                    airQualityIndexTextView.setText("AQI: N/A");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                airQualityIndexTextView.setText("AQI: Error");
+            }
+        });
+    }
+
 
     // Method to convert currency
     private void displayConvertedPrice(double priceInCad) {
@@ -207,7 +254,6 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
     private String sanitizeSlotId(String slotId) {
         return slotId.replaceAll("[.#$\\[\\]]", "_"); // Replace invalid characters with '_'
     }
-
 
     // Method to set up time slots based on the selected date
     private void setupTimeSlots(String selectedDate) {
@@ -352,6 +398,7 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
             datePickerDialog.show();
         });
     }
+
     // Method to set error message
     public void setErrorMessage(String message) {
         if (errorTextView != null) {
@@ -360,4 +407,5 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
         }
     }
 }
+
 
