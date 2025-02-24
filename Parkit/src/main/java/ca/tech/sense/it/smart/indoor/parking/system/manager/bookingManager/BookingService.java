@@ -9,8 +9,12 @@ import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
@@ -23,6 +27,8 @@ import ca.tech.sense.it.smart.indoor.parking.system.utility.BookingUtils;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 
+import androidx.annotation.NonNull;
+
 
 public class BookingService {
 
@@ -31,6 +37,8 @@ public class BookingService {
     private final FirebaseAuth firebaseAuth;
     private final Context context;
     private final SlotService slotService;
+    private ValueEventListener carParkedListener;
+    private DatabaseReference carParkedRef;
 
     public BookingService(ExecutorService executorService, FirebaseDatabase firebaseDatabase, FirebaseAuth firebaseAuth, Context context, SlotService slotService) {
         this.executorService = executorService;
@@ -47,15 +55,16 @@ public class BookingService {
             long startTime = BookingUtils.convertToMillis(selectedDate + " " + times[0]);
             long endTime = BookingUtils.convertToMillis(selectedDate + " " + times[1]);
 
-            slotService.checkSlotAvailability(booking.getLocationId(), booking.getSlotNumber(), selectedDate, times[0], status -> {
+            slotService.checkSlotAvailability(booking.getLocationId(), booking.getSlotNumber(), selectedDate, times[0], (status, carParked) -> {
                 if ("occupied".equals(status)) {
                     notifyUserSlotOccupied(onFailure);
                 } else {
                     fetchPriceAndConfirmBooking(transactionId, selectedDate, times, startTime, endTime, userId, booking, onSuccess, onFailure);
                 }
             }, onFailure);
-        }), 2000); // 2 seconds delay
+        }), 2000);
     }
+
 
     private void notifyUserSlotOccupied(Consumer<Exception> onFailure) {
         new Handler(Looper.getMainLooper()).post(() ->
@@ -65,66 +74,61 @@ public class BookingService {
     }
 
     private void fetchPriceAndConfirmBooking(String transactionId, String selectedDate, String[] times, long startTime, long endTime, String userId, Booking details, Runnable onSuccess, Consumer<Exception> onFailure) {
-        // Create the booking object using the provided details and total price
-        Booking booking = new Booking(
-                null,
-                details.getTitle(),
-                startTime,
-                endTime,
-                details.getLocation(),
-                null,
-                details.getTotalPrice(),
-                details.getPrice(),
-                details.getCurrencyCode(),
-                details.getCurrencySymbol(),
-                details.getSlotNumber(),
-                details.getPassKey(),
-                details.getLocationId(),
-                transactionId
-        );
+        Booking booking = new Booking(null, details.getTitle(), startTime, endTime, details.getLocation(), null,
+                details.getTotalPrice(), details.getPrice(), details.getCurrencyCode(), details.getCurrencySymbol(),
+                details.getSlotNumber(), details.getPassKey(), details.getLocationId(), transactionId);
 
-        // Save the booking
         saveBooking(userId, booking, details.getLocationId(), details.getSlotNumber(), selectedDate, times, onSuccess, onFailure);
     }
 
-
     private void saveBooking(String userId, Booking booking, String locationId, String slot, String selectedDate, String[] times, Runnable onSuccess, Consumer<Exception> onFailure) {
-        DatabaseReference databaseRef = firebaseDatabase
-                .getReference("users")
-                .child(userId)
-                .child("bookings")
-                .push();
-
+        DatabaseReference databaseRef = firebaseDatabase.getReference("users").child(userId).child("bookings").push();
         String bookingId = databaseRef.getKey();
         booking.setId(bookingId);
+
         if (bookingId != null) {
-            booking.setId(bookingId); // Set the booking ID
-            databaseRef.setValue(booking)
-                    .addOnSuccessListener(aVoid -> {
-                        slotService.updateHourlyStatus(locationId, slot, selectedDate, times[0], "occupied", () -> {
-                            slotService.scheduleStatusUpdate(locationId, slot, selectedDate, times[1], onSuccess, onFailure);
-                            // Show toast message
-                            Toast.makeText(context, context.getString(R.string.booking_confirmed), Toast.LENGTH_SHORT).show();
-
-                            // Pass the booking details, including the pass key, to the ParkingTicketActivity
-                            Intent intent = new Intent(context, ParkingTicket.class);
-                            intent.putExtra("booking", booking); // Pass the entire booking object
-                            context.startActivity(intent);
-
-                            // Send booking confirmation notification
-                            NotificationManagerHelper.sendBookingConfirmationNotification(userId, booking, selectedDate, times);
-
-                            // Schedule booking reminders
-                            scheduleBookingReminders(userId, booking, selectedDate, times);
-
-                        }, onFailure);
-                    })
-                    .addOnFailureListener(onFailure::accept);
+            databaseRef.setValue(booking).addOnSuccessListener(aVoid -> {
+                slotService.updateHourlyStatus(locationId, slot, selectedDate, times[0], "occupied", false, () -> {
+                    slotService.scheduleStatusUpdate(locationId, slot, selectedDate, times[1], onSuccess, onFailure);
+                    Toast.makeText(context, context.getString(R.string.booking_confirmed), Toast.LENGTH_SHORT).show();
+                    monitorCarParkedStatus(locationId, slot, selectedDate, times[0]);
+                    Intent intent = new Intent(context, ParkingTicket.class);
+                    intent.putExtra("booking", booking);
+                    context.startActivity(intent);
+                    NotificationManagerHelper.sendBookingConfirmationNotification(userId, booking, selectedDate, times);
+                    scheduleBookingReminders(userId, booking, selectedDate, times);
+                }, onFailure);
+            }).addOnFailureListener(onFailure::accept);
         } else {
             onFailure.accept(new Exception("Failed to generate booking ID"));
         }
     }
 
+    private void monitorCarParkedStatus(String locationId, String slot, String selectedDate, String bookingTime) {
+        carParkedRef = firebaseDatabase.getReference("parkingLocations").child(locationId).child("slots").child(slot).child("hourlyStatus").child(selectedDate + " " + bookingTime).child("carParked");
+
+        if (carParkedListener != null) {
+            carParkedRef.removeEventListener(carParkedListener);
+        }
+
+        carParkedListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    Boolean carParked = snapshot.getValue(Boolean.class);
+                    if (carParked != null) {
+                        NotificationManagerHelper.sendCarStatusNotification(carParked);
+                        Log.d("CarParkedStatus", "Car parked status updated: " + carParked);
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("CarParkedStatus", "Failed to read carParked status", error.toException());
+            }
+        };
+        carParkedRef.addValueEventListener(carParkedListener);
+    }
 
     public void updateTotalPrice(String userId, String bookingId, double totalPrice) {
         DatabaseReference databaseRef = firebaseDatabase

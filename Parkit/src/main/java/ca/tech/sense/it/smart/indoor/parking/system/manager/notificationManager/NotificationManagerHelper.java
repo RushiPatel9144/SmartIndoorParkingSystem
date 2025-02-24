@@ -17,7 +17,7 @@ import androidx.core.app.NotificationCompat;
 
 public class NotificationManagerHelper {
     private static final String CHANNEL_ID = "default";
-    private static  Context context;
+    private static Context context;
     private final SharedPreferences sharedPreferences;
     private final FirebaseAuth firebaseAuth;
     private final NotificationManager notificationManager;
@@ -40,13 +40,8 @@ public class NotificationManagerHelper {
     }
 
     public void enableNotifications() {
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
-                .setSmallIcon(R.drawable.notifications)
-                .setContentTitle(context.getString(R.string.notifications_enabled))
-                .setContentText(context.getString(R.string.you_will_receive_notifications))
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
-
-        notificationManager.notify(1, builder.build());
+        sendNotification(context.getString(R.string.notifications_enabled),
+                context.getString(R.string.you_will_receive_notifications));
     }
 
     public void disableNotifications() {
@@ -60,11 +55,9 @@ public class NotificationManagerHelper {
 
         FirebaseUser currentUser = firebaseAuth.getCurrentUser();
         if (currentUser != null && (currentTime - lastSentTimestamp > cooldown)) {
-            NotificationHelper.sendNotification(
-                    context,
+            sendNotification(
                     context.getString(R.string.welcome_back),
-                    context.getString(R.string.we_ve_missed_you_check_out_the_latest_parking_spots_available_for_you),
-                    currentUser.getUid()
+                    context.getString(R.string.we_ve_missed_you_check_out_the_latest_parking_spots_available_for_you)
             );
             sharedPreferences.edit().putLong("welcome_notification_timestamp", currentTime).apply();
         }
@@ -74,11 +67,9 @@ public class NotificationManagerHelper {
         boolean isWelcomeNotificationSent = sharedPreferences.getBoolean("welcome_notification_sent", false);
 
         if (!isWelcomeNotificationSent) {
-            NotificationHelper.sendNotification(
-                    context,
+            sendNotification(
                     context.getString(R.string.welcome_to_parkit),
-                    context.getString(R.string.explore_the_app_and_find_parking_spots_nearby),
-                    Objects.requireNonNull(firebaseAuth.getCurrentUser()).getUid()
+                    context.getString(R.string.explore_the_app_and_find_parking_spots_nearby)
             );
 
             sharedPreferences.edit().putBoolean("welcome_notification_sent", true).apply();
@@ -87,10 +78,39 @@ public class NotificationManagerHelper {
 
     public static void sendBookingConfirmationNotification(String userId, Booking booking, String selectedDate, String[] times) {
         String title = context.getString(R.string.booking_confirmed);
-        String message = context.getString(R.string.your_booking_at) + booking.getLocation() + context.getString(R.string.is_confirmed_for) + selectedDate + context.getString(R.string.from) + times[0] + context.getString(R.string.to) + times[1];
-        NotificationHelper.sendNotification(context, title, message, userId);
+        String message = context.getString(R.string.your_booking_at) + " " + booking.getLocation() + " " +
+                context.getString(R.string.is_confirmed_for) + " " + selectedDate + " " +
+                context.getString(R.string.from) + " " + times[0] + " " +
+                context.getString(R.string.to) + " " + times[1];
+        sendNotification(title, message);
     }
 
+    /**
+     * Sends a notification with a given title and message.
+     */
+    public static void sendNotification(String title, String message) {
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
+                .setSmallIcon(R.drawable.notifications)
+                .setContentTitle(title)
+                .setContentText(message)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setAutoCancel(true);
+
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        if (notificationManager != null) {
+            notificationManager.notify((int) System.currentTimeMillis(), builder.build());
+        }
+    }
+
+    /**
+     * Sends a notification for car parking status.
+     */
+    public static void sendCarStatusNotification(boolean isParked) {
+        String title = isParked ? context.getString(R.string.car_parked) : context.getString(R.string.car_moved);
+        String message = isParked ?
+                context.getString(R.string.your_car_is_now_parked) :
+                context.getString(R.string.your_car_has_moved_from_parking);
+
+        sendNotification(title, message);
+    }
 }
-
-

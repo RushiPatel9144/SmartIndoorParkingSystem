@@ -50,7 +50,7 @@ public class ParkingSlot {
     // Method to set status for a specific date and hour
     public void setStatusForHour(String date, int hour, String status) {
         String key = String.format("%s %02d", date, hour); // Format: "YYYY-MM-DD HH"
-        hourlyStatus.put(key, new BookingStatus(status, date));
+        hourlyStatus.put(key, new BookingStatus(status, date, false));
     }
 
     // Method to get status for a specific date and hour

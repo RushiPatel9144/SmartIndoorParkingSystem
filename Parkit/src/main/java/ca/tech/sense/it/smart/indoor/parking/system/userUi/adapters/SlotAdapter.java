@@ -34,15 +34,16 @@ public class SlotAdapter extends ArrayAdapter<String> {
             // Sanitize the slot ID before using it
             String sanitizedSlot = sanitizeSlotId(slot);
 
-            bookingManager.getSlotService().checkSlotAvailability(locationId, sanitizedSlot, selectedDate, selectedHour, status -> {
+            bookingManager.getSlotService().checkSlotAvailability(locationId, sanitizedSlot, selectedDate, selectedHour, (status, carParked) -> {
                 slotStatusMap.put(sanitizedSlot, status); // Use sanitized slot ID
-                Log.d("SlotAdapter", "Slot: " + sanitizedSlot + ", Status: " + status); // Add logging
+                Log.d("SlotAdapter", "Slot: " + sanitizedSlot + ", Status: " + status + ", Car Parked: " + carParked); // Add logging
                 notifyDataSetChanged(); // Refresh the adapter when status is updated
             }, error -> {
                 slotStatusMap.put(sanitizedSlot, "unknown"); // Use sanitized slot ID
                 Log.e("SlotAdapter", "Error checking slot availability for slot: " + sanitizedSlot, error); // Add logging
                 notifyDataSetChanged(); // Refresh the adapter on error
             });
+
         }
     }
 

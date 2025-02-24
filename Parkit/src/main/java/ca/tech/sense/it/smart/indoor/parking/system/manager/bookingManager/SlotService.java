@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import ca.tech.sense.it.smart.indoor.parking.system.model.Promotion;
@@ -62,7 +63,7 @@ public class SlotService {
         }
     }
 
-    public void checkSlotAvailability(String locationId, String slot, String selectedDate, String time, Consumer<String> onStatusChecked, Consumer<Exception> onFailure) {
+    public void checkSlotAvailability(String locationId, String slot, String selectedDate, String time, BiConsumer<String, Boolean> onStatusChecked, Consumer<Exception> onFailure) {
         String sanitizedSlot = sanitizeFirebasePath(slot);
         DatabaseReference slotRef = firebaseDatabase.getReference("parkingLocations")
                 .child(locationId)
@@ -75,7 +76,13 @@ public class SlotService {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 String status = snapshot.child("status").getValue(String.class);
-                onStatusChecked.accept(status);
+                Boolean carParked = snapshot.child("carParked").getValue(Boolean.class);
+
+                if (carParked == null) {
+                    carParked = false; // Default value if not set
+                }
+
+                onStatusChecked.accept(status, carParked);
             }
 
             @Override
@@ -85,21 +92,21 @@ public class SlotService {
         });
     }
 
-    public void updateHourlyStatus(String locationId, String slot, String date, String hour, String status, Runnable onSuccess, Consumer<Exception> onFailure) {
+    public void updateHourlyStatus(String locationId, String slot, String date, String hour, String status, boolean carParked, Runnable onSuccess, Consumer<Exception> onFailure) {
         executorService.submit(() -> {
-            // Sanitize the slot ID to remove invalid characters
             String sanitizedSlot = sanitizeSlotId(slot);
 
             DatabaseReference slotRef = firebaseDatabase.getReference("parkingLocations")
                     .child(locationId)
                     .child("slots")
-                    .child(sanitizedSlot)  // Use sanitized slot ID
+                    .child(sanitizedSlot)
                     .child("hourlyStatus")
                     .child(date + " " + hour);
 
             Map<String, Object> statusUpdate = new HashMap<>();
             statusUpdate.put("bookingDate", date);
             statusUpdate.put("status", status);
+            statusUpdate.put("carParked", carParked); // Ensure carParked is always updated
 
             slotRef.updateChildren(statusUpdate)
                     .addOnSuccessListener(aVoid -> {
@@ -111,6 +118,7 @@ public class SlotService {
                     .addOnFailureListener(onFailure::accept);
         });
     }
+
 
     private void markPromoCodeAsUsedForUser(String locationId, String slot) {
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -151,7 +159,7 @@ public class SlotService {
 
     public void scheduleStatusUpdate(String locationId, String slot, String date, String hour, Runnable onSuccess, Consumer<Exception> onFailure) {
         long delay = BookingUtils.calculateDelay(date + " " + hour);
-        scheduler.schedule(() -> updateHourlyStatus(locationId, slot, date, hour, "available", onSuccess, onFailure), delay, TimeUnit.MILLISECONDS);
+        scheduler.schedule(() -> updateHourlyStatus(locationId, slot, date, hour, "available",false, onSuccess, onFailure), delay, TimeUnit.MILLISECONDS);
     }
 
     public void updateSlotStatusToAvailable(String locationId, String slot, long startTime, long endTime, Runnable onSuccess, Consumer<Exception> onFailure) {
