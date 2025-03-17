@@ -182,7 +182,7 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
     private void fetchAirQualityIndex() {
         // Reference the top-level "airQuality" node
         DatabaseReference airQualityRef = FirebaseDatabase.getInstance()
-                .getReference("airQuality");
+                .getReference("AirQuality");
 
         airQualityRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
