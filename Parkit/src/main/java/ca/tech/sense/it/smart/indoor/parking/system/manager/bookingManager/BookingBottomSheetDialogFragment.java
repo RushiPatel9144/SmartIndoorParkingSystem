@@ -20,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.firebase.auth.FirebaseAuth;
@@ -27,6 +28,9 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 
 import java.text.ParseException;
@@ -342,6 +346,9 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
                     if ("occupied".equals(status)) {
                         Toast.makeText(requireContext(), R.string.slot_already_occupied, Toast.LENGTH_SHORT).show();
                     } else {
+                        // Generate passkey
+                        String generatedPassKey = BookingUtils.generatePassKey();
+
                         // Proceed with booking
                         Booking booking = new Booking(
                                 null,
@@ -355,7 +362,7 @@ public class BookingBottomSheetDialogFragment extends BottomSheetDialogFragment 
                                 selectedCurrency.getCode(),
                                 selectedCurrency.getSymbol(),
                                 selectedSlot,
-                                BookingUtils.generatePassKey(),
+                                generatedPassKey,
                                 locationId,
                                 null
                         );

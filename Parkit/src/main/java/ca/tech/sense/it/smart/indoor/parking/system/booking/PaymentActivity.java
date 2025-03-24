@@ -38,7 +38,9 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -47,6 +49,7 @@ import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.currency.CurrencyManager;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseDatabaseSingleton;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.bookingManager.BookingBottomSheetDialogFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.manager.bookingManager.BookingManager;
 import ca.tech.sense.it.smart.indoor.parking.system.manager.bookingManager.TransactionManager;
 import ca.tech.sense.it.smart.indoor.parking.system.model.Promotion;
@@ -291,6 +294,7 @@ public class PaymentActivity extends AppCompatActivity {
             // Use Handler with Looper.getMainLooper() for a delay
             new Handler(Looper.getMainLooper()).postDelayed(() -> {
                 confirmBooking(); // Confirm the booking
+                savePassKeyUnderLocation(booking.getLocationId(), booking.getPassKey());
                 markPromoCodeAsUsed(); // Mark the promo code as used
                 finish();
                 }, 2000); // 2-second delay
@@ -324,6 +328,46 @@ public class PaymentActivity extends AppCompatActivity {
             showToast(getString(R.string.an_unexpected_error_occurred) + e.getMessage());
         }
     }
+
+    private void savePassKeyUnderLocation(String locationId, String passKey) {
+        DatabaseReference passkeyRef = FirebaseDatabase.getInstance()
+                .getReference("parkingLocations")
+                .child(locationId)
+                .child("passkey");
+
+        passkeyRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                List<String> currentPasskeys = new ArrayList<>();
+
+                // If there's already an array, retrieve it
+                if (snapshot.exists()) {
+                    for (DataSnapshot child : snapshot.getChildren()) {
+                        String value = child.getValue(String.class);
+                        if (value != null) currentPasskeys.add(value);
+                    }
+                }
+
+                // Add new passkey if not present
+                if (!currentPasskeys.contains(passKey)) {
+                    currentPasskeys.add(passKey);
+
+                    // Set it back as an array (Firebase will store it correctly)
+                    passkeyRef.setValue(currentPasskeys)
+                            .addOnSuccessListener(aVoid ->
+                                    Log.d("PassKey", "Passkey saved under location successfully"))
+                            .addOnFailureListener(e ->
+                                    Log.e("PassKey", "Error saving passkey: " + e.getMessage()));
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("PassKey", "Database error: " + error.getMessage());
+            }
+        });
+    }
+
 
     private String formatTimeSlot(long startTime, long endTime) {
         String timeFormat = "HH:mm";

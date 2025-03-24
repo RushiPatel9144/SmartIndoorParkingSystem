@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
-import android.util.Log;
+
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -15,16 +15,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
+
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
+
 import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSingleton;
@@ -168,10 +165,6 @@ public class ParkingTicket extends AppCompatActivity {
         intent.putExtra("booking", booking);
         startActivity(intent);
     }
-
-
-
-
 
     //for map direction
     private void openMap() {

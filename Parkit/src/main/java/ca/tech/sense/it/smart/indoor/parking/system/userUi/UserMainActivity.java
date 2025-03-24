@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 import androidx.activity.OnBackPressedCallback;
@@ -21,12 +22,24 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.launcherActivity.ui.FirstActivity;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.bookingManager.BookingManager;
 import ca.tech.sense.it.smart.indoor.parking.system.manager.notificationManager.NotificationManagerHelper;
 import ca.tech.sense.it.smart.indoor.parking.system.manager.sessionManager.SessionManager;
 import ca.tech.sense.it.smart.indoor.parking.system.manager.themeManager.ThemeManager;
+import ca.tech.sense.it.smart.indoor.parking.system.model.booking.Booking;
 import ca.tech.sense.it.smart.indoor.parking.system.userUi.bottomNav.AccountFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.userUi.bottomNav.Activity;
 import ca.tech.sense.it.smart.indoor.parking.system.userUi.bottomNav.Home;
@@ -46,7 +59,7 @@ public class UserMainActivity extends MenuHandler implements NavigationBarView.O
     private final AccountFragment accountFragment = AccountFragment.newInstance(R.id.flFragment);
     private static final int NOTIFICATION_PERMISSION_CODE = 100;
     private NotificationManagerHelper notificationManagerHelper;
-
+    private BookingManager bookingManager;
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +69,10 @@ public class UserMainActivity extends MenuHandler implements NavigationBarView.O
 
         themeManager = new ThemeManager(this);
         notificationManagerHelper = new NotificationManagerHelper(this);
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        bookingManager = new BookingManager(executorService, firebaseDatabase, firebaseAuth, this);
 
         themeManager.applyTheme();
 
@@ -67,7 +84,16 @@ public class UserMainActivity extends MenuHandler implements NavigationBarView.O
         sessionManager.fetchSessionData((user, owner) -> {
             // You can now use 'user' or 'owner' data for your UI
             if (user != null) {
-                // Use user data
+                // Fetch the user's bookings from Firebase
+                FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+                if (firebaseUser != null) {
+                    String userId = firebaseUser.getUid();
+                    bookingManager.getUserBookings(userId, bookings -> {
+                        for (Booking booking : bookings) {
+                            removeExpiredPassKey(booking.getLocationId(), booking.getPassKey(), booking.getEndTime());
+                        }
+                    });
+                };
             } else if (owner != null) {
                 // Use owner data
             }
@@ -208,6 +234,38 @@ public class UserMainActivity extends MenuHandler implements NavigationBarView.O
             }
         }
     }
+    private void removeExpiredPassKey(String locationId, String passKey, long bookingEndTimeMillis) {
+        long currentTimeMillis = System.currentTimeMillis();
+
+        if (currentTimeMillis > bookingEndTimeMillis) {
+            DatabaseReference passkeyRef = FirebaseDatabase.getInstance()
+                    .getReference("parkingLocations")
+                    .child(locationId)
+                    .child("passkey");
+
+            passkeyRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    List<String> updatedPasskeys = new ArrayList<>();
+                    for (DataSnapshot child : snapshot.getChildren()) {
+                        String value = child.getValue(String.class);
+                        if (value != null && !value.equals(passKey)) {
+                            updatedPasskeys.add(value);
+                        }
+                    }
+
+                    // Save filtered array back
+                    passkeyRef.setValue(updatedPasskeys);
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Log.e("PassKeyCleanup", "Error: " + error.getMessage());
+                }
+            });
+        }
+    }
+
 
 }
 
