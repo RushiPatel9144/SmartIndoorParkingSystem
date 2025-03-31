@@ -57,6 +57,7 @@ public class NfcEmulatorService extends HostApduService {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 NFC_TAG = dataSnapshot.child("nfcTag").getValue(String.class);
                 if (NFC_TAG != null) {
+
                     Log.d(TAG, "NFC Tag retrieved: " + NFC_TAG);
                 } else {
                     Log.d(TAG, "No NFC tag found for the specified booking.");
