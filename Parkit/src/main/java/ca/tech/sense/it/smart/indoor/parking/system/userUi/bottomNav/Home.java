@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.bookingManager.BookingService;
+import ca.tech.sense.it.smart.indoor.parking.system.manager.bookingManager.SlotService;
 import ca.tech.sense.it.smart.indoor.parking.system.userUi.bottomNav.AccountItems.HelpFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.userUi.bottomNav.AccountItems.RateUsFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.userUi.bottomNav.activity.HistoryFragment;
@@ -19,9 +21,13 @@ import ca.tech.sense.it.smart.indoor.parking.system.userUi.menu.PromotionFragmen
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.Calendar;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 public class Home extends Fragment {
 
@@ -40,6 +46,26 @@ public class Home extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         db = FirebaseFirestore.getInstance();
+
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseUser user = auth.getCurrentUser();
+
+        if (user != null) {
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+
+            SlotService slotService = new SlotService(executor, FirebaseDatabase.getInstance(), scheduler,getContext());
+
+            BookingService bookingService = new BookingService(
+                    executor,
+                    FirebaseDatabase.getInstance(),
+                    auth,
+                    this.getContext(),
+                    slotService
+            );
+
+            bookingService.checkAndMonitorActiveBooking(user.getUid()); // 👈
+        }
     }
 
     @Override

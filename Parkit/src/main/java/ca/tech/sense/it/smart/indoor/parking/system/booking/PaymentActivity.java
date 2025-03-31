@@ -15,8 +15,10 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -33,8 +35,10 @@ import com.squareup.okhttp.Response;
 import com.stripe.android.PaymentConfiguration;
 import com.stripe.android.paymentsheet.PaymentSheet;
 import com.stripe.android.paymentsheet.PaymentSheetResult;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
@@ -82,7 +86,7 @@ public class PaymentActivity extends AppCompatActivity {
     private PaymentSheet paymentSheet;
     private double total;
     private String transactionId;
-    private TransactionManager transactionManager ;
+    private TransactionManager transactionManager;
     private String ownerId;
     FirebaseAuth firebaseAuth;
 
@@ -114,7 +118,7 @@ public class PaymentActivity extends AppCompatActivity {
 
         // Fetch the Stripe public key from Firebase and initialize PaymentConfiguration
         initializeStripeKey();
-        
+
         paymentSheet = new PaymentSheet(this, this::onPaymentSheetResult);
         setButtonListeners();
         PromotionHelper.setupPromoCodeEditText(promoCodeEditText, this);
@@ -122,28 +126,25 @@ public class PaymentActivity extends AppCompatActivity {
 
     private void initializeStripeKey() {
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-        firestore.collection(CONFIG_DOCUMENT).document(STRIPE_COLLECTION)
-                .get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists()) {
-                        String publicKey = documentSnapshot.getString("STRIPE_API_KEY");
-                        if (publicKey != null) {
-                            // Initialize PaymentConfiguration with the fetched public key
-                            PaymentConfiguration.init(getApplicationContext(), publicKey);
-                            Log.d("PaymentActivity", "Stripe Key Initialized: " + publicKey);
-                        } else {
-                            showToast("Stripe public key not found in Firebase.");
-                            Log.e("PaymentActivity", "Stripe public key not found in Firebase.");
-                        }
-                    } else {
-                        showToast("Stripe document not found in Firebase.");
-                        Log.e("PaymentActivity", "Stripe document not found in Firebase.");
-                    }
-                })
-                .addOnFailureListener(e -> {
-                    showToast("Failed to fetch Stripe key: ");
-                    Log.e("PaymentActivity", "Failed to fetch Stripe key: " + e.getMessage());
-                });
+        firestore.collection(CONFIG_DOCUMENT).document(STRIPE_COLLECTION).get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                String publicKey = documentSnapshot.getString("STRIPE_API_KEY");
+                if (publicKey != null) {
+                    // Initialize PaymentConfiguration with the fetched public key
+                    PaymentConfiguration.init(getApplicationContext(), publicKey);
+                    Log.d("PaymentActivity", "Stripe Key Initialized: " + publicKey);
+                } else {
+                    showToast("Stripe public key not found in Firebase.");
+                    Log.e("PaymentActivity", "Stripe public key not found in Firebase.");
+                }
+            } else {
+                showToast("Stripe document not found in Firebase.");
+                Log.e("PaymentActivity", "Stripe document not found in Firebase.");
+            }
+        }).addOnFailureListener(e -> {
+            showToast("Failed to fetch Stripe key: ");
+            Log.e("PaymentActivity", "Failed to fetch Stripe key: " + e.getMessage());
+        });
     }
 
     private void initializeUIElements() {
@@ -174,8 +175,7 @@ public class PaymentActivity extends AppCompatActivity {
         applyPromoCodeButton.setOnClickListener(v -> {
             String promoCode = promoCodeEditText.getText().toString().trim();
             if (!promoCode.isEmpty()) {
-                PromotionHelper.applyPromoCode(promoCode, new PromotionHelper.PromoCallback()
-                {
+                PromotionHelper.applyPromoCode(promoCode, new PromotionHelper.PromoCallback() {
                     @Override
                     public void onSuccess(double discountAmount) {
                         applyDiscount(discountAmount);
@@ -210,16 +210,16 @@ public class PaymentActivity extends AppCompatActivity {
             String currencySymbol = booking.getCurrencySymbol();
             double subtotal = booking.getPrice();
             double gstHst = subtotal * 0.13;
-            double platformFee =  subtotal * 0.10 ;
-            double discountAmount = ( discountPercent * subtotal ) / 100;
+            double platformFee = subtotal * 0.10;
+            double discountAmount = (discountPercent * subtotal) / 100;
             double totalBeforeDiscount = subtotal + gstHst + platformFee;
             total = totalBeforeDiscount - discountAmount;
 
             booking.setTotalPrice(CurrencyManager.getInstance().convertToCAD(total, booking.getCurrencyCode()));
-            subtotalTextView.setText(String.format(Locale.getDefault(), "%s %.2f",currencySymbol, subtotal));
-            gstHstTextView.setText(String.format(Locale.getDefault(), "%s %.2f",currencySymbol, gstHst));
-            platformFeeTextView.setText(String.format(Locale.getDefault(), "%s %.2f",currencySymbol, platformFee));
-            totalTextView.setText(String.format(Locale.getDefault(), "%s %.2f",currencySymbol, total));
+            subtotalTextView.setText(String.format(Locale.getDefault(), "%s %.2f", currencySymbol, subtotal));
+            gstHstTextView.setText(String.format(Locale.getDefault(), "%s %.2f", currencySymbol, gstHst));
+            platformFeeTextView.setText(String.format(Locale.getDefault(), "%s %.2f", currencySymbol, platformFee));
+            totalTextView.setText(String.format(Locale.getDefault(), "%s %.2f", currencySymbol, total));
 
             if (discountAmount > 0) {
                 promotionTextView.setText(String.format(Locale.getDefault(), "-%s %.2f", currencySymbol, discountAmount));
@@ -236,8 +236,6 @@ public class PaymentActivity extends AppCompatActivity {
     }
 
 
-
-
     private void fetchClientSecret(double price, Booking booking) {
         OkHttpClient client = new OkHttpClient();
         String url = "https://parkit-cd4c2ec26f90.herokuapp.com/create-payment-intent";
@@ -252,13 +250,9 @@ public class PaymentActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        RequestBody body = RequestBody.create(
-                MediaType.parse("application/json"), jsonRequest.toString());
+        RequestBody body = RequestBody.create(MediaType.parse("application/json"), jsonRequest.toString());
 
-        Request request = new Request.Builder()
-                .url(url)
-                .post(body)
-                .build();
+        Request request = new Request.Builder().url(url).post(body).build();
 
         client.newCall(request).enqueue(new Callback() {
             @Override
@@ -297,7 +291,7 @@ public class PaymentActivity extends AppCompatActivity {
                 savePassKeyUnderLocation(booking.getLocationId(), booking.getPassKey());
                 markPromoCodeAsUsed(); // Mark the promo code as used
                 finish();
-                }, 2000); // 2-second delay
+            }, 2000); // 2-second delay
         } else if (paymentSheetResult instanceof PaymentSheetResult.Failed) {
             showToast(getString(R.string.payment_failed) + ((PaymentSheetResult.Failed) paymentSheetResult).getError());
             finish();
@@ -330,10 +324,7 @@ public class PaymentActivity extends AppCompatActivity {
     }
 
     private void savePassKeyUnderLocation(String locationId, String passKey) {
-        DatabaseReference passkeyRef = FirebaseDatabase.getInstance()
-                .getReference("parkingLocations")
-                .child(locationId)
-                .child("passkey");
+        DatabaseReference passkeyRef = FirebaseDatabase.getInstance().getReference("parkingLocations").child(locationId).child("passkey");
 
         passkeyRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -353,11 +344,7 @@ public class PaymentActivity extends AppCompatActivity {
                     currentPasskeys.add(passKey);
 
                     // Set it back as an array (Firebase will store it correctly)
-                    passkeyRef.setValue(currentPasskeys)
-                            .addOnSuccessListener(aVoid ->
-                                    Log.d("PassKey", "Passkey saved under location successfully"))
-                            .addOnFailureListener(e ->
-                                    Log.e("PassKey", "Error saving passkey: " + e.getMessage()));
+                    passkeyRef.setValue(currentPasskeys).addOnSuccessListener(aVoid -> Log.d("PassKey", "Passkey saved under location successfully")).addOnFailureListener(e -> Log.e("PassKey", "Error saving passkey: " + e.getMessage()));
                 }
             }
 
@@ -386,19 +373,12 @@ public class PaymentActivity extends AppCompatActivity {
     }
 
     private void confirmBookingInService(String transactionId, String selectedTimeSlot, String selectedDate) {
-        bookingManager.getBookingService().confirmBooking(
-                transactionId,
-                selectedTimeSlot,
-                selectedDate,
-                booking,
-                this::onBookingConfirmed,
-                this::onBookingConfirmationError
-        );
+        bookingManager.getBookingService().confirmBooking(transactionId, selectedTimeSlot, selectedDate, booking, this::onBookingConfirmed, this::onBookingConfirmationError);
     }
 
     private void onBookingConfirmed() {
         showToast(getString(R.string.booking_confirmed));
-        
+
 //        handlePromoCode();
         //navigateToConfirmationPage();
     }

@@ -3,6 +3,7 @@ package ca.tech.sense.it.smart.indoor.parking.system.manager.bookingManager;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
@@ -91,7 +92,11 @@ public class BookingService {
                 slotService.updateHourlyStatus(locationId, slot, selectedDate, times[0], "occupied", false, () -> {
                     slotService.scheduleStatusUpdate(locationId, slot, selectedDate, times[1], onSuccess, onFailure);
                     Toast.makeText(context, context.getString(R.string.booking_confirmed), Toast.LENGTH_SHORT).show();
-                    monitorCarParkedStatus(locationId, slot, selectedDate, times[0]);
+
+                    SharedPreferences prefs = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+                    prefs.edit().putBoolean("hasActiveBooking", true).apply();
+
+                    Log.d("BookingService", "Booking confirmed. Monitoring will start at booking time.");
                     Intent intent = new Intent(context, ParkingTicket.class);
                     intent.putExtra("booking", booking);
                     context.startActivity(intent);
@@ -104,8 +109,43 @@ public class BookingService {
         }
     }
 
-    private void monitorCarParkedStatus(String locationId, String slot, String selectedDate, String bookingTime) {
-        carParkedRef = firebaseDatabase.getReference("parkingLocations").child(locationId).child("slots").child(slot).child("hourlyStatus").child(selectedDate + " " + bookingTime).child("carParked");
+    private void monitorCarParkedStatus() {
+        String userId = Objects.requireNonNull(firebaseAuth.getCurrentUser()).getUid();
+
+        DatabaseReference bookingsRef = firebaseDatabase.getReference("users")
+                .child(userId)
+                .child("bookings");
+
+        bookingsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                long now = System.currentTimeMillis();
+                boolean hasActiveBooking = false;
+
+                for (DataSnapshot bookingSnapshot : snapshot.getChildren()) {
+                    Booking booking = bookingSnapshot.getValue(Booking.class);
+                    if (booking != null && booking.getStartTime() <= now && booking.getEndTime() >= now) {
+                        hasActiveBooking = true;
+                        break;
+                    }
+                }
+
+                if (hasActiveBooking) {
+                    listenForCarDetected(); // ✅ Start listening
+                } else {
+                    Log.d("CarParkedStatus", "No active booking. Skipping car detection listener.");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("CarParkedStatus", "Failed to read bookings", error.toException());
+            }
+        });
+    }
+
+    private void listenForCarDetected() {
+        carParkedRef = firebaseDatabase.getReference("Parking").child("car_detected");
 
         if (carParkedListener != null) {
             carParkedRef.removeEventListener(carParkedListener);
@@ -117,18 +157,47 @@ public class BookingService {
                 if (snapshot.exists()) {
                     Boolean carParked = snapshot.getValue(Boolean.class);
                     if (carParked != null) {
-                        NotificationManagerHelper.sendCarStatusNotification(carParked);
-                        Log.d("CarParkedStatus", "Car parked status updated: " + carParked);
+                        NotificationManagerHelper.sendCarStatusNotification(context, carParked);
+                        Log.d("CarParkedStatus", "Car detected: " + carParked);
                     }
                 }
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Log.e("CarParkedStatus", "Failed to read carParked status", error.toException());
+                Log.e("CarParkedStatus", "Failed to read car_detected status", error.toException());
             }
         };
+
         carParkedRef.addValueEventListener(carParkedListener);
     }
+
+
+
+    public void checkAndMonitorActiveBooking(String userId) {
+        DatabaseReference bookingRef = firebaseDatabase.getReference("users").child(userId).child("bookings");
+
+        bookingRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                long currentTime = System.currentTimeMillis();
+
+                for (DataSnapshot bookingSnapshot : snapshot.getChildren()) {
+                    Booking booking = bookingSnapshot.getValue(Booking.class);
+                    if (booking != null && booking.getStartTime() <= currentTime && booking.getEndTime() >= currentTime) {
+                        monitorCarParkedStatus(); // 👈 only called if booking is active
+                        break;
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("BookingCheck", "Failed to fetch bookings", error.toException());
+            }
+        });
+    }
+
 
     public void updateTotalPrice(String userId, String bookingId, double totalPrice) {
         DatabaseReference databaseRef = firebaseDatabase

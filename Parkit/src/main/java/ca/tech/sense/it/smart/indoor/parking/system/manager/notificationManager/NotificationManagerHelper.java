@@ -6,11 +6,9 @@ import android.content.SharedPreferences;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import java.util.Objects;
-
 import ca.tech.sense.it.smart.indoor.parking.system.R;
 import ca.tech.sense.it.smart.indoor.parking.system.model.booking.Booking;
-import ca.tech.sense.it.smart.indoor.parking.system.utility.NotificationHelper;
+
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import androidx.core.app.NotificationCompat;
@@ -105,11 +103,11 @@ public class NotificationManagerHelper {
     /**
      * Sends a notification for car parking status.
      */
-    public static void sendCarStatusNotification(boolean isParked) {
-        String title = isParked ? context.getString(R.string.car_parked) : context.getString(R.string.car_moved);
+    public static void sendCarStatusNotification(Context context, boolean isParked) {
+        String title = isParked ? NotificationManagerHelper.context.getString(R.string.car_parked) : NotificationManagerHelper.context.getString(R.string.car_moved);
         String message = isParked ?
-                context.getString(R.string.your_car_is_now_parked) :
-                context.getString(R.string.your_car_has_moved_from_parking);
+                NotificationManagerHelper.context.getString(R.string.your_car_is_now_parked) :
+                NotificationManagerHelper.context.getString(R.string.your_car_has_moved_from_parking);
 
         sendNotification(title, message);
     }

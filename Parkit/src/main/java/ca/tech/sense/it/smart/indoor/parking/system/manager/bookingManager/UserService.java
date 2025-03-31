@@ -1,5 +1,8 @@
 package ca.tech.sense.it.smart.indoor.parking.system.manager.bookingManager;
 
+import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import com.google.firebase.auth.FirebaseAuth;
@@ -39,12 +42,14 @@ public class UserService {
     private TransactionManager transactionManager;
     private static final String COLLECTION = "users";
     private static final String PATH = "bookings";
+    private Context context = null;
 
 
     public UserService(ExecutorService executorService, FirebaseDatabase firebaseDatabase, FirebaseAuth firebaseAuth) {
         this.executorService = executorService;
         this.firebaseDatabase = firebaseDatabase;
         this.firebaseAuth = firebaseAuth;
+        this.context = context;
 
     }
 
@@ -152,7 +157,7 @@ public class UserService {
                     bookingRef.removeValue()
                             .addOnSuccessListener(aVoid -> {
                                 // Update the slot status to "available"
-                                SlotService slotService = new SlotService(executorService, firebaseDatabase, Executors.newScheduledThreadPool(1));
+                                SlotService slotService = new SlotService(executorService, firebaseDatabase, Executors.newScheduledThreadPool(1),context);
                                 slotService.updateSlotStatusToAvailable(booking.getLocationId(), booking.getSlotNumber(), booking.getStartTime(), booking.getEndTime(), onSuccess, onFailure);
                             })
                             .addOnFailureListener(onFailure::accept);
@@ -189,7 +194,7 @@ public class UserService {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Request request, IOException e) {
-                new android.os.Handler(android.os.Looper.getMainLooper())
+                new Handler(Looper.getMainLooper())
                         .post(() -> onFailure.accept(new Exception("Failed to connect to server for refund")));
             }
             @Override
@@ -201,18 +206,18 @@ public class UserService {
                         String refundId = responseJson.optString("refundId");
                         if (!refundId.isEmpty()) {
                             final String finalRefundId = refundId;
-                            new android.os.Handler(android.os.Looper.getMainLooper())
+                            new Handler(Looper.getMainLooper())
                                     .post(() -> onSuccess.accept(finalRefundId));
                         } else {
-                            new android.os.Handler(android.os.Looper.getMainLooper())
+                            new Handler(Looper.getMainLooper())
                                     .post(() -> onFailure.accept(new Exception("Refund ID not found in response")));
                         }
                     } catch (Exception e) {
-                        new android.os.Handler(android.os.Looper.getMainLooper())
+                        new Handler(Looper.getMainLooper())
                                 .post(() -> onFailure.accept(new Exception("Error processing response: " + e.getMessage())));
                     }
                 } else {
-                    new android.os.Handler(android.os.Looper.getMainLooper())
+                    new Handler(Looper.getMainLooper())
                             .post(() -> onFailure.accept(new Exception("Server error: " + response.message())));
                 }
             }

@@ -1,5 +1,7 @@
 package ca.tech.sense.it.smart.indoor.parking.system.manager.bookingManager;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -30,11 +32,14 @@ public class SlotService {
     private final ExecutorService executorService;
     private final FirebaseDatabase firebaseDatabase;
     private final ScheduledExecutorService scheduler;
+    private final Context context;
 
-    public SlotService(ExecutorService executorService, FirebaseDatabase firebaseDatabase, ScheduledExecutorService scheduler) {
+
+    public SlotService(ExecutorService executorService, FirebaseDatabase firebaseDatabase, ScheduledExecutorService scheduler, Context context) {
         this.executorService = executorService;
         this.firebaseDatabase = firebaseDatabase;
         this.scheduler = scheduler;
+        this.context = context; // store context
     }
 
     // Method to fetch the price of a parking location from Firebase
@@ -112,6 +117,10 @@ public class SlotService {
                     .addOnSuccessListener(aVoid -> {
                         if ("occupied".equals(status)) {
                             markPromoCodeAsUsedForUser(locationId, sanitizedSlot);
+                        } else if ("available".equals(status)) {
+                            // Booking ended — clear active booking flag
+                            SharedPreferences prefs = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+                            prefs.edit().putBoolean("hasActiveBooking", false).apply();
                         }
                         onSuccess.run();
                     })

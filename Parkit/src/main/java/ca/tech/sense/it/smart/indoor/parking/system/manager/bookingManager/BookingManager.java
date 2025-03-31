@@ -34,7 +34,7 @@ public class BookingManager {
      */
     public BookingManager(ExecutorService executorService, FirebaseDatabase firebaseDatabase, FirebaseAuth firebaseAuth, Context context) {
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-        this.slotService = new SlotService(executorService, firebaseDatabase, scheduler);
+        this.slotService = new SlotService(executorService, firebaseDatabase, scheduler,context);
         this.bookingService = new BookingService(executorService, firebaseDatabase, firebaseAuth, context, slotService);
         this.userService = new UserService(executorService, firebaseDatabase, firebaseAuth);
     }
