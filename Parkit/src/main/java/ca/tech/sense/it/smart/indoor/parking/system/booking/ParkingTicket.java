@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.bluetooth.BluetoothConnectivityActvity;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseDatabaseSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.model.booking.Booking;
@@ -88,7 +89,7 @@ public class ParkingTicket extends AppCompatActivity {
 
         cancelButton.setOnClickListener(v -> finish());
         getDirectionButton.setOnClickListener(v -> openMap());
-        NFCButton.setOnClickListener(v -> navigateToNfcEmulator());
+        NFCButton.setOnClickListener(v -> navigateToBluetoothConnectivityActivity());
     }
 
     //1
@@ -160,8 +161,8 @@ public class ParkingTicket extends AppCompatActivity {
         return start + " - " + end;
     }
 
-    public void navigateToNfcEmulator() {
-        Intent intent = new Intent(this, BookingConfirmationActivity.class);
+    public void navigateToBluetoothConnectivityActivity() {
+        Intent intent = new Intent(this, BluetoothConnectivityActvity.class);
         intent.putExtra("booking", booking);
         startActivity(intent);
     }

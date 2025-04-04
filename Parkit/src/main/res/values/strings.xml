@@ -610,4 +610,5 @@
     <string name="car_moved">Car Moved\n</string>
     <string name="your_car_is_now_parked">Your car is Parked now</string>
     <string name="your_car_has_moved_from_parking">Your car has moved from Parking</string>
+    <string name="access">Access</string>
 </resources>

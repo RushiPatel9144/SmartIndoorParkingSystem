@@ -5,22 +5,17 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <uses-permission android:name="android.permission.NFC" />
 
-    <uses-feature
-        android:name="android.hardware.nfc"
-        android:required="true" />
-    <uses-feature
-        android:name="android.hardware.nfc.hce"
-        android:required="true" />
-
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
     <uses-permission
         android:name="android.permission.READ_MEDIA_IMAGES"
         tools:ignore="SelectedPhotoAccess" />
-
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -29,6 +24,7 @@
 
     <application
         android:allowBackup="true"
+        android:usesCleartextTraffic="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
@@ -37,20 +33,10 @@
         android:supportsRtl="true"
         android:theme="@style/Base.Theme.SmartIndoorParkingSystem"
         tools:targetApi="31">
-        <service
-            android:name=".booking.NfcEmulatorService"
-            android:permission="android.permission.BIND_NFC_SERVICE"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.nfc.cardemulation.action.HOST_APDU_SERVICE" />
-            </intent-filter>
-            <meta-data android:name="android.nfc.cardemulation.host_apdu_service" android:resource="@xml/nfc_technical_profile"/>
-        </service>
-
-
         <activity
-            android:name=".booking.BookingConfirmationActivity"
+            android:name=".bluetooth.BluetoothConnectivityActvity"
             android:exported="false" />
+
         <activity
             android:name=".ownerUi.bottomNav.location.handleSlot.AddSlotActivity"
             android:exported="false" />
@@ -132,7 +118,6 @@
         <meta-data
             android:name="com.google.android.gms.wallet.api.enabled"
             android:value="true" />
-
     </application>
 
 </manifest>

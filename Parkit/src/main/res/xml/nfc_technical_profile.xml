@@ -1,9 +1,0 @@
-<host-apdu-service xmlns:android="http://schemas.android.com/apk/res/android"
-    android:requireDeviceUnlock="false" android:description="@string/servicetag_in_nfctechnical_profilexml">
-
-    <!-- Define the AID (Application Identifier) that your service will respond to -->
-    <aid-group android:description="@string/servicetag_in_nfctechnical_profilexml"
-        android:category="other">
-        <aid-filter android:name="F0010203040506" />
-    </aid-group>
-</host-apdu-service>

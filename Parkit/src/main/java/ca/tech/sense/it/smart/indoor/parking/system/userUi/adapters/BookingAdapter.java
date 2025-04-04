@@ -5,11 +5,8 @@
  */
 package ca.tech.sense.it.smart.indoor.parking.system.userUi.adapters;
 
-import static androidx.core.content.ContentProviderCompat.requireContext;
-
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,9 +23,6 @@ import java.util.List;
 import java.util.Locale;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
-import ca.tech.sense.it.smart.indoor.parking.system.booking.BookingConfirmationActivity;
-import ca.tech.sense.it.smart.indoor.parking.system.booking.NfcEmulatorService;
-import ca.tech.sense.it.smart.indoor.parking.system.booking.ParkingTicket;
 import ca.tech.sense.it.smart.indoor.parking.system.model.booking.Booking;
 import ca.tech.sense.it.smart.indoor.parking.system.model.booking.BookingViewModel;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;

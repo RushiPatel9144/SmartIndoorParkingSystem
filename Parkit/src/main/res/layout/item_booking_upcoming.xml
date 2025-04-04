@@ -163,9 +163,9 @@
                 <Button
                     app:cornerRadius="30dp"
                     android:id="@+id/cancel_button"
-                    android:layout_width="175dp"
+                    android:layout_width="140dp"
                     android:layout_height="wrap_content"
-                    android:text="Cancel Booking"
+                    android:text="Cancel"
                     android:textStyle="bold"
                     android:backgroundTint="@android:color/holo_red_dark"
                     android:textColor="@android:color/white"
@@ -176,9 +176,9 @@
                 <!-- Cancel Button -->
                 <Button
                     android:id="@+id/NFC_button_upcomingBooking"
-                    android:layout_width="170dp"
+                    android:layout_width="140dp"
                     android:layout_height="wrap_content"
-                    android:text="NFC"
+                    android:text="@string/access"
                     app:cornerRadius="30dp"
                     android:textStyle="bold"
                     android:backgroundTint="@color/theme"

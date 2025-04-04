@@ -157,7 +157,7 @@
                 android:id="@+id/NFC_button_ActiveBooking"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="NFC"
+                android:text="@string/access"
                 app:cornerRadius="32dp"
                 android:textStyle="bold"
                 android:backgroundTint="@color/theme"

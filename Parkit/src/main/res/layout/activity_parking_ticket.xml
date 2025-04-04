@@ -203,7 +203,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
                     android:layout_weight="1"
-                    android:text="NFC"
+                    android:text="@string/access"
                     app:cornerRadius="30dp"
                     android:backgroundTint="@color/black"
                     android:textColor="@color/white" />
