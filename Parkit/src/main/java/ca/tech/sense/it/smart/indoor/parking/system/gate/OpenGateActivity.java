@@ -26,7 +26,7 @@ import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSinglet
 
 public class OpenGateActivity extends AppCompatActivity {
 
-    private TextView statusTextView;
+    private TextView statusTextView,tempratureTextView,airQualityTextView,carDetectedTextView;
     private Button gateButton;
     private DatabaseReference gateRef;
     private String bookingId;
@@ -62,10 +62,66 @@ public class OpenGateActivity extends AppCompatActivity {
 
         // Fetch location ID from Firebase based on booking ID
         fetchLocationId(bookingId);
+        fetchSensorData();
+    }
+
+    private void fetchSensorData() {
+        DatabaseReference sensorDataRef = FirebaseDatabase.getInstance().getReference();
+
+// Fetching air quality data
+        // Fetching air quality index data continuously
+        sensorDataRef.child("AirQuality").child("iaq_index").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    Double iaqIndex = snapshot.getValue(Double.class);
+                    if (iaqIndex != null) {
+                        // Round the value to the nearest integer
+                        int roundedIaqIndex = (int) Math.round(iaqIndex);
+                        airQualityTextView.setText("Air Quality Index: " + String.valueOf(roundedIaqIndex)); // Set the rounded value
+                    } else {
+                        airQualityTextView.setText("Air Quality Index: No data");
+                    }
+                } else {
+                    airQualityTextView.setText("Air Quality Index: No data");
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                Log.e("AirQuality", "Error fetching air quality data: " + error.getMessage());
+            }
+        });
+
+// Fetching car detected data continuously
+        sensorDataRef.child("Parking").child("car_detected").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    Boolean carDetected = snapshot.getValue(Boolean.class);
+                    if (carDetected != null) {
+                        carDetectedTextView.setText(carDetected ? "Car Detected: Yes" : "Car Detected: No");
+                    } else {
+                        carDetectedTextView.setText("Car Detected: No data");
+                    }
+                } else {
+                    carDetectedTextView.setText("Car Detected: No data");
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                Log.e("Parking", "Error fetching car detected data: " + error.getMessage());
+            }
+        });
+
     }
 
     private void initializeUI() {
         statusTextView = findViewById(R.id.txtStatus);
+        tempratureTextView = findViewById(R.id.temperature);
+        airQualityTextView = findViewById(R.id.airQuality);
+        carDetectedTextView = findViewById(R.id.carDetected);
         backButton = findViewById(R.id.btn_back);
         gateButton = findViewById(R.id.btnOpenGate);
         gateButton.setEnabled(false); // Disable button until location ID is fetched

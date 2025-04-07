@@ -5,8 +5,8 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:theme="@style/LocationFragment"
     tools:context=".gate.OpenGateActivity">
-
 
 
     <!-- Button to trigger the gate opening -->
@@ -14,6 +14,8 @@
         android:id="@+id/btnOpenGate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="@drawable/blur_button_bg"
+
         android:text="OPEN GATE"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -46,7 +48,7 @@
         android:layout_marginBottom="56dp"
         android:fontFamily="@font/poppins_medium"
         android:paddingTop="20dp"
-        android:text="GATE STATUS"
+        android:text="Gate Closed"
         android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/btnOpenGate"
@@ -55,5 +57,74 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:elevation="16dp"
+        app:cardBackgroundColor="@color/bg_dark"
+        app:cardCornerRadius="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.13">
+
+        <!-- Inside the CardView, we have a LinearLayout to arrange text views vertically -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="start"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Sensor Information Title -->
+            <TextView
+                android:id="@+id/sensorTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="Parking Lot Information"
+                android:textColor="@color/lightGray"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <!-- Sensor Data: Temperature -->
+            <TextView
+                android:id="@+id/temperature"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:text="Temperature: 24°C"
+                android:textColor="@android:color/white"
+                android:textSize="16sp" />
+
+            <!-- Sensor Data: Humidity -->
+            <TextView
+                android:id="@+id/carDetected"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:text="Car Detected: Yes"
+                android:textColor="@android:color/white"
+                android:textSize="16sp" />
+
+            <!-- Sensor Data: Light -->
+            <TextView
+                android:id="@+id/airQuality"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:text="Air Quality Index: 75%"
+                android:textColor="@android:color/white"
+                android:textSize="16sp" />
+
+            <!-- Add more TextViews here for other sensor data as required -->
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
