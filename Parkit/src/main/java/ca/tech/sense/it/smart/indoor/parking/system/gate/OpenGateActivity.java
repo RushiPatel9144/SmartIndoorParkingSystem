@@ -183,8 +183,6 @@ public class OpenGateActivity extends AppCompatActivity {
         gateRef.setValue(true).addOnSuccessListener(unused -> {
             // Successfully opened the gate, now start countdown and close the gate after 5 seconds
             new Handler().postDelayed(() -> {
-                gateRef.setValue(false); // Close Gate after 5 sec
-
                 statusTextView.setText("Parking Gate Closing...");
             }, 5000); // 5 seconds delay before closing
 
