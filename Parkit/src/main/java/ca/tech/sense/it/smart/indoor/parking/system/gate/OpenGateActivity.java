@@ -100,7 +100,7 @@ public class OpenGateActivity extends AppCompatActivity {
                 if (snapshot.exists()) {
                     Boolean carDetected = snapshot.getValue(Boolean.class);
                     if (carDetected != null) {
-                        carDetectedTextView.setText(carDetected ? "Car Detected: Yes" : "Car Detected: No");
+                        carDetectedTextView.setText(carDetected ? "Car is detected" : "Car is not detected");
                     } else {
                         carDetectedTextView.setText("Car Detected: No data");
                     }
@@ -176,7 +176,7 @@ public class OpenGateActivity extends AppCompatActivity {
             return;
         }
 
-        statusTextView.setText("Gate Opening...");
+        statusTextView.setText("Parking Gate Opening...");
         gateButton.setEnabled(false);
 
         // Open the gate in Firebase
@@ -185,11 +185,11 @@ public class OpenGateActivity extends AppCompatActivity {
             new Handler().postDelayed(() -> {
                 gateRef.setValue(false); // Close Gate after 5 sec
 
-                statusTextView.setText("Gate Closing...");
+                statusTextView.setText("Parking Gate Closing...");
             }, 5000); // 5 seconds delay before closing
 
             new Handler().postDelayed(() -> {
-                statusTextView.setText("Gate Closed");
+                statusTextView.setText("Parking Gate Closed");
                 gateButton.setEnabled(true); // Re-enable button
             }, 8000); // 5 seconds delay before closing
         }).addOnFailureListener(e -> {
