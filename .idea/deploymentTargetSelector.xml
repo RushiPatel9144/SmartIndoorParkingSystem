@@ -4,10 +4,10 @@
     <selectionStates>
       <SelectionState runConfigName="Parkit">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-03-30T06:02:51.161903300Z">
+        <DropdownSelection timestamp="2025-04-04T20:01:22.921133Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\kunal\.android\avd\Pixel_8a_API_31.avd" />
+              <DeviceId pluginId="PhysicalDevice" identifier="serial=55a14967" />
             </handle>
           </Target>
         </DropdownSelection>

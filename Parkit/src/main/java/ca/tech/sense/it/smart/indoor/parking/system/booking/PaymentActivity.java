@@ -50,10 +50,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.gate.OpenGateActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.currency.CurrencyManager;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseDatabaseSingleton;
-import ca.tech.sense.it.smart.indoor.parking.system.manager.bookingManager.BookingBottomSheetDialogFragment;
 import ca.tech.sense.it.smart.indoor.parking.system.manager.bookingManager.BookingManager;
 import ca.tech.sense.it.smart.indoor.parking.system.manager.bookingManager.TransactionManager;
 import ca.tech.sense.it.smart.indoor.parking.system.model.Promotion;
@@ -384,7 +384,7 @@ public class PaymentActivity extends AppCompatActivity {
     }
 
     public void navigateToConfirmationPage() {
-        Intent intent = new Intent(PaymentActivity.this, BookingConfirmationActivity.class);
+        Intent intent = new Intent(PaymentActivity.this, OpenGateActivity.class);
         intent.putExtra("booking", booking);  // Pass booking details to the next activity
         startActivity(intent);
     }

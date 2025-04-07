@@ -24,7 +24,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
-import ca.tech.sense.it.smart.indoor.parking.system.bluetooth.BluetoothConnectivityActvity;
+import ca.tech.sense.it.smart.indoor.parking.system.gate.OpenGateActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseAuthSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.firebase.FirebaseDatabaseSingleton;
 import ca.tech.sense.it.smart.indoor.parking.system.model.booking.Booking;
@@ -37,7 +37,7 @@ public class ParkingTicket extends AppCompatActivity {
     private TextView parkingTimeText;
     private TextView priceTitle;
     private TextView priceText;
-    private TextView NFCButton;
+    private TextView GateButton;
     private ProgressBar progressBar;
     private String address;  // Holds the address value
     private String NFC_TAG;
@@ -80,7 +80,7 @@ public class ParkingTicket extends AppCompatActivity {
         priceTitle = findViewById(R.id.priceTitle);
         priceText = findViewById(R.id.priceText);
         progressBar = findViewById(R.id.progressBar);
-        NFCButton = findViewById(R.id.NFCButton_ParkingTicket);
+        GateButton = findViewById(R.id.AccessBTN_ParkingTicket);
 
     }
     private void setUpButtonListeners() {
@@ -89,7 +89,7 @@ public class ParkingTicket extends AppCompatActivity {
 
         cancelButton.setOnClickListener(v -> finish());
         getDirectionButton.setOnClickListener(v -> openMap());
-        NFCButton.setOnClickListener(v -> navigateToBluetoothConnectivityActivity());
+        GateButton.setOnClickListener(v -> navigateToOpenGateActivity());
     }
 
     //1
@@ -161,9 +161,9 @@ public class ParkingTicket extends AppCompatActivity {
         return start + " - " + end;
     }
 
-    public void navigateToBluetoothConnectivityActivity() {
-        Intent intent = new Intent(this, BluetoothConnectivityActvity.class);
-        intent.putExtra("booking", booking);
+    public void navigateToOpenGateActivity() {
+        Intent intent = new Intent(this, OpenGateActivity.class);
+        intent.putExtra("bookingId", booking.getId());
         startActivity(intent);
     }
 

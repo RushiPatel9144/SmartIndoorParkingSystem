@@ -175,7 +175,7 @@
                     android:elevation="4dp" />
                 <!-- Cancel Button -->
                 <Button
-                    android:id="@+id/NFC_button_upcomingBooking"
+                    android:id="@+id/gate_button_upcomingBooking"
                     android:layout_width="140dp"
                     android:layout_height="wrap_content"
                     android:text="@string/access"

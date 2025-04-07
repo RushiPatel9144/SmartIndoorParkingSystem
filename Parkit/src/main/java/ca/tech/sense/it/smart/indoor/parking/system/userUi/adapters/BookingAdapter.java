@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Locale;
 
 import ca.tech.sense.it.smart.indoor.parking.system.R;
+import ca.tech.sense.it.smart.indoor.parking.system.gate.OpenGateActivity;
 import ca.tech.sense.it.smart.indoor.parking.system.model.booking.Booking;
 import ca.tech.sense.it.smart.indoor.parking.system.model.booking.BookingViewModel;
 import ca.tech.sense.it.smart.indoor.parking.system.utility.DialogUtil;
@@ -88,8 +89,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingV
             bookingPrice = itemView.findViewById(R.id.booking_price);
             bookingPassKey = itemView.findViewById(R.id.booking_pass_key);
             Button cancelButton = itemView.findViewById(R.id.cancel_button);
-            Button NfcButton = itemView.findViewById(R.id.NFC_button_upcomingBooking);
-            Button NfcButton2 = itemView.findViewById(R.id.NFC_button_ActiveBooking);
+            Button AccessButton = itemView.findViewById(R.id.gate_button_upcomingBooking);
+            Button AccessButton2 = itemView.findViewById(R.id.gate_button_ActiveBooking);
 
             if (cancelButton != null) {
                 cancelButton.setOnClickListener(v -> {
@@ -100,29 +101,29 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingV
                     }
                 });
             }
-            if (NfcButton != null) {
+            if (AccessButton != null) {
                 //nfc button pressed
-                NfcButton.setOnClickListener(v -> {
+                AccessButton.setOnClickListener(v -> {
                     int position = getBindingAdapterPosition();
                     if (position != RecyclerView.NO_POSITION) {
                         Booking booking = bookingList.get(position);
                         Context context = itemView.getContext();
-                        Intent intent = new Intent(context, BookingConfirmationActivity.class);
-                        intent.putExtra("booking", booking);
+                        Intent intent = new Intent(context, OpenGateActivity.class);
+                        intent.putExtra("bookingId", booking.getId());
                         context.startActivity(intent);
                     }
                 });
             }
             //button in active booking
-            if (NfcButton2 != null) {
+            if (AccessButton2 != null) {
                 //nfc button pressed
-                NfcButton2.setOnClickListener(v -> {
+                AccessButton2.setOnClickListener(v -> {
                     int position = getBindingAdapterPosition();
                     if (position != RecyclerView.NO_POSITION) {
                         Booking booking = bookingList.get(position);
                         Context context = itemView.getContext();
-                        Intent intent = new Intent(context, BookingConfirmationActivity.class);
-                        intent.putExtra("booking", booking);
+                        Intent intent = new Intent(context, OpenGateActivity.class);
+                        intent.putExtra("bookingId", booking.getId());
                         context.startActivity(intent);
                     }
                 });

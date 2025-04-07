@@ -154,7 +154,7 @@
             </LinearLayout>
 
             <Button
-                android:id="@+id/NFC_button_ActiveBooking"
+                android:id="@+id/gate_button_ActiveBooking"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/access"
